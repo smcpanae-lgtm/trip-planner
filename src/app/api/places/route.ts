@@ -18,7 +18,10 @@ export async function GET(request: NextRequest) {
 
   try {
     // Use Google Places Text Search API
-    const encoded = encodeURIComponent(query + " 日本");
+    // Don't append "日本" for queries that already contain Japanese characters
+    const hasJapanese = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]/.test(query);
+    const searchQuery = hasJapanese ? query : query + " Japan";
+    const encoded = encodeURIComponent(searchQuery);
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encoded}&language=ja&region=jp&key=${API_KEY}`;
 
     const res = await fetch(url);
