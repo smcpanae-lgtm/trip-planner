@@ -1,0 +1,32 @@
+{
+  "name": "trip-planner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@react-google-maps/api": "^2.20.8",
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.8.0",
+    "next": "^16.2.3",
+    "postcss": "^8.5.9",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-leaflet": "^5.0.0",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2"
+  }
+}
