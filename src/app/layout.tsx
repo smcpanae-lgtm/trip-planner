@@ -26,8 +26,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://trip-planner-rho-five.vercel.app",
   },
+  metadataBase: new URL("https://trip-planner-rho-five.vercel.app"),
 };
 
 export default function RootLayout({

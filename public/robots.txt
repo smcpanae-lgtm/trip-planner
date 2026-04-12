@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://trip-planner-rho-five.vercel.app/sitemap.xml
