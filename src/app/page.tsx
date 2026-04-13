@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Map, X, Sparkles } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Map, X, Sparkles, Printer, Copy, Check } from "lucide-react";
 import TripForm from "@/components/TripForm";
 import Itinerary from "@/components/Itinerary";
 import { geocode } from "@/lib/geocoding";
@@ -438,6 +438,123 @@ export default function Home() {
     []
   );
 
+  // --- Print / Copy functionality ---
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printSelection, setPrintSelection] = useState<"a" | "b" | "both">("both");
+  const [copied, setCopied] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
+
+  function variantToText(variant: PlanVariantData): string {
+    const lines: string[] = [];
+    lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    lines.push(`📋 ${variant.planName}`);
+    if (variant.planDescription) {
+      lines.push(`   ${variant.planDescription}`);
+    }
+    lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    lines.push("");
+
+    for (const dayItin of variant.itineraries) {
+      lines.push(`■ ${dayItin.dayIndex + 1}日目`);
+      lines.push(`${"─".repeat(30)}`);
+
+      for (const item of dayItin.items) {
+        const typeLabel =
+          item.spot.type === "departure" ? "🚗 出発" :
+          item.spot.type === "arrival" ? "🏁 到着" :
+          item.isMealSpot === "lunch" ? "🍽️ 昼食" :
+          item.isMealSpot === "dinner" ? "🍽️ 夕食" :
+          "📍 観光";
+
+        const timeStr = item.stayMinutes > 0
+          ? `${item.arrivalTime}〜${item.departureTime}（${item.stayMinutes}分）`
+          : item.arrivalTime;
+
+        lines.push(`  ${typeLabel}  ${item.spot.name}`);
+        lines.push(`    ⏰ ${timeStr}`);
+
+        if (item.address) {
+          lines.push(`    📍 ${item.address}`);
+        }
+
+        if (item.description) {
+          lines.push(`    💡 ${item.description}`);
+        }
+
+        if (item.parkingInfo) {
+          lines.push(`    🅿️ ${item.parkingInfo}`);
+        }
+
+        if (item.highway) {
+          lines.push(`    🛣️ ${item.highway.entryIC} → ${item.highway.exitIC}（${item.highway.entryHighway}）`);
+        }
+
+        if (item.distanceKm > 0) {
+          lines.push(`    🚗 約${item.distanceKm}km・${item.travelMinutes}分${item.highway ? "（高速）" : "（一般道）"}`);
+        }
+
+        lines.push("");
+      }
+
+      // Commentary
+      const c = dayItin.commentary;
+      if (c) {
+        if (c.highlights && c.highlights.length > 0) {
+          lines.push(`  ⭐ ポイント`);
+          c.highlights.forEach((h) => lines.push(`    ・${h}`));
+          lines.push("");
+        }
+        if (c.tips && c.tips.length > 0) {
+          lines.push(`  💡 アドバイス`);
+          c.tips.forEach((t) => lines.push(`    ・${t}`));
+          lines.push("");
+        }
+        if (c.dogTips && c.dogTips.length > 0) {
+          lines.push(`  🐕 犬連れアドバイス`);
+          c.dogTips.forEach((t) => lines.push(`    ・${t}`));
+          lines.push("");
+        }
+      }
+    }
+
+    return lines.join("\n");
+  }
+
+  function getExportText(): string {
+    const header = "🚗 車で旅行プラン\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    if (planVariants.length <= 1) {
+      return header + variantToText(planVariants[0]);
+    }
+    if (printSelection === "a") {
+      return header + variantToText(planVariants[0]);
+    }
+    if (printSelection === "b") {
+      return header + variantToText(planVariants[1]);
+    }
+    return header + variantToText(planVariants[0]) + "\n\n" + variantToText(planVariants[1]);
+  }
+
+  function handleCopyText() {
+    const text = getExportText();
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function handlePrint() {
+    const text = getExportText();
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<!DOCTYPE html><html><head><title>車で旅行プラン</title><style>
+        body { font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; white-space: pre-wrap; line-height: 1.8; padding: 20px; font-size: 14px; }
+        @media print { body { padding: 0; } }
+      </style></head><body>${text.replace(/\n/g, "<br>")}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -493,6 +610,56 @@ export default function Home() {
         </div>
       )}
 
+      {/* Print/Copy modal for plan selection */}
+      {showPrintModal && (
+        <div className="fixed inset-0 z-[60] bg-black/30 flex items-center justify-center" onClick={() => setShowPrintModal(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-bold text-lg mb-4">出力するプランを選択</h3>
+            <div className="space-y-2 mb-5">
+              {[
+                { value: "a" as const, label: planVariants[0]?.planName || "プランA" },
+                { value: "b" as const, label: planVariants[1]?.planName || "プランB" },
+                { value: "both" as const, label: "両方のプラン" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setPrintSelection(opt.value)}
+                  className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                    printSelection === opt.value
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { handlePrint(); setShowPrintModal(false); }}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all"
+              >
+                <Printer className="w-4 h-4" />
+                印刷
+              </button>
+              <button
+                onClick={() => { handleCopyText(); setShowPrintModal(false); }}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-bold transition-all"
+              >
+                <Copy className="w-4 h-4" />
+                コピー
+              </button>
+            </div>
+            <button
+              onClick={() => setShowPrintModal(false)}
+              className="w-full mt-3 text-sm text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Layout */}
       <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row h-[calc(100vh-60px)]">
         <div
@@ -536,6 +703,36 @@ export default function Home() {
                   )}
                 </div>
               )}
+
+              {/* Print / Copy buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    if (planVariants.length > 1) {
+                      setShowPrintModal(true);
+                    } else {
+                      handlePrint();
+                    }
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+                >
+                  <Printer className="w-4 h-4" />
+                  印刷する
+                </button>
+                <button
+                  onClick={() => {
+                    if (planVariants.length > 1) {
+                      setShowPrintModal(true);
+                    } else {
+                      handleCopyText();
+                    }
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+                >
+                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                  {copied ? "コピー済み！" : "テキストをコピー"}
+                </button>
+              </div>
 
               <Itinerary
                 itineraries={itineraries}
