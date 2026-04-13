@@ -269,6 +269,7 @@ export default function Home() {
         })),
         withDog: config.withDog,
         travelDate: config.travelDate,
+        travelerProfile: config.travelerProfile,
       };
 
       const res = await fetch("/api/plan", {

@@ -21,6 +21,12 @@ interface PlanRequest {
   }[];
   withDog: boolean;
   travelDate?: string; // "YYYY-MM-DD"
+  travelerProfile?: {
+    partyType: string;
+    ageRange: string;
+    hasChildren: boolean;
+    childAges: string;
+  };
 }
 
 // Japanese national holidays (fixed + some calculated)
@@ -260,6 +266,52 @@ function buildPrompt(body: PlanRequest): string {
     ? analyzeTravelDate(body.travelDate, body.days.length)
     : "";
 
+  // Traveler profile context
+  let travelerContext = "";
+  if (body.travelerProfile) {
+    const p = body.travelerProfile;
+    const parts: string[] = [];
+
+    const partyLabels: Record<string, string> = {
+      solo: "一人旅",
+      couple: "カップル・夫婦旅行",
+      family: "家族旅行",
+      friends: "友人・グループ旅行",
+      senior: "シニア旅行",
+    };
+    if (p.partyType && partyLabels[p.partyType]) {
+      parts.push(`- 旅行スタイル: ${partyLabels[p.partyType]}`);
+    }
+
+    const ageLabels: Record<string, string> = {
+      "20s": "20代", "30s": "30代", "40s": "40代",
+      "50s": "50代", "60s": "60代", "70plus": "70代以上",
+    };
+    if (p.ageRange && ageLabels[p.ageRange]) {
+      parts.push(`- 年代: ${ageLabels[p.ageRange]}`);
+    }
+
+    if (p.hasChildren) {
+      parts.push(`- 子供連れ: あり${p.childAges ? `（${p.childAges}）` : ""}`);
+    }
+
+    if (parts.length > 0) {
+      travelerContext = `
+## 旅行者の情報
+${parts.join("\n")}
+
+上記の旅行者情報を踏まえて以下を考慮してください：
+${p.partyType === "solo" ? "- 一人でも楽しめるスポット（絶景、温泉、カフェ、写真映えスポット）を優先\n- 一人で入りやすい飲食店を提案" : ""}
+${p.partyType === "couple" ? "- ロマンチックなスポット、雰囲気の良いレストラン、景色の美しい場所を優先\n- カップル向けの体験（工芸体験、ワイナリーなど）も提案" : ""}
+${p.partyType === "family" ? "- 家族全員が楽しめる体験型スポット、公園、テーマパークを優先\n- 子供の年齢に合った施設を選定\n- ベビー設備や授乳室の有無にも配慮" : ""}
+${p.partyType === "friends" ? "- アクティブな体験、フォトジェニックなスポット、グルメスポットを優先\n- グループで盛り上がれるアクティビティを提案" : ""}
+${p.partyType === "senior" ? "- バリアフリー対応や歩行距離の少ないスポットを優先\n- ゆったりしたスケジュールで無理のないプラン\n- 休憩時間を多めに確保\n- 歴史・文化系のスポットを重視" : ""}
+${p.hasChildren ? `- 子供（${p.childAges || "年齢不明"}）が楽しめるスポットを必ず含める\n- 長時間の移動を避け、こまめに休憩を入れる\n- トイレ休憩のタイミングに配慮\n- 子供向けメニューのある飲食店を優先` : ""}
+${p.ageRange === "20s" || p.ageRange === "30s" ? "- SNS映えするスポットやトレンドの飲食店も考慮" : ""}
+${p.ageRange === "60s" || p.ageRange === "70plus" ? "- 歩行距離を最小限に抑え、ゆとりのあるスケジュールにする\n- 温泉や日本庭園など落ち着いたスポットを重視" : ""}`;
+    }
+  }
+
   const englishContext = hasEnglish
     ? `
 ## 多言語対応
@@ -292,6 +344,7 @@ function buildPrompt(body: PlanRequest): string {
 # 旅行条件
 ${daysDescription}
 ${dogContext}
+${travelerContext}
 ${dateContext}
 ${englishContext}
 ${planVariationInstruction}

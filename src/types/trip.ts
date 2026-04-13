@@ -18,11 +18,19 @@ export interface DayPlan {
   dinnerGenre: string;
 }
 
+export interface TravelerProfile {
+  partyType: "" | "solo" | "couple" | "family" | "friends" | "senior";
+  ageRange: "" | "20s" | "30s" | "40s" | "50s" | "60s" | "70plus";
+  hasChildren: boolean;
+  childAges: string; // e.g. "3歳、7歳"
+}
+
 export interface TripConfig {
   nights: number;
   days: DayPlan[];
   withDog: boolean;
   travelDate?: string; // "YYYY-MM-DD" format, optional
+  travelerProfile?: TravelerProfile;
 }
 
 export interface GeocodedSpot {

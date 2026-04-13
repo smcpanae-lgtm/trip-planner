@@ -20,7 +20,8 @@ import {
   Check,
 } from "lucide-react";
 import { searchPlaces } from "@/lib/geocoding";
-import type { TripConfig, DayPlan, Spot, SearchCandidate } from "@/types/trip";
+import { Users, Baby } from "lucide-react";
+import type { TripConfig, DayPlan, Spot, SearchCandidate, TravelerProfile } from "@/types/trip";
 
 interface TripFormProps {
   onSubmit: (config: TripConfig) => void;
@@ -206,6 +207,12 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
   const [homeAddress, setHomeAddress] = useState("");
   const [homeEditMode, setHomeEditMode] = useState(false);
   const [homeSaved, setHomeSaved] = useState(false);
+  const [travelerProfile, setTravelerProfile] = useState<TravelerProfile>({
+    partyType: "",
+    ageRange: "",
+    hasChildren: false,
+    childAges: "",
+  });
 
   // Load home address from localStorage on mount
   useEffect(() => {
@@ -349,7 +356,14 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
 
   const handleSubmit = () => {
     if (!validate()) return;
-    onSubmit({ nights, days, withDog, travelDate: travelDate || undefined });
+    const hasProfile = travelerProfile.partyType || travelerProfile.ageRange || travelerProfile.hasChildren;
+    onSubmit({
+      nights,
+      days,
+      withDog,
+      travelDate: travelDate || undefined,
+      travelerProfile: hasProfile ? travelerProfile : undefined,
+    });
   };
 
   const nightOptions = [
@@ -486,6 +500,97 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
             />
           </div>
         </button>
+      </div>
+
+      {/* Traveler Profile */}
+      <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+        <div className="flex items-center gap-2 mb-4">
+          <Users className="w-5 h-5 text-indigo-600" />
+          <h2 className="font-bold text-lg">旅行者の情報</h2>
+          <span className="text-xs text-slate-400 font-normal">（任意・AIの提案に反映）</span>
+        </div>
+
+        {/* Party type */}
+        <div className="mb-3">
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">旅行スタイル</label>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { value: "", label: "未選択" },
+              { value: "solo", label: "一人旅" },
+              { value: "couple", label: "カップル・夫婦" },
+              { value: "family", label: "家族旅行" },
+              { value: "friends", label: "友人・グループ" },
+              { value: "senior", label: "シニア旅行" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTravelerProfile((p) => ({ ...p, partyType: opt.value }))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  travelerProfile.partyType === opt.value
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Age range */}
+        <div className="mb-3">
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">年代</label>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { value: "", label: "未選択" },
+              { value: "20s", label: "20代" },
+              { value: "30s", label: "30代" },
+              { value: "40s", label: "40代" },
+              { value: "50s", label: "50代" },
+              { value: "60s", label: "60代" },
+              { value: "70plus", label: "70代以上" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTravelerProfile((p) => ({ ...p, ageRange: opt.value }))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  travelerProfile.ageRange === opt.value
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Children */}
+        <div>
+          <button
+            onClick={() => setTravelerProfile((p) => ({ ...p, hasChildren: !p.hasChildren, childAges: !p.hasChildren ? p.childAges : "" }))}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all text-sm ${
+              travelerProfile.hasChildren
+                ? "border-pink-400 bg-pink-50 text-pink-700"
+                : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
+            }`}
+          >
+            <Baby className={`w-4 h-4 ${travelerProfile.hasChildren ? "text-pink-500" : "text-slate-400"}`} />
+            <span className="font-medium">子供あり</span>
+          </button>
+          {travelerProfile.hasChildren && (
+            <div className="mt-2 ml-1">
+              <input
+                type="text"
+                value={travelerProfile.childAges}
+                onChange={(e) => setTravelerProfile((p) => ({ ...p, childAges: e.target.value }))}
+                placeholder="例: 3歳、7歳"
+                className="px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm w-full"
+              />
+              <p className="mt-1 text-xs text-slate-400">お子様の年齢に合ったスポットをAIが提案します</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Home Address Registration */}
