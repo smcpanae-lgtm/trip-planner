@@ -386,7 +386,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
         <p className="text-sm text-slate-600 leading-relaxed">
           出発地と目的地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
           渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
-          犬連れ旅行にも対応しています。
+          犬連れ旅行、旅行スタイル、年代にも対応しています。
         </p>
         <div className="flex flex-wrap gap-2 mt-3">
           {["AI自動プラン", "渋滞予測", "2プラン比較", "Google Maps連携", "犬連れ対応", "完全無料"].map((tag) => (
@@ -621,9 +621,14 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
           )}
         </div>
         {homeAddress && !homeEditMode ? (
-          <div className="mt-2 flex items-center gap-2 bg-green-50 rounded-lg px-3 py-2 border border-green-100">
-            <Check className="w-4 h-4 text-green-500 shrink-0" />
-            <span className="text-sm text-green-700 truncate">{homeAddress}</span>
+          <div className="mt-2">
+            <div className="flex items-center gap-2 bg-green-50 rounded-lg px-3 py-2 border border-green-100">
+              <Check className="w-4 h-4 text-green-500 shrink-0" />
+              <span className="text-sm text-green-700 truncate">{homeAddress}</span>
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              🔒 住所はお使いのブラウザ内にのみ保存されています。外部への送信は一切ありません。
+            </p>
           </div>
         ) : (
           <div className="mt-2">
@@ -653,6 +658,9 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
             </div>
             <p className="mt-1 text-xs text-slate-400">
               登録すると出発地・終着地にワンタップで入力できます
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              🔒 住所はお使いのブラウザ内（localStorage）にのみ保存されます。サーバーへの送信や第三者への共有は一切行いません。
             </p>
           </div>
         )}
