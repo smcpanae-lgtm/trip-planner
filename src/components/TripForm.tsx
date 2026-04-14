@@ -210,6 +210,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
   const [travelerProfile, setTravelerProfile] = useState<TravelerProfile>({
     partyType: "",
     ageRange: "",
+    hobbies: "",
     hasChildren: false,
     childAges: "",
   });
@@ -356,7 +357,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
 
   const handleSubmit = () => {
     if (!validate()) return;
-    const hasProfile = travelerProfile.partyType || travelerProfile.ageRange || travelerProfile.hasChildren;
+    const hasProfile = travelerProfile.partyType || travelerProfile.ageRange || travelerProfile.hobbies.trim() || travelerProfile.hasChildren;
     onSubmit({
       nights,
       days,
@@ -563,6 +564,19 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Hobbies */}
+        <div className="mb-3">
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">趣味・興味</label>
+          <input
+            type="text"
+            value={travelerProfile.hobbies}
+            onChange={(e) => setTravelerProfile((p) => ({ ...p, hobbies: e.target.value }))}
+            placeholder="例: 温泉 釣り 写真 グルメ 神社巡り"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm"
+          />
+          <p className="mt-1 text-xs text-slate-400">スペース区切りで複数入力可。お任せコースに趣味を反映します</p>
         </div>
 
         {/* Children */}

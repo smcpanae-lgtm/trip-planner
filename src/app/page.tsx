@@ -116,6 +116,18 @@ function parseGeminiPlan(plan: any): {
       items,
       lunchGenre,
       dinnerGenre,
+      lunchSpotInfo: day.lunchSpot ? {
+        name: day.lunchSpot.name,
+        description: day.lunchSpot.description,
+        nearSpot: day.lunchSpot.nearSpot || "",
+        alternatives: day.lunchSpot.alternatives || [],
+      } : undefined,
+      dinnerSpotInfo: day.dinnerSpot ? {
+        name: day.dinnerSpot.name,
+        description: day.dinnerSpot.description,
+        nearSpot: day.dinnerSpot.nearSpot || "",
+        alternatives: day.dinnerSpot.alternatives || [],
+      } : undefined,
       commentary,
     });
   }

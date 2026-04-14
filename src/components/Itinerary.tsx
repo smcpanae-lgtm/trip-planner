@@ -230,8 +230,69 @@ export default function Itinerary({ itineraries, onSpotHover }: ItineraryProps) 
             })}
           </div>
 
-          {/* Meal info */}
-          {(dayItin.lunchGenre || dayItin.dinnerGenre) && (
+          {/* Meal recommendations */}
+          {(dayItin.lunchSpotInfo || dayItin.dinnerSpotInfo) && (
+            <div className="ml-4 mt-3 space-y-2">
+              {dayItin.lunchSpotInfo && (
+                <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                  <div className="flex items-center gap-1.5 text-sm font-medium text-orange-700 mb-2">
+                    <Utensils className="w-4 h-4" />
+                    昼食おすすめ店舗
+                  </div>
+                  <div className="text-xs text-orange-700 font-medium mb-1">
+                    🏆 {dayItin.lunchSpotInfo.name}
+                    <span className="text-orange-500 font-normal ml-1">— {dayItin.lunchSpotInfo.description}</span>
+                  </div>
+                  {dayItin.lunchSpotInfo.nearSpot && (
+                    <p className="text-[11px] text-orange-400 mb-1.5">{dayItin.lunchSpotInfo.nearSpot}</p>
+                  )}
+                  {dayItin.lunchSpotInfo.alternatives && dayItin.lunchSpotInfo.alternatives.length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-orange-200">
+                      <p className="text-[10px] text-orange-500 font-medium mb-1">その他のおすすめ:</p>
+                      <ul className="space-y-0.5">
+                        {dayItin.lunchSpotInfo.alternatives.map((alt, i) => (
+                          <li key={i} className="text-[11px] text-orange-600 flex items-start gap-1">
+                            <span className="text-orange-400 mt-0.5">•</span>
+                            <span>{alt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+              {dayItin.dinnerSpotInfo && (
+                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                  <div className="flex items-center gap-1.5 text-sm font-medium text-purple-700 mb-2">
+                    <Utensils className="w-4 h-4" />
+                    夕食おすすめ店舗
+                  </div>
+                  <div className="text-xs text-purple-700 font-medium mb-1">
+                    🏆 {dayItin.dinnerSpotInfo.name}
+                    <span className="text-purple-500 font-normal ml-1">— {dayItin.dinnerSpotInfo.description}</span>
+                  </div>
+                  {dayItin.dinnerSpotInfo.nearSpot && (
+                    <p className="text-[11px] text-purple-400 mb-1.5">{dayItin.dinnerSpotInfo.nearSpot}</p>
+                  )}
+                  {dayItin.dinnerSpotInfo.alternatives && dayItin.dinnerSpotInfo.alternatives.length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-purple-200">
+                      <p className="text-[10px] text-purple-500 font-medium mb-1">その他のおすすめ:</p>
+                      <ul className="space-y-0.5">
+                        {dayItin.dinnerSpotInfo.alternatives.map((alt, i) => (
+                          <li key={i} className="text-[11px] text-purple-600 flex items-start gap-1">
+                            <span className="text-purple-400 mt-0.5">•</span>
+                            <span>{alt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {/* Fallback: show genre if no spot info */}
+          {!(dayItin.lunchSpotInfo || dayItin.dinnerSpotInfo) && (dayItin.lunchGenre || dayItin.dinnerGenre) && (
             <div className="ml-4 mt-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-orange-700 mb-1">
                 <Utensils className="w-4 h-4" />
