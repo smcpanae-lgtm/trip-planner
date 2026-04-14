@@ -231,6 +231,7 @@ export default function Home() {
   } | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("form");
   const [mobileShowMap, setMobileShowMap] = useState(false);
+  const [lastConfig, setLastConfig] = useState<TripConfig | null>(null);
 
   // Derived state from active plan
   const activeVariant = planVariants[activePlanIndex];
@@ -259,6 +260,7 @@ export default function Home() {
   );
 
   const handleSubmit = useCallback(async (config: TripConfig) => {
+    setLastConfig(config);
     setIsLoading(true);
     setLoadingMessage("AIが2つの旅行プランを作成中...");
 
@@ -681,7 +683,7 @@ export default function Home() {
           }`}
         >
           {viewMode === "form" ? (
-            <TripForm onSubmit={handleSubmit} isLoading={isLoading} />
+            <TripForm onSubmit={handleSubmit} isLoading={isLoading} initialConfig={lastConfig} />
           ) : (
             <div className="space-y-4">
               {/* Plan selector tabs */}

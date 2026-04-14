@@ -26,6 +26,7 @@ import type { TripConfig, DayPlan, Spot, SearchCandidate, TravelerProfile } from
 interface TripFormProps {
   onSubmit: (config: TripConfig) => void;
   isLoading: boolean;
+  initialConfig?: TripConfig | null;
 }
 
 interface ValidationErrors {
@@ -198,22 +199,37 @@ function clearHomeAddress() {
 }
 
 // --- Main form ---
-export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
-  const [nights, setNights] = useState(0);
-  const [days, setDays] = useState<DayPlan[]>([createEmptyDay(0)]);
+export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFormProps) {
+  const [nights, setNights] = useState(initialConfig?.nights ?? 0);
+  const [days, setDays] = useState<DayPlan[]>(initialConfig?.days ?? [createEmptyDay(0)]);
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [withDog, setWithDog] = useState(false);
-  const [travelDate, setTravelDate] = useState("");
+  const [withDog, setWithDog] = useState(initialConfig?.withDog ?? false);
+  const [travelDate, setTravelDate] = useState(initialConfig?.travelDate ?? "");
   const [homeAddress, setHomeAddress] = useState("");
   const [homeEditMode, setHomeEditMode] = useState(false);
   const [homeSaved, setHomeSaved] = useState(false);
-  const [travelerProfile, setTravelerProfile] = useState<TravelerProfile>({
-    partyType: "",
-    ageRange: "",
-    hobbies: "",
-    hasChildren: false,
-    childAges: "",
-  });
+  const [travelerProfile, setTravelerProfile] = useState<TravelerProfile>(
+    initialConfig?.travelerProfile ?? {
+      partyType: "",
+      ageRange: "",
+      hobbies: "",
+      hasChildren: false,
+      childAges: "",
+    }
+  );
+
+  // Restore form data when initialConfig changes (returning from result view)
+  useEffect(() => {
+    if (initialConfig) {
+      setNights(initialConfig.nights);
+      setDays(initialConfig.days);
+      setWithDog(initialConfig.withDog);
+      setTravelDate(initialConfig.travelDate ?? "");
+      if (initialConfig.travelerProfile) {
+        setTravelerProfile(initialConfig.travelerProfile);
+      }
+    }
+  }, [initialConfig]);
 
   // Load home address from localStorage on mount
   useEffect(() => {
