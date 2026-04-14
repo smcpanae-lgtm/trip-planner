@@ -25,17 +25,18 @@ function buildGoogleMapsUrl(name: string, address?: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
-function buildMealSearchUrl(areaName: string, genre: string): string {
-  const query = `${areaName} ${genre}`;
+function buildMealSearchUrl(areaName: string, genre: string, petFriendly?: boolean): string {
+  const query = petFriendly ? `${areaName} ${genre} ペットOK` : `${areaName} ${genre}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 interface ItineraryProps {
   itineraries: DayItinerary[];
   onSpotHover: (dayIndex: number, orderIndex: number) => void;
+  withDog?: boolean;
 }
 
-export default function Itinerary({ itineraries, onSpotHover }: ItineraryProps) {
+export default function Itinerary({ itineraries, onSpotHover, withDog }: ItineraryProps) {
   if (itineraries.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-slate-400">
@@ -220,6 +221,17 @@ export default function Itinerary({ itineraries, onSpotHover }: ItineraryProps) 
                           <ExternalLink className="w-3 h-3" />
                           Google Mapで確認
                         </a>
+                        {item.isMealSpot && withDog && (
+                          <a
+                            href={buildMealSearchUrl(item.spot.name, item.isMealSpot === "lunch" ? "ランチ" : "ディナー", true)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] text-amber-600 hover:text-amber-800 hover:underline transition-colors"
+                          >
+                            <PawPrint className="w-3 h-3" />
+                            ペットOKで探す
+                          </a>
+                        )}
                         {item.isMealSpot && (
                           <span className="text-[10px] text-amber-500 flex items-center gap-0.5">
                             <AlertTriangle className="w-3 h-3" />
@@ -250,15 +262,28 @@ export default function Itinerary({ itineraries, onSpotHover }: ItineraryProps) 
                   {dayItin.lunchSpotInfo.nearSpot && (
                     <p className="text-[11px] text-orange-400 mb-1.5">{dayItin.lunchSpotInfo.nearSpot}</p>
                   )}
-                  <a
-                    href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium mt-1"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Google Mapsで{dayItin.lunchGenre || "ランチ"}のお店を探す
-                  </a>
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <a
+                      href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Google Mapsで{dayItin.lunchGenre || "ランチ"}のお店を探す
+                    </a>
+                    {withDog && (
+                      <a
+                        href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ", true)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 hover:underline font-medium"
+                      >
+                        <PawPrint className="w-3.5 h-3.5" />
+                        ペットOKのお店を探す
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
               {dayItin.dinnerSpotInfo && (
@@ -274,15 +299,28 @@ export default function Itinerary({ itineraries, onSpotHover }: ItineraryProps) 
                   {dayItin.dinnerSpotInfo.nearSpot && (
                     <p className="text-[11px] text-purple-400 mb-1.5">{dayItin.dinnerSpotInfo.nearSpot}</p>
                   )}
-                  <a
-                    href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium mt-1"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Google Mapsで{dayItin.dinnerGenre || "ディナー"}のお店を探す
-                  </a>
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <a
+                      href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Google Mapsで{dayItin.dinnerGenre || "ディナー"}のお店を探す
+                    </a>
+                    {withDog && (
+                      <a
+                        href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー", true)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 hover:underline font-medium"
+                      >
+                        <PawPrint className="w-3.5 h-3.5" />
+                        ペットOKのお店を探す
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

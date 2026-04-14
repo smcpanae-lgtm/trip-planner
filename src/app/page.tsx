@@ -313,7 +313,11 @@ export default function Home() {
           })),
           arrival: day.arrival,
           arrivalTime: day.arrivalTime || "20:00",
+          includeLunch: day.includeLunch,
+          lunchLocation: day.lunchLocation,
           lunchGenre: day.lunchGenre,
+          includeDinner: day.includeDinner,
+          dinnerLocation: day.dinnerLocation,
           dinnerGenre: day.dinnerGenre,
         })),
         withDog: config.withDog,
@@ -452,8 +456,8 @@ export default function Home() {
       const startTime = day.departureTime || "09:00";
       const dayItin = buildDayItinerary(
         optimizedSpots,
-        day.lunchGenre,
-        day.dinnerGenre,
+        day.includeLunch ? day.lunchGenre || "ランチ" : "",
+        day.includeDinner ? day.dinnerGenre || "ディナー" : "",
         day.dayIndex,
         startTime,
         day.arrivalTime || "20:00",
@@ -787,6 +791,7 @@ export default function Home() {
               <Itinerary
                 itineraries={itineraries}
                 onSpotHover={handleSpotHover}
+                withDog={lastConfig?.withDog ?? false}
               />
             </div>
           )}

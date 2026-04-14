@@ -16,7 +16,11 @@ interface PlanRequest {
     }[];
     arrival: string;
     arrivalTime: string;
+    includeLunch: boolean;
+    lunchLocation: string;
     lunchGenre: string;
+    includeDinner: boolean;
+    dinnerLocation: string;
     dinnerGenre: string;
   }[];
   withDog: boolean;
@@ -243,13 +247,20 @@ function buildPrompt(body: PlanRequest): string {
         .filter(Boolean)
         .join("、");
 
+      const lunchDesc = day.includeLunch
+        ? `あり${day.lunchLocation ? `（希望場所: ${day.lunchLocation}）` : ""}${day.lunchGenre ? `（ジャンル: ${day.lunchGenre}）` : ""}`
+        : "不要";
+      const dinnerDesc = day.includeDinner
+        ? `あり${day.dinnerLocation ? `（希望場所: ${day.dinnerLocation}）` : ""}${day.dinnerGenre ? `（ジャンル: ${day.dinnerGenre}）` : ""}`
+        : "不要";
+
       return `
 ## ${day.dayIndex + 1}日目
 - 出発地: ${day.departure}（${day.departureTime}出発）
 - 希望目的地: ${destNames || "なし（AIが提案）"}
 - 終着地: ${day.arrival}（${day.arrivalTime}までに到着希望）
-- 昼食の希望: ${day.lunchGenre || "特になし"}
-- 夕食の希望: ${day.dinnerGenre || "特になし"}`;
+- 昼食: ${lunchDesc}
+- 夕食: ${dinnerDesc}`;
     })
     .join("\n");
 
@@ -375,18 +386,21 @@ ${planVariationInstruction}
 7. 各スポットの見どころや楽しみ方を簡潔に解説すること
 8. 各itemにaddress（住所）を必ず含めること（「東京都千代田区丸の内1丁目」のような形式）
 9. 昼食・夕食について:
-   - 昼食の希望ジャンルが記載されている場合: 11:30〜13:30の時間帯にitemsの中にtype="lunch"の食事スポットを**必ず1件**追加すること
-   - 夕食の希望ジャンルが記載されている場合: 17:30〜19:30の時間帯にitemsの中にtype="dinner"の食事スポットを**必ず1件**追加すること
+   - 昼食が「あり」の場合: 11:30〜13:30の時間帯にitemsの中にtype="lunch"の食事スポットを**必ず1件**追加すること
+   - 夕食が「あり」の場合: 17:30〜19:30の時間帯にitemsの中にtype="dinner"の食事スポットを**必ず1件**追加すること
+   - 希望場所が指定されている場合: その場所周辺で食事スポットを設定すること
+   - ジャンルが指定されている場合: そのジャンルの食事エリアとして提案すること
    - 食事スポットのnameは「○○エリアで昼食（ジャンル名）」の形式にすること（例: 「秩父駅周辺で昼食（蕎麦）」「箱根湯本周辺で夕食（和食）」）
+   - ジャンル未指定の場合は「○○エリアで昼食」のようにジャンル省略も可
    - **具体的な店名は提案しないこと**（AIが提案する店名は不正確な場合があるため）
    - 食事スポットには必ずlat/lng/addressを含めること（食事エリアの中心地点の座標を使用）
-   - descriptionには「このエリアで○○（ジャンル）のお店をGoogle Mapsで検索してお選びください」と記載すること
+   - descriptionには「このエリアで○○のお店をGoogle Mapsで検索してお選びください」と記載すること
    - 犬連れの場合はdescriptionに「犬同伴可・テラス席ありのお店を検索条件に加えてください」と追記すること
-   - 昼食・夕食の希望が「特になし」の場合: itemsへの食事スポット追加は不要。代わりにcommentaryのhighlightsの中でルート周辺のおすすめ食事エリアを簡単に紹介すること
+   - 昼食・夕食が「不要」の場合: itemsへの食事スポット追加は不要
 10. 食事スポットの注意:
    - 滞在時間は60分で設定すること
-   - 食事エリアはルート上の目的地に近い場所を選ぶこと
-   - lunchSpot/dinnerSpotのnameには「○○エリア（ジャンル名）」、descriptionには「○○周辺には○○（ジャンル）のお店が多数あります」、nearSpotには「○○（目的地名）から車で約○分」と記載すること
+   - 希望場所が指定されていればその付近、なければルート上の目的地に近い場所を選ぶこと
+   - lunchSpot/dinnerSpotのnameには「○○エリア（ジャンル名）」、descriptionには「○○周辺には○○のお店が多数あります」、nearSpotには「○○（目的地名）から車で約○分」と記載すること
    - lunchSpot/dinnerSpotのalternativesは不要（空配列でよい）
 
 # 出力JSON形式

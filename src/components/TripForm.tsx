@@ -50,7 +50,11 @@ function createEmptyDay(dayIndex: number): DayPlan {
     destinations: [createEmptySpot()],
     arrival: "",
     arrivalTime: "20:00",
+    includeLunch: false,
+    lunchLocation: "",
     lunchGenre: "",
+    includeDinner: false,
+    dinnerLocation: "",
     dinnerGenre: "",
   };
 }
@@ -934,36 +938,83 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           </div>
 
           {/* Meals */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
-                <Utensils className="w-3.5 h-3.5 text-orange-500" />
-                昼食ジャンル
-              </label>
-              <input
-                type="text"
-                placeholder="例: 海鮮、PA、道の駅..."
-                value={day.lunchGenre}
-                onChange={(e) =>
-                  updateDay(dayIdx, { lunchGenre: e.target.value })
-                }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
-              />
+          <div className="space-y-3">
+            {/* Lunch */}
+            <div className={`rounded-lg border-2 transition-all ${day.includeLunch ? "border-orange-300 bg-orange-50/50" : "border-slate-200 bg-slate-50"}`}>
+              <button
+                type="button"
+                onClick={() => updateDay(dayIdx, { includeLunch: !day.includeLunch })}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5"
+              >
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${day.includeLunch ? "bg-orange-500 border-orange-500" : "border-slate-300 bg-white"}`}>
+                  {day.includeLunch && <Check className="w-3.5 h-3.5 text-white" />}
+                </div>
+                <Utensils className={`w-4 h-4 ${day.includeLunch ? "text-orange-600" : "text-slate-400"}`} />
+                <span className={`text-sm font-medium ${day.includeLunch ? "text-orange-800" : "text-slate-500"}`}>昼食を含める</span>
+              </button>
+              {day.includeLunch && (
+                <div className="px-3 pb-3 space-y-2">
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意）</label>
+                    <input
+                      type="text"
+                      placeholder="例: 鎌倉駅周辺、江ノ島付近..."
+                      value={day.lunchLocation}
+                      onChange={(e) => updateDay(dayIdx, { lunchLocation: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意）</label>
+                    <input
+                      type="text"
+                      placeholder="例: 海鮮、蕎麦、イタリアン..."
+                      value={day.lunchGenre}
+                      onChange={(e) => updateDay(dayIdx, { lunchGenre: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-sm"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
-                <Utensils className="w-3.5 h-3.5 text-purple-500" />
-                夕食ジャンル
-              </label>
-              <input
-                type="text"
-                placeholder="例: 焼肉、PA、道の駅..."
-                value={day.dinnerGenre}
-                onChange={(e) =>
-                  updateDay(dayIdx, { dinnerGenre: e.target.value })
-                }
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
-              />
+
+            {/* Dinner */}
+            <div className={`rounded-lg border-2 transition-all ${day.includeDinner ? "border-purple-300 bg-purple-50/50" : "border-slate-200 bg-slate-50"}`}>
+              <button
+                type="button"
+                onClick={() => updateDay(dayIdx, { includeDinner: !day.includeDinner })}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5"
+              >
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${day.includeDinner ? "bg-purple-500 border-purple-500" : "border-slate-300 bg-white"}`}>
+                  {day.includeDinner && <Check className="w-3.5 h-3.5 text-white" />}
+                </div>
+                <Utensils className={`w-4 h-4 ${day.includeDinner ? "text-purple-600" : "text-slate-400"}`} />
+                <span className={`text-sm font-medium ${day.includeDinner ? "text-purple-800" : "text-slate-500"}`}>夕食を含める</span>
+              </button>
+              {day.includeDinner && (
+                <div className="px-3 pb-3 space-y-2">
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意）</label>
+                    <input
+                      type="text"
+                      placeholder="例: 箱根湯本周辺、熱海駅付近..."
+                      value={day.dinnerLocation}
+                      onChange={(e) => updateDay(dayIdx, { dinnerLocation: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意）</label>
+                    <input
+                      type="text"
+                      placeholder="例: 焼肉、和食、中華..."
+                      value={day.dinnerGenre}
+                      onChange={(e) => updateDay(dayIdx, { dinnerGenre: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

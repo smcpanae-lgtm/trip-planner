@@ -14,7 +14,11 @@ export interface DayPlan {
   destinations: Spot[];
   arrival: string;
   arrivalTime: string;
+  includeLunch: boolean;
+  lunchLocation: string;
   lunchGenre: string;
+  includeDinner: boolean;
+  dinnerLocation: string;
   dinnerGenre: string;
 }
 
