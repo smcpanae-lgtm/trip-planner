@@ -104,11 +104,17 @@ function parseGeminiPlan(plan: any): {
       overallDescription: plan.commentary?.overallDescription || undefined,
     };
 
+    // Extract genre from lunchSpot name like "○○エリアで昼食（蕎麦）" → "蕎麦"
+    const extractGenre = (spotName: string): string => {
+      const match = spotName.match(/[（(]([^）)]+)[）)]/);
+      return match ? match[1] : spotName;
+    };
+
     const lunchGenre = day.lunchSpot
-      ? `${day.lunchSpot.name}（${day.lunchSpot.description}）`
+      ? extractGenre(day.lunchSpot.name)
       : "";
     const dinnerGenre = day.dinnerSpot
-      ? `${day.dinnerSpot.name}（${day.dinnerSpot.description}）`
+      ? extractGenre(day.dinnerSpot.name)
       : "";
 
     itineraries.push({
@@ -139,11 +145,38 @@ function parseGeminiPlan(plan: any): {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseGeminiResponse(data: any): PlanVariantData[] {
   // New format: { plans: [...] }
-  if (data.plans && Array.isArray(data.plans)) {
-    return data.plans.map((plan: { planName?: string; planDescription?: string; days?: unknown[]; commentary?: unknown }) => {
+  if (data.plans && Array.isArray(data.plans) && data.plans.length > 0) {
+    console.log(`Parsed ${data.plans.length} plan variants from Gemini response`);
+    return data.plans.map((plan: { planName?: string; planDescription?: string; days?: unknown[]; commentary?: unknown }, idx: number) => {
       const { spots, itineraries } = parseGeminiPlan(plan);
       return {
-        planName: plan.planName || "プラン",
+        planName: plan.planName || (idx === 0 ? "プランA" : "プランB"),
+        planDescription: plan.planDescription || "",
+        spots,
+        itineraries,
+      };
+    });
+  }
+
+  // Fallback: look for plans array nested inside other keys
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const findPlans = (obj: any): any[] | null => {
+    if (!obj || typeof obj !== "object") return null;
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key]) && obj[key].length > 0 && obj[key][0]?.days) {
+        return obj[key];
+      }
+    }
+    return null;
+  };
+
+  const nestedPlans = findPlans(data);
+  if (nestedPlans && nestedPlans.length > 0) {
+    console.log(`Found ${nestedPlans.length} plans in nested structure`);
+    return nestedPlans.map((plan: { planName?: string; planDescription?: string }, idx: number) => {
+      const { spots, itineraries } = parseGeminiPlan(plan);
+      return {
+        planName: plan.planName || (idx === 0 ? "プランA" : "プランB"),
         planDescription: plan.planDescription || "",
         spots,
         itineraries,
@@ -153,6 +186,7 @@ function parseGeminiResponse(data: any): PlanVariantData[] {
 
   // Old format: { days: [...] } (single plan)
   if (data.days) {
+    console.warn("Gemini returned single plan format instead of plans array");
     const { spots, itineraries } = parseGeminiPlan(data);
     return [
       {
@@ -164,6 +198,7 @@ function parseGeminiResponse(data: any): PlanVariantData[] {
     ];
   }
 
+  console.error("Failed to parse Gemini response:", JSON.stringify(data).substring(0, 500));
   return [];
 }
 

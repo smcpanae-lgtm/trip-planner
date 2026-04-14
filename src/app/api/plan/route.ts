@@ -390,7 +390,8 @@ ${planVariationInstruction}
    - lunchSpot/dinnerSpotのalternativesは不要（空配列でよい）
 
 # 出力JSON形式
-以下の形式で**plans配列に2つのプラン**を出力してください：
+**必ず以下の形式で出力すること。最外層は必ず { "plans": [...] } とすること。plans配列には必ず2つのプランを含めること。**
+
 {
   "plans": [
     {
@@ -401,32 +402,105 @@ ${planVariationInstruction}
           "dayIndex": 0,
           "items": [
             {
-              "name": "スポット名",
+              "name": "自宅",
               "lat": 35.6812,
               "lng": 139.7671,
-              "address": "東京都千代田区丸の内1丁目",
-              "type": "departure | destination | arrival | lunch | dinner",
+              "address": "出発地の住所",
+              "type": "departure",
               "arrivalTime": "09:00",
               "departureTime": "09:00",
               "stayMinutes": 0,
               "distanceKm": 0,
               "travelMinutes": 0,
               "useHighway": false,
-              "highwayEntry": "入口IC名（高速利用時）",
-              "highwayExit": "出口IC名（高速利用時）",
-              "highwayName": "高速道路名",
-              "parkingInfo": "駐車場情報",
-              "description": "見どころ・楽しみ方（飲食店の場合は「※営業時間は事前にご確認ください」を含む）",
-              "dogWalkStop": false,
-              "mealRecommendation": "食事のおすすめ（該当時間帯の場合）"
+              "parkingInfo": "",
+              "description": "",
+              "dogWalkStop": false
+            },
+            {
+              "name": "観光スポット名",
+              "lat": 35.123,
+              "lng": 139.456,
+              "address": "東京都○○区○○1丁目",
+              "type": "destination",
+              "arrivalTime": "10:30",
+              "departureTime": "11:30",
+              "stayMinutes": 60,
+              "distanceKm": 50,
+              "travelMinutes": 45,
+              "useHighway": true,
+              "highwayEntry": "○○IC",
+              "highwayExit": "○○IC",
+              "highwayName": "○○自動車道",
+              "parkingInfo": "駐車場あり（無料・50台）",
+              "description": "見どころの説明",
+              "dogWalkStop": false
+            },
+            {
+              "name": "○○エリアで昼食（蕎麦）",
+              "lat": 35.234,
+              "lng": 139.567,
+              "address": "○○県○○市○○町付近",
+              "type": "lunch",
+              "arrivalTime": "12:00",
+              "departureTime": "13:00",
+              "stayMinutes": 60,
+              "distanceKm": 5,
+              "travelMinutes": 10,
+              "useHighway": false,
+              "parkingInfo": "周辺に駐車場あり",
+              "description": "このエリアで蕎麦のお店をGoogle Mapsで検索してお選びください",
+              "dogWalkStop": false
+            },
+            {
+              "name": "○○エリアで夕食（和食）",
+              "lat": 35.345,
+              "lng": 139.678,
+              "address": "○○県○○市○○町付近",
+              "type": "dinner",
+              "arrivalTime": "18:00",
+              "departureTime": "19:00",
+              "stayMinutes": 60,
+              "distanceKm": 10,
+              "travelMinutes": 15,
+              "useHighway": false,
+              "parkingInfo": "周辺に駐車場あり",
+              "description": "このエリアで和食のお店をGoogle Mapsで検索してお選びください",
+              "dogWalkStop": false
+            },
+            {
+              "name": "到着地",
+              "lat": 35.456,
+              "lng": 139.789,
+              "address": "到着地の住所",
+              "type": "arrival",
+              "arrivalTime": "20:00",
+              "departureTime": "20:00",
+              "stayMinutes": 0,
+              "distanceKm": 30,
+              "travelMinutes": 40,
+              "useHighway": false,
+              "parkingInfo": "",
+              "description": "",
+              "dogWalkStop": false
             }
           ],
-          "lunchSpot": { "name": "おすすめ店名1", "description": "特徴・人気メニュー", "nearSpot": "○○から車で約5分", "alternatives": ["店名2 - 特徴", "店名3 - 特徴", "店名4 - 特徴"] },
-          "dinnerSpot": { "name": "おすすめ店名1", "description": "特徴・人気メニュー", "nearSpot": "○○から車で約5分", "alternatives": ["店名2 - 特徴", "店名3 - 特徴", "店名4 - 特徴"] }
+          "lunchSpot": {
+            "name": "○○エリア（蕎麦）",
+            "description": "○○周辺には蕎麦のお店が多数あります",
+            "nearSpot": "○○（目的地名）から車で約10分",
+            "alternatives": []
+          },
+          "dinnerSpot": {
+            "name": "○○エリア（和食）",
+            "description": "○○周辺には和食のお店が多数あります",
+            "nearSpot": "○○（目的地名）から車で約15分",
+            "alternatives": []
+          }
         }
       ],
       "commentary": {
-        "removedSpots": [{ "name": "...", "reason": "..." }],
+        "removedSpots": [],
         "highlights": ["プランの見どころ1", "プランの見どころ2"],
         "tips": ["旅行のアドバイス1"],
         "dogTips": ["犬連れアドバイス（犬連れ時のみ）"],
@@ -435,14 +509,19 @@ ${planVariationInstruction}
     },
     {
       "planName": "プランB: 充実プラン",
-      "planDescription": "...",
-      "days": [...],
-      "commentary": {...}
+      "planDescription": "プランBの概要と特徴",
+      "days": [{"dayIndex": 0, "items": [...], "lunchSpot": {...}, "dinnerSpot": {...}}],
+      "commentary": {"removedSpots": [], "highlights": [...], "tips": [...], "overallDescription": "..."}
     }
   ]
 }
 
-重要:
+**絶対に守るべきルール:**
+- 最外層は必ず { "plans": [...] } にすること。days配列を直接返さないこと
+- plans配列には必ず2つのプランを含めること（プランAとプランB）
+- 昼食ジャンルが指定されている場合、itemsの中にtype="lunch"のアイテムを**必ず追加**すること（省略禁止）
+- 夕食ジャンルが指定されている場合、itemsの中にtype="dinner"のアイテムを**必ず追加**すること（省略禁止）
+- 食事アイテムにはlat, lng, addressを必ず含めること
 - 緯度経度は正確な値を使用してください。日本国内の実在する場所のみを提案してください
 - 2つのプランは必ず異なる内容にしてください（同じプランの重複は不可）
 - 各プランのplanNameとplanDescriptionは必須です`;
