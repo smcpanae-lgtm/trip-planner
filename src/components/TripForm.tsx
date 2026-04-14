@@ -970,6 +970,29 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
           </>
         )}
       </button>
+
+      {/* Disclaimer & Terms */}
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+        <div>
+          <h3 className="text-xs font-bold text-slate-500 mb-1">⚠️ 免責事項</h3>
+          <ul className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+            <li>・本サービスが生成する旅行プランはAIによる自動生成であり、実際の所要時間・距離・道路状況・営業時間・料金等と異なる場合があります。</li>
+            <li>・提案されたスポットや飲食店の営業状況、ペット同伴の可否等は、必ず事前にご自身でご確認ください。</li>
+            <li>・本サービスの利用により生じたいかなる損害についても、運営者は一切の責任を負いません。</li>
+            <li>・交通ルール・法規を遵守し、安全運転でお出かけください。</li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-xs font-bold text-slate-500 mb-1">📋 ご利用上の注意</h3>
+          <ul className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+            <li>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</li>
+            <li>・入力された情報（自宅住所を含む）はサーバーに保存されません。自宅住所はブラウザ内（localStorage）にのみ保存されます。</li>
+          </ul>
+        </div>
+        <p className="text-[10px] text-slate-300 text-center">
+          © {new Date().getFullYear()} 車で旅行プラン All Rights Reserved.
+        </p>
+      </div>
     </div>
   );
 }
