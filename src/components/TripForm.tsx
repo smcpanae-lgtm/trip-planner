@@ -362,6 +362,12 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
     );
   };
 
+  // Returns true if the string looks like multiple entries (comma/読点-separated)
+  const hasMultipleValues = (str: string): boolean => {
+    if (!str.trim()) return false;
+    return /[,、，]/.test(str);
+  };
+
   const validate = (): boolean => {
     const newErrors: ValidationErrors = {};
     days.forEach((day, dayIdx) => {
@@ -372,6 +378,19 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       const firstDest = day.destinations[0];
       if (firstDest && !firstDest.name.trim() && !firstDest.isOmakase)
         newErrors[`day${dayIdx}_dest0`] = "目的地を1つ以上入力してください";
+      // Meal field validation: only 1 value allowed
+      if (day.includeLunch) {
+        if (hasMultipleValues(day.lunchLocation))
+          newErrors[`day${dayIdx}_lunchLocation`] = "食べる場所は１つのみ入力してください（「、」や「,」で区切らないでください）";
+        if (hasMultipleValues(day.lunchGenre))
+          newErrors[`day${dayIdx}_lunchGenre`] = "ジャンルは１つのみ入力してください（「、」や「,」で区切らないでください）";
+      }
+      if (day.includeDinner) {
+        if (hasMultipleValues(day.dinnerLocation))
+          newErrors[`day${dayIdx}_dinnerLocation`] = "食べる場所は１つのみ入力してください（「、」や「,」で区切らないでください）";
+        if (hasMultipleValues(day.dinnerGenre))
+          newErrors[`day${dayIdx}_dinnerGenre`] = "ジャンルは１つのみ入力してください（「、」や「,」で区切らないでください）";
+      }
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -833,68 +852,25 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             {day.destinations.map((spot, spotIdx) => (
               <div
                 key={spot.id}
-                className={`p-3 rounded-lg border space-y-1 ${
-                  spot.isOmakase
-                    ? "bg-amber-50 border-amber-200"
-                    : "bg-slate-50 border-slate-100"
-                } ${
+                className={`p-3 rounded-lg border space-y-1 bg-slate-50 border-slate-100 ${
                   spotIdx === 0 && errors[`day${dayIdx}_dest0`]
                     ? "border-red-300 bg-red-50"
                     : ""
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded ${
-                      spot.isOmakase
-                        ? "text-amber-700 bg-amber-100"
-                        : "text-blue-600 bg-blue-50"
-                    }`}
-                  >
-                    {spot.isOmakase ? "✨" : `#${spotIdx + 1}`}
+                  <span className="text-xs font-bold px-2 py-0.5 rounded text-blue-600 bg-blue-50">
+                    #{spotIdx + 1}
                   </span>
-                  {spot.isOmakase ? (
-                    <div className="flex-1 px-3 py-2 rounded-lg bg-amber-100 border border-amber-200 text-amber-700 text-sm font-medium">
-                      おすすめスポットをお任せ
-                    </div>
-                  ) : (
-                    <SearchInput
-                      value={spot.name}
-                      placeholder="場所名を入力して検索"
-                      onChange={(val) =>
-                        updateSpot(dayIdx, spot.id, { name: val })
-                      }
-                      onSelect={(c) => handleSpotSelect(dayIdx, spot.id, c)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
-                    />
-                  )}
-                  {spotIdx === 0 && (
-                    <button
-                      onClick={() => updateDay(dayIdx, { firstDestId: day.firstDestId === spot.id ? undefined : spot.id })}
-                      className={`shrink-0 px-1.5 py-1 rounded border text-[8px] font-medium transition-all ${
-                        day.firstDestId === spot.id
-                          ? "bg-blue-100 border-blue-400 text-blue-700"
-                          : "bg-slate-100 border-slate-200 text-slate-400"
-                      }`}
-                    >
-                      最初に行く
-                    </button>
-                  )}
-                  <button
-                    onClick={() => toggleOmakase(dayIdx, spot.id)}
-                    title={spot.isOmakase ? "手動入力に切替" : "お任せにする"}
-                    className={`p-2 rounded-lg transition-all shrink-0 ${
-                      spot.isOmakase
-                        ? "bg-amber-200 text-amber-800 hover:bg-amber-300"
-                        : "bg-slate-100 text-slate-400 hover:bg-amber-50 hover:text-amber-600"
-                    }`}
-                  >
-                    {spot.isOmakase ? (
-                      <Keyboard className="w-4 h-4" />
-                    ) : (
-                      <Sparkles className="w-4 h-4" />
-                    )}
-                  </button>
+                  <SearchInput
+                    value={spot.name}
+                    placeholder="場所名を入力して検索"
+                    onChange={(val) =>
+                      updateSpot(dayIdx, spot.id, { name: val })
+                    }
+                    onSelect={(c) => handleSpotSelect(dayIdx, spot.id, c)}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+                  />
                   {day.destinations.length > 1 && (
                     <button
                       onClick={() => removeDestination(dayIdx, spot.id)}
@@ -904,10 +880,28 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     </button>
                   )}
                 </div>
-                {spot.address && !spot.isOmakase && (
+                {spot.address && (
                   <p className="text-xs text-slate-400 ml-10 truncate">
                     {spot.address}
                   </p>
+                )}
+                {/* "最初に行く" toggle - only for first destination */}
+                {spotIdx === 0 && (
+                  <div className="ml-10 mt-1.5">
+                    <button
+                      type="button"
+                      onClick={() => updateDay(dayIdx, { firstDestId: day.firstDestId === spot.id ? undefined : spot.id })}
+                      className="flex items-center gap-2 text-xs text-slate-500 hover:text-blue-600 transition-colors"
+                    >
+                      {/* Toggle switch */}
+                      <div className={`w-8 h-4 rounded-full transition-all relative shrink-0 ${day.firstDestId === spot.id ? "bg-blue-500" : "bg-slate-300"}`}>
+                        <div className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${day.firstDestId === spot.id ? "right-0.5" : "left-0.5"}`} />
+                      </div>
+                      <span className={`font-medium ${day.firstDestId === spot.id ? "text-blue-600" : "text-slate-400"}`}>
+                        この場所に最初に行く
+                      </span>
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
@@ -1005,19 +999,37 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                       type="text"
                       placeholder="例: 鎌倉駅周辺、江ノ島付近..."
                       value={day.lunchLocation}
-                      onChange={(e) => updateDay(dayIdx, { lunchLocation: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-sm"
+                      onChange={(e) => {
+                        updateDay(dayIdx, { lunchLocation: e.target.value });
+                        setErrors((prev) => { const n = { ...prev }; delete n[`day${dayIdx}_lunchLocation`]; return n; });
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg border outline-none transition-all text-sm ${errors[`day${dayIdx}_lunchLocation`] ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-100" : "border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"}`}
                     />
+                    {errors[`day${dayIdx}_lunchLocation`] && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        {errors[`day${dayIdx}_lunchLocation`]}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 海鮮、蕎麦、イタリアン..."
+                      placeholder="例: 海鮮 / 蕎麦 / イタリアン（１つだけ）"
                       value={day.lunchGenre}
-                      onChange={(e) => updateDay(dayIdx, { lunchGenre: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-sm"
+                      onChange={(e) => {
+                        updateDay(dayIdx, { lunchGenre: e.target.value });
+                        setErrors((prev) => { const n = { ...prev }; delete n[`day${dayIdx}_lunchGenre`]; return n; });
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg border outline-none transition-all text-sm ${errors[`day${dayIdx}_lunchGenre`] ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-100" : "border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"}`}
                     />
+                    {errors[`day${dayIdx}_lunchGenre`] && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        {errors[`day${dayIdx}_lunchGenre`]}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -1044,19 +1056,37 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                       type="text"
                       placeholder="例: 箱根湯本周辺、熱海駅付近..."
                       value={day.dinnerLocation}
-                      onChange={(e) => updateDay(dayIdx, { dinnerLocation: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                      onChange={(e) => {
+                        updateDay(dayIdx, { dinnerLocation: e.target.value });
+                        setErrors((prev) => { const n = { ...prev }; delete n[`day${dayIdx}_dinnerLocation`]; return n; });
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg border outline-none transition-all text-sm ${errors[`day${dayIdx}_dinnerLocation`] ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-100" : "border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100"}`}
                     />
+                    {errors[`day${dayIdx}_dinnerLocation`] && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        {errors[`day${dayIdx}_dinnerLocation`]}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 焼肉、和食、中華..."
+                      placeholder="例: 焼肉 / 和食 / 中華（１つだけ）"
                       value={day.dinnerGenre}
-                      onChange={(e) => updateDay(dayIdx, { dinnerGenre: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                      onChange={(e) => {
+                        updateDay(dayIdx, { dinnerGenre: e.target.value });
+                        setErrors((prev) => { const n = { ...prev }; delete n[`day${dayIdx}_dinnerGenre`]; return n; });
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg border outline-none transition-all text-sm ${errors[`day${dayIdx}_dinnerGenre`] ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-2 focus:ring-red-100" : "border-slate-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100"}`}
                     />
+                    {errors[`day${dayIdx}_dinnerGenre`] && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        {errors[`day${dayIdx}_dinnerGenre`]}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
