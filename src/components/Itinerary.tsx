@@ -49,6 +49,11 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
     );
   }
 
+  // Commentary is plan-level (same for all days) — show it once at the end
+  const planCommentary = itineraries.length > 0
+    ? itineraries[itineraries.length - 1].commentary
+    : undefined;
+
   return (
     <div className="space-y-6">
       {itineraries.map((dayItin) => (
@@ -343,100 +348,101 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             </div>
           )}
 
-          {/* Plan Commentary */}
-          {dayItin.commentary && (
-            <div className="ml-4 mt-4 space-y-3">
-              {/* Overall AI description */}
-              {dayItin.commentary.overallDescription && (
-                <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-purple-700 mb-2">
-                    <Sparkles className="w-4 h-4" />
-                    AIプランナーの解説
-                  </div>
-                  <p className="text-xs text-purple-600 leading-relaxed">
-                    {dayItin.commentary.overallDescription}
-                  </p>
-                </div>
-              )}
+        </div>
+      ))}
 
-              {/* Removed spots */}
-              {dayItin.commentary.removedSpots.length > 0 && (
-                <div className="p-3 bg-red-50 rounded-lg border border-red-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-red-700 mb-2">
-                    <AlertTriangle className="w-4 h-4" />
-                    時間の都合で除外した目的地
-                  </div>
-                  <ul className="space-y-1">
-                    {dayItin.commentary.removedSpots.map((removed, idx) => (
-                      <li key={idx} className="text-xs text-red-600 flex items-start gap-1.5">
-                        <span className="text-red-400 mt-0.5">•</span>
-                        <span>
-                          <span className="font-medium">{removed.name}</span>
-                          <span className="text-red-400 ml-1">— {removed.reason}</span>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+      {/* Plan Commentary — shown once after all days */}
+      {planCommentary && (
+        <div className="space-y-3 pt-2">
+          {/* Overall AI description */}
+          {planCommentary.overallDescription && (
+            <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-purple-700 mb-2">
+                <Sparkles className="w-4 h-4" />
+                AIプランナーの解説
+              </div>
+              <p className="text-xs text-purple-600 leading-relaxed">
+                {planCommentary.overallDescription}
+              </p>
+            </div>
+          )}
 
-              {/* Highlights */}
-              {dayItin.commentary.highlights.length > 0 && (
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-blue-700 mb-2">
-                    <Star className="w-4 h-4" />
-                    プランのポイント
-                  </div>
-                  <ul className="space-y-1">
-                    {dayItin.commentary.highlights.map((highlight, idx) => (
-                      <li key={idx} className="text-xs text-blue-600 flex items-start gap-1.5">
-                        <span className="text-blue-400 mt-0.5">•</span>
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {/* Removed spots */}
+          {planCommentary.removedSpots.length > 0 && (
+            <div className="p-3 bg-red-50 rounded-lg border border-red-100">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-red-700 mb-2">
+                <AlertTriangle className="w-4 h-4" />
+                時間の都合で除外した目的地
+              </div>
+              <ul className="space-y-1">
+                {planCommentary.removedSpots.map((removed, idx) => (
+                  <li key={idx} className="text-xs text-red-600 flex items-start gap-1.5">
+                    <span className="text-red-400 mt-0.5">•</span>
+                    <span>
+                      <span className="font-medium">{removed.name}</span>
+                      <span className="text-red-400 ml-1">— {removed.reason}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              {/* Tips */}
-              {dayItin.commentary.tips.length > 0 && (
-                <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-yellow-700 mb-2">
-                    <Lightbulb className="w-4 h-4" />
-                    アドバイス
-                  </div>
-                  <ul className="space-y-1">
-                    {dayItin.commentary.tips.map((tip, idx) => (
-                      <li key={idx} className="text-xs text-yellow-600 flex items-start gap-1.5">
-                        <span className="text-yellow-400 mt-0.5">•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {/* Highlights */}
+          {planCommentary.highlights.length > 0 && (
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-blue-700 mb-2">
+                <Star className="w-4 h-4" />
+                プランのポイント
+              </div>
+              <ul className="space-y-1">
+                {planCommentary.highlights.map((highlight, idx) => (
+                  <li key={idx} className="text-xs text-blue-600 flex items-start gap-1.5">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              {/* Dog tips */}
-              {dayItin.commentary.dogTips && dayItin.commentary.dogTips.length > 0 && (
-                <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-amber-700 mb-2">
-                    <Dog className="w-4 h-4" />
-                    犬連れ旅行のアドバイス
-                  </div>
-                  <ul className="space-y-1">
-                    {dayItin.commentary.dogTips.map((tip, idx) => (
-                      <li key={idx} className="text-xs text-amber-600 flex items-start gap-1.5">
-                        <span className="text-amber-400 mt-0.5">•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {/* Tips */}
+          {planCommentary.tips.length > 0 && (
+            <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-yellow-700 mb-2">
+                <Lightbulb className="w-4 h-4" />
+                アドバイス
+              </div>
+              <ul className="space-y-1">
+                {planCommentary.tips.map((tip, idx) => (
+                  <li key={idx} className="text-xs text-yellow-600 flex items-start gap-1.5">
+                    <span className="text-yellow-400 mt-0.5">•</span>
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Dog tips */}
+          {planCommentary.dogTips && planCommentary.dogTips.length > 0 && (
+            <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-amber-700 mb-2">
+                <Dog className="w-4 h-4" />
+                犬連れ旅行のアドバイス
+              </div>
+              <ul className="space-y-1">
+                {planCommentary.dogTips.map((tip, idx) => (
+                  <li key={idx} className="text-xs text-amber-600 flex items-start gap-1.5">
+                    <span className="text-amber-400 mt-0.5">•</span>
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
-      ))}
+      )}
     </div>
   );
 }
