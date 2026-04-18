@@ -26,7 +26,7 @@ function buildGoogleMapsUrl(name: string, address?: string): string {
 }
 
 function buildMealSearchUrl(areaName: string, genre: string, petFriendly?: boolean): string {
-  const query = petFriendly ? `${areaName} ${genre} ペットOK` : `${areaName} ${genre}`;
+  const query = petFriendly ? `${areaName} ${genre} 犬同伴可 テラス席あり` : `${areaName} ${genre}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
@@ -187,12 +187,20 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         </div>
                       </div>
 
-                      {/* AI description */}
-                      {item.description && (
-                        <p className="mt-1.5 text-xs text-slate-600 leading-relaxed bg-purple-50 rounded px-2 py-1.5 border border-purple-100">
-                          <Sparkles className="w-3 h-3 inline mr-1 text-purple-400" />
-                          {item.description}
+                      {/* Description: meal spots show static instruction; other spots show AI description */}
+                      {item.isMealSpot ? (
+                        <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
+                          {withDog
+                            ? "「Google Mapで確認」から周辺のお店をお選びください。犬連れの方は「ペットOKで探す」もご利用ください。"
+                            : "「Google Mapで確認」から周辺のお店をお選びください。"}
                         </p>
+                      ) : (
+                        item.description && (
+                          <p className="mt-1.5 text-xs text-slate-600 leading-relaxed bg-purple-50 rounded px-2 py-1.5 border border-purple-100">
+                            <Sparkles className="w-3 h-3 inline mr-1 text-purple-400" />
+                            {item.description}
+                          </p>
+                        )
                       )}
 
                       {/* Address */}
@@ -251,102 +259,6 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             })}
           </div>
 
-          {/* Meal recommendations */}
-          {(dayItin.lunchSpotInfo || dayItin.dinnerSpotInfo) && (
-            <div className="ml-4 mt-3 space-y-2">
-              {dayItin.lunchSpotInfo && (
-                <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-orange-700 mb-2">
-                    <Utensils className="w-4 h-4" />
-                    昼食エリア情報
-                  </div>
-                  <div className="text-xs text-orange-700 font-medium mb-1">
-                    {dayItin.lunchSpotInfo.name}
-                  </div>
-                  <p className="text-[11px] text-orange-600 mb-1.5">{dayItin.lunchSpotInfo.description}</p>
-                  {dayItin.lunchSpotInfo.nearSpot && (
-                    <p className="text-[11px] text-orange-400 mb-1.5">{dayItin.lunchSpotInfo.nearSpot}</p>
-                  )}
-                  <div className="flex flex-col gap-1.5 mt-1">
-                    <a
-                      href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ")}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      Google Mapsで{dayItin.lunchGenre || "ランチ"}のお店を探す
-                    </a>
-                    {withDog && (
-                      <a
-                        href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ", true)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:underline font-medium"
-                      >
-                        <PawPrint className="w-3.5 h-3.5" />
-                        ペットOKのお店を探す
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
-              {dayItin.dinnerSpotInfo && (
-                <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-purple-700 mb-2">
-                    <Utensils className="w-4 h-4" />
-                    夕食エリア情報
-                  </div>
-                  <div className="text-xs text-purple-700 font-medium mb-1">
-                    {dayItin.dinnerSpotInfo.name}
-                  </div>
-                  <p className="text-[11px] text-purple-600 mb-1.5">{dayItin.dinnerSpotInfo.description}</p>
-                  {dayItin.dinnerSpotInfo.nearSpot && (
-                    <p className="text-[11px] text-purple-400 mb-1.5">{dayItin.dinnerSpotInfo.nearSpot}</p>
-                  )}
-                  <div className="flex flex-col gap-1.5 mt-1">
-                    <a
-                      href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー")}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      Google Mapsで{dayItin.dinnerGenre || "ディナー"}のお店を探す
-                    </a>
-                    {withDog && (
-                      <a
-                        href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー", true)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:underline font-medium"
-                      >
-                        <PawPrint className="w-3.5 h-3.5" />
-                        ペットOKのお店を探す
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          {/* Fallback: show genre if no spot info */}
-          {!(dayItin.lunchSpotInfo || dayItin.dinnerSpotInfo) && (dayItin.lunchGenre || dayItin.dinnerGenre) && (
-            <div className="ml-4 mt-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-orange-700 mb-1">
-                <Utensils className="w-4 h-4" />
-                食事の希望
-              </div>
-              <div className="flex gap-4 text-xs text-orange-600">
-                {dayItin.lunchGenre && (
-                  <span>昼食: {dayItin.lunchGenre}</span>
-                )}
-                {dayItin.dinnerGenre && (
-                  <span>夕食: {dayItin.dinnerGenre}</span>
-                )}
-              </div>
-            </div>
-          )}
 
         </div>
       ))}
