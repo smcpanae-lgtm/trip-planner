@@ -223,6 +223,32 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         </div>
                       )}
 
+                      {/* Closing time warning for tourist spots arriving after 16:00 */}
+                      {!item.isMealSpot && spotType === "destination" && (() => {
+                        const hour = parseInt(item.arrivalTime?.split(":")[0] || "0", 10);
+                        if (hour >= 17) {
+                          return (
+                            <div className="mt-1.5 flex items-start gap-1.5 bg-red-50 border border-red-200 rounded px-2 py-1.5">
+                              <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                              <p className="text-[11px] text-red-600 leading-relaxed">
+                                <span className="font-bold">閉館の可能性あり。</span>寺社・博物館・城などは17時頃に閉館することが多いです。事前に営業時間をご確認ください。
+                              </p>
+                            </div>
+                          );
+                        }
+                        if (hour >= 16) {
+                          return (
+                            <div className="mt-1.5 flex items-start gap-1.5 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
+                              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                              <p className="text-[11px] text-amber-700 leading-relaxed">
+                                <span className="font-bold">閉館時間に注意。</span>寺社・博物館などは16〜17時頃に閉館する場合があります。事前に営業時間をご確認ください。
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+
                       {/* Google Maps link + business hours warning for meal spots and destinations */}
                       <div className="mt-1.5 flex flex-wrap items-center gap-2">
                         <a
