@@ -260,6 +260,7 @@ export default function Home() {
   const [activePlanIndex, setActivePlanIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [planError, setPlanError] = useState<string | null>(null);
   const [highlightedSpot, setHighlightedSpot] = useState<{
     dayIndex: number;
     orderIndex: number;
@@ -295,6 +296,7 @@ export default function Home() {
   );
 
   const handleSubmit = useCallback(async (config: TripConfig) => {
+    setPlanError(null);
     setLastConfig(config);
     setIsLoading(true);
     setLoadingMessage("AIが2つの旅行プランを作成中...");
@@ -319,8 +321,10 @@ export default function Home() {
           includeDinner: day.includeDinner,
           dinnerLocation: day.dinnerLocation,
           dinnerGenre: day.dinnerGenre,
+          firstDestId: day.firstDestId,
         })),
         withDog: config.withDog,
+        aiOmakase: config.aiOmakase,
         travelDate: config.travelDate,
         travelerProfile: config.travelerProfile,
       };
@@ -356,18 +360,17 @@ export default function Home() {
         }
       }
 
-      // Fallback to local algorithm
-      console.warn("Gemini API unavailable, falling back to local algorithm");
-      setLoadingMessage("ローカルアルゴリズムでプラン作成中...");
-      await buildLocalPlan(config);
+      // Gemini API failed - show error instead of fallback
+      console.warn("Gemini API unavailable, showing error");
+      setPlanError("AIプランの作成に失敗しました。しばらく待ってから再度お試しください。（AIサーバーが混雑している可能性があります）");
+      setIsLoading(false);
+      setLoadingMessage("");
+      return;
     } catch (e) {
       console.error("Error building plan:", e);
-      try {
-        setLoadingMessage("ローカルアルゴリズムでプラン作成中...");
-        await buildLocalPlan(config);
-      } catch (e2) {
-        console.error("Local plan also failed:", e2);
-      }
+      // Gemini API failed - show error instead of fallback
+      console.warn("Gemini API unavailable, showing error");
+      setPlanError("AIプランの作成に失敗しました。しばらく待ってから再度お試しください。（AIサーバーが混雑している可能性があります）");
     } finally {
       setIsLoading(false);
       setLoadingMessage("");
@@ -631,7 +634,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             {viewMode === "result" && (
               <button
-                onClick={() => setViewMode("form")}
+                onClick={() => { setViewMode("form"); setPlanError(null); }}
                 className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-all"
               >
                 プランを再編集
@@ -722,9 +725,30 @@ export default function Home() {
           }`}
         >
           {viewMode === "form" ? (
-            <TripForm onSubmit={handleSubmit} isLoading={isLoading} initialConfig={lastConfig} />
+            <div>
+              {planError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 mb-4">
+                  <div className="text-red-500 shrink-0 mt-0.5">⚠️</div>
+                  <div>
+                    <p className="text-sm font-medium text-red-700">エラーが発生しました</p>
+                    <p className="text-xs text-red-500 mt-1">{planError}</p>
+                  </div>
+                </div>
+              )}
+              <TripForm onSubmit={handleSubmit} isLoading={isLoading} initialConfig={lastConfig} />
+            </div>
           ) : (
             <div className="space-y-4">
+              {/* Error message */}
+              {planError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                  <div className="text-red-500 shrink-0 mt-0.5">⚠️</div>
+                  <div>
+                    <p className="text-sm font-medium text-red-700">エラーが発生しました</p>
+                    <p className="text-xs text-red-500 mt-1">{planError}</p>
+                  </div>
+                </div>
+              )}
               {/* Plan selector tabs */}
               {planVariants.length > 1 && (
                 <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 shadow-md border-2 border-red-200">

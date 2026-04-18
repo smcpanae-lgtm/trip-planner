@@ -208,6 +208,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
   const [days, setDays] = useState<DayPlan[]>(initialConfig?.days ?? [createEmptyDay(0)]);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [withDog, setWithDog] = useState(initialConfig?.withDog ?? false);
+  const [aiOmakase, setAiOmakase] = useState(initialConfig?.aiOmakase ?? true);
   const [travelDate, setTravelDate] = useState(initialConfig?.travelDate ?? "");
   const [homeAddress, setHomeAddress] = useState("");
   const [homeEditMode, setHomeEditMode] = useState(false);
@@ -228,6 +229,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       setNights(initialConfig.nights);
       setDays(initialConfig.days);
       setWithDog(initialConfig.withDog);
+      setAiOmakase(initialConfig.aiOmakase ?? true);
       setTravelDate(initialConfig.travelDate ?? "");
       if (initialConfig.travelerProfile) {
         setTravelerProfile(initialConfig.travelerProfile);
@@ -382,6 +384,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       nights,
       days,
       withDog,
+      aiOmakase,
       travelDate: travelDate || undefined,
       travelerProfile: hasProfile ? travelerProfile : undefined,
     });
@@ -405,7 +408,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           🚗 車で旅行プラン
         </h2>
         <p className="text-sm text-slate-600 leading-relaxed">
-          出発地と目的地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
+          出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
           渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
           犬連れ旅行、旅行スタイル、年代にも対応しています。
         </p>
@@ -484,8 +487,46 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         </div>
       </div>
 
-      {/* Dog-friendly toggle */}
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+      {/* AI Omakase + Dog-friendly toggles */}
+      <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 space-y-3">
+        {/* AI Omakase toggle */}
+        <button
+          onClick={() => setAiOmakase(!aiOmakase)}
+          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+            aiOmakase
+              ? "border-blue-400 bg-blue-50"
+              : "border-slate-200 bg-slate-50 hover:border-slate-300"
+          }`}
+        >
+          <Sparkles
+            className={`w-6 h-6 ${aiOmakase ? "text-blue-600" : "text-slate-400"}`}
+          />
+          <div className="text-left flex-1">
+            <div
+              className={`font-medium text-sm ${
+                aiOmakase ? "text-blue-800" : "text-slate-600"
+              }`}
+            >
+              目的地以外はお任せ
+            </div>
+            <div className="text-xs text-slate-400">
+              目的地以外は出発地、終着地、その時間等を勘案しAIがプランを作成します。
+            </div>
+          </div>
+          <div
+            className={`w-10 h-6 rounded-full transition-all relative ${
+              aiOmakase ? "bg-blue-500" : "bg-slate-300"
+            }`}
+          >
+            <div
+              className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${
+                aiOmakase ? "right-1" : "left-1"
+              }`}
+            />
+          </div>
+        </button>
+
+        {/* Dog-friendly toggle */}
         <button
           onClick={() => setWithDog(!withDog)}
           className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
@@ -521,7 +562,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             />
           </div>
         </button>
-      </div>
+      </div>  {/* end AI Omakase + Dog-friendly toggles */}
 
       {/* Traveler Profile */}
       <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
@@ -827,6 +868,18 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                       className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
                     />
                   )}
+                  {spotIdx === 0 && (
+                    <button
+                      onClick={() => updateDay(dayIdx, { firstDestId: day.firstDestId === spot.id ? undefined : spot.id })}
+                      className={`shrink-0 px-1.5 py-1 rounded border text-[8px] font-medium transition-all ${
+                        day.firstDestId === spot.id
+                          ? "bg-blue-100 border-blue-400 text-blue-700"
+                          : "bg-slate-100 border-slate-200 text-slate-400"
+                      }`}
+                    >
+                      最初に行く
+                    </button>
+                  )}
                   <button
                     onClick={() => toggleOmakase(dayIdx, spot.id)}
                     title={spot.isOmakase ? "手動入力に切替" : "お任せにする"}
@@ -871,14 +924,6 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               >
                 <Plus className="w-4 h-4" />
                 目的地を追加
-              </button>
-              <span className="text-slate-300">|</span>
-              <button
-                onClick={() => addDestination(dayIdx, true)}
-                className="flex items-center gap-1.5 text-sm text-amber-600 hover:text-amber-800 font-medium px-3 py-2 rounded-lg hover:bg-amber-50 transition-all"
-              >
-                <Sparkles className="w-4 h-4" />
-                お任せを追加
               </button>
             </div>
           </div>
@@ -955,7 +1000,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               {day.includeLunch && (
                 <div className="px-3 pb-3 space-y-2">
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
                     <input
                       type="text"
                       placeholder="例: 鎌倉駅周辺、江ノ島付近..."
@@ -965,7 +1010,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
                       placeholder="例: 海鮮、蕎麦、イタリアン..."
@@ -994,7 +1039,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               {day.includeDinner && (
                 <div className="px-3 pb-3 space-y-2">
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
                     <input
                       type="text"
                       placeholder="例: 箱根湯本周辺、熱海駅付近..."
@@ -1004,7 +1049,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
                       placeholder="例: 焼肉、和食、中華..."

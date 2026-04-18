@@ -226,7 +226,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                             href={buildMealSearchUrl(item.spot.name, item.isMealSpot === "lunch" ? "ランチ" : "ディナー", true)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[11px] text-amber-600 hover:text-amber-800 hover:underline transition-colors"
+                            className="inline-flex items-center gap-1 text-[11px] text-red-600 hover:text-red-800 hover:underline transition-colors font-medium"
                           >
                             <PawPrint className="w-3 h-3" />
                             ペットOKで探す
@@ -277,7 +277,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         href={buildMealSearchUrl(dayItin.lunchSpotInfo.name, dayItin.lunchGenre || "ランチ", true)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 hover:underline font-medium"
+                        className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:underline font-medium"
                       >
                         <PawPrint className="w-3.5 h-3.5" />
                         ペットOKのお店を探す
@@ -314,7 +314,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         href={buildMealSearchUrl(dayItin.dinnerSpotInfo.name, dayItin.dinnerGenre || "ディナー", true)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 hover:underline font-medium"
+                        className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:underline font-medium"
                       >
                         <PawPrint className="w-3.5 h-3.5" />
                         ペットOKのお店を探す

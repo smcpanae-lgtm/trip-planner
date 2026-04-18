@@ -22,8 +22,10 @@ interface PlanRequest {
     includeDinner: boolean;
     dinnerLocation: string;
     dinnerGenre: string;
+    firstDestId?: string;
   }[];
   withDog: boolean;
+  aiOmakase?: boolean;
   travelDate?: string; // "YYYY-MM-DD"
   travelerProfile?: {
     partyType: string;
@@ -165,7 +167,6 @@ ${seasonInfo || "特記事項なし"}
 const MODEL_NAMES = [
   "gemini-2.5-flash",
   "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
 ];
 
 export async function POST(request: NextRequest) {
@@ -183,37 +184,49 @@ export async function POST(request: NextRequest) {
     let lastError: unknown;
 
     for (const modelName of MODEL_NAMES) {
-      try {
-        console.log(`Trying model: ${modelName}`);
-        const model = genAI.getGenerativeModel({ model: modelName });
-
-        const result = await model.generateContent({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            responseMimeType: "application/json",
-          },
-        });
-
-        const responseText = result.response.text();
-        let plan;
+      let retries = 0;
+      const maxRetries = 1;
+      while (retries <= maxRetries) {
         try {
-          plan = JSON.parse(responseText);
-        } catch {
-          const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
-          if (jsonMatch) {
-            plan = JSON.parse(jsonMatch[1].trim());
-          } else {
-            throw new Error("Failed to parse Gemini response as JSON");
-          }
-        }
+          console.log(`Trying model: ${modelName}${retries > 0 ? ` (retry ${retries})` : ""}`);
+          const model = genAI.getGenerativeModel({ model: modelName });
 
-        console.log(`Success with model: ${modelName}`);
-        return NextResponse.json(plan);
-      } catch (err) {
-        console.warn(`Model ${modelName} failed:`, err);
-        lastError = err;
-        continue;
+          const result = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              responseMimeType: "application/json",
+            },
+          });
+
+          const responseText = result.response.text();
+          let plan;
+          try {
+            plan = JSON.parse(responseText);
+          } catch {
+            const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+            if (jsonMatch) {
+              plan = JSON.parse(jsonMatch[1].trim());
+            } else {
+              throw new Error("Failed to parse Gemini response as JSON");
+            }
+          }
+
+          console.log(`Success with model: ${modelName}`);
+          return NextResponse.json(plan);
+        } catch (err) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
+          if (is503 && retries < maxRetries) {
+            console.warn(`Model ${modelName} returned 503, retrying once...`);
+            retries++;
+            await new Promise((r) => setTimeout(r, 2000));
+            continue;
+          }
+          console.warn(`Model ${modelName} failed:`, err);
+          lastError = err;
+          break;
+        }
       }
     }
 
@@ -242,8 +255,12 @@ function buildPrompt(body: PlanRequest): string {
 
   const daysDescription = body.days
     .map((day) => {
-      const destNames = day.destinations
-        .map((d) => (d.isOmakase ? "【おまかせ（AIが提案）】" : d.name))
+      // Build destination list; mark the first destination with 【最初に行く】 if firstDestId is set
+      const destNamesWithFirst = day.destinations
+        .map((d, idx) => {
+          if (d.isOmakase) return "【おまかせ（AIが提案）】";
+          return idx === 0 && day.firstDestId ? `【最初に行く】${d.name}` : d.name;
+        })
         .filter(Boolean)
         .join("、");
 
@@ -254,10 +271,14 @@ function buildPrompt(body: PlanRequest): string {
         ? `あり${day.dinnerLocation ? `（希望場所: ${day.dinnerLocation}）` : ""}${day.dinnerGenre ? `（ジャンル: ${day.dinnerGenre}）` : ""}`
         : "不要";
 
+      const aiOmakaseNote = body.aiOmakase !== false
+        ? "\n- 【おまかせ】目的地はルート上で最適な観光地をAIが追加提案してください"
+        : "";
+
       return `
 ## ${day.dayIndex + 1}日目
 - 出発地: ${day.departure}（${day.departureTime}出発）
-- 希望目的地: ${destNames || "なし（AIが提案）"}
+- 希望目的地: ${destNamesWithFirst || "なし（AIが提案）"}${aiOmakaseNote}
 - 終着地: ${day.arrival}（${day.arrivalTime}までに到着希望）
 - 昼食: ${lunchDesc}
 - 夕食: ${dinnerDesc}`;
@@ -382,7 +403,10 @@ ${planVariationInstruction}
    - 途中にSA/PA・道の駅での休憩を挟み、長距離移動でも実現可能なプランにする
    - 滞在時間を短縮（最低30分）して対応する
    - それでも物理的に不可能な場合のみ、removedSpotsに理由を記載し、代わりに近隣の同ジャンルのスポットをプランに含めること
-6. 効率的なルート順序に最適化すること（近い場所をまとめる）
+6. ルート最適化:
+   - 帰りのドライブが楽になるよう、可能な限り遠い目的地から先に訪問し、帰りながら近い目的地を回るルートにすること（アウトアンドバック方式）
+   - ただし最初に行く目的地が指定されている場合はその制約を優先すること
+   - 効率的なルート順序に最適化すること（往復の総距離を最小化）
 7. 各スポットの見どころや楽しみ方を簡潔に解説すること
 8. 各itemにaddress（住所）を必ず含めること（「東京都千代田区丸の内1丁目」のような形式）
 9. 昼食・夕食について:
@@ -402,6 +426,11 @@ ${planVariationInstruction}
    - 希望場所が指定されていればその付近、なければルート上の目的地に近い場所を選ぶこと
    - lunchSpot/dinnerSpotのnameには「○○エリア（ジャンル名）」、descriptionには「○○周辺には○○のお店が多数あります」、nearSpotには「○○（目的地名）から車で約○分」と記載すること
    - lunchSpot/dinnerSpotのalternativesは不要（空配列でよい）
+11. 時間の有効活用:
+   - 出発時刻から終着地の希望時刻まで、できるだけ時間を有効に使うこと
+   - 最後の目的地から終着地まで時間が2時間以上余る場合は、ルート上にさらなる観光スポットや食事スポットを追加すること
+   - それでも追加スポットがない場合は、commentaryのtipsに「○○時頃に終着地に到着見込み。時間に余裕があります」と明記すること
+   - 終着地には希望到着時刻ちょうど（または少し前）に到着するようスケジュールを組むこと
 
 # 出力JSON形式
 **必ず以下の形式で出力すること。最外層は必ず { "plans": [...] } とすること。plans配列には必ず2つのプランを含めること。**
@@ -533,6 +562,7 @@ ${planVariationInstruction}
 **絶対に守るべきルール:**
 - 最外層は必ず { "plans": [...] } にすること。days配列を直接返さないこと
 - plans配列には必ず2つのプランを含めること（プランAとプランB）
+- 【最初に行く】と指定された目的地がある場合、その目的地を最初に訪れること。ただしPAなどの休憩が必要な場合は休憩後に向かうこと。
 - 昼食ジャンルが指定されている場合、itemsの中にtype="lunch"のアイテムを**必ず追加**すること（省略禁止）
 - 夕食ジャンルが指定されている場合、itemsの中にtype="dinner"のアイテムを**必ず追加**すること（省略禁止）
 - 食事アイテムにはlat, lng, addressを必ず含めること

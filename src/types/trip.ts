@@ -20,6 +20,7 @@ export interface DayPlan {
   includeDinner: boolean;
   dinnerLocation: string;
   dinnerGenre: string;
+  firstDestId?: string; // spot ID of the destination to visit first
 }
 
 export interface TravelerProfile {
@@ -34,6 +35,7 @@ export interface TripConfig {
   nights: number;
   days: DayPlan[];
   withDog: boolean;
+  aiOmakase: boolean;
   travelDate?: string; // "YYYY-MM-DD" format, optional
   travelerProfile?: TravelerProfile;
 }
