@@ -362,10 +362,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
     );
   };
 
-  // Returns true if the string looks like multiple entries (comma/読点-separated)
+  // Returns true if the string looks like multiple entries
+  // (comma/読点-separated, or space-separated multiple tokens)
   const hasMultipleValues = (str: string): boolean => {
     if (!str.trim()) return false;
-    return /[,、，]/.test(str);
+    // Check comma / 読点
+    if (/[,、，]/.test(str)) return true;
+    // Check space-separated (half-width or full-width space)
+    const parts = str.trim().split(/[\s　]+/).filter(Boolean);
+    return parts.length >= 2;
   };
 
   const validate = (): boolean => {
@@ -997,7 +1002,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 鎌倉駅周辺、江ノ島付近..."
+                      placeholder="例: 鎌倉駅周辺（1か所のみ）"
                       value={day.lunchLocation}
                       onChange={(e) => {
                         updateDay(dayIdx, { lunchLocation: e.target.value });
@@ -1016,7 +1021,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 海鮮 / 蕎麦 / イタリアン（１つだけ）"
+                      placeholder="例: 海鮮（1つのみ）"
                       value={day.lunchGenre}
                       onChange={(e) => {
                         updateDay(dayIdx, { lunchGenre: e.target.value });
@@ -1054,7 +1059,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 箱根湯本周辺、熱海駅付近..."
+                      placeholder="例: 箱根湯本周辺（1か所のみ）"
                       value={day.dinnerLocation}
                       onChange={(e) => {
                         updateDay(dayIdx, { dinnerLocation: e.target.value });
@@ -1073,7 +1078,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
                     <input
                       type="text"
-                      placeholder="例: 焼肉 / 和食 / 中華（１つだけ）"
+                      placeholder="例: 焼肉（1つのみ）"
                       value={day.dinnerGenre}
                       onChange={(e) => {
                         updateDay(dayIdx, { dinnerGenre: e.target.value });
