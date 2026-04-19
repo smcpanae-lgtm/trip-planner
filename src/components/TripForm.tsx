@@ -11,13 +11,13 @@ import {
   Navigation,
   Clock,
   AlertCircle,
-  Keyboard,
   Search,
   Dog,
   X,
   Home,
   Save,
   Check,
+  Route,
 } from "lucide-react";
 import { searchPlaces } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
@@ -57,6 +57,48 @@ function createEmptyDay(dayIndex: number): DayPlan {
     dinnerLocation: "",
     dinnerGenre: "",
   };
+}
+
+// --- Time selector (select-based, mobile-friendly) ---
+function TimeSelector({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  const parts = value.split(":");
+  const hour = parseInt(parts[0] || "0", 10);
+  const rawMinute = parseInt(parts[1] || "0", 10);
+  // Snap to nearest 15-min
+  const minute = Math.round(rawMinute / 15) * 15 % 60;
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+      <select
+        value={pad(hour)}
+        onChange={(e) => onChange(`${e.target.value}:${pad(minute)}`)}
+        className="py-2 pl-1 pr-0.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+      >
+        {Array.from({ length: 24 }, (_, i) => (
+          <option key={i} value={pad(i)}>{pad(i)}</option>
+        ))}
+      </select>
+      <span className="text-slate-400 font-bold text-sm">:</span>
+      <select
+        value={pad(minute)}
+        onChange={(e) => onChange(`${pad(hour)}:${e.target.value}`)}
+        className="py-2 pl-1 pr-0.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+      >
+        {["00", "15", "30", "45"].map((m) => (
+          <option key={m} value={m}>{m}</option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 // --- Search input component with dropdown ---
@@ -209,6 +251,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [withDog, setWithDog] = useState(initialConfig?.withDog ?? false);
   const [aiOmakase, setAiOmakase] = useState(initialConfig?.aiOmakase ?? true);
+  const [useHighway, setUseHighway] = useState(initialConfig?.useHighway ?? true);
   const [travelDate, setTravelDate] = useState(initialConfig?.travelDate ?? "");
   const [homeAddress, setHomeAddress] = useState("");
   const [homeEditMode, setHomeEditMode] = useState(false);
@@ -230,6 +273,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       setDays(initialConfig.days);
       setWithDog(initialConfig.withDog);
       setAiOmakase(initialConfig.aiOmakase ?? true);
+      setUseHighway(initialConfig.useHighway ?? true);
       setTravelDate(initialConfig.travelDate ?? "");
       if (initialConfig.travelerProfile) {
         setTravelerProfile(initialConfig.travelerProfile);
@@ -409,6 +453,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       days,
       withDog,
       aiOmakase,
+      useHighway,
       travelDate: travelDate || undefined,
       travelerProfile: hasProfile ? travelerProfile : undefined,
     });
@@ -586,7 +631,44 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             />
           </div>
         </button>
-      </div>  {/* end AI Omakase + Dog-friendly toggles */}
+
+        {/* Highway toggle */}
+        <button
+          onClick={() => setUseHighway(!useHighway)}
+          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+            useHighway
+              ? "border-emerald-400 bg-emerald-50"
+              : "border-slate-200 bg-slate-50 hover:border-slate-300"
+          }`}
+        >
+          <Route
+            className={`w-6 h-6 ${useHighway ? "text-emerald-600" : "text-slate-400"}`}
+          />
+          <div className="text-left flex-1">
+            <div
+              className={`font-medium text-sm ${
+                useHighway ? "text-emerald-800" : "text-slate-600"
+              }`}
+            >
+              高速道路を使う
+            </div>
+            <div className="text-xs text-slate-400">
+              {useHighway ? "高速道路を利用してルートを作成します" : "一般道のみでルートを作成します"}
+            </div>
+          </div>
+          <div
+            className={`w-10 h-6 rounded-full transition-all relative ${
+              useHighway ? "bg-emerald-500" : "bg-slate-300"
+            }`}
+          >
+            <div
+              className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${
+                useHighway ? "right-1" : "left-1"
+              }`}
+            />
+          </div>
+        </button>
+      </div>  {/* end AI Omakase + Dog-friendly + Highway toggles */}
 
       {/* Traveler Profile */}
       <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
@@ -822,17 +904,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     : "border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 }`}
               />
-              <div className="relative shrink-0">
-                <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                <input
-                  type="time"
-                  value={day.departureTime}
-                  onChange={(e) =>
-                    updateDay(dayIdx, { departureTime: e.target.value })
-                  }
-                  className="pl-8 pr-2 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm w-[120px]"
-                />
-              </div>
+              <TimeSelector
+                value={day.departureTime}
+                onChange={(val) => updateDay(dayIdx, { departureTime: val })}
+              />
             </div>
             {dayIdx > 0 && day.departure && (
               <p className="mt-1 text-xs text-slate-400">
@@ -958,17 +1033,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     : "border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 }`}
               />
-              <div className="relative shrink-0">
-                <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                <input
-                  type="time"
-                  value={day.arrivalTime}
-                  onChange={(e) =>
-                    updateDay(dayIdx, { arrivalTime: e.target.value })
-                  }
-                  className="pl-8 pr-2 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm w-[120px]"
-                />
-              </div>
+              <TimeSelector
+                value={day.arrivalTime}
+                onChange={(val) => updateDay(dayIdx, { arrivalTime: val })}
+              />
             </div>
             <p className="mt-1 text-xs text-slate-400">
               終着地の希望到着時刻（未入力の場合は20:00）

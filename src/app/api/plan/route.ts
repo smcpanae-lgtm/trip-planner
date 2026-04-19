@@ -26,6 +26,7 @@ interface PlanRequest {
   }[];
   withDog: boolean;
   aiOmakase?: boolean;
+  useHighway?: boolean; // true (default) = use highways; false = general roads only
   travelDate?: string; // "YYYY-MM-DD"
   travelerProfile?: {
     partyType: string;
@@ -401,7 +402,12 @@ ${planVariationInstruction}
 
 # ルール
 1. 出発時間と到着希望時間の間で必ず収まるプランにすること
-2. 移動時間は高速道路80km/h、一般道45km/hで計算（距離30km以上は高速利用を推奨）
+2. 移動時間の計算:${body.useHighway === false ? `
+   - **高速道路は使用しないこと（ユーザー設定）。すべて一般道でルートを組むこと**
+   - 一般道の速度: 45km/h で計算
+   - useHighway は常に false、highwayEntry/highwayExit/highwayName はすべて空文字列にすること` : `
+   - 高速道路: 80km/h、一般道: 45km/hで計算
+   - 距離30km以上の区間は高速利用を推奨`}
 3. 各目的地の滞在時間は観光地の規模に応じて30〜90分で設定
 4. 「おまかせ」の目的地はルート上で魅力的な観光地をAIが提案すること
 5. **ユーザーが指定した目的地は絶対に削除しないこと**。時間が厳しい場合は以下の対応をすること：

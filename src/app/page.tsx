@@ -325,6 +325,7 @@ export default function Home() {
         })),
         withDog: config.withDog,
         aiOmakase: config.aiOmakase,
+        useHighway: config.useHighway ?? true,
         travelDate: config.travelDate,
         travelerProfile: config.travelerProfile,
       };

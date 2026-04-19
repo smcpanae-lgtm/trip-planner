@@ -36,6 +36,7 @@ export interface TripConfig {
   days: DayPlan[];
   withDog: boolean;
   aiOmakase: boolean;
+  useHighway: boolean; // true = highways allowed (default), false = general roads only
   travelDate?: string; // "YYYY-MM-DD" format, optional
   travelerProfile?: TravelerProfile;
 }
