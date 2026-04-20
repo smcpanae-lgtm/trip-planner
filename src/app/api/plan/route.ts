@@ -166,8 +166,9 @@ ${seasonInfo || "特記事項なし"}
 }
 
 const MODEL_NAMES = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
+  "gemini-2.5-flash-preview-04-17", // current stable preview (released Apr 17, 2026)
+  "gemini-2.5-flash",               // generic alias (fallback)
+  "gemini-2.0-flash",               // stable fallback
 ];
 
 export async function POST(request: NextRequest) {
@@ -218,13 +219,19 @@ export async function POST(request: NextRequest) {
         } catch (err) {
           const errMsg = err instanceof Error ? err.message : String(err);
           const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
+          const is404 = errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("not found");
           if (is503 && retries < maxRetries) {
             console.warn(`Model ${modelName} returned 503, retrying once...`);
             retries++;
             await new Promise((r) => setTimeout(r, 2000));
             continue;
           }
-          console.warn(`Model ${modelName} failed:`, err);
+          if (is404) {
+            // 404 = model name invalid → skip immediately to next model, no retry
+            console.warn(`Model ${modelName} returned 404 (model not found), skipping to next model`);
+          } else {
+            console.warn(`Model ${modelName} failed:`, err);
+          }
           lastError = err;
           break;
         }
