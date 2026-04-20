@@ -233,6 +233,12 @@ export async function POST(request: NextRequest) {
             await new Promise((r) => setTimeout(r, 2000));
             continue;
           }
+          if (is429 && retries < maxRetries) {
+            console.warn(`Model ${modelName} returned 429, waiting 10s before retry...`);
+            retries++;
+            await new Promise((r) => setTimeout(r, 10000));
+            continue;
+          }
           if (is404) {
             console.warn(`Model ${modelName} returned 404 (model not found), skipping`);
           } else if (is403) {
