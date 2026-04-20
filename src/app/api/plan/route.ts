@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Support multiple API keys for quota distribution (key1 → key2 on 429)
+function getApiKeys(): string[] {
+  return [
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_2,
+  ].filter((k): k is string => !!k && k.length > 10);
+}
 
 interface PlanRequest {
   days: {
@@ -175,7 +181,8 @@ export async function POST(request: NextRequest) {
   try {
     const body: PlanRequest = await request.json();
 
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKeys = getApiKeys();
+    if (apiKeys.length === 0) {
       return NextResponse.json(
         { error: "GEMINI_API_KEY is not configured" },
         { status: 500 }
@@ -184,81 +191,75 @@ export async function POST(request: NextRequest) {
 
     const prompt = buildPrompt(body);
     let lastError: unknown;
-
     const modelErrors: string[] = [];
 
-    for (const modelName of MODEL_NAMES) {
-      let retries = 0;
-      const maxRetries = 1;
-      while (retries <= maxRetries) {
-        try {
-          console.log(`Trying model: ${modelName}${retries > 0 ? ` (retry ${retries})` : ""}`);
-          const model = genAI.getGenerativeModel({ model: modelName });
+    // Outer loop: try each API key (key1 → key2 on 429/403)
+    keyLoop: for (let keyIdx = 0; keyIdx < apiKeys.length; keyIdx++) {
+      const genAI = new GoogleGenerativeAI(apiKeys[keyIdx]);
+      const keyLabel = `key${keyIdx + 1}`;
 
-          const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              responseMimeType: "application/json",
-            },
-          });
-
-          const responseText = result.response.text();
-          let plan;
+      // Inner loop: try each model with this key
+      for (const modelName of MODEL_NAMES) {
+        let retries = 0;
+        const maxRetries = 1;
+        while (retries <= maxRetries) {
           try {
-            plan = JSON.parse(responseText);
-          } catch {
-            const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
-            if (jsonMatch) {
-              plan = JSON.parse(jsonMatch[1].trim());
-            } else {
-              throw new Error("Failed to parse Gemini response as JSON");
+            console.log(`[${keyLabel}] Trying model: ${modelName}${retries > 0 ? ` (retry ${retries})` : ""}`);
+            const model = genAI.getGenerativeModel({ model: modelName });
+
+            const result = await model.generateContent({
+              contents: [{ role: "user", parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.7,
+                responseMimeType: "application/json",
+              },
+            });
+
+            const responseText = result.response.text();
+            let plan;
+            try {
+              plan = JSON.parse(responseText);
+            } catch {
+              const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+              if (jsonMatch) {
+                plan = JSON.parse(jsonMatch[1].trim());
+              } else {
+                throw new Error("Failed to parse Gemini response as JSON");
+              }
             }
-          }
 
-          console.log(`Success with model: ${modelName}`);
-          return NextResponse.json(plan);
-        } catch (err) {
-          const errMsg = err instanceof Error ? err.message : String(err);
-          const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
-          const is404 = errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("not found");
-          const is403 = errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("API_KEY_INVALID");
-          const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
+            console.log(`[${keyLabel}] Success with model: ${modelName}`);
+            return NextResponse.json(plan);
+          } catch (err) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
+            const is404 = errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("not found");
+            const is403 = errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("API_KEY_INVALID");
+            const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
 
-          modelErrors.push(`[${modelName}] ${errMsg.substring(0, 200)}`);
+            modelErrors.push(`[${keyLabel}/${modelName}] ${errMsg.substring(0, 150)}`);
 
-          if (is503 && retries < maxRetries) {
-            console.warn(`Model ${modelName} returned 503, retrying once...`);
-            retries++;
-            await new Promise((r) => setTimeout(r, 2000));
-            continue;
-          }
-          if (is429 && retries < maxRetries) {
-            console.warn(`Model ${modelName} returned 429, waiting 10s before retry...`);
-            retries++;
-            await new Promise((r) => setTimeout(r, 10000));
-            continue;
-          }
-          if (is404) {
-            console.warn(`Model ${modelName} returned 404 (model not found), skipping`);
-          } else if (is403) {
-            console.error(`Model ${modelName} returned 403 (auth error) — check API key`);
-            // 403 is likely a key issue, no point trying other models
+            if (is503 && retries < maxRetries) {
+              console.warn(`[${keyLabel}] ${modelName} 503, retrying...`);
+              retries++;
+              await new Promise((r) => setTimeout(r, 2000));
+              continue;
+            }
+            if (is429 || is403) {
+              // Quota/auth error on this key → skip to next key immediately
+              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : "403 auth"} — switching to next key`);
+              lastError = err;
+              continue keyLoop;
+            }
+            if (is404) {
+              console.warn(`[${keyLabel}] ${modelName} 404, trying next model`);
+            } else {
+              console.warn(`[${keyLabel}] ${modelName} failed:`, errMsg.substring(0, 200));
+            }
+            lastError = err;
             break;
-          } else if (is429) {
-            console.warn(`Model ${modelName} returned 429 (rate limit), trying next model`);
-          } else {
-            console.warn(`Model ${modelName} failed:`, errMsg.substring(0, 300));
           }
-          lastError = err;
-          break;
         }
-      }
-
-      // If 403, stop trying other models immediately
-      const lastErrMsg = lastError instanceof Error ? lastError.message : String(lastError || "");
-      if (lastErrMsg.includes("403") || lastErrMsg.includes("PERMISSION_DENIED") || lastErrMsg.includes("API_KEY_INVALID")) {
-        break;
       }
     }
 
