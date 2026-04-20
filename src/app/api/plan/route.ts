@@ -185,6 +185,8 @@ export async function POST(request: NextRequest) {
     const prompt = buildPrompt(body);
     let lastError: unknown;
 
+    const modelErrors: string[] = [];
+
     for (const modelName of MODEL_NAMES) {
       let retries = 0;
       const maxRetries = 1;
@@ -220,6 +222,11 @@ export async function POST(request: NextRequest) {
           const errMsg = err instanceof Error ? err.message : String(err);
           const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
           const is404 = errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("not found");
+          const is403 = errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("API_KEY_INVALID");
+          const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
+
+          modelErrors.push(`[${modelName}] ${errMsg.substring(0, 200)}`);
+
           if (is503 && retries < maxRetries) {
             console.warn(`Model ${modelName} returned 503, retrying once...`);
             retries++;
@@ -227,24 +234,53 @@ export async function POST(request: NextRequest) {
             continue;
           }
           if (is404) {
-            // 404 = model name invalid → skip immediately to next model, no retry
-            console.warn(`Model ${modelName} returned 404 (model not found), skipping to next model`);
+            console.warn(`Model ${modelName} returned 404 (model not found), skipping`);
+          } else if (is403) {
+            console.error(`Model ${modelName} returned 403 (auth error) — check API key`);
+            // 403 is likely a key issue, no point trying other models
+            break;
+          } else if (is429) {
+            console.warn(`Model ${modelName} returned 429 (rate limit), trying next model`);
           } else {
-            console.warn(`Model ${modelName} failed:`, err);
+            console.warn(`Model ${modelName} failed:`, errMsg.substring(0, 300));
           }
           lastError = err;
           break;
         }
       }
+
+      // If 403, stop trying other models immediately
+      const lastErrMsg = lastError instanceof Error ? lastError.message : String(lastError || "");
+      if (lastErrMsg.includes("403") || lastErrMsg.includes("PERMISSION_DENIED") || lastErrMsg.includes("API_KEY_INVALID")) {
+        break;
+      }
     }
 
-    // All models failed
-    console.error("All Gemini models failed:", lastError);
-    const message =
-      lastError instanceof Error
-        ? lastError.message
-        : "AI plan generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // All models failed — return detailed error for diagnosis
+    console.error("All Gemini models failed. Errors:", modelErrors);
+    const diagMessage = modelErrors.length > 0
+      ? `[診断] ${modelErrors.join(" / ")}`
+      : "AI plan generation failed";
+    const lastErrMessage = lastError instanceof Error ? lastError.message : "AI plan generation failed";
+
+    // Check error type for user-friendly message
+    const is403 = lastErrMessage.includes("403") || lastErrMessage.includes("PERMISSION_DENIED") || lastErrMessage.includes("API_KEY_INVALID");
+    const is429 = lastErrMessage.includes("429") || lastErrMessage.includes("RESOURCE_EXHAUSTED");
+    const is404 = lastErrMessage.includes("404") || lastErrMessage.includes("NOT_FOUND");
+
+    let userMessage: string;
+    if (is403) {
+      userMessage = `APIキーエラー（403）: Gemini APIキーが無効です。管理者にお問い合わせください。[詳細: ${lastErrMessage.substring(0, 150)}]`;
+    } else if (is429) {
+      userMessage = `利用制限（429）: Gemini APIの無料枠の上限に達しました。しばらく時間をおいてから再度お試しください。`;
+    } else if (is404) {
+      userMessage = `モデルエラー（404）: 指定したAIモデルが見つかりません。[詳細: ${lastErrMessage.substring(0, 150)}]`;
+    } else {
+      userMessage = `AIサーバーエラー: ${lastErrMessage.substring(0, 200)}`;
+    }
+
+    console.error("Diagnosis:", diagMessage);
+    return NextResponse.json({ error: userMessage }, { status: 500 });
   } catch (error: unknown) {
     console.error("Gemini API error:", error);
     const message =
