@@ -336,42 +336,41 @@ export default function Home() {
         body: JSON.stringify(apiPayload),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (!data.error) {
-          const variants = parseGeminiResponse(data);
-          if (variants.length > 0) {
-            setPlanVariants(variants);
-            setActivePlanIndex(0);
-            setViewMode("result");
+      const data = await res.json().catch(() => ({}));
 
-            // Fetch routes for first plan in background
-            setLoadingMessage("ルートを取得中...");
-            fetchRoutePolylines(variants[0].spots).then((polylines) => {
-              if (polylines.length > 0) {
-                setPlanVariants((prev) =>
-                  prev.map((v, i) =>
-                    i === 0 ? { ...v, routePolylines: polylines } : v
-                  )
-                );
-              }
-            });
-            return;
-          }
+      if (res.ok && !data.error) {
+        const variants = parseGeminiResponse(data);
+        if (variants.length > 0) {
+          setPlanVariants(variants);
+          setActivePlanIndex(0);
+          setViewMode("result");
+
+          // Fetch routes for first plan in background
+          setLoadingMessage("ルートを取得中...");
+          fetchRoutePolylines(variants[0].spots).then((polylines) => {
+            if (polylines.length > 0) {
+              setPlanVariants((prev) =>
+                prev.map((v, i) =>
+                  i === 0 ? { ...v, routePolylines: polylines } : v
+                )
+              );
+            }
+          });
+          return;
         }
       }
 
-      // Gemini API failed - show error instead of fallback
-      console.warn("Gemini API unavailable, showing error");
-      setPlanError("AIプランの作成に失敗しました。しばらく待ってから再度お試しください。（AIサーバーが混雑している可能性があります）");
+      // Show actual error message from API (not hardcoded)
+      const apiError: string = data.error || `HTTPエラー ${res.status}`;
+      console.warn("Gemini API error:", apiError);
+      setPlanError(apiError);
       setIsLoading(false);
       setLoadingMessage("");
       return;
     } catch (e) {
       console.error("Error building plan:", e);
-      // Gemini API failed - show error instead of fallback
-      console.warn("Gemini API unavailable, showing error");
-      setPlanError("AIプランの作成に失敗しました。しばらく待ってから再度お試しください。（AIサーバーが混雑している可能性があります）");
+      const msg = e instanceof Error ? e.message : String(e);
+      setPlanError(`通信エラー: ${msg}`);
     } finally {
       setIsLoading(false);
       setLoadingMessage("");
