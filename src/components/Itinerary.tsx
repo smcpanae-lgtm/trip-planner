@@ -104,8 +104,8 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                           {item.highway ? "（高速利用）" : "（一般道）"}
                         </span>
                       </div>
-                      {/* Dog walk stop indicator */}
-                      {item.dogWalkStop && (
+                      {/* Dog walk stop indicator — only shown when dog mode is ON */}
+                      {withDog && item.dogWalkStop && (
                         <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 rounded-md px-2 py-1">
                           <PawPrint className="w-3 h-3" />
                           <span className="font-medium">
