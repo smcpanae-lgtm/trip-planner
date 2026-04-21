@@ -32,6 +32,36 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://trip-planner-rho-five.vercel.app"),
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "AI ドライブプランナー",
+  description:
+    "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
+  url: "https://trip-planner-rho-five.vercel.app",
+  applicationCategory: "TravelApplication",
+  operatingSystem: "Web",
+  inLanguage: "ja",
+  isAccessibleForFree: true,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "JPY",
+  },
+  featureList: [
+    "AIによる車旅行プラン自動作成",
+    "高速道路ルート・IC情報",
+    "SA/PAでの食事提案",
+    "犬連れ旅行対応",
+    "Googleマップ連携",
+    "日帰り〜複数泊プラン対応",
+  ],
+  creator: {
+    "@type": "Organization",
+    name: "AI ドライブプランナー",
+  },
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -42,6 +72,10 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HHWEKHRG56"
           strategy="afterInteractive"
