@@ -578,7 +578,7 @@ export default function Home() {
   }
 
   function getExportText(): string {
-    const header = "🚗 車で旅行プラン\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    const header = "🚗 AI ドライブプランナー\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
     if (planVariants.length <= 1) {
       return header + variantToText(planVariants[0]);
     }
@@ -603,7 +603,7 @@ export default function Home() {
     const text = getExportText();
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write(`<!DOCTYPE html><html><head><title>車で旅行プラン</title><style>
+      printWindow.document.write(`<!DOCTYPE html><html><head><title>AI ドライブプランナー</title><style>
         body { font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; white-space: pre-wrap; line-height: 1.8; padding: 20px; font-size: 14px; }
         @media print { body { padding: 0; } }
       </style></head><body>${text.replace(/\n/g, "<br>")}</body></html>`);
@@ -623,10 +623,10 @@ export default function Home() {
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">
-                車で旅行プラン
+                AI ドライブプランナー
               </h1>
               <p className="text-xs text-slate-400">
-                AI搭載・ドライブ旅行の工程表＆マップ
+                車旅行プランを自動作成・地図表示
               </p>
             </div>
           </div>
