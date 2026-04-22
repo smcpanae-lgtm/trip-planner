@@ -172,9 +172,9 @@ ${seasonInfo || "特記事項なし"}
 }
 
 const MODEL_NAMES = [
-  "gemini-2.5-flash-preview-04-17", // current stable preview (released Apr 17, 2026)
-  "gemini-2.5-flash",               // generic alias (fallback)
-  "gemini-2.0-flash",               // stable fallback
+  "gemini-2.0-flash",               // stable, 1500 RPD quota (primary)
+  "gemini-2.5-flash-preview-04-17", // higher quality preview, lower quota (fallback)
+  "gemini-2.5-flash",               // generic alias (last fallback)
 ];
 
 export async function POST(request: NextRequest) {
