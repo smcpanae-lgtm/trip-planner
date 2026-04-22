@@ -474,7 +474,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       {/* App Description for SEO and first-time users */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-xl p-5 shadow-sm border border-blue-100">
         <h2 className="font-bold text-lg text-blue-800 mb-2">
-          🚗 車で旅行プラン
+          🚗 AI ドライブプランナー
         </h2>
         <p className="text-sm text-slate-600 leading-relaxed">
           出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
@@ -1219,7 +1219,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           </ul>
         </div>
         <p className="text-[10px] text-slate-300 text-center">
-          © {new Date().getFullYear()} 車で旅行プラン All Rights Reserved.
+          © {new Date().getFullYear()} AI ドライブプランナー All Rights Reserved.
         </p>
       </div>
     </div>
