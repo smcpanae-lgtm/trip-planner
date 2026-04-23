@@ -239,14 +239,14 @@ export async function POST(request: NextRequest) {
             modelErrors.push(`[${keyLabel}/${modelName}] ${errMsg.substring(0, 150)}`);
 
             if (is503 && retries < maxRetries) {
-              console.warn(`[${keyLabel}] ${modelName} 503, retrying...`);
+              console.warn(`[${keyLabel}] ${modelName} 503, retrying once...`);
               retries++;
               await new Promise((r) => setTimeout(r, 2000));
               continue;
             }
-            if (is429 || is403) {
-              // Quota/auth error on this key → skip to next key immediately
-              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : "403 auth"} — switching to next key`);
+            if (is429 || is403 || is503) {
+              // Quota/auth/server error → skip to next key immediately
+              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : is403 ? "403 auth" : "503 server"} — switching to next key`);
               lastError = err;
               continue keyLoop;
             }
