@@ -245,11 +245,17 @@ export async function POST(request: NextRequest) {
               await new Promise((r) => setTimeout(r, 2000));
               continue;
             }
-            if (is429 || is403 || is503) {
-              // Quota/auth/server error → skip to next key immediately
-              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : is403 ? "403 auth" : "503 server"} — switching to next key`);
+            if (is429 || is403) {
+              // Quota/auth error → skip to next key immediately
+              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : "403 auth"} — switching to next key`);
               lastError = err;
               continue keyLoop;
+            }
+            if (is503) {
+              // Server error after retry → try next model on same key first
+              console.warn(`[${keyLabel}] ${modelName} 503 after retry — trying next model`);
+              lastError = err;
+              break;
             }
             if (is404) {
               console.warn(`[${keyLabel}] ${modelName} 404, trying next model`);
