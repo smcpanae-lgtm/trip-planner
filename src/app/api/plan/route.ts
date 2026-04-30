@@ -43,27 +43,49 @@ interface PlanRequest {
   };
 }
 
-// Japanese national holidays (fixed + some calculated)
+// Japanese national holidays (fixed dates + Happy Monday + substitute holidays)
 function getJapaneseHolidays(year: number): { date: string; name: string }[] {
   const holidays: { date: string; name: string }[] = [
+    // Fixed-date holidays
     { date: `${year}-01-01`, name: "元日" },
     { date: `${year}-02-11`, name: "建国記念の日" },
     { date: `${year}-02-23`, name: "天皇誕生日" },
-    { date: `${year}-03-20`, name: "春分の日" },
     { date: `${year}-04-29`, name: "昭和の日" },
     { date: `${year}-05-03`, name: "憲法記念日" },
     { date: `${year}-05-04`, name: "みどりの日" },
     { date: `${year}-05-05`, name: "こどもの日" },
-    { date: `${year}-07-21`, name: "海の日" }, // 3rd Monday approx
     { date: `${year}-08-11`, name: "山の日" },
-    { date: `${year}-09-16`, name: "敬老の日" }, // 3rd Monday approx
-    { date: `${year}-09-23`, name: "秋分の日" },
-    { date: `${year}-10-14`, name: "スポーツの日" }, // 2nd Monday approx
     { date: `${year}-11-03`, name: "文化の日" },
     { date: `${year}-11-23`, name: "勤労感謝の日" },
   ];
-  // Happy Monday holidays - calculate more precisely
-  holidays.push({ date: getNthMonday(year, 1, 2), name: "成人の日" }); // 2nd Monday of Jan
+
+  // Happy Monday holidays (calculated precisely)
+  holidays.push({ date: getNthMonday(year, 1, 2), name: "成人の日" });     // 1月第2月曜
+  holidays.push({ date: getNthMonday(year, 7, 3), name: "海の日" });       // 7月第3月曜
+  holidays.push({ date: getNthMonday(year, 9, 3), name: "敬老の日" });     // 9月第3月曜
+  holidays.push({ date: getNthMonday(year, 10, 2), name: "スポーツの日" }); // 10月第2月曜
+
+  // Equinox days (approximate - varies by year, ±1 day)
+  holidays.push({ date: `${year}-03-20`, name: "春分の日" });
+  holidays.push({ date: `${year}-09-23`, name: "秋分の日" });
+
+  // Substitute holidays (振替休日): if a holiday falls on Sunday, next Monday is a holiday
+  const baseHolidays = [...holidays];
+  for (const h of baseHolidays) {
+    const d = new Date(h.date + "T00:00:00");
+    if (d.getDay() === 0) { // Sunday
+      const substitute = new Date(d);
+      substitute.setDate(substitute.getDate() + 1);
+      // Skip consecutive holidays (e.g., GW) to find the next non-holiday weekday
+      let subStr = substitute.toISOString().split("T")[0];
+      while (holidays.some((hh) => hh.date === subStr)) {
+        substitute.setDate(substitute.getDate() + 1);
+        subStr = substitute.toISOString().split("T")[0];
+      }
+      holidays.push({ date: subStr, name: `振替休日（${h.name}）` });
+    }
+  }
+
   return holidays;
 }
 
@@ -369,7 +391,7 @@ function buildPrompt(body: PlanRequest): string {
   - **プランA・プランBともに、ユーザー指定の目的地は絶対にルートから除外しないこと。必ず両プランに含めること。**
   - 理由: 施設内に犬が入れなくても、周辺の散歩・外観見学・駐車場での休憩など部分的に楽しめる場合があるため
   - プランA・プランBともに: descriptionに「⚠️ 施設内はペット入場不可の場合があります。周辺の散歩や外観見学は可能なことが多いですが、事前に施設へご確認ください。入場できない場合は車内待機または近隣のペット預かり施設をご利用ください」と明記する
-  - プランBでは追加で: 同じ目的地を含めた上で、近隣に犬同伴可能なスポット（ドッグラン・ペットOK公園・テラス席カフェ等）があればルートに**追加**して提案する（代替ではなく追加）
+  - プランBでは追加で: 同じ目的地を含めた上で、近隣に犬同伴可能なスポット（ドッグラン・ペットOK公園・テラス席OKカフェ・店内ペットOKカフェ等）があればルートに**追加**して提案する（代替ではなく追加）
   - tipsに犬が入場不可の可能性がある施設についての注意事項と対策を含める
   - removedSpotsにユーザー指定の目的地を記載することは禁止`
     : "";
@@ -517,7 +539,7 @@ ${planVariationInstruction}
    - **具体的な店名は提案しないこと**（AIが提案する店名は不正確な場合があるため）
    - 食事スポットには必ずlat/lng/addressを含めること（食事エリアの中心地点の座標を使用）
    - descriptionには「このエリアで○○のお店をGoogle Mapsで検索してお選びください」と記載すること
-   - 犬連れの場合はdescriptionに「犬同伴可・テラス席ありのお店を検索条件に加えてください」と追記すること
+   - 犬連れの場合はdescriptionに「犬同伴可のお店（テラス席OK or 店内ペットOK）を検索条件に加えてください」と追記すること
    - 昼食・夕食が「不要」の場合: itemsへの食事スポット追加は不要
 10. 食事スポットの注意:
    - 滞在時間は60分で設定すること
