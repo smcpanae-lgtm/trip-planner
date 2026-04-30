@@ -244,9 +244,15 @@ export async function POST(request: NextRequest) {
               await new Promise((r) => setTimeout(r, 2000));
               continue;
             }
-            if (is429 || is403) {
-              // Quota/auth error → skip to next key immediately
-              console.warn(`[${keyLabel}] ${modelName} ${is429 ? "429 quota" : "403 auth"} — switching to next key`);
+            if (is429) {
+              // Model quota exhausted → try next model on same key first
+              console.warn(`[${keyLabel}] ${modelName} 429 quota — trying next model`);
+              lastError = err;
+              break;
+            }
+            if (is403) {
+              // Auth/key error → switch key immediately
+              console.warn(`[${keyLabel}] ${modelName} 403 auth — switching to next key`);
               lastError = err;
               continue keyLoop;
             }
