@@ -172,9 +172,8 @@ ${seasonInfo || "特記事項なし"}
 }
 
 const MODEL_NAMES = [
-  "gemini-2.5-flash",               // primary: 20 RPD free tier confirmed
-  "gemini-2.5-flash-preview-04-17", // fallback: preview version
-  "gemini-1.5-flash",               // last resort: stable model, higher quota
+  "gemini-2.5-flash", // primary: 10,000 RPD paid / 20 RPD free
+  "gemini-2.0-flash", // fallback: unlimited RPD on paid tier
 ];
 
 export async function POST(request: NextRequest) {
