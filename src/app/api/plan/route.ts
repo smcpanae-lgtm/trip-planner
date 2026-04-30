@@ -192,6 +192,14 @@ export async function POST(request: NextRequest) {
     let lastError: unknown;
     const modelErrors: string[] = [];
 
+    // Diagnostic: log key info for debugging
+    console.log(`[DIAG] API keys count: ${apiKeys.length}`);
+    apiKeys.forEach((k, i) => {
+      const last4 = k.slice(-4);
+      console.log(`[DIAG] key${i + 1}: ...${last4}`);
+    });
+    console.log(`[DIAG] Models: ${MODEL_NAMES.join(", ")}`);
+
     // Outer loop: try each API key (key1 → key2 on 429/403)
     keyLoop: for (let keyIdx = 0; keyIdx < apiKeys.length; keyIdx++) {
       const genAI = new GoogleGenerativeAI(apiKeys[keyIdx]);
@@ -236,6 +244,8 @@ export async function POST(request: NextRequest) {
             const is403 = errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("API_KEY_INVALID");
             const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
 
+            // Log full error for diagnosis
+            console.error(`[${keyLabel}/${modelName}] FULL ERROR: ${errMsg.substring(0, 500)}`);
             modelErrors.push(`[${keyLabel}/${modelName}] ${errMsg.substring(0, 150)}`);
 
             if (is503 && retries < maxRetries) {
