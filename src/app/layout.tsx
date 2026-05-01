@@ -27,9 +27,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://trip-planner-rho-five.vercel.app",
+    canonical: "https://ai-drive-planner.com",
   },
-  metadataBase: new URL("https://trip-planner-rho-five.vercel.app"),
+  metadataBase: new URL("https://ai-drive-planner.com"),
 };
 
 const jsonLd = {
@@ -38,7 +38,7 @@ const jsonLd = {
   name: "AI ドライブプランナー",
   description:
     "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
-  url: "https://trip-planner-rho-five.vercel.app",
+  url: "https://ai-drive-planner.com",
   applicationCategory: "TravelApplication",
   operatingSystem: "Web",
   inLanguage: "ja",
