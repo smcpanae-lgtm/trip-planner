@@ -494,7 +494,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             href="https://x.com/AIDRIVEPLAN"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-black transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-black transition-colors"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
