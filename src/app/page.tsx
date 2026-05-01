@@ -626,7 +626,7 @@ export default function Home() {
                 AI ドライブプランナー
               </h1>
               <p className="text-xs text-slate-400">
-                車旅行プランを自動作成・地図表示
+                車旅行プランを自動作成・地図（Google マップ）表示
               </p>
             </div>
           </div>
