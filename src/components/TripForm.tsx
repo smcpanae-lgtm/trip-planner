@@ -478,6 +478,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         </h2>
         <p className="text-sm text-slate-600 leading-relaxed">
           出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
+          プランはそのまま<span className="font-bold text-green-700">Google マップと連動</span>し、ルート・距離・移動時間をリアルタイムに表示。
           渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
           犬連れ旅行、旅行スタイル、年代にも対応しています。
         </p>
