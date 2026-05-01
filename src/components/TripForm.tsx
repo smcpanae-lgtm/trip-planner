@@ -534,9 +534,55 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
                     const dayOfWeek = dayNames[d.getDay()];
                     const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+
+                    // Check Japanese holidays
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    const day = d.getDate();
+                    const pad = (n: number) => String(n).padStart(2, "0");
+                    const dateStr = `${year}-${pad(month)}-${pad(day)}`;
+
+                    // getNthMonday helper
+                    const getNthMon = (y: number, m: number, n: number) => {
+                      let count = 0;
+                      for (let dd = 1; dd <= 31; dd++) {
+                        const dt = new Date(y, m - 1, dd);
+                        if (dt.getMonth() !== m - 1) break;
+                        if (dt.getDay() === 1) {
+                          count++;
+                          if (count === n) return `${y}-${pad(m)}-${pad(dd)}`;
+                        }
+                      }
+                      return "";
+                    };
+
+                    const fixedHolidays = [
+                      `${year}-01-01`, `${year}-02-11`, `${year}-02-23`,
+                      `${year}-03-20`, `${year}-04-29`,
+                      `${year}-05-03`, `${year}-05-04`, `${year}-05-05`,
+                      `${year}-08-11`, `${year}-09-23`,
+                      `${year}-11-03`, `${year}-11-23`,
+                    ];
+                    const happyMondays = [
+                      getNthMon(year, 1, 2),  // 成人の日
+                      getNthMon(year, 7, 3),  // 海の日
+                      getNthMon(year, 9, 3),  // 敬老の日
+                      getNthMon(year, 10, 2), // スポーツの日
+                    ];
+                    const allHolidays = [...fixedHolidays, ...happyMondays];
+                    const isHoliday = allHolidays.includes(dateStr);
+
+                    // GW check
+                    const isGW = (month === 4 && day >= 28) || (month === 5 && day <= 6);
+
+                    const isCrowded = isWeekend || isHoliday || isGW;
+
                     return (
-                      <span className={isWeekend ? "font-bold text-red-500" : ""}>
-                        （{dayOfWeek}曜日{isWeekend ? " 🚗混雑予想" : ""}）
+                      <span className={isCrowded ? "font-bold text-red-500" : ""}>
+                        （{dayOfWeek}曜日
+                        {isHoliday ? " 🎌祝日" : ""}
+                        {isGW && !isHoliday ? " 🎌GW" : ""}
+                        {isCrowded ? " 🚗混雑予想" : ""}）
                       </span>
                     );
                   })()}
