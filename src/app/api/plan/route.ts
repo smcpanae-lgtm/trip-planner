@@ -1,12 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Support multiple API keys for quota distribution (key1 → key2 on 429)
-function getApiKeys(): string[] {
-  return [
-    process.env.GEMINI_API_KEY,
-    process.env.GEMINI_API_KEY_2,
-  ].filter((k): k is string => !!k && k.length > 10);
+// API key strategy: FREE tier first → PAID tier fallback (seamless to user)
+// GEMINI_API_KEY_FREE  = key from project WITHOUT billing (free, rate-limited)
+// GEMINI_API_KEY_PAID  = key from project WITH prepaid billing (charged per token)
+// Legacy: GEMINI_API_KEY / GEMINI_API_KEY_2 also supported
+interface ApiKeyEntry {
+  key: string;
+  tier: "FREE" | "PAID";
+}
+
+function getApiKeys(): ApiKeyEntry[] {
+  const keys: ApiKeyEntry[] = [];
+
+  // Free tier keys (tried first)
+  const freeKey = process.env.GEMINI_API_KEY_FREE || process.env.GEMINI_API_KEY;
+  if (freeKey && freeKey.length > 10) {
+    keys.push({ key: freeKey, tier: "FREE" });
+  }
+
+  // Paid tier keys (fallback)
+  const paidKey = process.env.GEMINI_API_KEY_PAID || process.env.GEMINI_API_KEY_2;
+  if (paidKey && paidKey.length > 10 && paidKey !== freeKey) {
+    keys.push({ key: paidKey, tier: "PAID" });
+  }
+
+  return keys;
 }
 
 interface PlanRequest {
@@ -215,17 +234,18 @@ export async function POST(request: NextRequest) {
     const modelErrors: string[] = [];
 
     // Diagnostic: log key info for debugging
-    console.log(`[DIAG] API keys count: ${apiKeys.length}`);
+    console.log(`[DIAG] API keys: ${apiKeys.length} (${apiKeys.map(k => k.tier).join(" → ")})`);
     apiKeys.forEach((k, i) => {
-      const last4 = k.slice(-4);
-      console.log(`[DIAG] key${i + 1}: ...${last4}`);
+      const last4 = k.key.slice(-4);
+      console.log(`[DIAG] key${i + 1} [${k.tier}]: ...${last4}`);
     });
     console.log(`[DIAG] Models: ${MODEL_NAMES.join(", ")}`);
 
-    // Outer loop: try each API key (key1 → key2 on 429/403)
+    // Outer loop: FREE key first → PAID key fallback (seamless to user)
     keyLoop: for (let keyIdx = 0; keyIdx < apiKeys.length; keyIdx++) {
-      const genAI = new GoogleGenerativeAI(apiKeys[keyIdx]);
-      const keyLabel = `key${keyIdx + 1}`;
+      const { key: apiKey, tier } = apiKeys[keyIdx];
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const keyLabel = `key${keyIdx + 1}[${tier}]`;
 
       // Inner loop: try each model with this key
       for (const modelName of MODEL_NAMES) {
@@ -277,8 +297,9 @@ export async function POST(request: NextRequest) {
               continue;
             }
             if (is429) {
-              // Model quota exhausted → try next model on same key first
-              console.warn(`[${keyLabel}] ${modelName} 429 quota — trying next model`);
+              // Quota exhausted → try next model, then fallback to next key (FREE→PAID)
+              const nextKeyInfo = keyIdx + 1 < apiKeys.length ? ` → next: ${apiKeys[keyIdx + 1].tier}` : " (last key)";
+              console.warn(`[${keyLabel}] ${modelName} 429 quota — trying next model${nextKeyInfo}`);
               lastError = err;
               break;
             }
@@ -322,7 +343,7 @@ export async function POST(request: NextRequest) {
     if (is403) {
       userMessage = `APIキーエラー（403）: Gemini APIキーが無効です。管理者にお問い合わせください。[詳細: ${lastErrMessage.substring(0, 150)}]`;
     } else if (is429) {
-      userMessage = `利用制限（429）: Gemini APIの無料枠の上限に達しました。しばらく時間をおいてから再度お試しください。`;
+      userMessage = `利用制限（429）: 現在アクセスが集中しています。しばらく時間をおいてから再度お試しください。`;
     } else if (is404) {
       userMessage = `モデルエラー（404）: 指定したAIモデルが見つかりません。[詳細: ${lastErrMessage.substring(0, 150)}]`;
     } else {
