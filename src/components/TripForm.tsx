@@ -478,7 +478,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         </h2>
         <p className="text-sm text-slate-600 leading-relaxed">
           出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
-          プランはそのまま<span className="font-bold text-green-700">Google マップと連動</span>し、ルート・距離・移動時間をリアルタイムに表示。
+          プランはそのまま<span className="font-bold text-green-700">Google マップと連動</span>し、実際の道路ルート・距離・移動時間を自動表示。
           渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
           犬連れ旅行、旅行スタイル、年代にも対応しています。
         </p>
@@ -488,6 +488,19 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               {tag}
             </span>
           ))}
+        </div>
+        <div className="mt-3 pt-3 border-t border-blue-100">
+          <a
+            href="https://x.com/AIDRIVEPLAN"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-black transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            公式X（@AIDRIVEPLAN）をフォロー
+          </a>
         </div>
       </div>
 
