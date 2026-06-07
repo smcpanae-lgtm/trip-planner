@@ -480,7 +480,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
           プランはそのまま<span className="font-bold text-green-700">Google マップと連動</span>し、実際の道路ルート・距離・移動時間を自動表示。
           渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
-          犬連れ旅行、旅行スタイル、年代にも対応しています。
+          犬連れ旅行、旅行スタイル、年代にも対応し、YouTubeの関連動画も紹介。
         </p>
         <div className="flex flex-wrap gap-2 mt-3">
           {["AI自動プラン", "渋滞予測", "2プラン比較", "Google Maps連携", "犬連れ対応", "完全無料"].map((tag) => (
