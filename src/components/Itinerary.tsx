@@ -17,8 +17,10 @@ import {
   PawPrint,
   Sparkles,
   ExternalLink,
+  Video,
 } from "lucide-react";
 import type { DayItinerary } from "@/types/trip";
+import { generateYouTubeSearchLinks } from "@/lib/youtube";
 
 function buildGoogleMapsUrl(name: string, address?: string): string {
   const query = address ? `${name} ${address}` : name;
@@ -28,6 +30,44 @@ function buildGoogleMapsUrl(name: string, address?: string): string {
 function buildMealSearchUrl(areaName: string, genre: string, petFriendly?: boolean): string {
   const query = petFriendly ? `${areaName} ${genre} 犬同伴可 テラス席あり` : `${areaName} ${genre}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+// Gathers spot names, descriptions, meal info and commentary text from the
+// itinerary so YouTube search keywords can be derived from the plan content.
+// Sightseeing-related text (destinations, meals, AI commentary) is placed
+// before departure/arrival info so area-name extraction favors the places
+// the plan is actually about, rather than the start/end points of the day.
+function buildPlanPreviewContext(itineraries: DayItinerary[]): { planText: string } {
+  const highlightParts: string[] = [];
+  const otherParts: string[] = [];
+
+  for (const dayItin of itineraries) {
+    const c = dayItin.commentary;
+    if (c?.overallDescription) highlightParts.push(c.overallDescription);
+
+    for (const item of dayItin.items) {
+      const isSightseeing = item.spot.type === "destination";
+      const bucket = isSightseeing ? highlightParts : otherParts;
+      bucket.push(item.spot.name);
+      if (item.address) bucket.push(item.address);
+      if (item.description) bucket.push(item.description);
+      if (item.mealStop) highlightParts.push(item.mealStop.name);
+    }
+    if (dayItin.lunchGenre) highlightParts.push(dayItin.lunchGenre);
+    if (dayItin.dinnerGenre) highlightParts.push(dayItin.dinnerGenre);
+    if (dayItin.lunchSpotInfo) {
+      highlightParts.push(dayItin.lunchSpotInfo.name, dayItin.lunchSpotInfo.description);
+    }
+    if (dayItin.dinnerSpotInfo) {
+      highlightParts.push(dayItin.dinnerSpotInfo.name, dayItin.dinnerSpotInfo.description);
+    }
+    if (c) {
+      highlightParts.push(...c.highlights, ...c.tips, ...(c.dogTips || []));
+      highlightParts.push(...c.removedSpots.map((r) => r.name));
+    }
+  }
+
+  return { planText: [...highlightParts, ...otherParts].filter(Boolean).join(" ") };
 }
 
 interface ItineraryProps {
@@ -53,6 +93,10 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
   const planCommentary = itineraries.length > 0
     ? itineraries[itineraries.length - 1].commentary
     : undefined;
+
+  // YouTube preview links — derived from plan content, no YouTube API used
+  const { planText } = buildPlanPreviewContext(itineraries);
+  const youtubeLinks = generateYouTubeSearchLinks({ planText });
 
   return (
     <div className="space-y-6">
@@ -379,6 +423,34 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
               </ul>
             </div>
           )}
+        </div>
+      )}
+
+      {/* YouTube preview links — search-result links only, no YouTube API */}
+      {youtubeLinks.length > 0 && (
+        <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
+            <Video className="w-4 h-4 text-red-500" />
+            このプランを動画で下見する
+          </div>
+          <p className="text-xs text-slate-400 mb-2 leading-relaxed">
+            実際の雰囲気を確認したい方は、関連するYouTube動画も参考にできます。
+          </p>
+          <ul className="space-y-1.5">
+            {youtubeLinks.map((link) => (
+              <li key={link.query}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 hover:underline transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3 shrink-0" />
+                  YouTubeで「{link.query}」を見る
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
