@@ -1,0 +1,17 @@
+{
+  "name": "World Heritage Passport",
+  "short_name": "Heritage Pass",
+  "description": "世界遺産の訪問記録をブラウザ内だけに保存し、達成率や写真付きスタンプとして確認できる個人用トラベル記録サイトです。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f5ef",
+  "theme_color": "#176b5b",
+  "icons": [
+    {
+      "src": "./assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

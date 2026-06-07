@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://trip-planner-rho-five.vercel.app/sitemap.xml
+Sitemap: https://www.ai-drive-planner.com/sitemap.xml

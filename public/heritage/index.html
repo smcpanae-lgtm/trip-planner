@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <base href="/heritage/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>世界遺産パスポート | World Heritage Passport</title>
+    <meta name="description" content="世界遺産の訪問記録をブラウザ内だけに保存し、達成率や写真付きスタンプとして確認できる個人用トラベル記録サイトです。">
+    <meta name="theme-color" content="#176b5b">
+    <meta property="og:locale" content="ja_JP">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="World Heritage Passport">
+    <meta property="og:title" content="世界遺産パスポート">
+    <meta property="og:description" content="世界遺産の訪問記録をブラウザ内だけに保存し、達成率や写真付きスタンプとして確認できる個人用トラベル記録サイトです。">
+    <meta property="og:url" content="https://www.ai-drive-planner.com/heritage/">
+    <meta property="og:image" content="https://www.ai-drive-planner.com/heritage/assets/heritage/fuji.webp">
+    <meta property="og:image:alt" content="世界遺産パスポートの代表画像">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="世界遺産パスポート">
+    <meta name="twitter:description" content="世界遺産の訪問記録をブラウザ内だけに保存し、達成率や写真付きスタンプとして確認できる個人用トラベル記録サイトです。">
+    <meta name="twitter:image" content="https://www.ai-drive-planner.com/heritage/assets/heritage/fuji.webp">
+    <link rel="canonical" href="https://www.ai-drive-planner.com/heritage/">
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./styles.css?v=passport-ui-v5">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+          <p class="eyebrow" data-i18n="eyebrow">Private travel tracker</p>
+          <h1 data-i18n="appTitle">世界遺産パスポート</h1>
+          <p class="build-badge">ブラウザ内保存 / 写真スタンプ / 世界遺産1,248件（2026年5月末時点）対応</p>
+      </div>
+      <div class="top-actions">
+        <label class="profile-name-field">
+          <span data-i18n="profileNameLabel">ユーザー登録名</span>
+          <input id="profileNameInput" type="text" maxlength="40" autocomplete="nickname" data-i18n-placeholder="profileNamePlaceholder" placeholder="例: S.M. / 旅人A">
+          <small data-i18n="profileNameNote">ブラウザ内に保存され、バックアップにも含まれます。</small>
+        </label>
+        <select id="languageSelect" aria-label="Language">
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+          <option value="zh-CN">简体中文</option>
+          <option value="zh-TW">繁體中文</option>
+          <option value="ko">한국어</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+        </select>
+        <button id="exportBtn" class="ghost" type="button" data-i18n="export">バックアップ</button>
+        <button id="exportRecordsBtn" class="ghost" type="button" data-i18n="exportRecords">写真なしバックアップ</button>
+        <label class="ghost file-label">
+          <span data-i18n="import">復元</span>
+          <input id="importInput" type="file" accept="application/json">
+        </label>
+        <small class="backup-note" data-i18n="backupPhotoCaution">写真なしバックアップにはアップロード写真は含まれません。元写真はご自身でも保管してください。</small>
+      </div>
+    </header>
+
+    <main>
+      <noscript>
+        <div class="runtime-warning">JavaScriptが無効です。サンプル一覧は表示できますが、訪問チェックや写真保存は使えません。</div>
+      </noscript>
+      <div id="runtimeWarning" class="runtime-warning" hidden>アプリの初期化が止まっています。ページをリロードするか、ブラウザのサイトデータを削除して再度開いてください。</div>
+      <section class="hero">
+        <div class="hero-copy">
+          <h2 data-i18n="heroTitle">行った世界遺産を、写真つきのスタンプとして残す。</h2>
+          <p data-i18n="heroBody">記録はこのブラウザ内だけに保存されます。このサイトが写真や訪問情報を外部サーバーへ送信することはありません。</p>
+        </div>
+        <div class="stats-grid" aria-label="Statistics">
+          <article>
+            <span data-i18n="completed">制覇</span>
+            <strong id="visitedCount">0</strong>
+          </article>
+          <article>
+            <span data-i18n="remaining">残り</span>
+            <strong id="remainingCount">0</strong>
+          </article>
+          <article class="age-card">
+            <div>
+              <span data-i18n="progress">達成率</span>
+              <strong id="progressPercent">0%</strong>
+            </div>
+            <div>
+              <span data-i18n="ageLabel">現在の年齢</span>
+              <div class="age-input-row">
+                <input id="ageInput" type="number" min="0" max="120" inputmode="numeric" aria-label="Current age">
+                <small data-i18n="ageSuffix">歳</small>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard">
+        <div class="map-panel">
+          <div class="section-title">
+            <h3 data-i18n="worldProgress">世界の達成状況</h3>
+            <p id="privacyNote" data-i18n="privacyNote">写真は端末内に保存</p>
+          </div>
+          <div id="regionMap" class="region-map"></div>
+        </div>
+        <div class="passport-panel">
+          <div class="section-title">
+            <h3 data-i18n="passport">パスポート</h3>
+            <p id="stampSummary"></p>
+          </div>
+          <div id="stampGrid" class="stamp-grid"></div>
+          <button id="viewAllStampsBtn" class="ghost passport-link" type="button" data-i18n="viewAllStamps">すべてのスタンプを見る</button>
+          <button id="memorialBtn" class="memorial-link" type="button" data-i18n="memorialButton" hidden>完全制覇メモリアルを見る</button>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Filters">
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button class="view-mode active" type="button" data-view="countries" data-i18n="viewCountries">国から探す</button>
+          <button class="view-mode" type="button" data-view="heritage" data-i18n="viewHeritage">全件一覧</button>
+          <button class="view-mode" type="button" data-view="visited" data-i18n="viewVisited">訪問済み</button>
+        </div>
+        <div class="search-wrap">
+          <input id="searchInput" type="search" data-i18n-placeholder="search" placeholder="世界遺産名・国で検索">
+          <small id="searchHelp">国から探すでは、検索中だけ国をまたいだ検索結果を表示します。地域を開いて国を選ぶと、その国の世界遺産だけを表示します。</small>
+        </div>
+        <select id="regionFilter" aria-label="Region filter"></select>
+        <select id="categoryFilter" aria-label="Category filter"></select>
+        <select id="statusFilter" aria-label="Status filter"></select>
+      </section>
+
+      <section id="countrySection" class="country-panel">
+        <div class="section-title">
+          <h3 data-i18n="countryIndex">国別インデックス</h3>
+          <div class="list-meta">
+            <p id="countrySummary">地域を開いて国を選ぶと、その国の世界遺産だけを表示します。</p>
+            <button id="clearCountryBtn" class="ghost mini-button" type="button" data-i18n="clearCountry" hidden>国の選択を解除</button>
+          </div>
+        </div>
+        <div id="countryIndex" class="country-index">
+          <details class="region-group" open>
+            <summary>アジア・太平洋</summary>
+            <div class="country-table">
+              <button class="country-card" type="button">
+                <strong>日本</strong>
+                <span>2件</span>
+                <span>訪問済み0</span>
+                <span>残り2</span>
+                <div class="country-progress"><i style="width:0%"></i></div>
+                <b>0%</b>
+              </button>
+              <button class="country-card" type="button">
+                <strong>中国</strong>
+                <span>1件</span>
+                <span>訪問済み0</span>
+                <span>残り1</span>
+                <div class="country-progress"><i style="width:0%"></i></div>
+                <b>0%</b>
+              </button>
+              <button class="country-card" type="button">
+                <strong>インド</strong>
+                <span>1件</span>
+                <span>訪問済み0</span>
+                <span>残り1</span>
+                <div class="country-progress"><i style="width:0%"></i></div>
+                <b>0%</b>
+              </button>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="listSection">
+        <div class="section-title list-title">
+          <h3 id="listTitle" data-i18n="list">世界遺産一覧</h3>
+          <div class="list-meta">
+            <p id="listCount">20件を表示</p>
+            <p id="dataStatus">現在はサンプル20件 / 目標1,248件（2026年5月末時点）</p>
+          </div>
+        </div>
+        <div id="siteList" class="site-list">
+          <article class="site-tile" data-open="jp-kyoto"><div class="site-tile-image placeholder-visual cultural"></div><div class="site-tile-body"><h4>古都京都の文化財</h4><p>日本 · 1994 · 文化</p><span>未訪問</span></div></article>
+          <article class="site-tile" data-open="jp-fuji"><div class="site-tile-image placeholder-visual cultural"></div><div class="site-tile-body"><h4>富士山-信仰の対象と芸術の源泉</h4><p>日本 · 2013 · 文化</p><span>未訪問</span></div></article>
+          <article class="site-tile" data-open="cn-great-wall"><div class="site-tile-image placeholder-visual cultural"></div><div class="site-tile-body"><h4>万里の長城</h4><p>中国 · 1987 · 文化</p><span>未訪問</span></div></article>
+        </div>
+        <div id="pagination" class="pagination">
+          <button id="prevPageBtn" class="ghost" type="button" data-i18n="prevPage">前へ</button>
+          <span id="pageStatus">1-90 / 1248件</span>
+          <button id="nextPageBtn" class="ghost" type="button" data-i18n="nextPage">次へ</button>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p data-i18n="unofficialNotice">このサイトはUNESCO/WHCの公式サイトではありません。世界遺産の詳細情報は各公式ページを参照してください。</p>
+        <p data-i18n="localNotice">訪問記録と写真はこのブラウザ内に保存されます。バックアップは利用者の端末へJSONファイルを書き出す機能であり、このサイト運営者がバックアップ内容を閲覧・取得することはありません。</p>
+        <p data-i18n="memorialNotice">地域内の世界遺産をすべて訪問済みにした時と、全世界遺産を制覇した時に、ブラウザ内の記録をもとにメモリアル演出を表示します。</p>
+        <p data-i18n="rightsNotice">世界遺産の名称・国・登録年などの事実情報を扱い、UNESCO/WHC公式の説明文・写真・ロゴは使用していません。サイト内の代表画像は独自生成のイメージ画像です。</p>
+        <p data-i18n="accuracyNotice">掲載情報は公開データをもとにしていますが、最新性・完全性を保証するものではありません。旅行計画や公式確認には各公式ページを参照してください。</p>
+        <nav class="footer-links" aria-label="Policies">
+          <a href="https://www.ai-drive-planner.com">🚗 AI ドライブプランナー</a>
+          <a href="./privacy.html" data-i18n="privacyPolicy">プライバシーポリシー</a>
+          <a href="./cookie.html" data-i18n="cookiePolicy">Cookieについて</a>
+        </nav>
+      </footer>
+    </main>
+
+    <aside id="cookieBanner" class="cookie-banner" hidden>
+      <p data-i18n="cookieBanner">現在、このサイトは広告・解析Cookieを使用していません。訪問記録の保存にブラウザ内ストレージを使用します。</p>
+      <button id="cookieAcceptBtn" type="button" data-i18n="acceptEssential">了解</button>
+    </aside>
+
+    <dialog id="siteDialog">
+      <form method="dialog" class="dialog-card">
+        <button class="icon-close" value="cancel" aria-label="Close">×</button>
+        <div id="dialogContent"></div>
+      </form>
+    </dialog>
+
+    <dialog id="memorialDialog" class="memorial-dialog">
+      <form method="dialog" class="memorial-card">
+        <button class="icon-close memorial-close" value="cancel" aria-label="Close">×</button>
+        <div id="memorialContent"></div>
+      </form>
+    </dialog>
+
+    <script>
+      window.__passportReady = false;
+      window.addEventListener("error", () => {
+        const warning = document.getElementById("runtimeWarning");
+        if (warning) warning.hidden = false;
+      });
+      window.setTimeout(() => {
+        const warning = document.getElementById("runtimeWarning");
+        if (warning && !window.__passportReady) warning.hidden = false;
+      }, 1800);
+      window.setTimeout(() => {
+        if (window.__passportReady) return;
+        window.__passportFallbackAbort?.();
+        const fallbackController = "AbortController" in window ? new AbortController() : null;
+        const fallbackCleanups = [];
+        window.__passportFallbackAbort = () => {
+          fallbackController?.abort();
+          fallbackCleanups.forEach((cleanup) => cleanup());
+          fallbackCleanups.length = 0;
+          window.__passportFallbackAbort = null;
+        };
+        const addFallbackListener = (element, type, handler) => {
+          if (!element) return;
+          if (fallbackController) {
+            element.addEventListener(type, handler, { signal: fallbackController.signal });
+          } else {
+            element.addEventListener(type, handler);
+            fallbackCleanups.push(() => element.removeEventListener(type, handler));
+          }
+        };
+        const buttons = Array.from(document.querySelectorAll("[data-view]"));
+        const countrySection = document.getElementById("countrySection");
+        const siteList = document.getElementById("siteList");
+        const listCount = document.getElementById("listCount");
+        const pageStatus = document.getElementById("pageStatus");
+        const searchInput = document.getElementById("searchInput");
+        const sampleCards = Array.from(document.querySelectorAll(".site-tile"));
+
+        const applyView = (view) => {
+          buttons.forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+          if (countrySection) countrySection.hidden = view !== "countries";
+          sampleCards.forEach((card) => {
+            card.hidden = view === "visited";
+          });
+          if (listCount) listCount.textContent = view === "visited" ? "訪問済み0件" : "サンプル3件を横3列で表示";
+          if (pageStatus) pageStatus.textContent = view === "heritage" ? "1-60 / 1248件" : "1-3 / 3件";
+        };
+
+        buttons.forEach((button) => {
+          addFallbackListener(button, "click", () => applyView(button.dataset.view));
+        });
+        addFallbackListener(searchInput, "input", () => {
+          const query = searchInput.value.trim().toLowerCase();
+          sampleCards.forEach((card) => {
+            card.hidden = query && !card.textContent.toLowerCase().includes(query);
+          });
+          if (countrySection) countrySection.hidden = Boolean(query);
+        });
+        addFallbackListener(siteList, "click", (event) => {
+          const card = event.target.closest(".site-tile");
+          if (!card) return;
+          const dialog = document.getElementById("siteDialog");
+          const content = document.getElementById("dialogContent");
+          const title = card.querySelector("h4")?.textContent || "世界遺産";
+          const meta = card.querySelector("p")?.textContent || "";
+          if (content) {
+            content.innerHTML = `<div class="dialog-layout"><div class="dialog-photo"><div class="placeholder-visual cultural"></div></div><div><h3>${title}</h3><p class="site-meta">${meta}</p><p>ここで訪問記録、写真アップロード、メモを編集します。</p></div></div>`;
+          }
+          dialog?.showModal();
+        });
+        applyView("countries");
+      }, 1900);
+    </script>
+    <script src="./app.js?v=passport-ui-v5"></script>
+  </body>
+</html>

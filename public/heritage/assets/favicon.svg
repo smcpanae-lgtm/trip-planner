@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="World Heritage Passport">
+  <rect width="64" height="64" rx="14" fill="#176b5b"/>
+  <rect x="13" y="10" width="38" height="44" rx="5" fill="#f7f3e7"/>
+  <rect x="18" y="15" width="28" height="34" rx="3" fill="#fffaf0" stroke="#d5b45f" stroke-width="2"/>
+  <path d="M21 39h22" stroke="#176b5b" stroke-width="3" stroke-linecap="round"/>
+  <path d="M23 34l7-9 5 6 4-5 4 8H23z" fill="#8fb8a3"/>
+  <circle cx="39" cy="23" r="4" fill="#d5b45f"/>
+  <circle cx="32" cy="34" r="15" fill="none" stroke="#d85c3a" stroke-width="3" stroke-dasharray="3 3"/>
+</svg>

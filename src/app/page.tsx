@@ -632,6 +632,12 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
+            <a
+              href="/heritage/"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all whitespace-nowrap"
+            >
+              🌍 世界遺産パスポート
+            </a>
             {viewMode === "result" && (
               <button
                 onClick={() => { setViewMode("form"); setPlanError(null); }}
