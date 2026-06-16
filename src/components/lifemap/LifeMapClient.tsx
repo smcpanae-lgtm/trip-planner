@@ -57,6 +57,8 @@ function LifeMapClientInner() {
   const [loadErrorKey, setLoadErrorKey] = useState<string | null>(null);
   const [showReplay, setShowReplay] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [fileQueue, setFileQueue] = useState<File[]>([]);
+  const [queueTotal, setQueueTotal] = useState(0);
   const mapRef = useRef<HTMLDivElement>(null);
 
   const toggleSelect = useCallback((entry: LifeMapEntry) => {
@@ -144,6 +146,17 @@ function LifeMapClientInner() {
     [t]
   );
 
+  // 複数写真の一括追加（キュー管理）
+  const handleMultiplePhotoSelect = useCallback(
+    (files: File[]) => {
+      if (files.length === 0) return;
+      setQueueTotal(files.length);
+      setFileQueue(files.slice(1));
+      handlePhotoSelect(files[0]);
+    },
+    [handlePhotoSelect]
+  );
+
   // 地図タップで場所登録
   const handleMapClick = useCallback((lat: number, lng: number) => {
     setDraft((prev) => ({ ...prev, lat, lng }));
@@ -210,12 +223,21 @@ function LifeMapClientInner() {
       setDraft(createEmptyDraft());
       setPickMode(false);
       setFocus(null);
+
+      // キューに次の写真があれば自動で読み込む
+      if (fileQueue.length > 0) {
+        const [nextFile, ...rest] = fileQueue;
+        setFileQueue(rest);
+        handlePhotoSelect(nextFile);
+      } else {
+        setQueueTotal(0);
+      }
     } catch {
       setError(t("form.errSave"));
     } finally {
       setSaving(false);
     }
-  }, [draft, t]);
+  }, [draft, t, fileQueue, handlePhotoSelect]);
 
   const handleDelete = useCallback(
     async (entry: LifeMapEntry) => {
@@ -351,10 +373,22 @@ function LifeMapClientInner() {
       <div className="max-w-[1400px] mx-auto p-4 flex flex-col lg:flex-row gap-4">
         {/* 左：記録追加＋一覧 */}
         <div className="w-full lg:w-[440px] xl:w-[480px] shrink-0 space-y-4">
+          {queueTotal > 1 && (
+            <div className="bg-slate-700 text-white rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm font-medium">
+              <span>{queueTotal - fileQueue.length} / {queueTotal} 枚目を処理中</span>
+              <div className="flex-1 bg-slate-600 rounded-full h-1.5">
+                <div
+                  className="bg-white rounded-full h-1.5 transition-all"
+                  style={{ width: `${((queueTotal - fileQueue.length) / queueTotal) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
           <LifeMapEntryForm
             draft={draft}
             onChange={patchDraft}
             onPhotoSelect={handlePhotoSelect}
+            onSelectMultiple={handleMultiplePhotoSelect}
             pickMode={pickMode}
             onTogglePick={setPickMode}
             onSave={handleSave}

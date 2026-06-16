@@ -67,6 +67,7 @@ interface Props {
   draft: Draft;
   onChange: (patch: Partial<Draft>) => void;
   onPhotoSelect: (file: File) => void;
+  onSelectMultiple?: (files: File[]) => void;
   pickMode: boolean;
   onTogglePick: (on: boolean) => void;
   onSave: () => void;
@@ -78,6 +79,7 @@ export default function LifeMapEntryForm({
   draft,
   onChange,
   onPhotoSelect,
+  onSelectMultiple,
   pickMode,
   onTogglePick,
   onSave,
@@ -102,6 +104,7 @@ export default function LifeMapEntryForm({
 
       <PhotoUploader
         onSelect={onPhotoSelect}
+        onSelectMultiple={onSelectMultiple}
         previewUrl={draft.imageDataUrl || null}
         processing={draft.processing}
       />

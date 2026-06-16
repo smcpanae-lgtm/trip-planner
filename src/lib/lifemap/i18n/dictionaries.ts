@@ -96,6 +96,8 @@ export interface LifeMapDict {
   photo: {
     selectBtn: string;
     cameraBtn: string;
+    bulkBtn: string;
+    bulkHint: string;
     loading: string;
     previewAlt: string;
   };
@@ -230,11 +232,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "バックアップの保存に失敗しました。",
       importSuccess: "{{count}}件の記録を復元しました。",
       importError: "復元に失敗しました。",
-      hint: "全記録を1つのファイルに保存できます。機種変更や別端末への移行、ブラウザのデータ削除に備えてときどき保存してください。",
+      hint: "全記録を1つのファイルに保存できます。機種変更や別端末への移行、ブラウザのデータ削除に備えてときどき保存してください。また、このファイルをお子様やご家族に渡すことで、思い出のアルバムとして引き継ぐこともできます。",
     },
     photo: {
       selectBtn: "写真を選ぶ",
       cameraBtn: "カメラで撮影",
+      bulkBtn: "まとめて追加（複数枚）",
+      bulkHint: "同じ場所・同じ日の写真は1枚を目安にしてください。",
       loading: "写真を読み込み中...",
       previewAlt: "アップロードした写真のプレビュー",
     },
@@ -368,11 +372,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "Failed to save backup.",
       importSuccess: "Restored {{count}} records.",
       importError: "Restore failed.",
-      hint: "Save all records to a single file. Do this occasionally in case of device changes or browser data clearing.",
+      hint: "Save all records to a single file. Do this occasionally in case of device changes or browser data clearing. You can also share this file with your children or family as a keepsake album to pass down.",
     },
     photo: {
       selectBtn: "Select photo",
       cameraBtn: "Take photo",
+      bulkBtn: "Add multiple photos",
+      bulkHint: "Aim for one photo per location per day.",
       loading: "Loading photo...",
       previewAlt: "Preview of uploaded photo",
     },
@@ -506,11 +512,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "백업 저장에 실패했습니다.",
       importSuccess: "{{count}}건의 기록을 복원했습니다.",
       importError: "복원에 실패했습니다.",
-      hint: "모든 기록을 하나의 파일에 저장할 수 있습니다. 기기 변경이나 브라우저 데이터 삭제에 대비해 가끔 저장하세요.",
+      hint: "모든 기록을 하나의 파일에 저장할 수 있습니다. 기기 변경이나 브라우저 데이터 삭제에 대비해 가끔 저장하세요. 또한 이 파일을 자녀나 가족에게 전달하여 소중한 추억 앨범으로 이어줄 수 있습니다.",
     },
     photo: {
       selectBtn: "사진 선택",
       cameraBtn: "사진 촬영",
+      bulkBtn: "여러 장 한꺼번에 추가",
+      bulkHint: "같은 장소·같은 날의 사진은 1장을 기준으로 해 주세요.",
       loading: "사진 불러오는 중...",
       previewAlt: "업로드한 사진 미리보기",
     },
@@ -644,11 +652,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "备份保存失败。",
       importSuccess: "已恢复 {{count}} 条记录。",
       importError: "恢复失败。",
-      hint: "可将所有记录保存为一个文件。设备更换或浏览器数据清除时可用于恢复，建议定期保存。",
+      hint: "可将所有记录保存为一个文件。设备更换或浏览器数据清除时可用于恢复，建议定期保存。您还可以将此文件传给子女或家人，作为珍贵的回忆相册传承下去。",
     },
     photo: {
       selectBtn: "选择照片",
       cameraBtn: "拍摄照片",
+      bulkBtn: "批量添加",
+      bulkHint: "建议同一地点同一天只上传1张照片。",
       loading: "正在加载照片...",
       previewAlt: "已上传照片的预览",
     },
@@ -782,11 +792,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "備份儲存失敗。",
       importSuccess: "已還原 {{count}} 筆記錄。",
       importError: "還原失敗。",
-      hint: "可將所有記錄儲存為一個檔案。裝置更換或瀏覽器資料清除時可用於還原，建議定期儲存。",
+      hint: "可將所有記錄儲存為一個檔案。裝置更換或瀏覽器資料清除時可用於還原，建議定期儲存。您也可以將此檔案傳給子女或家人，作為珍貴的回憶相冊傳承下去。",
     },
     photo: {
       selectBtn: "選擇照片",
       cameraBtn: "拍攝照片",
+      bulkBtn: "批次新增",
+      bulkHint: "建議同一地點同一天只上傳1張照片。",
       loading: "正在載入照片...",
       previewAlt: "已上傳照片的預覽",
     },
@@ -920,11 +932,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "Error al guardar la copia de seguridad.",
       importSuccess: "{{count}} registros restaurados.",
       importError: "Error al restaurar.",
-      hint: "Guarda todos tus registros en un archivo. Hazlo ocasionalmente en caso de cambios de dispositivo o borrado del navegador.",
+      hint: "Guarda todos tus registros en un archivo. Hazlo ocasionalmente en caso de cambios de dispositivo o borrado del navegador. También puedes compartir este archivo con tus hijos o familia como un álbum de recuerdos para las próximas generaciones.",
     },
     photo: {
       selectBtn: "Seleccionar foto",
       cameraBtn: "Tomar foto",
+      bulkBtn: "Añadir varias fotos",
+      bulkHint: "Se recomienda una foto por lugar y día.",
       loading: "Cargando foto...",
       previewAlt: "Vista previa de la foto cargada",
     },
@@ -1058,11 +1072,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "Ошибка сохранения резервной копии.",
       importSuccess: "Восстановлено {{count}} записей.",
       importError: "Ошибка восстановления.",
-      hint: "Сохраняйте все записи в один файл. Делайте это периодически на случай смены устройства или очистки данных браузера.",
+      hint: "Сохраняйте все записи в один файл. Делайте это периодически на случай смены устройства или очистки данных браузера. Вы также можете передать этот файл детям или семье как памятный фотоальбом.",
     },
     photo: {
       selectBtn: "Выбрать фото",
       cameraBtn: "Сделать фото",
+      bulkBtn: "Добавить несколько фото",
+      bulkHint: "Рекомендуется одно фото на место и день.",
       loading: "Загрузка фото...",
       previewAlt: "Предпросмотр загруженного фото",
     },

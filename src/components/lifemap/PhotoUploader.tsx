@@ -1,27 +1,37 @@
 "use client";
 
 import { useRef } from "react";
-import { Camera, ImagePlus } from "lucide-react";
+import { Camera, ImagePlus, Images } from "lucide-react";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 
-// 写真アップロード。ライブラリ選択とカメラ撮影の2導線を用意。
-// capture属性に非対応の環境でも、通常の写真選択は機能する。
+// 写真アップロード。1枚選択・カメラ撮影・複数枚一括追加の3導線を用意。
 export default function PhotoUploader({
   onSelect,
+  onSelectMultiple,
   previewUrl,
   processing,
 }: {
   onSelect: (file: File) => void;
+  onSelectMultiple?: (files: File[]) => void;
   previewUrl: string | null;
   processing: boolean;
 }) {
   const { t } = useTranslation();
   const libRef = useRef<HTMLInputElement>(null);
   const camRef = useRef<HTMLInputElement>(null);
+  const bulkRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) onSelect(file);
+    e.target.value = "";
+  };
+
+  const handleBulkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0 && onSelectMultiple) {
+      onSelectMultiple(Array.from(files));
+    }
     e.target.value = "";
   };
 
@@ -45,6 +55,30 @@ export default function PhotoUploader({
           <span className="text-sm">{t("photo.cameraBtn")}</span>
         </button>
       </div>
+
+      {onSelectMultiple && (
+        <>
+          <button
+            type="button"
+            onClick={() => bulkRef.current?.click()}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 bg-white text-slate-600 hover:text-slate-800 font-medium text-sm transition-all"
+          >
+            <Images className="w-5 h-5" />
+            {t("photo.bulkBtn")}
+          </button>
+          <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+            ⚠️ {t("photo.bulkHint")}
+          </p>
+          <input
+            ref={bulkRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleBulkChange}
+            className="hidden"
+          />
+        </>
+      )}
 
       <input
         ref={libRef}
