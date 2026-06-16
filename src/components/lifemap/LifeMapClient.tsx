@@ -485,6 +485,10 @@ function LifeMapClientInner() {
           <div className="bg-white rounded-xl px-3 py-2 border border-slate-100 shadow-sm">
             <CategoryLegend />
           </div>
+          <div className="text-xs text-slate-400 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 space-y-1">
+            <p className="font-medium text-slate-500">📋 ご利用上の注意</p>
+            <p>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</p>
+          </div>
         </div>
       </div>
 
