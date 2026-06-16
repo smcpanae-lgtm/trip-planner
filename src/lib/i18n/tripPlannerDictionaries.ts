@@ -3,6 +3,7 @@ export interface TripPlannerDict {
     title: string;
     subtitle: string;
     heritageLink: string;
+    lifeMapLink: string;
     editPlan: string;
   };
   loading: {
@@ -148,6 +149,7 @@ const ja: TripPlannerDict = {
     title: "AI ドライブプランナー",
     subtitle: "車旅行プランを自動作成・地図（Google マップ）表示",
     heritageLink: "🌍 世界遺産パスポート",
+    lifeMapLink: "🗺 人生体験マップ",
     editPlan: "プランを再編集",
   },
   loading: {
@@ -342,6 +344,7 @@ const en: TripPlannerDict = {
     title: "AI Drive Planner",
     subtitle: "Auto-generate Japan road trip plans with Google Maps",
     heritageLink: "🌍 World Heritage Passport",
+    lifeMapLink: "🗺 Life Experience Map",
     editPlan: "Re-edit Plan",
   },
   loading: {
@@ -536,6 +539,7 @@ const ko: TripPlannerDict = {
     title: "AI 드라이브 플래너",
     subtitle: "일본 자동차 여행 플랜 자동 생성 · Google 지도 연동",
     heritageLink: "🌍 세계유산 패스포트",
+    lifeMapLink: "🗺 인생 체험 지도",
     editPlan: "플랜 재편집",
   },
   loading: {
@@ -730,6 +734,7 @@ const zhCN: TripPlannerDict = {
     title: "AI 自驾游规划师",
     subtitle: "自动生成日本自驾旅行计划 · Google 地图联动显示",
     heritageLink: "🌍 世界遗产护照",
+    lifeMapLink: "🗺 人生体验地图",
     editPlan: "重新编辑计划",
   },
   loading: {
@@ -921,6 +926,7 @@ const zhTW: TripPlannerDict = {
     title: "AI 自駕遊規劃師",
     subtitle: "自動生成日本自駕旅行計畫 · Google 地圖聯動顯示",
     heritageLink: "🌍 世界遺產護照",
+    lifeMapLink: "🗺 人生體驗地圖",
     editPlan: "重新編輯計畫",
   },
   loading: {
@@ -1112,6 +1118,7 @@ const es: TripPlannerDict = {
     title: "AI Drive Planner",
     subtitle: "Genera automáticamente itinerarios de viaje en Japón con Google Maps",
     heritageLink: "🌍 Pasaporte Patrimonio Mundial",
+    lifeMapLink: "🗺 Mapa de Experiencias",
     editPlan: "Reeditar plan",
   },
   loading: {
@@ -1303,6 +1310,7 @@ const ru: TripPlannerDict = {
     title: "AI Планировщик поездок",
     subtitle: "Автогенерация маршрутов по Японии с отображением на Google Картах",
     heritageLink: "🌍 Паспорт объектов ЮНЕСКО",
+    lifeMapLink: "🗺 Карта жизни",
     editPlan: "Редактировать план",
   },
   loading: {
