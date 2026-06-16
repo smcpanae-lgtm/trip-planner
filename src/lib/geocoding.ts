@@ -11,6 +11,13 @@ interface NominatimResult {
   class: string;
 }
 
+interface NominatimReverseResult {
+  address?: {
+    state?: string;
+    province?: string;
+  };
+}
+
 // Search for place candidates using Google Places API (with Nominatim fallback)
 export async function searchPlaces(
   query: string
@@ -162,6 +169,27 @@ export async function geocode(
     console.error("Geocoding error:", e);
   }
   return null;
+}
+
+// 緯度経度から州・都道府県名を取得（Nominatimの逆ジオコーディング）
+// 世界中の座標に対応。取得できない場合はnullを返す
+export async function reverseGeocodeRegion(
+  lat: number,
+  lng: number
+): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja&zoom=8&addressdetails=1`,
+      { headers: { "User-Agent": "TripPlannerApp/1.0" } }
+    );
+    if (!res.ok) return null;
+    const data: NominatimReverseResult = await res.json();
+    const state = data.address?.state || data.address?.province;
+    return state || null;
+  } catch (e) {
+    console.warn("Reverse geocoding error:", e);
+    return null;
+  }
 }
 
 // Calculate distance between two points (Haversine formula)
