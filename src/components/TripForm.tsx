@@ -22,6 +22,7 @@ import {
 import { searchPlaces } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
 import type { TripConfig, DayPlan, Spot, SearchCandidate, TravelerProfile } from "@/types/trip";
+import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
 
 interface TripFormProps {
   onSubmit: (config: TripConfig) => void;
@@ -138,6 +139,7 @@ function SearchInput({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const { t } = useTripLang();
   const [noResults, setNoResults] = useState(false);
 
   const handleSearch = useCallback(async (q: string) => {
@@ -215,10 +217,10 @@ function SearchInput({
           ) : noResults ? (
             <div className="px-3 py-3 text-center">
               <p className="text-xs text-amber-600 font-medium">
-                地図検索で候補が見つかりませんでした
+                {t.form.search.noResults}
               </p>
               <p className="text-xs text-slate-400 mt-1">
-                このまま入力すればAIが場所を特定してプランを作成します
+                {t.form.search.noResultsHint}
               </p>
             </div>
           ) : null}
@@ -246,6 +248,7 @@ function clearHomeAddress() {
 
 // --- Main form ---
 export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFormProps) {
+  const { t } = useTripLang();
   const [nights, setNights] = useState(initialConfig?.nights ?? 0);
   const [days, setDays] = useState<DayPlan[]>(initialConfig?.days ?? [createEmptyDay(0)]);
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -421,24 +424,24 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
     const newErrors: ValidationErrors = {};
     days.forEach((day, dayIdx) => {
       if (!day.departure.trim())
-        newErrors[`day${dayIdx}_departure`] = "出発地を入力してください";
+        newErrors[`day${dayIdx}_departure`] = t.form.errors.departure;
       if (!day.arrival.trim())
-        newErrors[`day${dayIdx}_arrival`] = "終着地を入力してください";
+        newErrors[`day${dayIdx}_arrival`] = t.form.errors.arrival;
       const firstDest = day.destinations[0];
       if (firstDest && !firstDest.name.trim() && !firstDest.isOmakase)
-        newErrors[`day${dayIdx}_dest0`] = "目的地を1つ以上入力してください";
+        newErrors[`day${dayIdx}_dest0`] = t.form.errors.dest0;
       // Meal field validation: only 1 value allowed
       if (day.includeLunch) {
         if (hasMultipleValues(day.lunchLocation))
-          newErrors[`day${dayIdx}_lunchLocation`] = "食べる場所は１つのみ入力してください（「、」や「,」で区切らないでください）";
+          newErrors[`day${dayIdx}_lunchLocation`] = t.form.errors.mealMultiple;
         if (hasMultipleValues(day.lunchGenre))
-          newErrors[`day${dayIdx}_lunchGenre`] = "ジャンルは１つのみ入力してください（「、」や「,」で区切らないでください）";
+          newErrors[`day${dayIdx}_lunchGenre`] = t.form.errors.genreMultiple;
       }
       if (day.includeDinner) {
         if (hasMultipleValues(day.dinnerLocation))
-          newErrors[`day${dayIdx}_dinnerLocation`] = "食べる場所は１つのみ入力してください（「、」や「,」で区切らないでください）";
+          newErrors[`day${dayIdx}_dinnerLocation`] = t.form.errors.mealMultiple;
         if (hasMultipleValues(day.dinnerGenre))
-          newErrors[`day${dayIdx}_dinnerGenre`] = "ジャンルは１つのみ入力してください（「、」や「,」で区切らないでください）";
+          newErrors[`day${dayIdx}_dinnerGenre`] = t.form.errors.genreMultiple;
       }
     });
     setErrors(newErrors);
@@ -459,13 +462,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
     });
   };
 
-  const nightOptions = [
-    { value: 0, label: "日帰り" },
-    { value: 1, label: "1泊2日" },
-    { value: 2, label: "2泊3日" },
-    { value: 3, label: "3泊4日" },
-    { value: 4, label: "4泊5日" },
-  ];
+  const nightOptions = t.form.tripDuration.options.map((label, i) => ({ value: i, label }));
 
   const hasErrors = Object.keys(errors).length > 0;
 
@@ -474,16 +471,14 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       {/* App Description for SEO and first-time users */}
       <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-xl p-5 shadow-sm border border-blue-100">
         <h2 className="font-bold text-lg text-blue-800 mb-2">
-          🚗 AI ドライブプランナー
+          🚗 {t.form.appTitle}
         </h2>
         <p className="text-sm text-slate-600 leading-relaxed">
-          出発地、目的地、終着地を入力するだけで、<span className="font-bold text-blue-700">AIが最適なドライブ旅行プラン</span>を自動作成します。
-          プランはそのまま<span className="font-bold text-green-700">Google マップと連動</span>し、実際の道路ルート・距離・移動時間を自動表示。
-          渋滞予測・季節イベント・おすすめ食事スポット・駐車場情報まで、すべてAIがプランニング。
-          犬連れ旅行、旅行スタイル、年代にも対応し、YouTubeの関連動画も紹介。
+          {t.form.appDescription}
         </p>
+        <p className="text-xs text-slate-400 mt-1">Since 2026年5月</p>
         <div className="flex flex-wrap gap-2 mt-3">
-          {["AI自動プラン", "渋滞予測", "2プラン比較", "Google Maps連携", "犬連れ対応", "完全無料"].map((tag) => (
+          {t.form.tags.map((tag) => (
             <span key={tag} className="text-[10px] px-2 py-1 bg-white rounded-full text-blue-600 border border-blue-200 font-medium">
               {tag}
             </span>
@@ -494,12 +489,12 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             href="https://x.com/AIDRIVEPLAN"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-black transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-black text-white px-3 py-1.5 rounded-full hover:bg-slate-800 transition-colors"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
-            公式X（@AIDRIVEPLAN）をフォロー
+            {t.form.xFollow}
           </a>
         </div>
       </div>
@@ -508,7 +503,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-blue-600" />
-          <h2 className="font-bold text-lg">旅行期間</h2>
+          <h2 className="font-bold text-lg">{t.form.tripDuration.title}</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {nightOptions.map((opt) => (
@@ -530,8 +525,8 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         <div className="mt-4 pt-4 border-t border-slate-100">
           <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-2">
             <Calendar className="w-4 h-4 text-blue-600" />
-            出発日
-            <span className="text-xs text-slate-400 font-normal ml-1">（任意）</span>
+            {t.form.departureDate.label}
+            <span className="text-xs text-slate-400 font-normal ml-1">{t.form.departureDate.optional}</span>
           </label>
           <div className="flex items-center gap-3">
             <input
@@ -611,7 +606,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             )}
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            入力するとAIが休日・祝日の渋滞予測やイベント情報を考慮します
+            {t.form.departureDate.hint}
           </p>
         </div>
       </div>
@@ -636,10 +631,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 aiOmakase ? "text-blue-800" : "text-slate-600"
               }`}
             >
-              目的地以外はお任せ
+              {t.form.omakase.label}
             </div>
             <div className="text-xs text-slate-400">
-              目的地以外は出発地、終着地、その時間等を勘案しAIがプランを作成します。
+              {t.form.omakase.description}
             </div>
           </div>
           <div
@@ -673,10 +668,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 withDog ? "text-amber-800" : "text-slate-600"
               }`}
             >
-              犬連れ旅行
+              {t.form.dog.label}
             </div>
             <div className="text-xs text-slate-400">
-              散歩タイム・犬同伴可の飲食店を考慮
+              {t.form.dog.description}
             </div>
           </div>
           <div
@@ -710,10 +705,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 useHighway ? "text-emerald-800" : "text-slate-600"
               }`}
             >
-              高速道路を使う
+              {t.form.highway.label}
             </div>
             <div className="text-xs text-slate-400">
-              {useHighway ? "高速道路を利用してルートを作成します" : "一般道のみでルートを作成します"}
+              {useHighway ? t.form.highway.on : t.form.highway.off}
             </div>
           </div>
           <div
@@ -734,22 +729,18 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-indigo-600" />
-          <h2 className="font-bold text-lg">旅行者の情報</h2>
-          <span className="text-xs text-slate-400 font-normal">（任意・AIの提案に反映）</span>
+          <h2 className="font-bold text-lg">{t.form.traveler.title}</h2>
+          <span className="text-xs text-slate-400 font-normal">{t.form.traveler.optional}</span>
         </div>
 
         {/* Party type */}
         <div className="mb-3">
-          <label className="text-sm font-medium text-slate-600 mb-1.5 block">旅行スタイル</label>
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">{t.form.traveler.partyType.label}</label>
           <div className="flex flex-wrap gap-2">
-            {([
-              { value: "", label: "未選択" },
-              { value: "solo", label: "一人旅" },
-              { value: "couple", label: "カップル・夫婦" },
-              { value: "family", label: "家族旅行" },
-              { value: "friends", label: "友人・グループ" },
-              { value: "senior", label: "シニア旅行" },
-            ] as const).map((opt) => (
+            {(["", "solo", "couple", "family", "friends", "senior"] as const).map((val, i) => ({
+              value: val,
+              label: t.form.traveler.partyType.options[i] ?? val,
+            })).map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setTravelerProfile((p) => ({ ...p, partyType: opt.value }))}
@@ -767,17 +758,12 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
 
         {/* Age range */}
         <div className="mb-3">
-          <label className="text-sm font-medium text-slate-600 mb-1.5 block">年代</label>
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">{t.form.traveler.ageRange.label}</label>
           <div className="flex flex-wrap gap-2">
-            {([
-              { value: "", label: "未選択" },
-              { value: "20s", label: "20代" },
-              { value: "30s", label: "30代" },
-              { value: "40s", label: "40代" },
-              { value: "50s", label: "50代" },
-              { value: "60s", label: "60代" },
-              { value: "70plus", label: "70代以上" },
-            ] as const).map((opt) => (
+            {(["", "20s", "30s", "40s", "50s", "60s", "70plus"] as const).map((val, i) => ({
+              value: val,
+              label: t.form.traveler.ageRange.options[i] ?? val,
+            })).map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setTravelerProfile((p) => ({ ...p, ageRange: opt.value }))}
@@ -795,15 +781,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
 
         {/* Hobbies */}
         <div className="mb-3">
-          <label className="text-sm font-medium text-slate-600 mb-1.5 block">趣味・興味</label>
+          <label className="text-sm font-medium text-slate-600 mb-1.5 block">{t.form.traveler.hobbies.label}</label>
           <input
             type="text"
             value={travelerProfile.hobbies}
             onChange={(e) => setTravelerProfile((p) => ({ ...p, hobbies: e.target.value }))}
-            placeholder="例: 温泉 釣り 写真 グルメ 神社巡り"
+            placeholder={t.form.traveler.hobbies.placeholder}
             className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm"
           />
-          <p className="mt-1 text-xs text-slate-400">スペース区切りで複数入力可。お任せコースに趣味を反映します</p>
+          <p className="mt-1 text-xs text-slate-400">{t.form.traveler.hobbies.hint}</p>
         </div>
 
         {/* Children */}
@@ -817,7 +803,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             }`}
           >
             <Baby className={`w-4 h-4 ${travelerProfile.hasChildren ? "text-pink-500" : "text-slate-400"}`} />
-            <span className="font-medium">子供あり</span>
+            <span className="font-medium">{t.form.traveler.children.label}</span>
           </button>
           {travelerProfile.hasChildren && (
             <div className="mt-2 ml-1">
@@ -825,10 +811,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 type="text"
                 value={travelerProfile.childAges}
                 onChange={(e) => setTravelerProfile((p) => ({ ...p, childAges: e.target.value }))}
-                placeholder="例: 3歳、7歳"
+                placeholder={t.form.traveler.children.agePlaceholder}
                 className="px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-sm w-full"
               />
-              <p className="mt-1 text-xs text-slate-400">お子様の年齢に合ったスポットをAIが提案します</p>
+              <p className="mt-1 text-xs text-slate-400">{t.form.traveler.children.ageHint}</p>
             </div>
           )}
         </div>
@@ -839,7 +825,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Home className="w-5 h-5 text-green-600" />
-            <h2 className="font-bold text-sm">自宅住所の登録</h2>
+            <h2 className="font-bold text-sm">{t.form.homeAddress.title}</h2>
           </div>
           {homeAddress && !homeEditMode && (
             <div className="flex items-center gap-1">
@@ -847,7 +833,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 onClick={() => setHomeEditMode(true)}
                 className="text-xs px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
               >
-                変更
+                {t.form.homeAddress.edit}
               </button>
               <button
                 onClick={() => {
@@ -856,7 +842,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 }}
                 className="text-xs px-2 py-1 rounded bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
               >
-                削除
+                {t.form.homeAddress.delete}
               </button>
             </div>
           )}
@@ -868,7 +854,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               <span className="text-sm text-green-700 truncate">{homeAddress}</span>
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              🔒 住所はお使いのブラウザ内にのみ保存されています。外部への送信は一切ありません。
+              {t.form.homeAddress.privacySaved}
             </p>
           </div>
         ) : (
@@ -878,7 +864,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 type="text"
                 value={homeAddress}
                 onChange={(e) => setHomeAddress(e.target.value)}
-                placeholder="例: 東京都渋谷区神宮前1-1-1"
+                placeholder={t.form.homeAddress.placeholder}
                 className="flex-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
               />
               <button
@@ -894,21 +880,21 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 className="shrink-0 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center gap-1"
               >
                 <Save className="w-3.5 h-3.5" />
-                登録
+                {t.form.homeAddress.register}
               </button>
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              登録すると出発地・終着地にワンタップで入力できます
+              {t.form.homeAddress.hint}
             </p>
             <p className="mt-1 text-xs text-slate-400">
-              🔒 住所はお使いのブラウザ内（localStorage）にのみ保存されます。サーバーへの送信や第三者への共有は一切行いません。
+              {t.form.homeAddress.privacy2}
             </p>
           </div>
         )}
         {homeSaved && (
           <p className="mt-1 text-xs text-green-600 flex items-center gap-1">
             <Check className="w-3 h-3" />
-            自宅住所を保存しました
+            {t.form.homeAddress.saved}
           </p>
         )}
       </div>
@@ -924,8 +910,8 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               {dayIdx + 1}
             </div>
             <h2 className="font-bold text-lg">
-              {dayIdx + 1}日目
-              {dayIdx === 0 && nights === 0 ? "（日帰り）" : ""}
+              {t.form.day.title.replace("{n}", String(dayIdx + 1))}
+              {dayIdx === 0 && nights === 0 ? t.form.day.dayTrip : ""}
             </h2>
           </div>
 
@@ -933,26 +919,26 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           <div className="mb-4">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
               <Navigation className="w-4 h-4 text-green-600" />
-              出発地
-              <span className="text-red-500 text-xs">*必須</span>
+              {t.form.departure.label}
+              <span className="text-red-500 text-xs">{t.form.departure.required}</span>
             </label>
             <div className="flex gap-2">
               {homeAddress && !day.departure && dayIdx === 0 && (
                 <button
                   onClick={() => updateDay(dayIdx, { departure: homeAddress })}
                   className="shrink-0 px-2.5 py-2 rounded-lg bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 text-xs font-medium transition-colors flex items-center gap-1"
-                  title="自宅住所を入力"
+                  title={t.form.departure.homeButton}
                 >
                   <Home className="w-3.5 h-3.5" />
-                  自宅
+                  {t.form.departure.homeButton}
                 </button>
               )}
               <SearchInput
                 value={day.departure}
                 placeholder={
                   dayIdx > 0
-                    ? "前日の終着地から自動入力（変更可）"
-                    : "例: 東京駅、自宅の住所..."
+                    ? t.form.departure.placeholder1
+                    : t.form.departure.placeholder0
                 }
                 onChange={(val) => updateDay(dayIdx, { departure: val })}
                 onSelect={(c) =>
@@ -971,7 +957,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             </div>
             {dayIdx > 0 && day.departure && (
               <p className="mt-1 text-xs text-slate-400">
-                前日の終着地から転記済み（変更可能）
+                {t.form.departure.prevDayNote}
               </p>
             )}
             {errors[`day${dayIdx}_departure`] && (
@@ -986,8 +972,8 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           <div className="mb-4 space-y-3">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
               <MapPin className="w-4 h-4 text-blue-600" />
-              目的地
-              <span className="text-red-500 text-xs">*1つ以上必須</span>
+              {t.form.destination.label}
+              <span className="text-red-500 text-xs">{t.form.destination.required}</span>
             </label>
             {day.destinations.map((spot, spotIdx) => (
               <div
@@ -1004,7 +990,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                   </span>
                   <SearchInput
                     value={spot.name}
-                    placeholder="場所名を入力して検索"
+                    placeholder={t.form.destination.searchPlaceholder}
                     onChange={(val) =>
                       updateSpot(dayIdx, spot.id, { name: val })
                     }
@@ -1038,7 +1024,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                         <div className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${day.firstDestId === spot.id ? "right-0.5" : "left-0.5"}`} />
                       </div>
                       <span className={`font-medium ${day.firstDestId === spot.id ? "text-blue-600" : "text-slate-400"}`}>
-                        この場所に最初に行く
+                        {t.form.destination.firstToggle}
                       </span>
                     </button>
                   </div>
@@ -1057,7 +1043,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-2 rounded-lg hover:bg-blue-50 transition-all"
               >
                 <Plus className="w-4 h-4" />
-                目的地を追加
+                {t.form.destination.add}
               </button>
             </div>
           </div>
@@ -1066,15 +1052,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           <div className="mb-4">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
               <Navigation className="w-4 h-4 text-red-500" />
-              終着地
-              <span className="text-red-500 text-xs">*必須</span>
+              {t.form.arrival.label}
+              <span className="text-red-500 text-xs">{t.form.arrival.required}</span>
             </label>
             <div className="flex gap-2">
               {homeAddress && !day.arrival && (
                 <button
                   onClick={() => updateDay(dayIdx, { arrival: homeAddress })}
                   className="shrink-0 px-2.5 py-2 rounded-lg bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 text-xs font-medium transition-colors flex items-center gap-1"
-                  title="自宅住所を入力"
+                  title={t.form.departure.homeButton}
                 >
                   <Home className="w-3.5 h-3.5" />
                   自宅
@@ -1082,7 +1068,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               )}
               <SearchInput
                 value={day.arrival}
-                placeholder="例: 自宅、ホテル名..."
+                placeholder={t.form.arrival.placeholder}
                 onChange={(val) => updateDay(dayIdx, { arrival: val })}
                 onSelect={(c) =>
                   updateDay(dayIdx, { arrival: c.name })
@@ -1099,7 +1085,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
               />
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              終着地の希望到着時刻（未入力の場合は20:00）
+              {t.form.arrival.timeHint}
             </p>
             {errors[`day${dayIdx}_arrival`] && (
               <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -1122,15 +1108,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                   {day.includeLunch && <Check className="w-3.5 h-3.5 text-white" />}
                 </div>
                 <Utensils className={`w-4 h-4 ${day.includeLunch ? "text-orange-600" : "text-slate-400"}`} />
-                <span className={`text-sm font-medium ${day.includeLunch ? "text-orange-800" : "text-slate-500"}`}>昼食を含める</span>
+                <span className={`text-sm font-medium ${day.includeLunch ? "text-orange-800" : "text-slate-500"}`}>{t.form.lunch.toggle}</span>
               </button>
               {day.includeLunch && (
                 <div className="px-3 pb-3 space-y-2">
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">{t.form.lunch.locationLabel}</label>
                     <input
                       type="text"
-                      placeholder="例: 鎌倉駅周辺（1か所のみ）"
+                      placeholder={t.form.lunch.locationPlaceholder}
                       value={day.lunchLocation}
                       onChange={(e) => {
                         updateDay(dayIdx, { lunchLocation: e.target.value });
@@ -1146,10 +1132,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     )}
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">{t.form.lunch.genreLabel}</label>
                     <input
                       type="text"
-                      placeholder="例: 海鮮（1つのみ）"
+                      placeholder={t.form.lunch.genrePlaceholder}
                       value={day.lunchGenre}
                       onChange={(e) => {
                         updateDay(dayIdx, { lunchGenre: e.target.value });
@@ -1179,15 +1165,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                   {day.includeDinner && <Check className="w-3.5 h-3.5 text-white" />}
                 </div>
                 <Utensils className={`w-4 h-4 ${day.includeDinner ? "text-purple-600" : "text-slate-400"}`} />
-                <span className={`text-sm font-medium ${day.includeDinner ? "text-purple-800" : "text-slate-500"}`}>夕食を含める</span>
+                <span className={`text-sm font-medium ${day.includeDinner ? "text-purple-800" : "text-slate-500"}`}>{t.form.dinner.toggle}</span>
               </button>
               {day.includeDinner && (
                 <div className="px-3 pb-3 space-y-2">
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">食べる場所（任意、１つ）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">{t.form.dinner.locationLabel}</label>
                     <input
                       type="text"
-                      placeholder="例: 箱根湯本周辺（1か所のみ）"
+                      placeholder={t.form.dinner.locationPlaceholder}
                       value={day.dinnerLocation}
                       onChange={(e) => {
                         updateDay(dayIdx, { dinnerLocation: e.target.value });
@@ -1203,10 +1189,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     )}
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 mb-1 block">ジャンル（任意、１つ）</label>
+                    <label className="text-xs text-slate-500 mb-1 block">{t.form.dinner.genreLabel}</label>
                     <input
                       type="text"
-                      placeholder="例: 焼肉（1つのみ）"
+                      placeholder={t.form.dinner.genrePlaceholder}
                       value={day.dinnerGenre}
                       onChange={(e) => {
                         updateDay(dayIdx, { dinnerGenre: e.target.value });
@@ -1233,9 +1219,9 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-700">入力内容に不足があります</p>
+            <p className="text-sm font-medium text-red-700">{t.form.errorSummary.title}</p>
             <p className="text-xs text-red-500 mt-1">
-              必須項目（出発地・目的地・終着地）をすべて入力してください。
+              {t.form.errorSummary.desc}
             </p>
           </div>
         </div>
@@ -1250,12 +1236,12 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         {isLoading ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            プランを作成中...
+            {t.form.submitting}
           </>
         ) : (
           <>
             <MapPin className="w-5 h-5" />
-            旅行プランを作成
+            {t.form.submit}
           </>
         )}
       </button>
@@ -1263,23 +1249,19 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       {/* Disclaimer & Terms */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
         <div>
-          <h3 className="text-xs font-bold text-slate-500 mb-1">⚠️ 免責事項</h3>
+          <h3 className="text-xs font-bold text-slate-500 mb-1">{t.form.disclaimer.title}</h3>
           <ul className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">
-            <li>・本サービスが生成する旅行プランはAIによる自動生成であり、実際の所要時間・距離・道路状況・営業時間・料金等と異なる場合があります。</li>
-            <li>・提案されたスポットや飲食店の営業状況、ペット同伴の可否等は、必ず事前にご自身でご確認ください。</li>
-            <li>・本サービスの利用により生じたいかなる損害についても、運営者は一切の責任を負いません。</li>
-            <li>・交通ルール・法規を遵守し、安全運転でお出かけください。</li>
+            {t.form.disclaimer.items.map((item, i) => <li key={i}>{item}</li>)}
           </ul>
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-500 mb-1">📋 ご利用上の注意</h3>
+          <h3 className="text-xs font-bold text-slate-500 mb-1">{t.form.terms.title}</h3>
           <ul className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">
-            <li>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</li>
-            <li>・入力された情報（自宅住所を含む）はサーバーに保存されません。自宅住所はブラウザ内（localStorage）にのみ保存されます。</li>
+            {t.form.terms.items.map((item, i) => <li key={i}>{item}</li>)}
           </ul>
         </div>
         <p className="text-[10px] text-slate-300 text-center">
-          © {new Date().getFullYear()} AI ドライブプランナー All Rights Reserved.
+          {t.form.copyright.replace("{year}", String(new Date().getFullYear()))}
         </p>
       </div>
     </div>

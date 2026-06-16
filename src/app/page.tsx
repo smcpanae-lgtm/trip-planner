@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { Map, X, Sparkles, Printer, Copy, Check } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { Map, X, Sparkles, Printer, Copy, Check, Globe } from "lucide-react";
 import TripForm from "@/components/TripForm";
 import Itinerary from "@/components/Itinerary";
 import { geocode } from "@/lib/geocoding";
@@ -19,6 +19,10 @@ import type {
 
 import TripMap from "@/components/TripMap";
 import { decodePolyline } from "@/components/TripMap";
+import {
+  TripPlannerLanguageProvider,
+  useTripLang,
+} from "@/lib/i18n/TripPlannerLanguageContext";
 
 type ViewMode = "form" | "result";
 
@@ -104,18 +108,13 @@ function parseGeminiPlan(plan: any): {
       overallDescription: plan.commentary?.overallDescription || undefined,
     };
 
-    // Extract genre from lunchSpot name like "○○エリアで昼食（蕎麦）" → "蕎麦"
     const extractGenre = (spotName: string): string => {
       const match = spotName.match(/[（(]([^）)]+)[）)]/);
       return match ? match[1] : spotName;
     };
 
-    const lunchGenre = day.lunchSpot
-      ? extractGenre(day.lunchSpot.name)
-      : "";
-    const dinnerGenre = day.dinnerSpot
-      ? extractGenre(day.dinnerSpot.name)
-      : "";
+    const lunchGenre = day.lunchSpot ? extractGenre(day.lunchSpot.name) : "";
+    const dinnerGenre = day.dinnerSpot ? extractGenre(day.dinnerSpot.name) : "";
 
     itineraries.push({
       dayIndex: day.dayIndex,
@@ -141,10 +140,8 @@ function parseGeminiPlan(plan: any): {
   return { spots: allSpots, itineraries };
 }
 
-// Parse Gemini response into plan variants (supports both old and new format)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseGeminiResponse(data: any): PlanVariantData[] {
-  // New format: { plans: [...] }
   if (data.plans && Array.isArray(data.plans) && data.plans.length > 0) {
     console.log(`Parsed ${data.plans.length} plan variants from Gemini response`);
     return data.plans.map((plan: { planName?: string; planDescription?: string; days?: unknown[]; commentary?: unknown }, idx: number) => {
@@ -158,7 +155,6 @@ function parseGeminiResponse(data: any): PlanVariantData[] {
     });
   }
 
-  // Fallback: look for plans array nested inside other keys
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const findPlans = (obj: any): any[] | null => {
     if (!obj || typeof obj !== "object") return null;
@@ -184,40 +180,27 @@ function parseGeminiResponse(data: any): PlanVariantData[] {
     });
   }
 
-  // Old format: { days: [...] } (single plan)
   if (data.days) {
     console.warn("Gemini returned single plan format instead of plans array");
     const { spots, itineraries } = parseGeminiPlan(data);
-    return [
-      {
-        planName: "プランA",
-        planDescription: "",
-        spots,
-        itineraries,
-      },
-    ];
+    return [{ planName: "プランA", planDescription: "", spots, itineraries }];
   }
 
   console.error("Failed to parse Gemini response:", JSON.stringify(data).substring(0, 500));
   return [];
 }
 
-// Fetch driving directions from Google Directions API
 async function fetchRoutePolylines(
   spots: GeocodedSpot[]
 ): Promise<{ dayIndex: number; path: { lat: number; lng: number }[] }[]> {
-  const dayGroups: globalThis.Map<number, GeocodedSpot[]> =
-    new globalThis.Map();
+  const dayGroups: globalThis.Map<number, GeocodedSpot[]> = new globalThis.Map();
   spots.forEach((s) => {
     const group = dayGroups.get(s.dayIndex) || [];
     group.push(s);
     dayGroups.set(s.dayIndex, group);
   });
 
-  const polylines: {
-    dayIndex: number;
-    path: { lat: number; lng: number }[];
-  }[] = [];
+  const polylines: { dayIndex: number; path: { lat: number; lng: number }[] }[] = [];
 
   for (const [dayIndex, daySpots] of dayGroups.entries()) {
     const sorted = daySpots.sort((a, b) => a.orderIndex - b.orderIndex);
@@ -225,9 +208,7 @@ async function fetchRoutePolylines(
 
     const origin = sorted[0];
     const destination = sorted[sorted.length - 1];
-    const waypoints = sorted
-      .slice(1, -1)
-      .map((s) => ({ lat: s.lat, lng: s.lng }));
+    const waypoints = sorted.slice(1, -1).map((s) => ({ lat: s.lat, lng: s.lng }));
 
     try {
       const res = await fetch("/api/directions", {
@@ -255,7 +236,9 @@ async function fetchRoutePolylines(
   return polylines;
 }
 
-export default function Home() {
+function HomeContent() {
+  const { t, lang, setLang, languages } = useTripLang();
+
   const [planVariants, setPlanVariants] = useState<PlanVariantData[]>([]);
   const [activePlanIndex, setActivePlanIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -269,7 +252,90 @@ export default function Home() {
   const [mobileShowMap, setMobileShowMap] = useState(false);
   const [lastConfig, setLastConfig] = useState<TripConfig | null>(null);
 
-  // Derived state from active plan
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+
+    const destinationsStr = sp.get("destinations");
+    if (destinationsStr) {
+      const names = destinationsStr.split("|").filter(Boolean);
+      if (names.length >= 2) {
+        const latsArr = (sp.get("lats") ?? "").split("|");
+        const lngsArr = (sp.get("lngs") ?? "").split("|");
+        const destinations = names.map((name, i) => {
+          const latNum = parseFloat(latsArr[i] ?? "");
+          const lngNum = parseFloat(lngsArr[i] ?? "");
+          return {
+            id: crypto.randomUUID(),
+            name,
+            address: "",
+            isOmakase: false,
+            ...(!Number.isNaN(latNum) && !Number.isNaN(lngNum)
+              ? { lat: latNum, lng: lngNum }
+              : {}),
+          };
+        });
+        const config: TripConfig = {
+          nights: 0,
+          days: [{
+            dayIndex: 0,
+            departure: "",
+            departureTime: "09:00",
+            destinations,
+            arrival: "",
+            arrivalTime: "20:00",
+            includeLunch: false,
+            lunchLocation: "",
+            lunchGenre: "",
+            includeDinner: false,
+            dinnerLocation: "",
+            dinnerGenre: "",
+          }],
+          withDog: false,
+          aiOmakase: true,
+          useHighway: true,
+        };
+        setLastConfig(config);
+        return;
+      }
+    }
+
+    const destination = sp.get("destination");
+    if (!destination) return;
+
+    const latNum = parseFloat(sp.get("lat") ?? "");
+    const lngNum = parseFloat(sp.get("lng") ?? "");
+    const hasLatLng = !Number.isNaN(latNum) && !Number.isNaN(lngNum);
+
+    const config: TripConfig = {
+      nights: 0,
+      days: [{
+        dayIndex: 0,
+        departure: "",
+        departureTime: "09:00",
+        destinations: [{
+          id: crypto.randomUUID(),
+          name: destination,
+          address: "",
+          isOmakase: false,
+          ...(hasLatLng ? { lat: latNum, lng: lngNum } : {}),
+        }],
+        arrival: "",
+        arrivalTime: "20:00",
+        includeLunch: false,
+        lunchLocation: "",
+        lunchGenre: "",
+        includeDinner: false,
+        dinnerLocation: "",
+        dinnerGenre: "",
+      }],
+      withDog: false,
+      aiOmakase: true,
+      useHighway: true,
+    };
+    setLastConfig(config);
+  }, []);
+
   const activeVariant = planVariants[activePlanIndex];
   const allSpots = activeVariant?.spots || [];
   const itineraries = activeVariant?.itineraries || [];
@@ -278,15 +344,12 @@ export default function Home() {
   const handlePlanSwitch = useCallback(
     (index: number) => {
       setActivePlanIndex(index);
-      // Fetch route polylines for this plan if not yet fetched
       const variant = planVariants[index];
       if (variant && !variant.routePolylines) {
         fetchRoutePolylines(variant.spots).then((polylines) => {
           if (polylines.length > 0) {
             setPlanVariants((prev) =>
-              prev.map((v, i) =>
-                i === index ? { ...v, routePolylines: polylines } : v
-              )
+              prev.map((v, i) => i === index ? { ...v, routePolylines: polylines } : v)
             );
           }
         });
@@ -299,7 +362,7 @@ export default function Home() {
     setPlanError(null);
     setLastConfig(config);
     setIsLoading(true);
-    setLoadingMessage("AIが2つの旅行プランを作成中...");
+    setLoadingMessage(t.loading.message);
 
     try {
       const apiPayload = {
@@ -345,14 +408,11 @@ export default function Home() {
           setActivePlanIndex(0);
           setViewMode("result");
 
-          // Fetch routes for first plan in background
-          setLoadingMessage("ルートを取得中...");
+          setLoadingMessage(t.loading.messageRoute);
           fetchRoutePolylines(variants[0].spots).then((polylines) => {
             if (polylines.length > 0) {
               setPlanVariants((prev) =>
-                prev.map((v, i) =>
-                  i === 0 ? { ...v, routePolylines: polylines } : v
-                )
+                prev.map((v, i) => i === 0 ? { ...v, routePolylines: polylines } : v)
               );
             }
           });
@@ -360,7 +420,6 @@ export default function Home() {
         }
       }
 
-      // Show actual error message from API (not hardcoded)
       const apiError: string = data.error || `HTTPエラー ${res.status}`;
       console.warn("Gemini API error:", apiError);
       setPlanError(apiError);
@@ -375,7 +434,7 @@ export default function Home() {
       setIsLoading(false);
       setLoadingMessage("");
     }
-  }, []);
+  }, [t]);
 
   const buildLocalPlan = useCallback(async (config: TripConfig) => {
     const allGeoSpots: GeocodedSpot[] = [];
@@ -476,7 +535,6 @@ export default function Home() {
       itineraries: dayItineraries,
     };
 
-    // Fetch driving routes
     fetchRoutePolylines(allGeoSpots).then((polylines) => {
       if (polylines.length > 0) {
         setPlanVariants([{ ...variant, routePolylines: polylines }]);
@@ -495,7 +553,6 @@ export default function Home() {
     []
   );
 
-  // --- Print / Copy functionality ---
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printSelection, setPrintSelection] = useState<"a" | "b" | "both">("both");
   const [copied, setCopied] = useState(false);
@@ -512,16 +569,17 @@ export default function Home() {
     lines.push("");
 
     for (const dayItin of variant.itineraries) {
-      lines.push(`■ ${dayItin.dayIndex + 1}日目`);
+      const dayLabel = t.itinerary.day.replace("{n}", String(dayItin.dayIndex + 1));
+      lines.push(`■ ${dayLabel}`);
       lines.push(`${"─".repeat(30)}`);
 
       for (const item of dayItin.items) {
         const typeLabel =
-          item.spot.type === "departure" ? "🚗 出発" :
-          item.spot.type === "arrival" ? "🏁 到着" :
-          item.isMealSpot === "lunch" ? "🍽️ 昼食" :
-          item.isMealSpot === "dinner" ? "🍽️ 夕食" :
-          "📍 観光";
+          item.spot.type === "departure" ? `🚗 ${t.itinerary.meal.lunch.replace("昼食", "出発") || "出発"}` :
+          item.spot.type === "arrival" ? "🏁" :
+          item.isMealSpot === "lunch" ? `🍽️ ${t.itinerary.meal.lunch}` :
+          item.isMealSpot === "dinner" ? `🍽️ ${t.itinerary.meal.dinner}` :
+          "📍";
 
         const timeStr = item.stayMinutes > 0
           ? `${item.arrivalTime}〜${item.departureTime}（${item.stayMinutes}分）`
@@ -530,45 +588,33 @@ export default function Home() {
         lines.push(`  ${typeLabel}  ${item.spot.name}`);
         lines.push(`    ⏰ ${timeStr}`);
 
-        if (item.address) {
-          lines.push(`    📍 ${item.address}`);
-        }
-
-        if (item.description) {
-          lines.push(`    💡 ${item.description}`);
-        }
-
-        if (item.parkingInfo) {
-          lines.push(`    🅿️ ${item.parkingInfo}`);
-        }
-
+        if (item.address) lines.push(`    📍 ${item.address}`);
+        if (item.description) lines.push(`    💡 ${item.description}`);
+        if (item.parkingInfo) lines.push(`    🅿️ ${item.parkingInfo}`);
         if (item.highway) {
           lines.push(`    🛣️ ${item.highway.entryIC} → ${item.highway.exitIC}（${item.highway.entryHighway}）`);
         }
-
         if (item.distanceKm > 0) {
           lines.push(`    🚗 約${item.distanceKm}km・${item.travelMinutes}分${item.highway ? "（高速）" : "（一般道）"}`);
         }
-
         lines.push("");
       }
 
-      // Commentary
       const c = dayItin.commentary;
       if (c) {
         if (c.highlights && c.highlights.length > 0) {
-          lines.push(`  ⭐ ポイント`);
+          lines.push(`  ⭐ ${t.itinerary.highlights.title}`);
           c.highlights.forEach((h) => lines.push(`    ・${h}`));
           lines.push("");
         }
         if (c.tips && c.tips.length > 0) {
-          lines.push(`  💡 アドバイス`);
-          c.tips.forEach((t) => lines.push(`    ・${t}`));
+          lines.push(`  💡 ${t.itinerary.tips.title}`);
+          c.tips.forEach((tip) => lines.push(`    ・${tip}`));
           lines.push("");
         }
         if (c.dogTips && c.dogTips.length > 0) {
-          lines.push(`  🐕 犬連れアドバイス`);
-          c.dogTips.forEach((t) => lines.push(`    ・${t}`));
+          lines.push(`  🐕 ${t.itinerary.dogTips.title}`);
+          c.dogTips.forEach((tip) => lines.push(`    ・${tip}`));
           lines.push("");
         }
       }
@@ -578,16 +624,12 @@ export default function Home() {
   }
 
   function getExportText(): string {
-    const header = "🚗 AI ドライブプランナー\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    const header = `🚗 ${t.header.title}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     if (planVariants.length <= 1) {
       return header + variantToText(planVariants[0]);
     }
-    if (printSelection === "a") {
-      return header + variantToText(planVariants[0]);
-    }
-    if (printSelection === "b") {
-      return header + variantToText(planVariants[1]);
-    }
+    if (printSelection === "a") return header + variantToText(planVariants[0]);
+    if (printSelection === "b") return header + variantToText(planVariants[1]);
     return header + variantToText(planVariants[0]) + "\n\n" + variantToText(planVariants[1]);
   }
 
@@ -603,7 +645,7 @@ export default function Home() {
     const text = getExportText();
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write(`<!DOCTYPE html><html><head><title>AI ドライブプランナー</title><style>
+      printWindow.document.write(`<!DOCTYPE html><html><head><title>${t.header.title}</title><style>
         body { font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; white-space: pre-wrap; line-height: 1.8; padding: 20px; font-size: 14px; }
         @media print { body { padding: 0; } }
       </style></head><body>${text.replace(/\n/g, "<br>")}</body></html>`);
@@ -623,38 +665,49 @@ export default function Home() {
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">
-                AI ドライブプランナー
+                {t.header.title}
               </h1>
               <p className="text-xs text-slate-400">
-                車旅行プランを自動作成・地図（Google マップ）表示
+                {t.header.subtitle}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Language selector */}
+            <div className="flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as Parameters<typeof setLang>[0])}
+                className="text-xs text-slate-600 bg-transparent border-none outline-none cursor-pointer pr-1"
+                aria-label="Language"
+              >
+                {languages.map((l) => (
+                  <option key={l.code} value={l.code}>{l.label}</option>
+                ))}
+              </select>
+            </div>
+
             <a
               href="/heritage/"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all whitespace-nowrap"
             >
-              🌍 世界遺産パスポート
+              {t.header.heritageLink}
             </a>
             {viewMode === "result" && (
               <button
                 onClick={() => { setViewMode("form"); setPlanError(null); }}
                 className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-all"
               >
-                プランを再編集
+                {t.header.editPlan}
               </button>
             )}
             <button
               onClick={() => setMobileShowMap(!mobileShowMap)}
               className="lg:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600"
             >
-              {mobileShowMap ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Map className="w-5 h-5" />
-              )}
+              {mobileShowMap ? <X className="w-5 h-5" /> : <Map className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -667,22 +720,22 @@ export default function Home() {
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center animate-pulse">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <p className="font-bold text-lg mb-1">プラン作成中</p>
+            <p className="font-bold text-lg mb-1">{t.loading.title}</p>
             <p className="text-sm text-slate-500">{loadingMessage}</p>
           </div>
         </div>
       )}
 
-      {/* Print/Copy modal for plan selection */}
+      {/* Print/Copy modal */}
       {showPrintModal && (
         <div className="fixed inset-0 z-[60] bg-black/30 flex items-center justify-center" onClick={() => setShowPrintModal(false)}>
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-bold text-lg mb-4">出力するプランを選択</h3>
+            <h3 className="font-bold text-lg mb-4">{t.printModal.title}</h3>
             <div className="space-y-2 mb-5">
               {[
-                { value: "a" as const, label: planVariants[0]?.planName || "プランA" },
-                { value: "b" as const, label: planVariants[1]?.planName || "プランB" },
-                { value: "both" as const, label: "両方のプラン" },
+                { value: "a" as const, label: planVariants[0]?.planName || t.printModal.planA },
+                { value: "b" as const, label: planVariants[1]?.planName || t.printModal.planB },
+                { value: "both" as const, label: t.printModal.both },
               ].map((opt) => (
                 <button
                   key={opt.value}
@@ -703,21 +756,21 @@ export default function Home() {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all"
               >
                 <Printer className="w-4 h-4" />
-                印刷
+                {t.printModal.print}
               </button>
               <button
                 onClick={() => { handleCopyText(); setShowPrintModal(false); }}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-bold transition-all"
               >
                 <Copy className="w-4 h-4" />
-                コピー
+                {t.printModal.copy}
               </button>
             </div>
             <button
               onClick={() => setShowPrintModal(false)}
               className="w-full mt-3 text-sm text-slate-400 hover:text-slate-600 transition-colors"
             >
-              キャンセル
+              {t.printModal.cancel}
             </button>
           </div>
         </div>
@@ -736,7 +789,7 @@ export default function Home() {
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 mb-4">
                   <div className="text-red-500 shrink-0 mt-0.5">⚠️</div>
                   <div>
-                    <p className="text-sm font-medium text-red-700">エラーが発生しました</p>
+                    <p className="text-sm font-medium text-red-700">{t.error.title}</p>
                     <p className="text-xs text-red-500 mt-1">{planError}</p>
                   </div>
                 </div>
@@ -745,21 +798,21 @@ export default function Home() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Error message */}
               {planError && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
                   <div className="text-red-500 shrink-0 mt-0.5">⚠️</div>
                   <div>
-                    <p className="text-sm font-medium text-red-700">エラーが発生しました</p>
+                    <p className="text-sm font-medium text-red-700">{t.error.title}</p>
                     <p className="text-xs text-red-500 mt-1">{planError}</p>
                   </div>
                 </div>
               )}
+
               {/* Plan selector tabs */}
               {planVariants.length > 1 && (
                 <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 shadow-md border-2 border-red-200">
                   <p className="text-center text-xs font-bold text-red-600 mb-3 tracking-wider">
-                    ▼ 2つのプランを比較できます ▼
+                    {t.planCompare.hint}
                   </p>
                   <div className="flex gap-3">
                     {planVariants.map((v, i) => (
@@ -776,7 +829,6 @@ export default function Home() {
                       </button>
                     ))}
                   </div>
-                  {/* Active plan description */}
                   {activeVariant?.planDescription && (
                     <div className="mt-3 p-3 bg-white rounded-lg border border-red-100">
                       <p className="text-xs text-red-700 leading-relaxed font-medium">
@@ -801,7 +853,7 @@ export default function Home() {
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
                 >
                   <Printer className="w-4 h-4" />
-                  印刷する
+                  {t.buttons.print}
                 </button>
                 <button
                   onClick={() => {
@@ -814,7 +866,7 @@ export default function Home() {
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
                 >
                   {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                  {copied ? "コピー済み！" : "テキストをコピー"}
+                  {copied ? t.buttons.copied : t.buttons.copy}
                 </button>
               </div>
 
@@ -842,5 +894,13 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <TripPlannerLanguageProvider>
+      <HomeContent />
+    </TripPlannerLanguageProvider>
   );
 }

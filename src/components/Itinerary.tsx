@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import type { DayItinerary } from "@/types/trip";
 import { generateYouTubeSearchLinks } from "@/lib/youtube";
+import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
 
 function buildGoogleMapsUrl(name: string, address?: string): string {
   const query = address ? `${name} ${address}` : name;
@@ -77,13 +78,15 @@ interface ItineraryProps {
 }
 
 export default function Itinerary({ itineraries, onSpotHover, withDog }: ItineraryProps) {
+  const { t } = useTripLang();
+
   if (itineraries.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-slate-400">
         <MapPin className="w-12 h-12 mb-3 opacity-50" />
-        <p className="text-lg font-medium">旅行プランを入力してください</p>
+        <p className="text-lg font-medium">{t.itinerary.empty.title}</p>
         <p className="text-sm mt-1">
-          左のフォームから出発地・目的地を入力して作成ボタンを押してください
+          {t.itinerary.empty.desc}
         </p>
       </div>
     );
@@ -107,7 +110,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
               {dayItin.dayIndex + 1}
             </div>
             <h3 className="font-bold text-lg">
-              {dayItin.dayIndex + 1}日目
+              {t.itinerary.day.replace("{n}", String(dayItin.dayIndex + 1))}
             </h3>
           </div>
 
@@ -145,7 +148,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         <Car className="w-3.5 h-3.5" />
                         <span>
                           約{item.distanceKm}km・{item.travelMinutes}分
-                          {item.highway ? "（高速利用）" : "（一般道）"}
+                          {item.highway ? t.itinerary.travel.highway : t.itinerary.travel.road}
                         </span>
                       </div>
                       {/* Dog walk stop indicator — only shown when dog mode is ON */}
@@ -153,7 +156,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 rounded-md px-2 py-1">
                           <PawPrint className="w-3 h-3" />
                           <span className="font-medium">
-                            犬の散歩休憩（約15分）
+                            {t.itinerary.dogwalk}
                           </span>
                         </div>
                       )}
@@ -162,7 +165,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         <div className="flex items-center gap-1.5 text-xs text-orange-600 bg-orange-50 rounded-md px-2 py-1">
                           <Coffee className="w-3 h-3" />
                           <span className="font-medium">
-                            食事おすすめ: {item.mealStop.name}
+                            {t.itinerary.mealstop}{item.mealStop.name}
                           </span>
                           <span className="text-orange-400">
                             ({item.mealStop.type}・{item.mealStop.features})
@@ -212,10 +215,10 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         <div className="flex items-center gap-2">
                           <h4 className="font-bold text-sm">{item.spot.name}</h4>
                           {item.isMealSpot === "lunch" && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">昼食</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">{t.itinerary.badge.lunch}</span>
                           )}
                           {item.isMealSpot === "dinner" && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">夕食</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">{t.itinerary.badge.dinner}</span>
                           )}
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
@@ -226,7 +229,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                               ` 〜 ${item.departureTime}`}
                           </span>
                           {item.stayMinutes > 0 && (
-                            <span>滞在 {item.stayMinutes}分</span>
+                            <span>{t.itinerary.stay.replace("{min}", String(item.stayMinutes))}</span>
                           )}
                         </div>
                       </div>
@@ -234,9 +237,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                       {/* Description: meal spots show static instruction; other spots show AI description */}
                       {item.isMealSpot ? (
                         <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
-                          {withDog
-                            ? "「Google Mapで確認」から周辺のお店をお選びください。犬連れの方は「ペットOKで探す」もご利用ください。"
-                            : "「Google Mapで確認」から周辺のお店をお選びください。"}
+                          {withDog ? t.itinerary.mealHintDog : t.itinerary.mealHint}
                         </p>
                       ) : (
                         item.description && (
@@ -275,7 +276,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                             <div className="mt-1.5 flex items-start gap-1.5 bg-red-50 border border-red-200 rounded px-2 py-1.5">
                               <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
                               <p className="text-[11px] text-red-600 leading-relaxed">
-                                <span className="font-bold">閉館の可能性あり。</span>寺社・博物館・城などは17時頃に閉館することが多いです。事前に営業時間をご確認ください。
+                                <span className="font-bold">{t.itinerary.closing17.bold}</span>{t.itinerary.closing17.text}
                               </p>
                             </div>
                           );
@@ -285,7 +286,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                             <div className="mt-1.5 flex items-start gap-1.5 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
                               <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                               <p className="text-[11px] text-amber-700 leading-relaxed">
-                                <span className="font-bold">閉館時間に注意。</span>寺社・博物館などは16〜17時頃に閉館する場合があります。事前に営業時間をご確認ください。
+                                <span className="font-bold">{t.itinerary.closing16.bold}</span>{t.itinerary.closing16.text}
                               </p>
                             </div>
                           );
@@ -302,7 +303,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                           className="inline-flex items-center gap-1 text-[11px] text-blue-500 hover:text-blue-700 hover:underline transition-colors"
                         >
                           <ExternalLink className="w-3 h-3" />
-                          Google Mapで確認
+                          {t.itinerary.googleMap}
                         </a>
                         {item.isMealSpot && withDog && (
                           <a
@@ -312,13 +313,13 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                             className="inline-flex items-center gap-1 text-[11px] text-red-600 hover:text-red-800 hover:underline transition-colors font-medium"
                           >
                             <PawPrint className="w-3 h-3" />
-                            ペットOKで探す
+                            {t.itinerary.petSearch}
                           </a>
                         )}
                         {item.isMealSpot && (
                           <span className="text-[10px] text-amber-500 flex items-center gap-0.5">
                             <AlertTriangle className="w-3 h-3" />
-                            営業時間を事前にご確認ください
+                            {t.itinerary.businessHours}
                           </span>
                         )}
                       </div>
@@ -341,7 +342,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-purple-700 mb-2">
                 <Sparkles className="w-4 h-4" />
-                AIプランナーの解説
+                {t.itinerary.commentary.title}
               </div>
               <p className="text-xs text-purple-600 leading-relaxed">
                 {planCommentary.overallDescription}
@@ -354,7 +355,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             <div className="p-3 bg-red-50 rounded-lg border border-red-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-red-700 mb-2">
                 <AlertTriangle className="w-4 h-4" />
-                時間の都合で除外した目的地
+                {t.itinerary.removed.title}
               </div>
               <ul className="space-y-1">
                 {planCommentary.removedSpots.map((removed, idx) => (
@@ -375,7 +376,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-blue-700 mb-2">
                 <Star className="w-4 h-4" />
-                プランのポイント
+                {t.itinerary.highlights.title}
               </div>
               <ul className="space-y-1">
                 {planCommentary.highlights.map((highlight, idx) => (
@@ -393,7 +394,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-yellow-700 mb-2">
                 <Lightbulb className="w-4 h-4" />
-                アドバイス
+                {t.itinerary.tips.title}
               </div>
               <ul className="space-y-1">
                 {planCommentary.tips.map((tip, idx) => (
@@ -411,7 +412,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
               <div className="flex items-center gap-1.5 text-sm font-medium text-amber-700 mb-2">
                 <Dog className="w-4 h-4" />
-                犬連れ旅行のアドバイス
+                {t.itinerary.dogTips.title}
               </div>
               <ul className="space-y-1">
                 {planCommentary.dogTips.map((tip, idx) => (
@@ -431,10 +432,10 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
         <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
           <div className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
             <Video className="w-4 h-4 text-red-500" />
-            このプランを動画で下見する
+            {t.itinerary.youtube.title}
           </div>
           <p className="text-xs text-slate-400 mb-2 leading-relaxed">
-            実際の雰囲気を確認したい方は、関連するYouTube動画も参考にできます。
+            {t.itinerary.youtube.desc}
           </p>
           <ul className="space-y-1.5">
             {youtubeLinks.map((link) => (
@@ -446,7 +447,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                   className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 hover:underline transition-colors"
                 >
                   <ExternalLink className="w-3 h-3 shrink-0" />
-                  YouTubeで「{link.query}」を見る
+                  {t.itinerary.youtube.linkText.replace("{query}", link.query)}
                 </a>
               </li>
             ))}
