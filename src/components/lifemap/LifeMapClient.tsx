@@ -272,16 +272,16 @@ function LifeMapClientInner() {
     <div className="min-h-screen bg-slate-50" style={{ fontFamily: FONT_STACK }}>
       {/* ヘッダー */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-[1000]">
-        <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-[1400px] mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center shrink-0">
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-bold text-lg leading-tight truncate">
+              <h1 className="font-bold text-lg leading-tight">
                 {t("app.title")}
               </h1>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-slate-400">
                 {t("app.subtitle")}
               </p>
             </div>
@@ -327,14 +327,14 @@ function LifeMapClientInner() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
             >
               <span className="text-base leading-none">🌐</span>
-              {t("heritageLink")}
+              <span className="hidden sm:inline">{t("heritageLink")}</span>
             </a>
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              {t("app.backLink")}
+              <span className="hidden sm:inline">{t("app.backLink")}</span>
+              <span className="sm:hidden text-base leading-none">🚗</span>
             </Link>
           </div>
         </div>

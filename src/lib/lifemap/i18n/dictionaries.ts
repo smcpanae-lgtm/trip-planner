@@ -155,7 +155,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
   ja: {
     app: {
       title: "人生体験マップ",
-      subtitle: "写真で残す、あなたの思い出日本地図",
+      subtitle: "写真で残す、あなたの思い出と地図",
       backLink: "🚗 AI ドライブプランナー",
       desc: "旅行、釣り、食事、犬連れ、温泉、お城、お友達と、家族など、人生の体験を写真と場所で記録できます。",
       privacy:
