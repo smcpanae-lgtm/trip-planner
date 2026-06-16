@@ -3,15 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { X, Play, Pause } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
-import { getCategory } from "@/lib/lifemap/categories";
+import type { LifeMapCategory } from "@/types/lifemap";
+import { CATEGORIES, getCategory } from "@/lib/lifemap/categories";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 
 type Period = "all" | "1y" | "2y" | "3y";
+type CategoryFilter = LifeMapCategory | "all";
 
 const SLIDE_SECONDS = 4;
 
-// 写真回想モーダル。期間を選ぶと、対象の記録を撮影日の古い順に
-// 1枚ずつ左から右へスライドさせながら自動で表示する。
 export default function MemoryReplay({
   entries,
   onClose,
@@ -21,6 +21,7 @@ export default function MemoryReplay({
 }) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<Period | null>(null);
+  const [category, setCategory] = useState<CategoryFilter>("all");
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [animKey, setAnimKey] = useState(0);
@@ -42,16 +43,17 @@ export default function MemoryReplay({
     }
     return entries
       .filter((e) => !cutoff || new Date(e.date) >= cutoff)
+      .filter((e) => category === "all" || e.category === category)
       .slice()
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [entries, period]);
+  }, [entries, period, category]);
 
-  // 期間が変わったら最初から再生
+  // 期間・カテゴリが変わったら最初から再生
   useEffect(() => {
     setIndex(0);
     setAnimKey((k) => k + 1);
     setPlaying(true);
-  }, [period]);
+  }, [period, category]);
 
   // 一定時間ごとに次の写真へ
   useEffect(() => {
@@ -64,6 +66,11 @@ export default function MemoryReplay({
   }, [period, filtered, playing, index]);
 
   const current = filtered[index];
+
+  const handleReset = () => {
+    setPeriod(null);
+    setCategory("all");
+  };
 
   return (
     <div className="fixed inset-0 z-[2000] bg-black/90 flex flex-col">
@@ -80,19 +87,54 @@ export default function MemoryReplay({
       </div>
 
       {!period ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4">
-          <p className="text-white text-sm">{t("replay.choosePeriod")}</p>
-          <div className="flex gap-2 flex-wrap justify-center">
-            {periodOptions.map((opt) => (
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-4 overflow-y-auto py-4">
+          {/* 期間選択 */}
+          <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+            <p className="text-white text-sm">{t("replay.choosePeriod")}</p>
+            <div className="flex gap-2 flex-wrap justify-center">
+              {periodOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPeriod(opt.value)}
+                  className="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all"
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* カテゴリ絞り込み */}
+          <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+            <p className="text-white/70 text-xs">{t("replay.chooseCategory")}</p>
+            <div className="flex gap-2 flex-wrap justify-center">
               <button
-                key={opt.value}
                 type="button"
-                onClick={() => setPeriod(opt.value)}
-                className="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all"
+                onClick={() => setCategory("all")}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  category === "all"
+                    ? "bg-white text-slate-800"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
               >
-                {opt.label}
+                {t("replay.allCategories")}
               </button>
-            ))}
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setCategory(c.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    category === c.value
+                      ? "bg-white text-slate-800"
+                      : "bg-white/10 text-white hover:bg-white/20"
+                  }`}
+                >
+                  {c.emoji} {t(`categories.${c.value}`)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       ) : filtered.length === 0 ? (
@@ -100,7 +142,7 @@ export default function MemoryReplay({
           <p className="text-white text-sm">{t("replay.noEntries")}</p>
           <button
             type="button"
-            onClick={() => setPeriod(null)}
+            onClick={handleReset}
             className="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-all"
           >
             {t("replay.changePeriodBtn")}
@@ -153,7 +195,7 @@ export default function MemoryReplay({
             </span>
             <button
               type="button"
-              onClick={() => setPeriod(null)}
+              onClick={handleReset}
               className="px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-all"
             >
               {t("replay.changePeriod")}

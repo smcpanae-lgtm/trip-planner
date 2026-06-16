@@ -105,6 +105,8 @@ export interface LifeMapDict {
     title: string;
     closeAria: string;
     choosePeriod: string;
+    chooseCategory: string;
+    allCategories: string;
     all: string;
     period1y: string;
     period2y: string;
@@ -246,6 +248,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "思い出を振り返る",
       closeAria: "閉じる",
       choosePeriod: "振り返る期間を選んでください",
+      chooseCategory: "カテゴリで絞り込む（任意）",
+      allCategories: "すべて",
       all: "すべて",
       period1y: "直近1年",
       period2y: "直近2年",
@@ -386,6 +390,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "View Memories",
       closeAria: "Close",
       choosePeriod: "Select a time period",
+      chooseCategory: "Filter by category (optional)",
+      allCategories: "All",
       all: "All time",
       period1y: "Past 1 year",
       period2y: "Past 2 years",
@@ -526,6 +532,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "추억 되돌아보기",
       closeAria: "닫기",
       choosePeriod: "되돌아볼 기간을 선택하세요",
+      chooseCategory: "카테고리로 필터링（선택사항）",
+      allCategories: "전체",
       all: "전체",
       period1y: "최근 1년",
       period2y: "최근 2년",
@@ -666,6 +674,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "回顾回忆",
       closeAria: "关闭",
       choosePeriod: "请选择回顾的时间段",
+      chooseCategory: "按类别筛选（可选）",
+      allCategories: "全部",
       all: "全部",
       period1y: "最近1年",
       period2y: "最近2年",
@@ -806,6 +816,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "回顧回憶",
       closeAria: "關閉",
       choosePeriod: "請選擇回顧的時間段",
+      chooseCategory: "依類別篩選（選填）",
+      allCategories: "全部",
       all: "全部",
       period1y: "最近1年",
       period2y: "最近2年",
@@ -946,6 +958,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "Ver recuerdos",
       closeAria: "Cerrar",
       choosePeriod: "Selecciona un período de tiempo",
+      chooseCategory: "Filtrar por categoría (opcional)",
+      allCategories: "Todas",
       all: "Todo el tiempo",
       period1y: "Último año",
       period2y: "Últimos 2 años",
@@ -1086,6 +1100,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       title: "Просмотр воспоминаний",
       closeAria: "Закрыть",
       choosePeriod: "Выберите период для просмотра",
+      chooseCategory: "Фильтр по категории (необязательно)",
+      allCategories: "Все",
       all: "Всё время",
       period1y: "Последний год",
       period2y: "Последние 2 года",
