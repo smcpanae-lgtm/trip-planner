@@ -187,6 +187,10 @@ function LifeMapClientInner() {
       setError(t("form.errMapTap"));
       return;
     }
+    if (draft.locationMode === "coords" && (draft.lat == null || draft.lng == null)) {
+      setError(t("form.errCoords"));
+      return;
+    }
 
     setSaving(true);
     try {
@@ -260,9 +264,9 @@ function LifeMapClientInner() {
     }
   }, []);
 
-  // 地図に渡す「新規ピン」位置（GPS取得時／地図タップ時）
+  // 地図に渡す「新規ピン」位置（GPS取得時／地図タップ時／座標直接入力時）
   const newLocation =
-    (draft.locationMode === "gps" || draft.locationMode === "map") &&
+    (draft.locationMode === "gps" || draft.locationMode === "map" || draft.locationMode === "coords") &&
     draft.lat != null &&
     draft.lng != null
       ? { lat: draft.lat, lng: draft.lng }
@@ -346,7 +350,20 @@ function LifeMapClientInner() {
           <p className="text-sm text-slate-600 leading-relaxed">
             {t("app.desc")}
           </p>
-          <p className="text-xs text-slate-400 mt-1">Since 2026年6月</p>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-slate-400">Since 2026年6月</p>
+            <a
+              href="https://x.com/AIDRIVEPLAN"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-white text-xs font-medium hover:bg-slate-800 transition-colors shrink-0"
+            >
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white shrink-0" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
+              </svg>
+              公式X（@AIDRIVEPLAN）をフォロー
+            </a>
+          </div>
           <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1.5">
             <Lock className="w-3.5 h-3.5 shrink-0" />
             {t("app.privacy")}

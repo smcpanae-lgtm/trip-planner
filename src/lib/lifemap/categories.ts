@@ -9,6 +9,11 @@ export interface CategoryDef {
   color: string; // ピン・バッジの基調色
 }
 
+// ユーザーがラベルを自由に変更できるカテゴリ
+export const CUSTOM_CAT_VALUES = ["other1", "other2", "other3"] as const;
+export type CustomCatKey = (typeof CUSTOM_CAT_VALUES)[number];
+export const CUSTOM_CAT_STORAGE_KEY = "lifemap-custom-categories";
+
 export const CATEGORIES: CategoryDef[] = [
   { value: "travel", label: "旅行", emoji: "🧳", color: "#475569" },
   { value: "fishing", label: "釣り", emoji: "🎣", color: "#0e7490" },
@@ -19,6 +24,9 @@ export const CATEGORIES: CategoryDef[] = [
   { value: "friends", label: "お友達と", emoji: "👫", color: "#7c6b9e" },
   { value: "family", label: "家族", emoji: "👨‍👩‍👧", color: "#2e7d5e" },
   { value: "other", label: "その他", emoji: "📍", color: "#64748b" },
+  { value: "other1", label: "その他①", emoji: "📌", color: "#64748b" },
+  { value: "other2", label: "その他②", emoji: "📎", color: "#64748b" },
+  { value: "other3", label: "その他③", emoji: "📝", color: "#64748b" },
 ];
 
 const CATEGORY_MAP: Record<LifeMapCategory, CategoryDef> = CATEGORIES.reduce(

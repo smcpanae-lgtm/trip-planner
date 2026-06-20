@@ -55,7 +55,13 @@ export interface LifeMapDict {
     errPhoto: string;
     errPref: string;
     errMapTap: string;
+    errCoords: string;
     errSave: string;
+    coordsMode: string;
+    coordsLatLabel: string;
+    coordsLngLabel: string;
+    coordsHint: string;
+    editCategoryBtn: string;
   };
   card: {
     showOnMap: string;
@@ -148,6 +154,9 @@ export interface LifeMapDict {
     friends: string;
     family: string;
     other: string;
+    other1: string;
+    other2: string;
+    other3: string;
   };
   disclaimer: string;
   heritageLink: string;
@@ -198,7 +207,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "写真を選択してください。",
       errPref: "都道府県を選択してください。",
       errMapTap: "地図をタップして場所を指定してください。",
+      errCoords: "緯度・経度を入力してください。",
       errSave: "保存に失敗しました。",
+      coordsMode: "緯度・経度を直接入力",
+      coordsLatLabel: "緯度（Latitude）",
+      coordsLngLabel: "経度（Longitude）",
+      coordsHint: "Google マップで場所を右クリック → 表示された数字をコピーして入力してください。",
+      editCategoryBtn: "カテゴリ名を変更（絵文字も使えます）",
     },
     card: {
       showOnMap: "地図で見る",
@@ -234,13 +249,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       exportError: "バックアップの保存に失敗しました。",
       importSuccess: "{{count}}件の記録を復元しました。",
       importError: "復元に失敗しました。",
-      hint: "全記録を1つのファイルに保存できます。機種変更や別端末への移行、ブラウザのデータ削除に備えてときどき保存してください。また、このファイルをお子様やご家族に渡すことで、思い出のアルバムとして引き継ぐこともできます。",
+      hint: "全記録を1つのファイルに保存できます。機種変更や別端末への移行、ブラウザのデータ削除に備えてときどき保存してください。また、このファイルをお子様やご家族に渡すことで、思い出のアルバムとして引き継ぐこともできます。\n\n読み込み（インポート）時は、すでに保存されている記録と自動でマージされます。スマホとPCなど複数の端末で記録した場合も、それぞれのバックアップを読み込むことで、両方の記録をまとめることができます。",
     },
     photo: {
       selectBtn: "写真を選ぶ",
       cameraBtn: "カメラで撮影",
       bulkBtn: "まとめて追加（複数枚）",
-      bulkHint: "同じ場所・同じ日の写真は1枚を目安にしてください。",
+      bulkHint: "同じ場所・同じ日の写真は1枚を目安にしてください。位置情報（GPS）が記録されていない写真は、地図上でタップして場所を指定できます。",
       loading: "写真を読み込み中...",
       previewAlt: "アップロードした写真のプレビュー",
     },
@@ -291,6 +306,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "お友達と",
       family: "家族",
       other: "その他",
+      other1: "その他①",
+      other2: "その他②",
+      other3: "その他③",
     },
     disclaimer: "本サービスは個人の記録目的で提供されます。記録データはすべてお使いの端末内にのみ保存され、外部サーバーへの送信は行いません。本サービスの利用により生じた損害について、運営者は一切の責任を負いません。コンテンツは予告なく変更・終了する場合があります。",
     heritageLink: "世界遺産パスポート",
@@ -340,7 +358,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "Please select a photo.",
       errPref: "Please select a prefecture.",
       errMapTap: "Please tap the map to set a location.",
+      errCoords: "Please enter latitude and longitude.",
       errSave: "Failed to save.",
+      coordsMode: "Enter coordinates (lat/lng)",
+      coordsLatLabel: "Latitude",
+      coordsLngLabel: "Longitude",
+      coordsHint: "Right-click a spot in Google Maps → copy the numbers shown.",
+      editCategoryBtn: "Rename (emoji OK)",
     },
     card: {
       showOnMap: "View on map",
@@ -382,7 +406,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "Select photo",
       cameraBtn: "Take photo",
       bulkBtn: "Add multiple photos",
-      bulkHint: "Aim for one photo per location per day.",
+      bulkHint: "Aim for one photo per location per day. If your photo has no GPS data, you can tap the map to set the location.",
       loading: "Loading photo...",
       previewAlt: "Preview of uploaded photo",
     },
@@ -433,6 +457,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "With friends",
       family: "Family",
       other: "Other",
+      other1: "Custom 1",
+      other2: "Custom 2",
+      other3: "Custom 3",
     },
     disclaimer: "This service is provided for personal recording purposes. All data is stored solely on your device and is never sent to external servers. The operator accepts no responsibility for any damages arising from use of this service. Content may be changed or discontinued without notice.",
     heritageLink: "World Heritage Passport",
@@ -482,7 +509,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "사진을 선택하세요.",
       errPref: "도도부현을 선택하세요.",
       errMapTap: "지도를 탭하여 장소를 지정하세요.",
+      errCoords: "위도와 경도를 입력하세요.",
       errSave: "저장에 실패했습니다.",
+      coordsMode: "위도·경도 직접 입력",
+      coordsLatLabel: "위도（Latitude）",
+      coordsLngLabel: "경도（Longitude）",
+      coordsHint: "Google 지도에서 장소를 우클릭 → 표시된 숫자를 복사해 입력하세요.",
+      editCategoryBtn: "카테고리 이름 변경（이모지 가능）",
     },
     card: {
       showOnMap: "지도에서 보기",
@@ -524,7 +557,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "사진 선택",
       cameraBtn: "사진 촬영",
       bulkBtn: "여러 장 한꺼번에 추가",
-      bulkHint: "같은 장소·같은 날의 사진은 1장을 기준으로 해 주세요.",
+      bulkHint: "같은 장소·같은 날의 사진은 1장을 기준으로 해 주세요. GPS 정보가 없는 사진은 지도에서 탭하여 위치를 지정할 수 있습니다.",
       loading: "사진 불러오는 중...",
       previewAlt: "업로드한 사진 미리보기",
     },
@@ -575,6 +608,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "친구와 함께",
       family: "가족",
       other: "기타",
+      other1: "기타①",
+      other2: "기타②",
+      other3: "기타③",
     },
     disclaimer: "본 서비스는 개인 기록 목적으로 제공됩니다. 모든 데이터는 기기에만 저장되며 외부 서버로 전송되지 않습니다. 본 서비스 이용으로 인한 손해에 대해 운영자는 일체의 책임을 지지 않습니다. 서비스 내용은 예고 없이 변경·종료될 수 있습니다.",
     heritageLink: "세계유산 여권",
@@ -624,7 +660,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "请选择照片。",
       errPref: "请选择都道府县。",
       errMapTap: "请点击地图指定位置。",
+      errCoords: "请输入纬度和经度。",
       errSave: "保存失败。",
+      coordsMode: "直接输入经纬度",
+      coordsLatLabel: "纬度（Latitude）",
+      coordsLngLabel: "经度（Longitude）",
+      coordsHint: "在 Google 地图右键点击位置 → 复制显示的数字输入即可。",
+      editCategoryBtn: "修改分类名称（可用表情符号）",
     },
     card: {
       showOnMap: "在地图上查看",
@@ -666,7 +708,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "选择照片",
       cameraBtn: "拍摄照片",
       bulkBtn: "批量添加",
-      bulkHint: "建议同一地点同一天只上传1张照片。",
+      bulkHint: "建议同一地点同一天只上传1张照片。没有GPS信息的照片，可在地图上点击指定位置。",
       loading: "正在加载照片...",
       previewAlt: "已上传照片的预览",
     },
@@ -717,6 +759,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "与朋友同行",
       family: "家庭",
       other: "其他",
+      other1: "其他①",
+      other2: "其他②",
+      other3: "其他③",
     },
     disclaimer: "本服务仅供个人记录使用。所有数据仅保存在您的设备上，不会发送至外部服务器。因使用本服务造成的任何损失，运营方概不负责。内容可能在不另行通知的情况下更改或终止。",
     heritageLink: "世界遗产护照",
@@ -766,7 +811,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "請選擇照片。",
       errPref: "請選擇都道府縣。",
       errMapTap: "請點擊地圖指定位置。",
+      errCoords: "請輸入緯度和經度。",
       errSave: "儲存失敗。",
+      coordsMode: "直接輸入經緯度",
+      coordsLatLabel: "緯度（Latitude）",
+      coordsLngLabel: "經度（Longitude）",
+      coordsHint: "在 Google 地圖右鍵點擊位置 → 複製顯示的數字輸入即可。",
+      editCategoryBtn: "修改分類名稱（可用表情符號）",
     },
     card: {
       showOnMap: "在地圖上查看",
@@ -808,7 +859,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "選擇照片",
       cameraBtn: "拍攝照片",
       bulkBtn: "批次新增",
-      bulkHint: "建議同一地點同一天只上傳1張照片。",
+      bulkHint: "建議同一地點同一天只上傳1張照片。沒有GPS資訊的照片，可在地圖上點擊指定位置。",
       loading: "正在載入照片...",
       previewAlt: "已上傳照片的預覽",
     },
@@ -859,6 +910,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "與朋友同行",
       family: "家庭",
       other: "其他",
+      other1: "其他①",
+      other2: "其他②",
+      other3: "其他③",
     },
     disclaimer: "本服務僅供個人記錄使用。所有資料僅保存在您的裝置上，不會傳送至外部伺服器。因使用本服務造成的任何損失，營運方概不負責。內容可能在不另行通知的情況下更改或終止。",
     heritageLink: "世界遺產護照",
@@ -908,7 +962,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "Por favor selecciona una foto.",
       errPref: "Por favor selecciona una prefectura.",
       errMapTap: "Toca el mapa para fijar una ubicación.",
+      errCoords: "Por favor ingresa latitud y longitud.",
       errSave: "Error al guardar.",
+      coordsMode: "Ingresar coordenadas",
+      coordsLatLabel: "Latitud",
+      coordsLngLabel: "Longitud",
+      coordsHint: "Haz clic derecho en un lugar en Google Maps → copia los números que aparecen.",
+      editCategoryBtn: "Renombrar (emoji OK)",
     },
     card: {
       showOnMap: "Ver en mapa",
@@ -950,7 +1010,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "Seleccionar foto",
       cameraBtn: "Tomar foto",
       bulkBtn: "Añadir varias fotos",
-      bulkHint: "Se recomienda una foto por lugar y día.",
+      bulkHint: "Se recomienda una foto por lugar y día. Si la foto no tiene GPS, puedes tocar el mapa para indicar la ubicación.",
       loading: "Cargando foto...",
       previewAlt: "Vista previa de la foto cargada",
     },
@@ -1001,6 +1061,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "Con amigos",
       family: "Familia",
       other: "Otro",
+      other1: "Personaliz. 1",
+      other2: "Personaliz. 2",
+      other3: "Personaliz. 3",
     },
     disclaimer: "Este servicio se ofrece con fines de registro personal. Todos los datos se almacenan únicamente en tu dispositivo y no se envían a servidores externos. El operador no se responsabiliza de ningún daño derivado del uso de este servicio. El contenido puede modificarse o interrumpirse sin previo aviso.",
     heritageLink: "Patrimonio Mundial",
@@ -1050,7 +1113,13 @@ export const translations: Record<LangCode, LifeMapDict> = {
       errPhoto: "Пожалуйста, выберите фото.",
       errPref: "Пожалуйста, выберите префектуру.",
       errMapTap: "Нажмите на карту, чтобы указать место.",
+      errCoords: "Пожалуйста, введите широту и долготу.",
       errSave: "Ошибка сохранения.",
+      coordsMode: "Ввести координаты вручную",
+      coordsLatLabel: "Широта (Latitude)",
+      coordsLngLabel: "Долгота (Longitude)",
+      coordsHint: "Нажмите правой кнопкой мыши на место в Google Maps → скопируйте числа.",
+      editCategoryBtn: "Переименовать (эмодзи OK)",
     },
     card: {
       showOnMap: "Показать на карте",
@@ -1092,7 +1161,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       selectBtn: "Выбрать фото",
       cameraBtn: "Сделать фото",
       bulkBtn: "Добавить несколько фото",
-      bulkHint: "Рекомендуется одно фото на место и день.",
+      bulkHint: "Рекомендуется одно фото на место и день. Если в фото нет GPS-данных, укажите место на карте.",
       loading: "Загрузка фото...",
       previewAlt: "Предпросмотр загруженного фото",
     },
@@ -1143,6 +1212,9 @@ export const translations: Record<LangCode, LifeMapDict> = {
       friends: "С друзьями",
       family: "Семья",
       other: "Другое",
+      other1: "Другое 1",
+      other2: "Другое 2",
+      other3: "Другое 3",
     },
     disclaimer: "Данный сервис предоставляется в личных целях записи воспоминаний. Все данные хранятся исключительно на вашем устройстве и не отправляются на внешние серверы. Оператор не несёт ответственности за любой ущерб, возникший в результате использования сервиса. Содержание может быть изменено или прекращено без предварительного уведомления.",
     heritageLink: "Всемирное наследие",

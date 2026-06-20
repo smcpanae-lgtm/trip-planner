@@ -10,7 +10,10 @@ export type LifeMapCategory =
   | "castle"
   | "friends"
   | "family"
-  | "other";
+  | "other"
+  | "other1"
+  | "other2"
+  | "other3";
 
 // 場所の保存精度（プライバシー保護）
 export type LocationPrecision = "exact" | "approximate" | "prefecture";

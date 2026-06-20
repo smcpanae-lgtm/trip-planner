@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   MapPin,
   Calendar,
@@ -9,9 +10,12 @@ import {
   Building2,
   Ban,
   ShieldCheck,
+  Pencil,
+  Navigation,
+  X,
 } from "lucide-react";
 import PhotoUploader from "./PhotoUploader";
-import { CATEGORIES } from "@/lib/lifemap/categories";
+import { CATEGORIES, CUSTOM_CAT_VALUES, type CustomCatKey } from "@/lib/lifemap/categories";
 import { PREFECTURES } from "@/lib/lifemap/prefectures";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 import type {
@@ -21,7 +25,7 @@ import type {
 } from "@/types/lifemap";
 
 // 記録追加フォームの下書き状態
-export type LocationMode = "gps" | "map" | "prefecture" | "none";
+export type LocationMode = "gps" | "map" | "prefecture" | "coords" | "none";
 
 export interface Draft {
   imageDataUrl: string;
@@ -86,7 +90,9 @@ export default function LifeMapEntryForm({
   saving,
   error,
 }: Props) {
-  const { t, homeCountry } = useTranslation();
+  const { t, homeCountry, updateCustomCatLabel } = useTranslation();
+  const [editingCatKey, setEditingCatKey] = useState<CustomCatKey | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const hasImage = !!draft.imageDataUrl;
   const hasGps = draft.exif?.hasGps;
 
@@ -168,6 +174,27 @@ export default function LifeMapEntryForm({
                   type="button"
                   onClick={() => {
                     onChange({
+                      locationMode: "coords",
+                      lat: undefined,
+                      lng: undefined,
+                      prefecture: "",
+                      precision: "exact",
+                    });
+                    onTogglePick(false);
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
+                    draft.locationMode === "coords"
+                      ? "border-slate-500 bg-slate-50 text-slate-800"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  <Navigation className="w-4 h-4" />
+                  {t("form.coordsMode")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange({
                       locationMode: "none",
                       lat: undefined,
                       lng: undefined,
@@ -194,6 +221,45 @@ export default function LifeMapEntryForm({
                     ? t("form.mapTapDone")
                     : ""}
                 </p>
+              )}
+
+              {draft.locationMode === "coords" && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-xs text-slate-500">{t("form.coordsHint")}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">{t("form.coordsLatLabel")}</label>
+                      <input
+                        type="number"
+                        step="any"
+                        placeholder="35.6762"
+                        value={draft.lat ?? ""}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          onChange({ lat: isNaN(val) ? undefined : val });
+                        }}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">{t("form.coordsLngLabel")}</label>
+                      <input
+                        type="number"
+                        step="any"
+                        placeholder="139.6503"
+                        value={draft.lng ?? ""}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          onChange({ lng: isNaN(val) ? undefined : val });
+                        }}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+                  {draft.lat != null && draft.lng != null && (
+                    <p className="text-xs text-emerald-600">✅ {t("form.mapTapDone")}</p>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -226,22 +292,75 @@ export default function LifeMapEntryForm({
               <span className="text-red-500 text-xs">{t("form.catRequired")}</span>
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c.value}
-                  type="button"
-                  onClick={() => onChange({ category: c.value })}
-                  className={`flex flex-col items-center gap-1 py-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
-                    draft.category === c.value
-                      ? "border-slate-600 bg-slate-50 text-slate-800"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
-                  }`}
-                >
-                  <span className="text-lg leading-none">{c.emoji}</span>
-                  {t(`categories.${c.value}`)}
-                </button>
-              ))}
+              {CATEGORIES.map((c) => {
+                const isCustom = (CUSTOM_CAT_VALUES as readonly string[]).includes(c.value);
+                return (
+                  <div key={c.value} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => onChange({ category: c.value })}
+                      className={`w-full flex flex-col items-center gap-1 py-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
+                        draft.category === c.value
+                          ? "border-slate-600 bg-slate-50 text-slate-800"
+                          : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                      }`}
+                    >
+                      <span className="text-lg leading-none">{c.emoji}</span>
+                      {t(`categories.${c.value}`)}
+                    </button>
+                    {isCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCatKey(c.value as CustomCatKey);
+                          setEditDraft(t(`categories.${c.value}`));
+                        }}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-slate-400 hover:bg-slate-600 rounded-full flex items-center justify-center text-white transition-colors"
+                        title={t("form.editCategoryBtn")}
+                      >
+                        <Pencil className="w-2.5 h-2.5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
+
+            {/* カテゴリ名インライン編集 */}
+            {editingCatKey && (
+              <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
+                <p className="text-xs font-medium text-slate-600">{t("form.editCategoryBtn")}</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editDraft}
+                    onChange={(e) => setEditDraft(e.target.value)}
+                    placeholder="🏕️ キャンプ"
+                    maxLength={20}
+                    autoFocus
+                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editDraft.trim()) updateCustomCatLabel(editingCatKey, editDraft.trim());
+                      setEditingCatKey(null);
+                    }}
+                    className="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-sm font-medium"
+                  >
+                    OK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCatKey(null)}
+                    className="px-2 py-2 border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 日付 */}

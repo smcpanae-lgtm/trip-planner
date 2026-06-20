@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { translations, LANGUAGES, type LangCode } from "./dictionaries";
+import { CUSTOM_CAT_STORAGE_KEY, CUSTOM_CAT_VALUES } from "../categories";
 
 const LANG_STORAGE_KEY = "lifemap-lang";
 const COUNTRY_STORAGE_KEY = "lifemap-country";
@@ -44,6 +45,8 @@ interface LanguageContextValue {
   t: (key: string, vars?: Record<string, string | number>) => string;
   homeCountry: HomeCountry;
   setHomeCountry: (country: HomeCountry) => void;
+  customCatLabels: Record<string, string>;
+  updateCustomCatLabel: (key: string, label: string) => void;
 }
 
 const LanguageContext = createContext<LanguageContextValue>({
@@ -52,11 +55,14 @@ const LanguageContext = createContext<LanguageContextValue>({
   t: (key) => key,
   homeCountry: DEFAULT_COUNTRY,
   setHomeCountry: () => undefined,
+  customCatLabels: {},
+  updateCustomCatLabel: () => undefined,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<LangCode>("ja");
   const [homeCountry, setHomeCountryState] = useState<HomeCountry>(DEFAULT_COUNTRY);
+  const [customCatLabels, setCustomCatLabels] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const savedLang = localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
@@ -67,6 +73,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       const found = HOME_COUNTRIES.find((c) => c.code === savedCountry);
       if (found) setHomeCountryState(found);
     }
+
+    try {
+      const raw = localStorage.getItem(CUSTOM_CAT_STORAGE_KEY);
+      if (raw) setCustomCatLabels(JSON.parse(raw));
+    } catch {}
   }, []);
 
   const setLang = useCallback((next: LangCode) => {
@@ -79,8 +90,23 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(COUNTRY_STORAGE_KEY, next.code);
   }, []);
 
+  const updateCustomCatLabel = useCallback((key: string, label: string) => {
+    setCustomCatLabels((prev) => {
+      const next = { ...prev, [key]: label };
+      localStorage.setItem(CUSTOM_CAT_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>): string => {
+      // カスタムカテゴリ名が設定されていれば優先して返す
+      if (key.startsWith("categories.")) {
+        const catKey = key.slice("categories.".length);
+        if ((CUSTOM_CAT_VALUES as readonly string[]).includes(catKey) && customCatLabels[catKey]) {
+          return customCatLabels[catKey];
+        }
+      }
       const parts = key.split(".");
       let val: unknown = translations[lang];
       for (const p of parts) {
@@ -98,11 +124,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
       return result;
     },
-    [lang]
+    [lang, customCatLabels]
   );
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t, homeCountry, setHomeCountry }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, homeCountry, setHomeCountry, customCatLabels, updateCustomCatLabel }}>
       {children}
     </LanguageContext.Provider>
   );
