@@ -505,6 +505,10 @@ function LifeMapClientInner() {
           <div className="text-xs text-slate-400 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 space-y-1">
             <p className="font-medium text-slate-500">📋 ご利用上の注意</p>
             <p>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</p>
+            <p className="pt-1 font-medium text-slate-500">💾 データの保存について</p>
+            <p>・登録した写真・場所・メモ等のデータは、お使いの端末のブラウザ内（ローカルストレージ）にのみ保存されます。サーバーへの送信・クラウドへのバックアップは行われません。</p>
+            <p>・ブラウザの「閲覧データ削除」「キャッシュクリア」、端末の初期化・機種変更、ブラウザの変更等により、データが消失する場合があります。</p>
+            <p>・データの消失・破損に関して、当サービスは一切の責任を負いかねます。大切なデータは定期的に「バックアップ書き出し」ボタンでファイルに保存しておくことをお勧めします。</p>
           </div>
         </div>
       </div>
