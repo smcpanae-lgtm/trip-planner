@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "AI ドライブプランナー",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "AI ドライブプランナー｜車旅行プランを自動作成",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: "AI ドライブプランナー｜車旅行プランを自動作成",
     description:
       "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
