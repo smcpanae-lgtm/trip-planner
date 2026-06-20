@@ -15,12 +15,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     siteName: "AI ドライブプランナー",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AI ドライブプランナー｜車旅行プランを自動作成",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AI ドライブプランナー｜車旅行プランを自動作成",
     description:
       "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
