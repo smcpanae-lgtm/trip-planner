@@ -13,6 +13,7 @@ import {
   Pencil,
   Navigation,
   X,
+  CheckCircle2,
 } from "lucide-react";
 import PhotoUploader from "./PhotoUploader";
 import { CATEGORIES, CUSTOM_CAT_VALUES, type CustomCatKey } from "@/lib/lifemap/categories";
@@ -102,9 +103,9 @@ export default function LifeMapEntryForm({
   ];
 
   return (
-    <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-slate-100 space-y-5">
-      <h2 className="font-bold text-lg flex items-center gap-2">
-        <MapPin className="w-5 h-5 text-slate-600" />
+    <div className="bg-white rounded-[18px] p-[22px] shadow-[0_4px_22px_rgba(43,39,33,.05)] border border-[#EEE7DA] space-y-5">
+      <h2 className="font-extrabold text-base flex items-center gap-2 text-[#2B2721]">
+        <MapPin className="w-[19px] h-[19px] text-[#1C7A66]" />
         {t("form.sectionTitle")}
       </h2>
 
@@ -119,19 +120,19 @@ export default function LifeMapEntryForm({
         <>
           {/* 位置情報の状態表示 */}
           {hasGps ? (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm text-emerald-700 flex items-start gap-2">
+            <div className="bg-[#EAF3F0] border border-[#CDE0DA] rounded-lg p-3 text-sm text-[#145E4E] flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0" />
               <div>
                 {t("form.gpsSuccess")}
                 <br />
-                <span className="text-xs text-emerald-600">
+                <span className="text-xs text-[#1C7A66]">
                   {t("form.gpsSuccessHint")}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-              <p className="text-sm text-amber-700">{t("form.noGps")}</p>
+            <div className="bg-[#FBF3E4] border border-[#F0E2C6] rounded-lg p-3 space-y-2">
+              <p className="text-sm text-[#7A6535]">{t("form.noGps")}</p>
               <div className="grid grid-cols-1 gap-2">
                 <button
                   type="button"
@@ -141,8 +142,8 @@ export default function LifeMapEntryForm({
                   }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
                     draft.locationMode === "map"
-                      ? "border-slate-500 bg-slate-50 text-slate-800"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                      : "border-[#E4DCCC] bg-white text-[#6B6357] hover:border-[#C9BEA6]"
                   }`}
                 >
                   <MapIcon className="w-4 h-4" />
@@ -162,8 +163,8 @@ export default function LifeMapEntryForm({
                     }}
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
                       draft.locationMode === "prefecture"
-                        ? "border-slate-500 bg-slate-50 text-slate-800"
-                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                        ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                        : "border-[#E4DCCC] bg-white text-[#6B6357] hover:border-[#C9BEA6]"
                     }`}
                   >
                     <Building2 className="w-4 h-4" />
@@ -184,8 +185,8 @@ export default function LifeMapEntryForm({
                   }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
                     draft.locationMode === "coords"
-                      ? "border-slate-500 bg-slate-50 text-slate-800"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                      : "border-[#E4DCCC] bg-white text-[#6B6357] hover:border-[#C9BEA6]"
                   }`}
                 >
                   <Navigation className="w-4 h-4" />
@@ -204,8 +205,8 @@ export default function LifeMapEntryForm({
                   }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
                     draft.locationMode === "none"
-                      ? "border-slate-500 bg-slate-50 text-slate-800"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                      : "border-[#E4DCCC] bg-white text-[#6B6357] hover:border-[#C9BEA6]"
                   }`}
                 >
                   <Ban className="w-4 h-4" />
@@ -214,7 +215,7 @@ export default function LifeMapEntryForm({
               </div>
 
               {draft.locationMode === "map" && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#8A8172]">
                   {pickMode
                     ? t("form.mapTapHint")
                     : draft.lat != null
@@ -225,10 +226,10 @@ export default function LifeMapEntryForm({
 
               {draft.locationMode === "coords" && (
                 <div className="space-y-2 pt-1">
-                  <p className="text-xs text-slate-500">{t("form.coordsHint")}</p>
+                  <p className="text-xs text-[#8A8172]">{t("form.coordsHint")}</p>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs text-slate-500 mb-1 block">{t("form.coordsLatLabel")}</label>
+                      <label className="text-xs text-[#8A8172] mb-1 block">{t("form.coordsLatLabel")}</label>
                       <input
                         type="number"
                         step="any"
@@ -238,11 +239,11 @@ export default function LifeMapEntryForm({
                           const val = parseFloat(e.target.value);
                           onChange({ lat: isNaN(val) ? undefined : val });
                         }}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                        className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-slate-500 mb-1 block">{t("form.coordsLngLabel")}</label>
+                      <label className="text-xs text-[#8A8172] mb-1 block">{t("form.coordsLngLabel")}</label>
                       <input
                         type="number"
                         step="any"
@@ -252,12 +253,15 @@ export default function LifeMapEntryForm({
                           const val = parseFloat(e.target.value);
                           onChange({ lng: isNaN(val) ? undefined : val });
                         }}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                        className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                       />
                     </div>
                   </div>
                   {draft.lat != null && draft.lng != null && (
-                    <p className="text-xs text-emerald-600">✅ {t("form.mapTapDone")}</p>
+                    <p className="flex items-center gap-1 text-xs text-[#1C7A66]">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      {t("form.mapTapDone")}
+                    </p>
                   )}
                 </div>
               )}
@@ -267,13 +271,13 @@ export default function LifeMapEntryForm({
           {/* 都道府県プルダウン（都道府県登録時） */}
           {draft.locationMode === "prefecture" && (
             <div>
-              <label className="text-sm font-medium text-slate-600 mb-1.5 block">
+              <label className="text-sm font-medium text-[#4A443B] mb-1.5 block">
                 {t("form.prefLabel")}
               </label>
               <select
                 value={draft.prefecture}
                 onChange={(e) => onChange({ prefecture: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm bg-white"
+                className="w-full px-3 py-2.5 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm bg-white"
               >
                 <option value="">{t("form.prefSelect")}</option>
                 {PREFECTURES.map((p) => (
@@ -287,7 +291,7 @@ export default function LifeMapEntryForm({
 
           {/* カテゴリ（必須） */}
           <div>
-            <label className="text-sm font-medium text-slate-600 mb-1.5 block">
+            <label className="text-sm font-medium text-[#4A443B] mb-1.5 block">
               {t("form.catLabel")}{" "}
               <span className="text-red-500 text-xs">{t("form.catRequired")}</span>
             </label>
@@ -301,8 +305,8 @@ export default function LifeMapEntryForm({
                       onClick={() => onChange({ category: c.value })}
                       className={`w-full flex flex-col items-center gap-1 py-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
                         draft.category === c.value
-                          ? "border-slate-600 bg-slate-50 text-slate-800"
-                          : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                          ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                          : "border-[#E4DCCC] bg-white text-[#8A8172] hover:border-[#C9BEA6]"
                       }`}
                     >
                       <span className="text-lg leading-none">{c.emoji}</span>
@@ -316,7 +320,7 @@ export default function LifeMapEntryForm({
                           setEditingCatKey(c.value as CustomCatKey);
                           setEditDraft(t(`categories.${c.value}`));
                         }}
-                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-slate-400 hover:bg-slate-600 rounded-full flex items-center justify-center text-white transition-colors"
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#A79E8C] hover:bg-[#6B6357] rounded-full flex items-center justify-center text-white transition-colors"
                         title={t("form.editCategoryBtn")}
                       >
                         <Pencil className="w-2.5 h-2.5" />
@@ -329,8 +333,8 @@ export default function LifeMapEntryForm({
 
             {/* カテゴリ名インライン編集 */}
             {editingCatKey && (
-              <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
-                <p className="text-xs font-medium text-slate-600">{t("form.editCategoryBtn")}</p>
+              <div className="mt-2 bg-[#F6F1E8] border border-[#E4DCCC] rounded-lg p-3 space-y-2">
+                <p className="text-xs font-medium text-[#4A443B]">{t("form.editCategoryBtn")}</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -339,7 +343,7 @@ export default function LifeMapEntryForm({
                     placeholder="🏕️ キャンプ"
                     maxLength={20}
                     autoFocus
-                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                   />
                   <button
                     type="button"
@@ -347,14 +351,14 @@ export default function LifeMapEntryForm({
                       if (editDraft.trim()) updateCustomCatLabel(editingCatKey, editDraft.trim());
                       setEditingCatKey(null);
                     }}
-                    className="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-sm font-medium"
+                    className="px-3 py-2 bg-[#2B2721] hover:opacity-90 text-white rounded-lg text-sm font-medium"
                   >
                     OK
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditingCatKey(null)}
-                    className="px-2 py-2 border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+                    className="px-2 py-2 border border-[#E4DCCC] hover:bg-[#F6F1E8] rounded-lg text-[#8A8172] transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -365,7 +369,7 @@ export default function LifeMapEntryForm({
 
           {/* 日付 */}
           <div>
-            <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-[#4A443B] mb-1.5">
               <Calendar className="w-4 h-4" />
               {t("form.dateLabel")}
             </label>
@@ -373,15 +377,15 @@ export default function LifeMapEntryForm({
               type="date"
               value={draft.date}
               onChange={(e) => onChange({ date: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+              className="w-full px-3 py-2.5 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
             />
           </div>
 
           {/* メモ */}
           <div>
-            <label className="text-sm font-medium text-slate-600 mb-1.5 block">
+            <label className="text-sm font-medium text-[#4A443B] mb-1.5 block">
               {t("form.memoLabel")}{" "}
-              <span className="text-slate-400 text-xs font-normal">
+              <span className="text-[#A79E8C] text-xs font-normal">
                 {t("form.memoOptional")}
               </span>
             </label>
@@ -390,16 +394,16 @@ export default function LifeMapEntryForm({
               onChange={(e) => onChange({ memo: e.target.value })}
               placeholder={t("form.memoPlaceholder")}
               rows={3}
-              className="w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm resize-y"
+              className="w-full px-3 py-2.5 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm resize-y"
             />
           </div>
 
           {/* 場所名（任意） */}
           {draft.locationMode !== "none" && (
             <div>
-              <label className="text-sm font-medium text-slate-600 mb-1.5 block">
+              <label className="text-sm font-medium text-[#4A443B] mb-1.5 block">
                 {t("form.locationNameLabel")}{" "}
-                <span className="text-slate-400 text-xs font-normal">
+                <span className="text-[#A79E8C] text-xs font-normal">
                   {t("form.locationNameOptional")}
                 </span>
               </label>
@@ -408,7 +412,7 @@ export default function LifeMapEntryForm({
                 value={draft.locationName}
                 onChange={(e) => onChange({ locationName: e.target.value })}
                 placeholder={t("form.locationNamePlaceholder")}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 outline-none text-sm"
+                className="w-full px-3 py-2.5 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
               />
             </div>
           )}
@@ -416,7 +420,7 @@ export default function LifeMapEntryForm({
           {/* 場所ぼかし（保存精度） */}
           {draft.locationMode !== "none" && draft.locationMode !== "prefecture" && (
             <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-[#4A443B] mb-1.5">
                 <ShieldCheck className="w-4 h-4" />
                 {t("form.precisionLabel")}
               </label>
@@ -428,15 +432,15 @@ export default function LifeMapEntryForm({
                     onClick={() => onChange({ precision: opt.value })}
                     className={`px-2 py-2 rounded-lg border-2 text-xs font-medium transition-all ${
                       draft.precision === opt.value
-                        ? "border-slate-600 bg-slate-50 text-slate-800"
-                        : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                        ? "border-[#1C7A66] bg-[#EAF3F0] text-[#145E4E]"
+                        : "border-[#E4DCCC] bg-white text-[#8A8172] hover:border-[#C9BEA6]"
                     }`}
                   >
                     {opt.label}
                   </button>
                 ))}
               </div>
-              <p className="mt-1.5 text-xs text-slate-400">
+              <p className="mt-1.5 text-xs text-[#A79E8C]">
                 {t("form.precisionHint")}
               </p>
             </div>
@@ -453,7 +457,7 @@ export default function LifeMapEntryForm({
             type="button"
             onClick={onSave}
             disabled={saving || draft.processing}
-            className="w-full py-3.5 bg-slate-700 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold rounded-xl shadow-md transition-all text-base flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-[#2B2721] hover:opacity-90 disabled:bg-[#C9BEA6] text-white font-bold rounded-[14px] shadow-[0_6px_16px_rgba(43,39,33,.16)] transition-all text-base flex items-center justify-center gap-2"
           >
             {saving ? (
               <>

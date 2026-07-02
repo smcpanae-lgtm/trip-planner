@@ -26,29 +26,29 @@ export default function LifeMapEntryList({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 bg-slate-100 rounded-xl p-1">
+      <div className="flex gap-1.5 bg-[#F1ECE1] rounded-[13px] p-[5px]">
         <button
           type="button"
           onClick={() => setTab("timeline")}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[9px] text-[12.5px] font-bold transition-all ${
             tab === "timeline"
-              ? "bg-white text-slate-800 shadow-sm"
-              : "text-slate-500"
+              ? "bg-white text-[#2B2721] shadow-[0_1px_4px_rgba(43,39,33,.1)]"
+              : "bg-transparent text-[#8A8172]"
           }`}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-[15px] h-[15px]" />
           {t("list.timeline")}
         </button>
         <button
           type="button"
           onClick={() => setTab("prefecture")}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[9px] text-[12.5px] font-bold transition-all ${
             tab === "prefecture"
-              ? "bg-white text-slate-800 shadow-sm"
-              : "text-slate-500"
+              ? "bg-white text-[#2B2721] shadow-[0_1px_4px_rgba(43,39,33,.1)]"
+              : "bg-transparent text-[#8A8172]"
           }`}
         >
-          <Building2 className="w-4 h-4" />
+          <Building2 className="w-[15px] h-[15px]" />
           {t("list.prefecture")}
         </button>
       </div>

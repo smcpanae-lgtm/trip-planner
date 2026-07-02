@@ -54,11 +54,11 @@ export default function BackupButtons({
 
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2.5">
         <button
           type="button"
           onClick={handleExport}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[11px] bg-[#F6F1E8] hover:bg-[#F1EADA] border border-[#E4DCCC] text-[#4A443B] text-[12.5px] font-semibold transition-all"
         >
           <Download className="w-4 h-4" />
           {t("backup.exportBtn")}
@@ -66,7 +66,7 @@ export default function BackupButtons({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[11px] bg-[#F6F1E8] hover:bg-[#F1EADA] border border-[#E4DCCC] text-[#4A443B] text-[12.5px] font-semibold transition-all"
         >
           <Upload className="w-4 h-4" />
           {t("backup.importBtn")}
@@ -81,9 +81,9 @@ export default function BackupButtons({
         className="hidden"
       />
 
-      <p className="text-xs text-slate-400">{t("backup.hint")}</p>
+      <p className="text-[11.5px] leading-relaxed text-[#8A8172]">{t("backup.hint")}</p>
 
-      {message && <p className="text-xs text-emerald-600">{message}</p>}
+      {message && <p className="text-xs text-[#1C7A66]">{message}</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );

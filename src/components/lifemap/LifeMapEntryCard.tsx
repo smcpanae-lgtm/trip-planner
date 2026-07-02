@@ -1,6 +1,7 @@
 "use client";
 
-import { MapPinned, Trash2, CheckCircle2, Circle } from "lucide-react";
+import Link from "next/link";
+import { MapPinned, Trash2, CheckCircle2, Circle, BookOpen } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { getCategory } from "@/lib/lifemap/categories";
 import { resolveEntryLatLng, isJapanCoord } from "@/lib/lifemap/plannerLink";
@@ -26,6 +27,7 @@ export default function LifeMapEntryCard({
   const pos = resolveEntryLatLng(entry);
   const hasMapLocation = pos !== null;
   const canSelect = onToggleSelect && pos && isJapanCoord(pos.lat, pos.lng);
+  const hasSavedPhoto = Boolean(entry.imageDataUrl || entry.thumbnailDataUrl);
 
   const precisionNote =
     entry.locationPrecision === "approximate"
@@ -36,15 +38,15 @@ export default function LifeMapEntryCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border shadow-sm overflow-hidden flex transition-all ${
-        selected ? "border-slate-500 ring-2 ring-slate-300" : "border-slate-100"
+      className={`bg-white rounded-xl border shadow-[0_4px_22px_rgba(43,39,33,.05)] overflow-hidden flex transition-all ${
+        selected ? "border-[#1C7A66] ring-2 ring-[#CDE0DA]" : "border-[#EEE7DA]"
       }`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={entry.thumbnailDataUrl}
         alt={t(`categories.${entry.category}`)}
-        className="w-24 h-24 sm:w-28 sm:h-28 object-cover shrink-0 bg-slate-50"
+        className="w-24 h-24 sm:w-28 sm:h-28 object-cover shrink-0 bg-[#F6F1E8]"
       />
       <div className="flex-1 min-w-0 p-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -54,14 +56,14 @@ export default function LifeMapEntryCard({
           >
             {cat.emoji} {t(`categories.${entry.category}`)}
           </span>
-          <span className="text-xs text-slate-500">{entry.date}</span>
+          <span className="text-xs text-[#8A8172]">{entry.date}</span>
           {entry.prefecture && (
-            <span className="text-xs text-slate-400">{entry.prefecture}</span>
+            <span className="text-xs text-[#A79E8C]">{entry.prefecture}</span>
           )}
         </div>
 
         {(entry.locationName || precisionNote) && (
-          <div className="mt-1 text-xs text-slate-400 truncate">
+          <div className="mt-1 text-xs text-[#A79E8C] truncate">
             {entry.locationName}
             {entry.locationName && precisionNote ? "・" : ""}
             {precisionNote}
@@ -69,7 +71,7 @@ export default function LifeMapEntryCard({
         )}
 
         {entry.memo && (
-          <p className="mt-1 text-sm text-slate-600 line-clamp-2">{entry.memo}</p>
+          <p className="mt-1 text-sm text-[#4A443B] line-clamp-2">{entry.memo}</p>
         )}
 
         <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -77,21 +79,40 @@ export default function LifeMapEntryCard({
             <button
               type="button"
               onClick={() => onShowOnMap(entry)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F6F1E8] hover:bg-[#F1EADA] text-[#4A443B] text-xs font-medium transition-all"
             >
               <MapPinned className="w-3.5 h-3.5" />
               {t("card.showOnMap")}
             </button>
           )}
           <DrivePlannerLinkButton entry={entry} compact />
+          {hasSavedPhoto ? (
+            <Link
+              href={`/shiori?source=lifemap&ids=${encodeURIComponent(entry.id)}`}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#2B2721] hover:opacity-90 text-white text-xs font-medium transition-all"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              SNS投稿
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              title="写真を保存するとSNS投稿を作れます。"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F1ECE1] text-[#A79E8C] text-xs font-medium cursor-not-allowed"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              SNS投稿
+            </button>
+          )}
           {canSelect && (
             <button
               type="button"
               onClick={() => onToggleSelect!(entry)}
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 selected
-                  ? "bg-slate-700 text-white border-slate-700"
-                  : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
+                  ? "bg-[#1C7A66] text-white border-[#1C7A66]"
+                  : "bg-white text-[#8A8172] border-[#E4DCCC] hover:border-[#C9BEA6]"
               }`}
             >
               {selected ? (
@@ -104,7 +125,7 @@ export default function LifeMapEntryCard({
           <button
             type="button"
             onClick={() => onDelete(entry)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border border-slate-200 text-xs font-medium transition-all ml-auto"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white hover:bg-red-50 text-[#A79E8C] hover:text-red-500 border border-[#E4DCCC] text-xs font-medium transition-all ml-auto"
             aria-label={t("card.deleteAria")}
           >
             <Trash2 className="w-3.5 h-3.5" />

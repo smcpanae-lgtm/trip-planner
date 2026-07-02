@@ -3,7 +3,24 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { MapPin, Lock, ArrowLeft, Film, Globe, Navigation, X } from "lucide-react";
+import {
+  MapPin,
+  Lock,
+  Film,
+  Globe,
+  Navigation,
+  X,
+  BookOpen,
+  Landmark,
+  Plus,
+  ShieldCheck,
+  Image as ImageIcon,
+  Camera,
+  ArrowRight,
+  ClipboardList,
+  HardDrive,
+  ChevronDown,
+} from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { extractExifLocation } from "@/lib/lifemap/exif";
 import { compressImage } from "@/lib/lifemap/image";
@@ -43,7 +60,7 @@ const LifeMapLeaflet = dynamic(() => import("./LifeMapLeaflet"), {
 });
 
 const FONT_STACK =
-  '"Meiryo", "メイリオ", "Hiragino Sans", "Noto Sans JP", sans-serif';
+  'var(--font-lifemap), "Noto Sans JP", "Meiryo", "メイリオ", "Hiragino Sans", sans-serif';
 
 // 実体コンポーネント（LanguageProvider内で動作）
 function LifeMapClientInner() {
@@ -272,51 +289,87 @@ function LifeMapClientInner() {
       ? { lat: draft.lat, lng: draft.lng }
       : null;
 
-  return (
-    <div className="min-h-screen bg-slate-50" style={{ fontFamily: FONT_STACK }}>
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-[1000]">
-        <div className="max-w-[1400px] mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 bg-slate-700 rounded-lg flex items-center justify-center shrink-0">
-              <MapPin className="w-5 h-5 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="font-bold text-lg leading-tight">
-                {t("app.title")}
-              </h1>
-              <p className="text-xs text-slate-400">
-                {t("app.subtitle")}
-              </p>
-            </div>
-          </div>
+  const heroTokens = {
+    sectionBg: "linear-gradient(168deg,#E7F1EE 0%,#F2EFE7 58%,#FAF7F1 100%)",
+    eyebrowBg: "#D7E8E2",
+    eyebrowText: "#145E4E",
+    h1: "#22332E",
+    body: "#4A443B",
+    ctaBg: "#1C7A66",
+    ctaShadow: "rgba(28,122,102,.24)",
+    secondaryBorder: "#CFE0DA",
+    secondaryText: "#22332E",
+    noteText: "#5B5346",
+    metaText: "#8A8172",
+    metaLinkText: "#5B5346",
+    accent: "#1C7A66",
+    cardShadow: "rgba(43,39,33,.14)",
+    card1Photo: "repeating-linear-gradient(45deg,#E3EEEA,#E3EEEA 9px,#EDF4F1 9px,#EDF4F1 18px)",
+    card1PhotoText: "#8FA9A1",
+    card1Border: "#EFE9DD",
+    card1ChipBg: "#E7F1EE",
+    card1ChipText: "#145E4E",
+    card2Photo: "repeating-linear-gradient(45deg,#EDE6D8,#EDE6D8 9px,#F4EEE2 9px,#F4EEE2 18px)",
+    card2PhotoText: "#B0A488",
+    card2Border: "#EFE9DD",
+    card2ChipBg: "#F3ECDD",
+    card2ChipText: "#8A6320",
+  };
 
-          {/* 居住国・言語切替 + バックリンク */}
-          <div className="flex items-center gap-2 shrink-0">
+  return (
+    <div className="min-h-screen bg-[#FAF7F1] text-[#2B2721]" style={{ fontFamily: FONT_STACK }}>
+      {/* ヘッダー */}
+      <header className="sticky top-0 z-[1000] bg-[rgba(253,251,247,0.9)] backdrop-blur-[10px] border-b border-[#E9E2D6]">
+        <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] py-[14px] pb-[12px] flex items-center justify-between gap-5 flex-wrap">
+          <Link href="/life-map" className="flex items-center gap-[11px] no-underline shrink-0">
+            <span className="grid place-items-center w-[38px] h-[38px] rounded-[11px] bg-[#1C7A66] text-white shrink-0">
+              <MapPin className="w-[21px] h-[21px]" strokeWidth={1.9} />
+            </span>
+            <span className="flex flex-col leading-[1.25]">
+              <span className="font-extrabold text-[18px] tracking-[0.01em] text-[#2B2721]">
+                {t("app.title")}
+              </span>
+              <span className="text-[11.5px] text-[#7A7264] font-medium">
+                {t("app.subtitle")}
+              </span>
+            </span>
+          </Link>
+
+          <div className="flex items-start gap-[9px] flex-wrap">
             {/* 居住国選択 */}
-            <select
-              value={homeCountry.code}
-              onChange={(e) => {
-                const found = HOME_COUNTRIES.find((c) => c.code === e.target.value);
-                if (found) setHomeCountry(found);
-              }}
-              className="px-2 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-600 cursor-pointer hover:border-slate-300 transition-all focus:outline-none focus:border-slate-400"
-              aria-label={t("country.label")}
-              title={t("country.label")}
-            >
-              {HOME_COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-col items-start gap-[3px]">
+              <span className="pl-0.5 text-[9px] font-bold tracking-wide text-[#A79E8C] uppercase">
+                Residence
+              </span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-[#E4DCCC] rounded-[9px] bg-white text-[#6B6357]">
+                <Globe className="w-[15px] h-[15px]" strokeWidth={1.75} />
+                <select
+                  value={homeCountry.code}
+                  onChange={(e) => {
+                    const found = HOME_COUNTRIES.find((c) => c.code === e.target.value);
+                    if (found) setHomeCountry(found);
+                  }}
+                  className="border-0 bg-transparent text-[12.5px] font-semibold text-[#4A443B] outline-none cursor-pointer"
+                  aria-label={t("country.label")}
+                  title={t("country.label")}
+                >
+                  {HOME_COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             {/* 言語選択 */}
-            <div className="relative">
-              <Globe className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+            <div className="flex flex-col items-start gap-[3px]">
+              <span className="pl-0.5 text-[9px] font-bold tracking-wide text-[#A79E8C] uppercase">
+                Language
+              </span>
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value as LangCode)}
-                className="pl-7 pr-2 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-600 appearance-none cursor-pointer hover:border-slate-300 transition-all focus:outline-none focus:border-slate-400"
+                className="px-2.5 py-1.5 border border-[#E4DCCC] rounded-[9px] bg-white text-[12.5px] font-semibold text-[#4A443B] outline-none cursor-pointer"
                 aria-label="Language"
               >
                 {LANGUAGES.map((l) => (
@@ -328,54 +381,197 @@ function LifeMapClientInner() {
             </div>
             <a
               href="https://www.ai-drive-planner.com/heritage"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-2 border border-[#CDE0DA] rounded-[9px] bg-[#EAF3F0] text-[#145E4E] text-[12.5px] font-bold no-underline"
             >
-              <span className="text-base leading-none">🌐</span>
-              <span className="hidden sm:inline">{t("heritageLink")}</span>
+              <Landmark className="w-[15px] h-[15px]" strokeWidth={1.75} />
+              {t("heritageLink")}
             </a>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
-            >
-              <span className="hidden sm:inline">{t("app.backLink")}</span>
-              <span className="sm:hidden text-base leading-none">🚗</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* 説明 */}
-      <div className="max-w-[1400px] mx-auto px-4 pt-4 space-y-3">
-        <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-          <p className="text-sm text-slate-600 leading-relaxed">
-            {t("app.desc")}
-          </p>
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-slate-400">Since 2026年6月</p>
             <a
               href="https://x.com/AIDRIVEPLAN"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-white text-xs font-medium hover:bg-slate-800 transition-colors shrink-0"
+              className="inline-flex items-center gap-[7px] px-3 py-2 rounded-[9px] bg-[#2B2721] text-white text-[12.5px] font-bold no-underline"
             >
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white shrink-0" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="w-[13px] h-[13px] fill-white shrink-0" aria-hidden="true">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
               </svg>
               公式X（@AIDRIVEPLAN）をフォロー
             </a>
           </div>
-          <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 shrink-0" />
-            {t("app.privacy")}
-          </p>
         </div>
+        <nav className="border-t border-[#EFE9DD] bg-[rgba(255,255,255,0.55)]">
+          <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] flex items-center justify-between gap-4">
+            <div className="flex items-stretch gap-1">
+              <a href="#howto" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
+                使い方
+              </a>
+              <Link href="/shiori" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
+                AI旅行記メーカー
+              </Link>
+              <a href="#faq" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
+                よくある質問
+              </a>
+            </div>
+            <a
+              href="#record"
+              className="inline-flex items-center gap-1.5 px-3.5 py-[7px] rounded-full bg-[#1C7A66] text-white text-[12.5px] font-bold no-underline"
+            >
+              <Plus className="w-[15px] h-[15px]" strokeWidth={1.9} />
+              体験を記録
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      {/* ヒーロー */}
+      <section
+        className="border-b border-[#E9E2D6]"
+        style={{ background: heroTokens.sectionBg }}
+      >
+        <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] py-[52px] pb-[56px] grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] gap-11 items-center">
+          <div>
+            <span
+              className="inline-flex items-center gap-[7px] px-3 py-[5px] rounded-full text-[11.5px] font-bold tracking-[0.04em]"
+              style={{ background: heroTokens.eyebrowBg, color: heroTokens.eyebrowText }}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.9} />
+              非公開のライフログ
+            </span>
+            <h1
+              className="mt-[18px] mb-4 text-[42px] leading-[1.28] font-extrabold tracking-[0.01em]"
+              style={{ color: heroTokens.h1 }}
+            >
+              写真と場所で、<br />人生の体験を残す。
+            </h1>
+            <p
+              className="mb-[22px] text-[15.5px] max-w-[38ch]"
+              style={{ color: heroTokens.body }}
+            >
+              {t("app.desc")}
+            </p>
+            <div className="flex gap-3 flex-wrap mb-5">
+              <a
+                href="#record"
+                className="inline-flex items-center gap-[9px] px-[22px] py-[14px] rounded-xl text-white text-[15px] font-bold no-underline"
+                style={{ background: heroTokens.ctaBg, boxShadow: `0 8px 20px ${heroTokens.ctaShadow}` }}
+              >
+                <ImageIcon className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                写真を選ぶ
+              </a>
+              <a
+                href="#record"
+                className="inline-flex items-center gap-[9px] px-[22px] py-[14px] rounded-xl bg-white text-[15px] font-bold no-underline border"
+                style={{ color: heroTokens.secondaryText, borderColor: heroTokens.secondaryBorder }}
+              >
+                <Camera className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                カメラで撮影
+              </a>
+            </div>
+            <div className="flex items-start gap-[9px] max-w-[44ch] text-[12.5px]" style={{ color: heroTokens.noteText }}>
+              <Lock className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={1.85} style={{ color: heroTokens.accent }} />
+              <span>{t("app.privacy")}</span>
+            </div>
+            <div className="mt-[18px] flex items-center gap-4 flex-wrap text-xs" style={{ color: heroTokens.metaText }}>
+              <span>Since 2026年6月</span>
+              <a
+                href="https://x.com/AIDRIVEPLAN"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-semibold no-underline"
+                style={{ color: heroTokens.metaLinkText }}
+              >
+                <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current shrink-0" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
+                </svg>
+                公式X（@AIDRIVEPLAN）をフォロー
+              </a>
+            </div>
+          </div>
+
+          <div className="relative h-[300px] lg:h-[340px] hidden sm:block">
+            <div
+              className="absolute top-6 right-2 w-[230px] rotate-[4deg] bg-white rounded-2xl p-3 border"
+              style={{ boxShadow: `0 16px 34px ${heroTokens.cardShadow}`, borderColor: heroTokens.card1Border }}
+            >
+              <div
+                className="h-[132px] rounded-[10px] grid place-items-center text-[10px] font-semibold tracking-[0.08em]"
+                style={{ background: heroTokens.card1Photo, color: heroTokens.card1PhotoText }}
+              >
+                PHOTO
+              </div>
+              <div className="flex items-center gap-[7px] mt-2.5">
+                <span
+                  className="px-[9px] py-0.5 rounded-full text-[11px] font-bold"
+                  style={{ background: heroTokens.card1ChipBg, color: heroTokens.card1ChipText }}
+                >
+                  🎣 釣り
+                </span>
+                <span className="text-[11px]" style={{ color: heroTokens.metaText }}>2025-10-11</span>
+              </div>
+              <div className="mt-[5px] flex items-center gap-[5px] text-xs font-semibold" style={{ color: heroTokens.body }}>
+                <MapPin className="w-[13px] h-[13px]" strokeWidth={1.9} style={{ color: heroTokens.accent }} />
+                神奈川県
+              </div>
+            </div>
+            <div
+              className="absolute bottom-3.5 left-1 w-[214px] -rotate-[5deg] bg-white rounded-2xl p-3 border"
+              style={{ boxShadow: `0 16px 34px ${heroTokens.cardShadow}`, borderColor: heroTokens.card2Border }}
+            >
+              <div
+                className="h-[120px] rounded-[10px] grid place-items-center text-[10px] font-semibold tracking-[0.08em]"
+                style={{ background: heroTokens.card2Photo, color: heroTokens.card2PhotoText }}
+              >
+                PHOTO
+              </div>
+              <div className="flex items-center gap-[7px] mt-2.5">
+                <span
+                  className="px-[9px] py-0.5 rounded-full text-[11px] font-bold"
+                  style={{ background: heroTokens.card2ChipBg, color: heroTokens.card2ChipText }}
+                >
+                  🐕 犬連れ
+                </span>
+                <span className="text-[11px]" style={{ color: heroTokens.metaText }}>2025-05-03</span>
+              </div>
+              <div className="mt-[5px] flex items-center gap-[5px] text-xs font-semibold" style={{ color: heroTokens.body }}>
+                <MapPin className="w-[13px] h-[13px]" strokeWidth={1.9} style={{ color: heroTokens.accent }} />
+                東京都
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI旅行記バナー・免責小注記 */}
+      <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] pt-[26px] space-y-3">
+        <Link
+          href="/shiori?source=lifemap"
+          className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-5 shadow-sm transition-opacity hover:opacity-90"
+          style={{
+            background: "linear-gradient(100deg,#2B2721,#3A342B)",
+          }}
+        >
+          <div className="min-w-0">
+            <p className="flex items-center gap-1.5 text-xs font-bold text-[#E4A857]">
+              <BookOpen className="w-3.5 h-3.5" />
+              AI旅行記メーカー
+            </p>
+            <p className="mt-1.5 text-sm font-bold text-white">
+              保存した写真とメモから、SNS投稿文・アイキャッチ画像を作る
+            </p>
+            <p className="mt-1 text-xs text-[#C9C2B5] leading-relaxed">
+              人生体験マップの記録を読み込み、旅行後の思い出整理に使えます。
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 self-start sm:self-center px-4 py-2 rounded-lg bg-[#E4A857] text-[#3A2C18] text-xs font-extrabold shrink-0">
+            AI旅行記へ
+            <ArrowRight className="w-3.5 h-3.5" />
+          </span>
+        </Link>
 
         {/* 免責事項 */}
-        <div className="bg-white rounded-xl px-4 py-3 border border-slate-100 shadow-sm">
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            {t("disclaimer")}
-          </p>
-        </div>
+        <p className="text-[11.5px] text-[#9A9184] leading-relaxed px-1">
+          {t("disclaimer")}
+        </p>
       </div>
 
       {loadErrorKey && (
@@ -386,14 +582,17 @@ function LifeMapClientInner() {
         </div>
       )}
 
-      {/* 本体 */}
-      <div className="max-w-[1400px] mx-auto p-4 flex flex-col lg:flex-row gap-4">
+      {/* ダッシュボード（記録操作 / 地図・カテゴリ） */}
+      <div
+        id="record"
+        className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] mt-5 grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 items-start"
+      >
         {/* 左：記録追加＋一覧 */}
-        <div className="w-full lg:w-[440px] xl:w-[480px] shrink-0 space-y-4">
+        <div className="flex flex-col gap-5">
           {queueTotal > 1 && (
-            <div className="bg-slate-700 text-white rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm font-medium">
+            <div className="bg-[#2B2721] text-white rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm font-medium">
               <span>{queueTotal - fileQueue.length} / {queueTotal} 枚目を処理中</span>
-              <div className="flex-1 bg-slate-600 rounded-full h-1.5">
+              <div className="flex-1 bg-white/20 rounded-full h-1.5">
                 <div
                   className="bg-white rounded-full h-1.5 transition-all"
                   style={{ width: `${((queueTotal - fileQueue.length) / queueTotal) * 100}%` }}
@@ -413,16 +612,16 @@ function LifeMapClientInner() {
             error={error}
           />
 
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-bold text-base">{t("entries.sectionTitle")}</h2>
+          <div className="bg-white rounded-[18px] p-[22px] shadow-[0_4px_22px_rgba(43,39,33,.05)] border border-[#EEE7DA]">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="font-extrabold text-base text-[#2B2721]">{t("entries.sectionTitle")}</h2>
               <button
                 type="button"
                 onClick={() => setShowReplay(true)}
                 disabled={entries.length === 0}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-medium transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] bg-[#2B2721] hover:opacity-90 disabled:bg-[#F1ECE1] disabled:text-[#A79E8C] text-white text-xs font-bold transition-all"
               >
-                <Film className="w-3.5 h-3.5" />
+                <Film className="w-[15px] h-[15px]" />
                 {t("entries.replayBtn")}
               </button>
             </div>
@@ -431,8 +630,8 @@ function LifeMapClientInner() {
             {homeCountry.isJapan && entries.length > 0 && (
               <div className={`mb-4 rounded-xl border transition-all ${
                 selectedIds.size >= 2
-                  ? "bg-slate-700 border-slate-600 p-3"
-                  : "bg-slate-50 border-slate-200 p-3"
+                  ? "bg-[#2B2721] border-[#2B2721] p-3"
+                  : "bg-[#F6F1E8] border-[#E4DCCC] p-3"
               }`}>
                 {selectedIds.size >= 2 ? (
                   <div className="flex items-center gap-2 flex-wrap">
@@ -443,22 +642,29 @@ function LifeMapClientInner() {
                       href={buildMultiPlannerLink(
                         entries.filter((e) => selectedIds.has(e.id))
                       )}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-slate-800 text-xs font-bold hover:bg-slate-100 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-[#2B2721] text-xs font-bold hover:bg-[#F6F1E8] transition-all"
                     >
                       <Navigation className="w-3.5 h-3.5" />
                       {t("drive.planBtn")}
                     </a>
+                    <Link
+                      href={`/shiori?source=lifemap&ids=${encodeURIComponent([...selectedIds].join(","))}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E4A857] text-[#3A2C18] text-xs font-bold hover:opacity-90 transition-all"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      選択した記録でSNS投稿
+                    </Link>
                     <button
                       type="button"
                       onClick={clearSelection}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-500 text-slate-300 hover:text-white text-xs transition-all"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/30 text-white/70 hover:text-white text-xs transition-all"
                     >
                       <X className="w-3 h-3" />
                       {t("drive.clearBtn")}
                     </button>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-500">{t("drive.selectHint")}</p>
+                  <p className="text-xs text-[#8A8172]">{t("drive.selectHint")}</p>
                 )}
               </div>
             )}
@@ -477,10 +683,10 @@ function LifeMapClientInner() {
         </div>
 
         {/* 右：地図 */}
-        <div className="flex-1 lg:sticky lg:top-[76px] lg:self-start space-y-2">
+        <div className="flex-1 lg:sticky lg:top-[132px] lg:self-start space-y-3">
           <div
             ref={mapRef}
-            className="h-[55vh] min-h-[360px] lg:h-[calc(100vh-160px)] rounded-xl overflow-hidden shadow-lg border border-slate-200"
+            className="h-[55vh] min-h-[360px] lg:h-[520px] rounded-[18px] overflow-hidden shadow-[0_4px_22px_rgba(43,39,33,.05)] border border-[#E6DFD1]"
           >
             <LifeMapLeaflet
               key={homeCountry.code}
@@ -499,19 +705,67 @@ function LifeMapClientInner() {
               }}
             />
           </div>
-          <div className="bg-white rounded-xl px-3 py-2 border border-slate-100 shadow-sm">
+          <div className="bg-white rounded-[18px] p-[18px] border border-[#EEE7DA] shadow-[0_4px_22px_rgba(43,39,33,.05)]">
+            <p className="text-sm font-extrabold text-[#2B2721] mb-2.5">
+              カテゴリ
+            </p>
             <CategoryLegend />
-          </div>
-          <div className="text-xs text-slate-400 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 space-y-1">
-            <p className="font-medium text-slate-500">📋 ご利用上の注意</p>
-            <p>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</p>
-            <p className="pt-1 font-medium text-slate-500">💾 データの保存について</p>
-            <p>・登録した写真・場所・メモ等のデータは、お使いの端末のブラウザ内（ローカルストレージ）にのみ保存されます。サーバーへの送信・クラウドへのバックアップは行われません。</p>
-            <p>・ブラウザの「閲覧データ削除」「キャッシュクリア」、端末の初期化・機種変更、ブラウザの変更等により、データが消失する場合があります。</p>
-            <p>・データの消失・破損に関して、当サービスは一切の責任を負いかねます。大切なデータは定期的に「バックアップ書き出し」ボタンでファイルに保存しておくことをお勧めします。</p>
           </div>
         </div>
       </div>
+
+      {/* 注意事項アコーディオン */}
+      <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] mt-6">
+        <details className="group bg-white rounded-[18px] border border-[#EEE7DA] shadow-[0_4px_22px_rgba(43,39,33,.05)] px-[18px] py-4">
+          <summary className="flex items-center justify-between cursor-pointer list-none font-extrabold text-[15px] text-[#2B2721]">
+            <span className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-[#8A8172]" />
+              ご利用上の注意・データの保存について
+            </span>
+            <ChevronDown className="w-4 h-4 text-[#A79E8C] transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="mt-3 space-y-3 text-xs text-[#8A8172] leading-relaxed">
+            <div>
+              <p className="flex items-center gap-1.5 font-medium text-[#6B6357] mb-1">
+                <ClipboardList className="w-3.5 h-3.5" />
+                ご利用上の注意
+              </p>
+              <p>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</p>
+            </div>
+            <div>
+              <p className="flex items-center gap-1.5 font-medium text-[#6B6357] mb-1">
+                <HardDrive className="w-3.5 h-3.5" />
+                データの保存について
+              </p>
+              <p>・登録した写真・場所・メモ等のデータは、お使いの端末のブラウザ内（ローカルストレージ）にのみ保存されます。サーバーへの送信・クラウドへのバックアップは行われません。</p>
+              <p>・ブラウザの「閲覧データ削除」「キャッシュクリア」、端末の初期化・機種変更、ブラウザの変更等により、データが消失する場合があります。</p>
+              <p>・データの消失・破損に関して、当サービスは一切の責任を負いかねます。大切なデータは定期的に「バックアップ書き出し」ボタンでファイルに保存しておくことをお勧めします。</p>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      {/* フッター */}
+      <footer className="mt-10 border-t border-[#E9E2D6]">
+        <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <Link href="/life-map" className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-[10px] bg-[#1C7A66] flex items-center justify-center shrink-0">
+              <MapPin className="w-4 h-4 text-white" />
+            </span>
+            <span className="font-extrabold text-sm text-[#2B2721]">人生体験マップ</span>
+          </Link>
+          <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#6B6357] font-medium">
+            <Link href="/" className="hover:text-[#2B2721]">AIドライブプランナー</Link>
+            <Link href="/heritage" className="hover:text-[#2B2721]">世界遺産パスポート</Link>
+            <Link href="/shiori" className="hover:text-[#2B2721]">AI旅行記メーカー</Link>
+            <Link href="/privacy" className="hover:text-[#2B2721]">プライバシーポリシー</Link>
+            <Link href="/cookie" className="hover:text-[#2B2721]">Cookieについて</Link>
+          </nav>
+        </div>
+        <p className="text-center text-[11px] text-[#A79E8C] pb-6">
+          © {new Date().getFullYear()} AIドライブプランナー
+        </p>
+      </footer>
 
       {showReplay && (
         <MemoryReplay entries={entries} onClose={() => setShowReplay(false)} />

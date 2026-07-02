@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import LifeMapClient from "@/components/lifemap/LifeMapClient";
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-lifemap",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "人生体験マップ｜写真で残す、あなたの思い出と地図",
@@ -35,5 +43,9 @@ export const metadata: Metadata = {
 };
 
 export default function LifeMapPage() {
-  return <LifeMapClient />;
+  return (
+    <div className={notoSansJP.variable}>
+      <LifeMapClient />
+    </div>
+  );
 }

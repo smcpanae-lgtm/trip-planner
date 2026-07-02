@@ -48,7 +48,7 @@ export default function PrefectureSummary({
 
   if (entries.length === 0) {
     return (
-      <p className="text-center text-sm text-slate-400 py-10">
+      <p className="text-center text-sm text-[#8A8172] py-10">
         {t("prefecture.noEntries")}
       </p>
     );
@@ -61,15 +61,15 @@ export default function PrefectureSummary({
         <button
           type="button"
           onClick={() => setSelected(null)}
-          className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-800 font-medium"
+          className="inline-flex items-center gap-1 text-sm text-[#4A443B] hover:text-[#2B2721] font-medium"
         >
           <ChevronLeft className="w-4 h-4" />
           {t("prefecture.backLink")}
         </button>
 
-        <h3 className="font-bold text-base">
+        <h3 className="font-bold text-base text-[#2B2721]">
           {selected}
-          <span className="text-sm text-slate-400 font-normal ml-2">
+          <span className="text-sm text-[#A79E8C] font-normal ml-2">
             {t("prefecture.countTemplate", { count: filtered.length })}
           </span>
         </h3>
@@ -81,8 +81,8 @@ export default function PrefectureSummary({
             onClick={() => setCatFilter("all")}
             className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
               catFilter === "all"
-                ? "bg-slate-700 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-[#2B2721] text-white"
+                : "bg-[#F6F1E8] text-[#6B6357] hover:bg-[#F1EADA]"
             }`}
           >
             {t("prefecture.all")}
@@ -94,8 +94,8 @@ export default function PrefectureSummary({
               onClick={() => setCatFilter(c.value)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                 catFilter === c.value
-                  ? "bg-slate-700 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-[#2B2721] text-white"
+                  : "bg-[#F6F1E8] text-[#6B6357] hover:bg-[#F1EADA]"
               }`}
             >
               {c.emoji} {t(`categories.${c.value}`)}
@@ -104,7 +104,7 @@ export default function PrefectureSummary({
         </div>
 
         {filtered.length === 0 ? (
-          <p className="text-center text-sm text-slate-400 py-6">
+          <p className="text-center text-sm text-[#8A8172] py-6">
             {t("prefecture.noFiltered")}
           </p>
         ) : (
@@ -134,12 +134,12 @@ export default function PrefectureSummary({
             setSelected(name);
             setCatFilter("all");
           }}
-          className="flex items-center justify-between px-3 py-3 rounded-xl bg-white border border-slate-100 shadow-sm hover:border-slate-300 transition-all text-left"
+          className="flex items-center justify-between px-3 py-3 rounded-xl bg-white border border-[#EEE7DA] shadow-[0_4px_22px_rgba(43,39,33,.05)] hover:border-[#C9BEA6] transition-all text-left"
         >
-          <span className="text-sm font-medium text-slate-700 truncate">
+          <span className="text-sm font-medium text-[#4A443B] truncate">
             {name}
           </span>
-          <span className="text-xs font-bold text-white bg-slate-600 rounded-full px-2 py-0.5 shrink-0 ml-2">
+          <span className="text-xs font-bold text-white bg-[#1C7A66] rounded-full px-2 py-0.5 shrink-0 ml-2">
             {count}
           </span>
         </button>
@@ -158,12 +158,8 @@ export function CategoryLegend() {
         return (
           <span
             key={c.value}
-            className="inline-flex items-center gap-1 text-xs text-slate-500"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[#6B6357] bg-[#F6F1E8] border border-[#EDE5D6] rounded-full px-2.5 py-1"
           >
-            <span
-              className="w-3 h-3 rounded-full inline-block"
-              style={{ background: cat.color }}
-            />
             {cat.emoji} {t(`categories.${c.value}`)}
           </span>
         );
