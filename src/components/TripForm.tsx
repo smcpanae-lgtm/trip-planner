@@ -1247,7 +1247,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       </button>
 
       {/* Disclaimer & Terms */}
-      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+      <div id="disclaimer" className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
         <div>
           <h3 className="text-xs font-bold text-slate-500 mb-1">{t.form.disclaimer.title}</h3>
           <ul className="text-[11px] text-slate-400 leading-relaxed space-y-0.5">

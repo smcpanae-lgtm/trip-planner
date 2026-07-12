@@ -17,6 +17,7 @@ import type {
   PlanVariantData,
 } from "@/types/trip";
 
+import SiteFooter from "@/components/SiteFooter";
 import TripMap from "@/components/TripMap";
 import { decodePolyline } from "@/components/TripMap";
 import {
@@ -25,6 +26,25 @@ import {
 } from "@/lib/i18n/TripPlannerLanguageContext";
 
 type ViewMode = "form" | "result";
+const PLAN_SESSION_STORAGE_KEY = "plan-anonymous-session-id";
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        element: HTMLElement,
+        options: {
+          sitekey: string;
+          callback?: (token: string) => void;
+          "expired-callback"?: () => void;
+          "error-callback"?: () => void;
+        }
+      ) => string;
+      reset: (widgetId?: string) => void;
+    };
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseGeminiPlan(plan: any): {
@@ -251,9 +271,22 @@ function HomeContent() {
   const [viewMode, setViewMode] = useState<ViewMode>("form");
   const [mobileShowMap, setMobileShowMap] = useState(false);
   const [lastConfig, setLastConfig] = useState<TripConfig | null>(null);
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState(TURNSTILE_SITE_KEY);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileStatus, setTurnstileStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [sessionId, setSessionId] = useState("");
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    let anonymousSessionId = localStorage.getItem(PLAN_SESSION_STORAGE_KEY);
+    if (!anonymousSessionId) {
+      anonymousSessionId = crypto.randomUUID();
+      localStorage.setItem(PLAN_SESSION_STORAGE_KEY, anonymousSessionId);
+    }
+    setSessionId(anonymousSessionId);
+
     const sp = new URLSearchParams(window.location.search);
 
     const destinationsStr = sp.get("destinations");
@@ -300,6 +333,38 @@ function HomeContent() {
       }
     }
 
+    const fromParam = sp.get("from");
+    const toParam = sp.get("to");
+    if (fromParam && toParam) {
+      const config: TripConfig = {
+        nights: 0,
+        days: [{
+          dayIndex: 0,
+          departure: fromParam,
+          departureTime: "09:00",
+          destinations: [{
+            id: crypto.randomUUID(),
+            name: "お任せ",
+            address: "",
+            isOmakase: true,
+          }],
+          arrival: toParam,
+          arrivalTime: "20:00",
+          includeLunch: false,
+          lunchLocation: "",
+          lunchGenre: "",
+          includeDinner: false,
+          dinnerLocation: "",
+          dinnerGenre: "",
+        }],
+        withDog: false,
+        aiOmakase: true,
+        useHighway: true,
+      };
+      setLastConfig(config);
+      return;
+    }
+
     const destination = sp.get("destination");
     if (!destination) return;
 
@@ -336,10 +401,76 @@ function HomeContent() {
     setLastConfig(config);
   }, []);
 
+  useEffect(() => {
+    if (turnstileSiteKey) return;
+    fetch("/api/turnstile-site-key")
+      .then((response) => response.json())
+      .then((data: { siteKey?: string }) => {
+        if (data.siteKey) setTurnstileSiteKey(data.siteKey);
+        else setTurnstileStatus("error");
+      })
+      .catch(() => setTurnstileStatus("error"));
+  }, [turnstileSiteKey]);
+
+  useEffect(() => {
+    if (!turnstileSiteKey || turnstileWidgetIdRef.current) return;
+    setTurnstileStatus("loading");
+
+    const renderTurnstile = () => {
+      if (!window.turnstile || !turnstileContainerRef.current || turnstileWidgetIdRef.current) return;
+      turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: turnstileSiteKey,
+        callback: (token) => {
+          setTurnstileToken(token);
+          setTurnstileStatus("ready");
+        },
+        "expired-callback": () => {
+          setTurnstileToken("");
+          setTurnstileStatus("loading");
+        },
+        "error-callback": () => {
+          setTurnstileToken("");
+          setTurnstileStatus("error");
+        },
+      });
+    };
+
+    if (window.turnstile) {
+      renderTurnstile();
+      return;
+    }
+
+    const scriptId = "cloudflare-turnstile-script";
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.onerror = () => setTurnstileStatus("error");
+      document.head.appendChild(script);
+    }
+
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      if (window.turnstile && turnstileContainerRef.current) {
+        window.clearInterval(timer);
+        renderTurnstile();
+      } else if (Date.now() - startedAt > 10000) {
+        window.clearInterval(timer);
+        setTurnstileStatus("error");
+      }
+    }, 200);
+
+    return () => window.clearInterval(timer);
+  }, [turnstileSiteKey, viewMode]);
+
   const activeVariant = planVariants[activePlanIndex];
   const allSpots = activeVariant?.spots || [];
   const itineraries = activeVariant?.itineraries || [];
   const routePolylines = activeVariant?.routePolylines;
+  const planVerificationReady = Boolean(turnstileSiteKey && turnstileToken && sessionId);
 
   const handlePlanSwitch = useCallback(
     (index: number) => {
@@ -361,6 +492,10 @@ function HomeContent() {
   const handleSubmit = useCallback(async (config: TripConfig) => {
     setPlanError(null);
     setLastConfig(config);
+    if (!planVerificationReady) {
+      setPlanError("AIプラン作成の認証確認が完了していません。しばらく待ってから再度お試しください。");
+      return;
+    }
     setIsLoading(true);
     setLoadingMessage(t.loading.message);
 
@@ -391,11 +526,16 @@ function HomeContent() {
         useHighway: config.useHighway ?? true,
         travelDate: config.travelDate,
         travelerProfile: config.travelerProfile,
+        turnstileToken,
+        sessionId,
       };
 
       const res = await fetch("/api/plan", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-plan-session-id": sessionId,
+        },
         body: JSON.stringify(apiPayload),
       });
 
@@ -431,10 +571,14 @@ function HomeContent() {
       const msg = e instanceof Error ? e.message : String(e);
       setPlanError(`通信エラー: ${msg}`);
     } finally {
+      if (turnstileWidgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(turnstileWidgetIdRef.current);
+      }
+      setTurnstileToken("");
       setIsLoading(false);
       setLoadingMessage("");
     }
-  }, [t]);
+  }, [planVerificationReady, sessionId, t, turnstileToken]);
 
   const buildLocalPlan = useCallback(async (config: TripConfig) => {
     const allGeoSpots: GeocodedSpot[] = [];
@@ -800,6 +944,27 @@ function HomeContent() {
                   </div>
                 </div>
               )}
+              <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4 shadow-sm">
+                {turnstileSiteKey ? (
+                  <>
+                    <div ref={turnstileContainerRef} className="min-h-[65px]" />
+                    {!turnstileToken && turnstileStatus === "loading" && (
+                      <p className="text-xs text-slate-500 leading-relaxed">
+                        自動送信対策を読み込んでいます。数秒お待ちください。
+                      </p>
+                    )}
+                    {turnstileStatus === "error" && (
+                      <p className="text-xs text-amber-700 leading-relaxed">
+                        自動送信対策を読み込めませんでした。ページを再読み込みしてください。改善しない場合は、Cloudflare Turnstileのドメイン設定をご確認ください。
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-xs text-amber-700 leading-relaxed">
+                    AIプラン作成の不正利用対策が未設定です。Cloudflare Turnstile のサイトキーを設定するとAI生成を使えます。
+                  </p>
+                )}
+              </div>
               <TripForm onSubmit={handleSubmit} isLoading={isLoading} initialConfig={lastConfig} />
             </div>
           ) : (
@@ -899,6 +1064,8 @@ function HomeContent() {
           </div>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }
