@@ -12,12 +12,14 @@ export default function LifeMapEntryList({
   entries,
   onShowOnMap,
   onDelete,
+  onEdit,
   selectedIds,
   onToggleSelect,
 }: {
   entries: LifeMapEntry[];
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
+  onEdit?: (entry: LifeMapEntry) => void;
   selectedIds?: Set<string>;
   onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
@@ -58,6 +60,7 @@ export default function LifeMapEntryList({
           entries={entries}
           onShowOnMap={onShowOnMap}
           onDelete={onDelete}
+          onEdit={onEdit}
           selectedIds={selectedIds}
           onToggleSelect={onToggleSelect}
         />
@@ -66,6 +69,7 @@ export default function LifeMapEntryList({
           entries={entries}
           onShowOnMap={onShowOnMap}
           onDelete={onDelete}
+          onEdit={onEdit}
           selectedIds={selectedIds}
           onToggleSelect={onToggleSelect}
         />

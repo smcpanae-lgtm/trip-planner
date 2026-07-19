@@ -261,6 +261,7 @@ export default function LifeMapEntryForm({
                     <p className="flex items-center gap-1 text-xs text-[#1C7A66]">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       {t("form.mapTapDone")}
+                      {draft.prefecture && `（${draft.prefecture}）`}
                     </p>
                   )}
                 </div>

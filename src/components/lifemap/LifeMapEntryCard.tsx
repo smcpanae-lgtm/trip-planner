@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPinned, Trash2, CheckCircle2, Circle, BookOpen } from "lucide-react";
+import { MapPinned, Trash2, CheckCircle2, Circle, BookOpen, Pencil } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { getCategory } from "@/lib/lifemap/categories";
 import { resolveEntryLatLng, isJapanCoord } from "@/lib/lifemap/plannerLink";
@@ -13,12 +13,14 @@ export default function LifeMapEntryCard({
   entry,
   onShowOnMap,
   onDelete,
+  onEdit,
   selected,
   onToggleSelect,
 }: {
   entry: LifeMapEntry;
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
+  onEdit?: (entry: LifeMapEntry) => void;
   selected?: boolean;
   onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
@@ -109,6 +111,7 @@ export default function LifeMapEntryCard({
             <button
               type="button"
               onClick={() => onToggleSelect!(entry)}
+              title={t("drive.selectHint")}
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 selected
                   ? "bg-[#1C7A66] text-white border-[#1C7A66]"
@@ -120,6 +123,17 @@ export default function LifeMapEntryCard({
               ) : (
                 <Circle className="w-3.5 h-3.5" />
               )}
+              {selected ? t("card.selectedBtn") : t("card.selectBtn")}
+            </button>
+          )}
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(entry)}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F6F1E8] hover:bg-[#F1EADA] text-[#4A443B] text-xs font-medium transition-all"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              {t("card.editBtn")}
             </button>
           )}
           <button

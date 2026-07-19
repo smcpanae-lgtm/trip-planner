@@ -20,7 +20,10 @@ import {
   ClipboardList,
   HardDrive,
   ChevronDown,
+  Share2,
+  ImageDown,
 } from "lucide-react";
+import { buildXShareUrl, generateAchievementShareCard, downloadDataUrl } from "@/lib/shareCard";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { extractExifLocation } from "@/lib/lifemap/exif";
 import { compressImage } from "@/lib/lifemap/image";
@@ -39,6 +42,7 @@ import LifeMapEntryForm, {
 import LifeMapEntryList from "./LifeMapEntryList";
 import BackupButtons from "./BackupButtons";
 import MemoryReplay from "./MemoryReplay";
+import LifeMapEditModal from "./LifeMapEditModal";
 import { CategoryLegend } from "./PrefectureSummary";
 import {
   LanguageProvider,
@@ -73,6 +77,9 @@ function LifeMapClientInner() {
   const [error, setError] = useState<string | null>(null);
   const [loadErrorKey, setLoadErrorKey] = useState<string | null>(null);
   const [showReplay, setShowReplay] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<LifeMapEntry | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [fileQueue, setFileQueue] = useState<File[]>([]);
   const [queueTotal, setQueueTotal] = useState(0);
@@ -88,6 +95,41 @@ function LifeMapClientInner() {
   }, []);
 
   const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
+
+  function getAchievementStats(): { headline: string; subline: string } {
+    if (homeCountry.isJapan) {
+      const prefectureCount = new Set(
+        entries.map((e) => e.prefecture).filter((p): p is string => !!p)
+      ).size;
+      return {
+        headline: `47都道府県中 ${prefectureCount}県 訪問`,
+        subline: `記録数 ${entries.length}件`,
+      };
+    }
+    return {
+      headline: `${entries.length}件の思い出を記録`,
+      subline: "人生でやりたいことリストの実績版",
+    };
+  }
+
+  function handleAchievementShare() {
+    const { headline } = getAchievementStats();
+    const text = `人生体験マップに${headline}しました🗺️`;
+    window.open(buildXShareUrl(text), "_blank", "noopener,noreferrer");
+  }
+
+  function handleAchievementImage() {
+    const { headline, subline } = getAchievementStats();
+    const dataUrl = generateAchievementShareCard({
+      brandLabel: "🗺️ 人生体験マップ",
+      headline,
+      subline,
+      accentFrom: "#1C7A66",
+      accentTo: "#2B2721",
+      siteLabel: "ai-drive-planner.com/life-map",
+    });
+    downloadDataUrl(dataUrl, "人生体験マップ-実績.png");
+  }
 
   // 起動時にIndexedDBから記録を読み込む
   useEffect(() => {
@@ -188,6 +230,37 @@ function LifeMapClientInner() {
     });
   }, []);
 
+  // 緯度・経度を手入力した場合も都道府県を自動判定する。
+  // 入力途中で何度も照会しないよう、打ち終わってから少し待って問い合わせる。
+  const draftLat = draft.lat;
+  const draftLng = draft.lng;
+  const draftLocationMode = draft.locationMode;
+  useEffect(() => {
+    if (draftLocationMode !== "coords") return;
+    if (draftLat == null || draftLng == null) return;
+    if (!Number.isFinite(draftLat) || !Number.isFinite(draftLng)) return;
+    if (Math.abs(draftLat) > 90 || Math.abs(draftLng) > 180) return;
+
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      reverseGeocodeRegion(draftLat, draftLng).then((pref) => {
+        if (cancelled || !pref) return;
+        setDraft((prev) =>
+          prev.locationMode === "coords" &&
+          prev.lat === draftLat &&
+          prev.lng === draftLng
+            ? { ...prev, prefecture: pref }
+            : prev
+        );
+      });
+    }, 800);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [draftLocationMode, draftLat, draftLng]);
+
   // 保存
   const handleSave = useCallback(async () => {
     setError(null);
@@ -268,6 +341,30 @@ function LifeMapClientInner() {
         setEntries((prev) => prev.filter((e) => e.id !== entry.id));
       } catch {
         setError(t("errors.deleteFailed"));
+      }
+    },
+    [t]
+  );
+
+  // 保存済み記録の編集を書き戻す（IDは変えずに上書き）
+  const handleUpdateEntry = useCallback(
+    async (updated: LifeMapEntry) => {
+      setEditError(null);
+      setEditSaving(true);
+      try {
+        await putEntry(updated);
+        setEntries((prev) =>
+          prev.map((e) => (e.id === updated.id ? updated : e))
+        );
+        setEditingEntry(null);
+
+        // 編集後の位置を地図に反映する
+        const pos = resolveEntryLatLng(updated);
+        if (pos) setFocus(pos);
+      } catch {
+        setEditError(t("form.errSave"));
+      } finally {
+        setEditSaving(false);
       }
     },
     [t]
@@ -672,10 +769,34 @@ function LifeMapClientInner() {
             <div className="mb-4">
               <BackupButtons entries={entries} onRestored={setEntries} />
             </div>
+            {entries.length > 0 && (
+              <div className="mb-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleAchievementShare}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Xでシェア
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAchievementImage}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition-colors"
+                >
+                  <ImageDown className="w-4 h-4" />
+                  実績画像を保存
+                </button>
+              </div>
+            )}
             <LifeMapEntryList
               entries={entries}
               onShowOnMap={handleShowOnMap}
               onDelete={handleDelete}
+              onEdit={(entry) => {
+                setEditError(null);
+                setEditingEntry(entry);
+              }}
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
             />
@@ -769,6 +890,17 @@ function LifeMapClientInner() {
 
       {showReplay && (
         <MemoryReplay entries={entries} onClose={() => setShowReplay(false)} />
+      )}
+
+      {editingEntry && (
+        <LifeMapEditModal
+          key={editingEntry.id}
+          entry={editingEntry}
+          onClose={() => setEditingEntry(null)}
+          onSave={handleUpdateEntry}
+          saving={editSaving}
+          error={editError}
+        />
       )}
     </div>
   );

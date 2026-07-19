@@ -69,6 +69,19 @@ export interface LifeMapDict {
     approxLocation: string;
     prefectureOnly: string;
     revisitLink: string;
+    editBtn: string;
+    selectBtn: string;
+    selectedBtn: string;
+  };
+  edit: {
+    title: string;
+    saveBtn: string;
+    cancelBtn: string;
+    closeAria: string;
+    photoLocked: string;
+    prefDetecting: string;
+    prefDetected: string; // {{name}} placeholder
+    precisionWarn: string;
   };
   list: {
     timeline: string;
@@ -185,7 +198,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "都道府県だけ登録する",
       noneMode: "場所情報なしで保存する",
       mapTapHint: "👉 右（下）の地図をタップして場所を指定してください。",
-      mapTapDone: "✅ 地図で場所を指定しました。",
+      mapTapDone: "地図で場所を指定しました。",
       prefLabel: "都道府県",
       prefSelect: "選択してください",
       catLabel: "カテゴリ",
@@ -221,6 +234,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "おおまかな場所",
       prefectureOnly: "都道府県のみ",
       revisitLink: "この場所へ再訪プラン作成",
+      editBtn: "編集",
+      selectBtn: "ドライブに選ぶ",
+      selectedBtn: "選択中",
+    },
+    edit: {
+      title: "記録を編集",
+      saveBtn: "変更を保存",
+      cancelBtn: "キャンセル",
+      closeAria: "閉じる",
+      photoLocked: "写真は変更できません。写真を変えたい場合は、この記録を削除して登録し直してください。",
+      prefDetecting: "座標から都道府県を判定しています…",
+      prefDetected: "座標から「{{name}}」と判定しました。",
+      precisionWarn: "「おおまかな場所」で保存すると、緯度・経度は約1km単位に丸められます。正確な位置を残したい場合は「正確な場所」を選んでください。",
     },
     list: {
       timeline: "時系列",
@@ -336,7 +362,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "Register prefecture only",
       noneMode: "Save without location",
       mapTapHint: "👉 Tap the map (right/below) to set the location.",
-      mapTapDone: "✅ Location set on map.",
+      mapTapDone: "Location set on map.",
       prefLabel: "Prefecture",
       prefSelect: "Select...",
       catLabel: "Category",
@@ -372,6 +398,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "Approx. location",
       prefectureOnly: "Prefecture only",
       revisitLink: "Plan a revisit here",
+      editBtn: "Edit",
+      selectBtn: "Select for drive",
+      selectedBtn: "Selected",
+    },
+    edit: {
+      title: "Edit record",
+      saveBtn: "Save changes",
+      cancelBtn: "Cancel",
+      closeAria: "Close",
+      photoLocked: "The photo cannot be changed. To use a different photo, delete this record and add it again.",
+      prefDetecting: "Looking up the region from the coordinates…",
+      prefDetected: "Detected “{{name}}” from the coordinates.",
+      precisionWarn: "Saving as an approximate location rounds the coordinates to about 1 km. Choose “Exact location” to keep the precise position.",
     },
     list: {
       timeline: "Timeline",
@@ -487,7 +526,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "광역단체만 등록",
       noneMode: "위치 정보 없이 저장",
       mapTapHint: "👉 오른쪽(아래) 지도를 탭하여 장소를 지정하세요.",
-      mapTapDone: "✅ 지도에서 장소를 지정했습니다.",
+      mapTapDone: "지도에서 장소를 지정했습니다.",
       prefLabel: "도도부현",
       prefSelect: "선택하세요",
       catLabel: "카테고리",
@@ -523,6 +562,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "대략적인 위치",
       prefectureOnly: "광역단체만",
       revisitLink: "이 장소 재방문 계획 세우기",
+      editBtn: "편집",
+      selectBtn: "드라이브에 선택",
+      selectedBtn: "선택됨",
+    },
+    edit: {
+      title: "기록 편집",
+      saveBtn: "변경 사항 저장",
+      cancelBtn: "취소",
+      closeAria: "닫기",
+      photoLocked: "사진은 변경할 수 없습니다. 다른 사진을 사용하려면 이 기록을 삭제하고 다시 등록해 주세요.",
+      prefDetecting: "좌표에서 지역을 확인하는 중…",
+      prefDetected: "좌표에서 '{{name}}'(으)로 확인되었습니다.",
+      precisionWarn: "'대략적인 위치'로 저장하면 좌표가 약 1km 단위로 반올림됩니다. 정확한 위치를 남기려면 '정확한 위치'를 선택하세요.",
     },
     list: {
       timeline: "시계열",
@@ -638,7 +690,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "仅注册都道府县",
       noneMode: "不含位置信息保存",
       mapTapHint: "👉 请点击右侧（下方）地图指定位置。",
-      mapTapDone: "✅ 已在地图上指定位置。",
+      mapTapDone: "已在地图上指定位置。",
       prefLabel: "都道府县",
       prefSelect: "请选择",
       catLabel: "分类",
@@ -674,6 +726,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "大致位置",
       prefectureOnly: "仅都道府县",
       revisitLink: "制定重访计划",
+      editBtn: "编辑",
+      selectBtn: "选入兜风路线",
+      selectedBtn: "已选择",
+    },
+    edit: {
+      title: "编辑记录",
+      saveBtn: "保存更改",
+      cancelBtn: "取消",
+      closeAria: "关闭",
+      photoLocked: "照片无法更改。如需更换照片，请删除此记录后重新添加。",
+      prefDetecting: "正在根据坐标判断地区…",
+      prefDetected: "已根据坐标判断为“{{name}}”。",
+      precisionWarn: "以“大致位置”保存时，坐标会被四舍五入到约1公里。若要保留精确位置，请选择“精确位置”。",
     },
     list: {
       timeline: "时间轴",
@@ -789,7 +854,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "僅登記都道府縣",
       noneMode: "不含位置資訊儲存",
       mapTapHint: "👉 請點擊右側（下方）地圖指定位置。",
-      mapTapDone: "✅ 已在地圖上指定位置。",
+      mapTapDone: "已在地圖上指定位置。",
       prefLabel: "都道府縣",
       prefSelect: "請選擇",
       catLabel: "分類",
@@ -825,6 +890,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "大致位置",
       prefectureOnly: "僅都道府縣",
       revisitLink: "制定重訪計劃",
+      editBtn: "編輯",
+      selectBtn: "選入兜風路線",
+      selectedBtn: "已選擇",
+    },
+    edit: {
+      title: "編輯記錄",
+      saveBtn: "儲存變更",
+      cancelBtn: "取消",
+      closeAria: "關閉",
+      photoLocked: "照片無法變更。如需更換照片，請刪除此記錄後重新新增。",
+      prefDetecting: "正在根據座標判斷地區…",
+      prefDetected: "已根據座標判斷為「{{name}}」。",
+      precisionWarn: "以「大致位置」儲存時，座標會四捨五入至約1公里。若要保留精確位置，請選擇「精確位置」。",
     },
     list: {
       timeline: "時間軸",
@@ -940,7 +1018,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "Registrar solo prefectura",
       noneMode: "Guardar sin ubicación",
       mapTapHint: "👉 Toca el mapa (derecha/abajo) para fijar la ubicación.",
-      mapTapDone: "✅ Ubicación fijada en el mapa.",
+      mapTapDone: "Ubicación fijada en el mapa.",
       prefLabel: "Prefectura",
       prefSelect: "Selecciona...",
       catLabel: "Categoría",
@@ -976,6 +1054,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "Ubicación aprox.",
       prefectureOnly: "Solo prefectura",
       revisitLink: "Planificar una revisita",
+      editBtn: "Editar",
+      selectBtn: "Elegir para la ruta",
+      selectedBtn: "Seleccionado",
+    },
+    edit: {
+      title: "Editar registro",
+      saveBtn: "Guardar cambios",
+      cancelBtn: "Cancelar",
+      closeAria: "Cerrar",
+      photoLocked: "La foto no se puede cambiar. Para usar otra foto, elimina este registro y vuelve a añadirlo.",
+      prefDetecting: "Buscando la región a partir de las coordenadas…",
+      prefDetected: "Se detectó «{{name}}» a partir de las coordenadas.",
+      precisionWarn: "Al guardar como ubicación aproximada, las coordenadas se redondean a unos 1 km. Elige «Ubicación exacta» para conservar la posición precisa.",
     },
     list: {
       timeline: "Cronología",
@@ -1091,7 +1182,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefMode: "Только префектура",
       noneMode: "Сохранить без местоположения",
       mapTapHint: "👉 Нажмите на карту (справа/снизу), чтобы указать место.",
-      mapTapDone: "✅ Место указано на карте.",
+      mapTapDone: "Место указано на карте.",
       prefLabel: "Префектура",
       prefSelect: "Выберите...",
       catLabel: "Категория",
@@ -1127,6 +1218,19 @@ export const translations: Record<LangCode, LifeMapDict> = {
       approxLocation: "Прибл. место",
       prefectureOnly: "Только префектура",
       revisitLink: "Запланировать повторный визит",
+      editBtn: "Изменить",
+      selectBtn: "Выбрать для маршрута",
+      selectedBtn: "Выбрано",
+    },
+    edit: {
+      title: "Редактирование записи",
+      saveBtn: "Сохранить изменения",
+      cancelBtn: "Отмена",
+      closeAria: "Закрыть",
+      photoLocked: "Фотографию нельзя изменить. Чтобы использовать другое фото, удалите эту запись и добавьте её заново.",
+      prefDetecting: "Определяем регион по координатам…",
+      prefDetected: "По координатам определён регион «{{name}}».",
+      precisionWarn: "При сохранении как «примерное место» координаты округляются примерно до 1 км. Выберите «точное место», чтобы сохранить точную позицию.",
     },
     list: {
       timeline: "Хронология",

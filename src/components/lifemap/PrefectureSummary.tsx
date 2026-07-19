@@ -13,12 +13,14 @@ export default function PrefectureSummary({
   entries,
   onShowOnMap,
   onDelete,
+  onEdit,
   selectedIds,
   onToggleSelect,
 }: {
   entries: LifeMapEntry[];
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
+  onEdit?: (entry: LifeMapEntry) => void;
   selectedIds?: Set<string>;
   onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
@@ -114,6 +116,7 @@ export default function PrefectureSummary({
               entry={entry}
               onShowOnMap={onShowOnMap}
               onDelete={onDelete}
+              onEdit={onEdit}
               selected={selectedIds?.has(entry.id)}
               onToggleSelect={onToggleSelect}
             />
