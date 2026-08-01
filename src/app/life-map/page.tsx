@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     url: "https://www.ai-drive-planner.com/life-map",
     images: [
       {
-        url: "https://www.ai-drive-planner.com/ogp-lifemap.jpg",
-        secureUrl: "https://www.ai-drive-planner.com/ogp-lifemap.jpg",
+        url: "https://www.ai-drive-planner.com/ogp-lifemap.jpg?v=2",
+        secureUrl: "https://www.ai-drive-planner.com/ogp-lifemap.jpg?v=2",
         type: "image/jpeg",
         width: 1200,
         height: 675,
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "人生体験マップ｜行った場所を記録する地図アプリ",
     description:
       "旅行・釣り・食事・犬連れ・温泉・お城など、行った場所を写真つきで地図に記録できるライフログ。県別・時系列で思い出を振り返れます。",
-    images: ["https://www.ai-drive-planner.com/ogp-lifemap.jpg"],
+    images: ["https://www.ai-drive-planner.com/ogp-lifemap.jpg?v=2"],
   },
   alternates: {
     canonical: "https://www.ai-drive-planner.com/life-map",
