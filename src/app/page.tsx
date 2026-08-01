@@ -927,9 +927,9 @@ function HomeContent() {
       )}
 
       {/* Main Layout */}
-      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row h-[calc(100vh-60px)]">
+      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-60px)]">
         <div
-          className={`w-full lg:w-[440px] xl:w-[480px] shrink-0 overflow-y-auto itinerary-scroll p-4 ${
+          className={`w-full lg:w-[440px] xl:w-[480px] shrink-0 lg:overflow-y-auto itinerary-scroll p-4 ${
             mobileShowMap ? "hidden lg:block" : ""
           }`}
         >
@@ -1051,7 +1051,7 @@ function HomeContent() {
         </div>
 
         <div
-          className={`flex-1 p-4 pt-0 lg:pt-4 ${
+          className={`lg:flex-1 h-[calc(100vh-60px)] lg:h-auto p-4 pt-0 lg:pt-4 ${
             !mobileShowMap ? "hidden lg:block" : ""
           }`}
         >
