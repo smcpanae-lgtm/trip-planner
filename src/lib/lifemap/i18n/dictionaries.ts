@@ -217,6 +217,33 @@ export interface LifeMapDict {
     faqs: { q: string; a: string }[];
   };
   heritageLink: string;
+  /** ヘッダー・ヒーロー・フッター等、guideセクション以外の固定UI文言 */
+  landing: {
+    followX: string;
+    journalName: string;
+    recordCta: string;
+    heroEyebrow: string;
+    heroHeadline1: string;
+    heroHeadline2: string;
+    since: string;
+    demoLocation1: string;
+    demoLocation2: string;
+    journalBannerTitle: string;
+    journalBannerBody: string;
+    journalBannerCta: string;
+    journalWithSelectionCta: string;
+    queueProgress: string; // {{current}} / {{total}} placeholder
+    noticeAccordionTitle: string;
+    noticeTitle: string;
+    noticeBody: string;
+    dataStorageTitle: string;
+    dataStorageBody1: string;
+    dataStorageBody2: string;
+    dataStorageBody3: string;
+    footerPrivacyLink: string;
+    footerCookieLink: string;
+    footerBrandName: string;
+  };
 }
 
 export const translations: Record<LangCode, LifeMapDict> = {
@@ -482,6 +509,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "世界遺産パスポート",
+    landing: {
+      followX: "公式X（@AIDRIVEPLAN）をフォロー",
+      journalName: "AI旅行記メーカー",
+      recordCta: "体験を記録",
+      heroEyebrow: "非公開のライフログ",
+      heroHeadline1: "写真と場所で、",
+      heroHeadline2: "人生の体験を残す。",
+      since: "Since 2026年6月",
+      demoLocation1: "神奈川県",
+      demoLocation2: "東京都",
+      journalBannerTitle: "保存した写真とメモから、SNS投稿文・アイキャッチ画像を作る",
+      journalBannerBody: "人生体験マップの記録を読み込み、旅行後の思い出整理に使えます。",
+      journalBannerCta: "AI旅行記へ",
+      journalWithSelectionCta: "選択した記録でSNS投稿",
+      queueProgress: "{{current}} / {{total}} 枚目を処理中",
+      noticeAccordionTitle: "ご利用上の注意・データの保存について",
+      noticeTitle: "ご利用上の注意",
+      noticeBody: "・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。",
+      dataStorageTitle: "データの保存について",
+      dataStorageBody1: "・登録した写真・場所・メモ等のデータは、お使いの端末のブラウザ内（ローカルストレージ）にのみ保存されます。サーバーへの送信・クラウドへのバックアップは行われません。",
+      dataStorageBody2: "・ブラウザの「閲覧データ削除」「キャッシュクリア」、端末の初期化・機種変更、ブラウザの変更等により、データが消失する場合があります。",
+      dataStorageBody3: "・データの消失・破損に関して、当サービスは一切の責任を負いかねます。大切なデータは定期的に「バックアップ書き出し」ボタンでファイルに保存しておくことをお勧めします。",
+      footerPrivacyLink: "プライバシーポリシー",
+      footerCookieLink: "Cookieについて",
+      footerBrandName: "AIドライブプランナー",
+    },
   },
 
   en: {
@@ -746,6 +799,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "World Heritage Passport",
+    landing: {
+      followX: "Follow us on X (@AIDRIVEPLAN)",
+      journalName: "AI Travel Journal Maker",
+      recordCta: "Record an experience",
+      heroEyebrow: "A private life log",
+      heroHeadline1: "Capture your life experiences",
+      heroHeadline2: "through photos and places.",
+      since: "Since June 2026",
+      demoLocation1: "Kanagawa",
+      demoLocation2: "Tokyo",
+      journalBannerTitle: "Turn your saved photos and notes into a social post and eye-catching image",
+      journalBannerBody: "Load your Life Experience Map records and use them to put your trip memories together.",
+      journalBannerCta: "Open AI Travel Journal",
+      journalWithSelectionCta: "Post selected records to social media",
+      queueProgress: "Processing {{current}} / {{total}}",
+      noticeAccordionTitle: "Terms of use & data storage",
+      noticeTitle: "Terms of use",
+      noticeBody: "· Copying, repurposing, or redistributing this site's source code, design, or content without permission is prohibited.",
+      dataStorageTitle: "About data storage",
+      dataStorageBody1: "· Photos, places, notes, and other data you register are stored only in your device's browser (local storage). Nothing is sent to a server or backed up to the cloud.",
+      dataStorageBody2: "· Data may be lost if you clear your browsing data or cache, reset or replace your device, or switch browsers.",
+      dataStorageBody3: "· We accept no responsibility for any loss or corruption of data. We recommend periodically saving a file with the \"Save backup\" button for anything important.",
+      footerPrivacyLink: "Privacy Policy",
+      footerCookieLink: "Cookies",
+      footerBrandName: "AI Drive Planner",
+    },
   },
 
   ko: {
@@ -1010,6 +1089,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "세계유산 여권",
+    landing: {
+      followX: "공식 X（@AIDRIVEPLAN）팔로우",
+      journalName: "AI 여행기 메이커",
+      recordCta: "체험 기록하기",
+      heroEyebrow: "비공개 라이프로그",
+      heroHeadline1: "사진과 장소로,",
+      heroHeadline2: "인생의 체험을 남기다.",
+      since: "Since 2026년 6월",
+      demoLocation1: "가나가와현",
+      demoLocation2: "도쿄도",
+      journalBannerTitle: "저장한 사진과 메모로 SNS 게시글・썸네일 이미지를 만들어요",
+      journalBannerBody: "인생 체험 지도의 기록을 불러와 여행 후 추억 정리에 활용할 수 있습니다.",
+      journalBannerCta: "AI 여행기로 이동",
+      journalWithSelectionCta: "선택한 기록으로 SNS 게시",
+      queueProgress: "{{current}} / {{total}}번째 처리 중",
+      noticeAccordionTitle: "이용 시 주의사항・데이터 저장에 대해",
+      noticeTitle: "이용 시 주의사항",
+      noticeBody: "・본 사이트의 소스 코드・디자인・콘텐츠의 무단 복제・전용・재배포를 금지합니다。",
+      dataStorageTitle: "데이터 저장에 대해",
+      dataStorageBody1: "・등록한 사진・장소・메모 등의 데이터는 사용 중인 기기의 브라우저 내（로컬 스토리지）에만 저장됩니다。서버 전송・클라우드 백업은 이루어지지 않습니다。",
+      dataStorageBody2: "・브라우저의 「인터넷 사용 기록 삭제」「캐시 삭제」, 기기 초기화・기종 변경, 브라우저 변경 등으로 데이터가 소실될 수 있습니다。",
+      dataStorageBody3: "・데이터 소실・손상에 대해 당 서비스는 일체의 책임을 지지 않습니다。소중한 데이터는 정기적으로 「백업 저장」 버튼으로 파일에 저장해 두시기를 권장합니다。",
+      footerPrivacyLink: "개인정보처리방침",
+      footerCookieLink: "쿠키에 대해",
+      footerBrandName: "AI 드라이브 플래너",
+    },
   },
 
   "zh-CN": {
@@ -1274,6 +1379,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "世界遗产护照",
+    landing: {
+      followX: "关注官方 X（@AIDRIVEPLAN）",
+      journalName: "AI 旅行日记生成器",
+      recordCta: "记录体验",
+      heroEyebrow: "私密的生活记录",
+      heroHeadline1: "用照片和地点，",
+      heroHeadline2: "留下人生的体验。",
+      since: "Since 2026年6月",
+      demoLocation1: "神奈川县",
+      demoLocation2: "东京都",
+      journalBannerTitle: "用保存的照片和备注，生成社交媒体文案和封面图",
+      journalBannerBody: "读取人生体验地图的记录，可用于整理旅行后的回忆。",
+      journalBannerCta: "前往 AI 旅行日记",
+      journalWithSelectionCta: "用选中的记录生成社交媒体文案",
+      queueProgress: "正在处理第 {{current}} / {{total}} 张",
+      noticeAccordionTitle: "使用须知・关于数据保存",
+      noticeTitle: "使用须知",
+      noticeBody: "・禁止未经许可复制、挪用或再发布本网站的源代码、设计与内容。",
+      dataStorageTitle: "关于数据保存",
+      dataStorageBody1: "・您登记的照片、地点、备注等数据仅保存在您设备的浏览器内（本地存储），不会发送到服务器，也不会备份到云端。",
+      dataStorageBody2: "・清除浏览器的浏览数据/缓存、重置或更换设备、更换浏览器等操作，都可能导致数据丢失。",
+      dataStorageBody3: "・对于数据丢失或损坏，本服务概不负责。建议您定期使用「保存备份」按钮将重要数据保存为文件。",
+      footerPrivacyLink: "隐私政策",
+      footerCookieLink: "关于 Cookie",
+      footerBrandName: "AI 自驾游规划",
+    },
   },
 
   "zh-TW": {
@@ -1538,6 +1669,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "世界遺產護照",
+    landing: {
+      followX: "追蹤官方 X（@AIDRIVEPLAN）",
+      journalName: "AI 旅行日記產生器",
+      recordCta: "記錄體驗",
+      heroEyebrow: "私密的生活紀錄",
+      heroHeadline1: "用照片和地點，",
+      heroHeadline2: "留下人生的體驗。",
+      since: "Since 2026年6月",
+      demoLocation1: "神奈川縣",
+      demoLocation2: "東京都",
+      journalBannerTitle: "用儲存的照片和備註，產生社群貼文與封面圖",
+      journalBannerBody: "讀取人生體驗地圖的紀錄，可用於整理旅行後的回憶。",
+      journalBannerCta: "前往 AI 旅行日記",
+      journalWithSelectionCta: "用選取的紀錄產生社群貼文",
+      queueProgress: "正在處理第 {{current}} / {{total}} 張",
+      noticeAccordionTitle: "使用須知・關於資料保存",
+      noticeTitle: "使用須知",
+      noticeBody: "・禁止未經授權複製、挪用或再散布本網站的原始碼、設計與內容。",
+      dataStorageTitle: "關於資料保存",
+      dataStorageBody1: "・您登錄的照片、地點、備註等資料僅保存在您裝置的瀏覽器內（本機儲存），不會傳送至伺服器，也不會備份到雲端。",
+      dataStorageBody2: "・清除瀏覽器的瀏覽資料/快取、重設或更換裝置、更換瀏覽器等操作，都可能導致資料遺失。",
+      dataStorageBody3: "・對於資料遺失或損毀，本服務概不負責。建議您定期使用「儲存備份」按鈕將重要資料保存為檔案。",
+      footerPrivacyLink: "隱私權政策",
+      footerCookieLink: "關於 Cookie",
+      footerBrandName: "AI 自駕遊規劃",
+    },
   },
 
   es: {
@@ -1802,6 +1959,32 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "Patrimonio Mundial",
+    landing: {
+      followX: "Síguenos en X (@AIDRIVEPLAN)",
+      journalName: "AI Creador de Diario de Viaje",
+      recordCta: "Registrar una experiencia",
+      heroEyebrow: "Un registro de vida privado",
+      heroHeadline1: "Con fotos y lugares,",
+      heroHeadline2: "conserva tus experiencias de vida.",
+      since: "Desde junio de 2026",
+      demoLocation1: "Kanagawa",
+      demoLocation2: "Tokio",
+      journalBannerTitle: "Convierte tus fotos y notas guardadas en una publicación y una imagen destacada",
+      journalBannerBody: "Carga tus registros del Mapa de Experiencias de Vida para organizar tus recuerdos de viaje.",
+      journalBannerCta: "Ir a AI Diario de Viaje",
+      journalWithSelectionCta: "Publicar los registros seleccionados en redes sociales",
+      queueProgress: "Procesando {{current}} / {{total}}",
+      noticeAccordionTitle: "Términos de uso y almacenamiento de datos",
+      noticeTitle: "Términos de uso",
+      noticeBody: "· Queda prohibido copiar, reutilizar o redistribuir sin permiso el código fuente, el diseño o el contenido de este sitio.",
+      dataStorageTitle: "Sobre el almacenamiento de datos",
+      dataStorageBody1: "· Las fotos, lugares, notas y demás datos que registres se guardan únicamente en el navegador de tu dispositivo (almacenamiento local). No se envían a ningún servidor ni se respaldan en la nube.",
+      dataStorageBody2: "· Los datos pueden perderse al borrar los datos de navegación o la caché, al restablecer o cambiar de dispositivo, o al cambiar de navegador.",
+      dataStorageBody3: "· No nos responsabilizamos de la pérdida o el daño de los datos. Te recomendamos guardar periódicamente un archivo con el botón «Guardar copia» para lo que sea importante.",
+      footerPrivacyLink: "Política de privacidad",
+      footerCookieLink: "Sobre las cookies",
+      footerBrandName: "AI Drive Planner",
+    },
   },
 
   ru: {
@@ -2066,5 +2249,31 @@ export const translations: Record<LangCode, LifeMapDict> = {
       ],
     },
     heritageLink: "Всемирное наследие",
+    landing: {
+      followX: "Подписывайтесь на нас в X (@AIDRIVEPLAN)",
+      journalName: "AI Конструктор путевого дневника",
+      recordCta: "Записать впечатление",
+      heroEyebrow: "Приватный дневник жизни",
+      heroHeadline1: "С фотографиями и местами",
+      heroHeadline2: "сохраняйте впечатления от жизни.",
+      since: "С июня 2026",
+      demoLocation1: "Канагава",
+      demoLocation2: "Токио",
+      journalBannerTitle: "Превратите сохранённые фото и заметки в пост и обложку для соцсетей",
+      journalBannerBody: "Загрузите записи с Карты жизненного опыта, чтобы собрать воспоминания о поездке.",
+      journalBannerCta: "Открыть AI Дневник путешествий",
+      journalWithSelectionCta: "Опубликовать выбранные записи в соцсетях",
+      queueProgress: "Обработка {{current}} / {{total}}",
+      noticeAccordionTitle: "Условия использования и хранение данных",
+      noticeTitle: "Условия использования",
+      noticeBody: "· Копирование, использование или распространение исходного кода, дизайна и содержимого этого сайта без разрешения запрещено.",
+      dataStorageTitle: "О хранении данных",
+      dataStorageBody1: "· Фотографии, места, заметки и другие данные, которые вы регистрируете, хранятся только в браузере вашего устройства (локальное хранилище). Ничего не отправляется на сервер и не резервируется в облаке.",
+      dataStorageBody2: "· Данные могут быть утеряны при очистке данных браузера или кэша, сбросе или замене устройства, а также при смене браузера.",
+      dataStorageBody3: "· Мы не несём ответственности за потерю или повреждение данных. Рекомендуем периодически сохранять файл с помощью кнопки «Сохранить резервную копию» для всего важного.",
+      footerPrivacyLink: "Политика конфиденциальности",
+      footerCookieLink: "О файлах cookie",
+      footerBrandName: "AI Планировщик поездок",
+    },
   },
 };

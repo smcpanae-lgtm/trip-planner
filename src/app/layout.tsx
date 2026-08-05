@@ -85,6 +85,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    // 既知の制約・対応見送り: ルートレイアウトが全ページ共通のため、/en/life-map でも
+    // lang="ja" のまま出力される。Googleの言語判定はhreflangと本文の実言語が主でhtml lang属性は
+    // ほぼ使われないため、ルートレイアウト分割（言語別layout）は今回のスコープ外とした。
     <html lang="ja">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />

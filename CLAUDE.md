@@ -2,40 +2,26 @@
 
 ## デプロイ運用（最重要・毎回必ず読むこと）
 
-このプロジェクトは **git をデプロイ元にしていない**。
-`npx vercel --prod` で **作業フォルダ（ワーキングディレクトリ）の中身がそのまま本番へ送られる**運用。
-GitHub連携による「コミット＝デプロイ」ではない。
+**2026年8月5日、Vercelプロジェクトの Git 連携（GitHub: `smcpanae-lgtm/trip-planner`）を設定し、
+未コミットだった本番稼働中の内容（世界遺産機能・人生体験マップ・AI旅行記メーカー等）を
+すべて `master` に同期済み。これ以降このプロジェクトは \*\*git をデプロイ元にしている\*\*。**
 
-### したがって、絶対にやってはいけない誤解
+- `master` に push すると Vercel が自動でビルド・本番デプロイする（Production Branch = `master`）。
+- それ以外のブランチ／PRを push すると Preview デプロイ（本番には影響しない）が作られる。
+- `npx vercel --prod` によるCLI直接デプロイは、今後は基本的に使わない
+  （使うと git 履歴と本番が再びズレるため）。通常は `git push` だけで完結させる。
 
-**`git status` の未コミット・未追跡を「本番に未反映」と解釈してはならない。**
+### 以前の運用との違い（過去の会話ログを参照する場合の注意）
 
-git は本番の状態を表していない。git は実態から大きく遅れている。
-未コミット・未追跡であっても、すでに本番稼働中であることが普通にある。
+2026年8月5日より前は、`npx vercel --prod` で作業フォルダの中身を直接本番へ送る運用だったため、
+「git が未コミットでも本番はとっくに反映済み」という状態が常態化していた。
+**この過去の事情は解消済み。** 今は通常どおり、`git status` の未コミット・未追跡は
+「まだ本番に反映されていない」ことを意味する、一般的な git ベースの運用に戻っている。
 
-### 実例（この事実の裏付け）
+### 反映状況を確認したい場合
 
-以下はすべて **git 未追跡（`??`）なのに本番で稼働中**：
-
-| パス | 本番URL | 状態 |
-|---|---|---|
-| `src/app/heritage/` | https://www.ai-drive-planner.com/heritage | HTTP 200 稼働中 |
-| `src/app/shiori/` | https://www.ai-drive-planner.com/shiori | HTTP 200 稼働中 |
-| `src/app/columns/` | https://www.ai-drive-planner.com/columns | HTTP 200 稼働中 |
-| `src/data/heritage.ts` / `heritage-sites.json` | 上記の遺産データ | 稼働中 |
-| `public/heritage/assets/heritage/*.webp`（約1,173枚） | 各遺産の画像 | 稼働中 |
-
-世界遺産機能の本体一式が未追跡のまま本番で動いている。これがこの運用の何よりの証拠。
-
-### 禁止事項
-
-- `git status` を根拠に「今回の作業と無関係な変更が一緒にデプロイされます」と警告しないこと。
-  → 事実として誤り。すでに本番に出ているものが git に記録されていないだけ。
-- ユーザーに同じ確認を繰り返させないこと。この件は何度も説明済み。
-
-### 反映状況を確認したい場合の正しい方法
-
-git を見るのではなく、**本番URLに直接アクセスして確認する**。
+まずは `git log` / `git status` で確認してよい（通常のプロジェクトと同じ）。
+より確実に確認したい場合は、本番URLに直接アクセスする。
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" https://www.ai-drive-planner.com/<path>
@@ -44,11 +30,14 @@ curl -s -o /dev/null -w "%{http_code}\n" https://www.ai-drive-planner.com/<path>
 ### デプロイ手順
 
 ```bash
-npx vercel --prod --yes
+git push origin master
 ```
 
 - 実行前にユーザーの明示的な指示を得ること（グローバル CLAUDE.md の方針どおり）。
-- ただし「git が汚れているから」という理由で止めないこと。それは止める理由にならない。
+- push後はVercelのビルドが走るため、`npx vercel ls trip-planner` 等で `Ready`/`Error` を確認してから完了報告すること。
+- 影響範囲が大きい変更（多数の新規ファイルなど）は、いきなり `master` に push せず、
+  作業用ブランチを push → Preview デプロイでビルド成功を確認 → `master` にマージ、
+  という2段階で行うと安全（2026年8月5日の同期作業ではこの手順を実施した）。
 
 ## その他の前提
 

@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import {
   MapPin,
   Lock,
@@ -69,6 +70,23 @@ const FONT_STACK =
 // 実体コンポーネント（LanguageProvider内で動作）
 function LifeMapClientInner() {
   const { lang, setLang, t, homeCountry, setHomeCountry } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // English を選んだら /en/life-map へ、/en/life-map から日本語に戻したら /life-map へ遷移する。
+  // ja/en以外を選んだ場合は専用URLが無いため、従来どおりページ内切替のみ（将来の拡張用に温存）。
+  const handleLangChange = useCallback(
+    (next: LangCode) => {
+      setLang(next);
+      if (next === "en" && pathname !== "/en/life-map") {
+        router.push("/en/life-map");
+      } else if (next === "ja" && pathname === "/en/life-map") {
+        router.push("/life-map");
+      }
+    },
+    [setLang, pathname, router]
+  );
+
   const [entries, setEntries] = useState<LifeMapEntry[]>([]);
   const [draft, setDraft] = useState<Draft>(createEmptyDraft());
   const [pickMode, setPickMode] = useState(false);
@@ -431,7 +449,7 @@ function LifeMapClientInner() {
               </span>
               <select
                 value={lang}
-                onChange={(e) => setLang(e.target.value as LangCode)}
+                onChange={(e) => handleLangChange(e.target.value as LangCode)}
                 className="px-2.5 py-1.5 border border-[#E4DCCC] rounded-[9px] bg-white text-[12.5px] font-semibold text-[#4A443B] outline-none cursor-pointer"
                 aria-label="Language"
               >
@@ -458,7 +476,7 @@ function LifeMapClientInner() {
               <svg viewBox="0 0 24 24" className="w-[13px] h-[13px] fill-white shrink-0" aria-hidden="true">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
               </svg>
-              公式X（@AIDRIVEPLAN）をフォロー
+              {t("landing.followX")}
             </a>
           </div>
         </div>
@@ -466,13 +484,13 @@ function LifeMapClientInner() {
           <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] flex items-center justify-between gap-4">
             <div className="flex items-stretch gap-1">
               <a href="#howto" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
-                使い方
+                {t("guide.howtoTitle")}
               </a>
               <Link href="/shiori" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
-                AI旅行記メーカー
+                {t("landing.journalName")}
               </Link>
               <a href="#faq" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
-                よくある質問
+                {t("guide.faqTitle")}
               </a>
             </div>
             <a
@@ -480,7 +498,7 @@ function LifeMapClientInner() {
               className="inline-flex items-center gap-1.5 px-3.5 py-[7px] rounded-full bg-[#1C7A66] text-white text-[12.5px] font-bold no-underline"
             >
               <Plus className="w-[15px] h-[15px]" strokeWidth={1.9} />
-              体験を記録
+              {t("landing.recordCta")}
             </a>
           </div>
         </nav>
@@ -498,13 +516,13 @@ function LifeMapClientInner() {
               style={{ background: heroTokens.eyebrowBg, color: heroTokens.eyebrowText }}
             >
               <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.9} />
-              非公開のライフログ
+              {t("landing.heroEyebrow")}
             </span>
             <h1
               className="mt-[18px] mb-4 text-[42px] leading-[1.28] font-extrabold tracking-[0.01em]"
               style={{ color: heroTokens.h1 }}
             >
-              写真と場所で、<br />人生の体験を残す。
+              {t("landing.heroHeadline1")}<br />{t("landing.heroHeadline2")}
             </h1>
             <p
               className="mb-[22px] text-[15.5px] max-w-[38ch]"
@@ -519,7 +537,7 @@ function LifeMapClientInner() {
                 style={{ background: heroTokens.ctaBg, boxShadow: `0 8px 20px ${heroTokens.ctaShadow}` }}
               >
                 <ImageIcon className="w-[19px] h-[19px]" strokeWidth={1.8} />
-                写真を選ぶ
+                {t("photo.selectBtn")}
               </a>
               <a
                 href="#record"
@@ -527,7 +545,7 @@ function LifeMapClientInner() {
                 style={{ color: heroTokens.secondaryText, borderColor: heroTokens.secondaryBorder }}
               >
                 <Camera className="w-[19px] h-[19px]" strokeWidth={1.8} />
-                カメラで撮影
+                {t("photo.cameraBtn")}
               </a>
             </div>
             <div className="flex items-start gap-[9px] max-w-[44ch] text-[12.5px]" style={{ color: heroTokens.noteText }}>
@@ -535,7 +553,7 @@ function LifeMapClientInner() {
               <span>{t("app.privacy")}</span>
             </div>
             <div className="mt-[18px] flex items-center gap-4 flex-wrap text-xs" style={{ color: heroTokens.metaText }}>
-              <span>Since 2026年6月</span>
+              <span>{t("landing.since")}</span>
               <a
                 href="https://x.com/AIDRIVEPLAN"
                 target="_blank"
@@ -546,7 +564,7 @@ function LifeMapClientInner() {
                 <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current shrink-0" aria-hidden="true">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" />
                 </svg>
-                公式X（@AIDRIVEPLAN）をフォロー
+                {t("landing.followX")}
               </a>
             </div>
           </div>
@@ -567,13 +585,13 @@ function LifeMapClientInner() {
                   className="px-[9px] py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background: heroTokens.card1ChipBg, color: heroTokens.card1ChipText }}
                 >
-                  🎣 釣り
+                  🎣 {t("categories.fishing")}
                 </span>
                 <span className="text-[11px]" style={{ color: heroTokens.metaText }}>2025-10-11</span>
               </div>
               <div className="mt-[5px] flex items-center gap-[5px] text-xs font-semibold" style={{ color: heroTokens.body }}>
                 <MapPin className="w-[13px] h-[13px]" strokeWidth={1.9} style={{ color: heroTokens.accent }} />
-                神奈川県
+                {t("landing.demoLocation1")}
               </div>
             </div>
             <div
@@ -591,13 +609,13 @@ function LifeMapClientInner() {
                   className="px-[9px] py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background: heroTokens.card2ChipBg, color: heroTokens.card2ChipText }}
                 >
-                  🐕 犬連れ
+                  🐕 {t("categories.dog")}
                 </span>
                 <span className="text-[11px]" style={{ color: heroTokens.metaText }}>2025-05-03</span>
               </div>
               <div className="mt-[5px] flex items-center gap-[5px] text-xs font-semibold" style={{ color: heroTokens.body }}>
                 <MapPin className="w-[13px] h-[13px]" strokeWidth={1.9} style={{ color: heroTokens.accent }} />
-                東京都
+                {t("landing.demoLocation2")}
               </div>
             </div>
           </div>
@@ -616,17 +634,17 @@ function LifeMapClientInner() {
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs font-bold text-[#E4A857]">
               <BookOpen className="w-3.5 h-3.5" />
-              AI旅行記メーカー
+              {t("landing.journalName")}
             </p>
             <p className="mt-1.5 text-sm font-bold text-white">
-              保存した写真とメモから、SNS投稿文・アイキャッチ画像を作る
+              {t("landing.journalBannerTitle")}
             </p>
             <p className="mt-1 text-xs text-[#C9C2B5] leading-relaxed">
-              人生体験マップの記録を読み込み、旅行後の思い出整理に使えます。
+              {t("landing.journalBannerBody")}
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 self-start sm:self-center px-4 py-2 rounded-lg bg-[#E4A857] text-[#3A2C18] text-xs font-extrabold shrink-0">
-            AI旅行記へ
+            {t("landing.journalBannerCta")}
             <ArrowRight className="w-3.5 h-3.5" />
           </span>
         </Link>
@@ -654,7 +672,7 @@ function LifeMapClientInner() {
         <div className="flex flex-col gap-5">
           {queueTotal > 1 && (
             <div className="bg-[#2B2721] text-white rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm font-medium">
-              <span>{queueTotal - fileQueue.length} / {queueTotal} 枚目を処理中</span>
+              <span>{t("landing.queueProgress", { current: queueTotal - fileQueue.length, total: queueTotal })}</span>
               <div className="flex-1 bg-white/20 rounded-full h-1.5">
                 <div
                   className="bg-white rounded-full h-1.5 transition-all"
@@ -715,7 +733,7 @@ function LifeMapClientInner() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E4A857] text-[#3A2C18] text-xs font-bold hover:opacity-90 transition-all"
                     >
                       <BookOpen className="w-3.5 h-3.5" />
-                      選択した記録でSNS投稿
+                      {t("landing.journalWithSelectionCta")}
                     </Link>
                     <button
                       type="button"
@@ -791,7 +809,7 @@ function LifeMapClientInner() {
           </div>
           <div className="bg-white rounded-[18px] p-[18px] border border-[#EEE7DA] shadow-[0_4px_22px_rgba(43,39,33,.05)]">
             <p className="text-sm font-extrabold text-[#2B2721] mb-2.5">
-              カテゴリ
+              {t("form.catLabel")}
             </p>
             <CategoryLegend />
           </div>
@@ -807,7 +825,7 @@ function LifeMapClientInner() {
           <summary className="flex items-center justify-between cursor-pointer list-none font-extrabold text-[15px] text-[#2B2721]">
             <span className="flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-[#8A8172]" />
-              ご利用上の注意・データの保存について
+              {t("landing.noticeAccordionTitle")}
             </span>
             <ChevronDown className="w-4 h-4 text-[#A79E8C] transition-transform group-open:rotate-180" />
           </summary>
@@ -815,18 +833,18 @@ function LifeMapClientInner() {
             <div>
               <p className="flex items-center gap-1.5 font-medium text-[#6B6357] mb-1">
                 <ClipboardList className="w-3.5 h-3.5" />
-                ご利用上の注意
+                {t("landing.noticeTitle")}
               </p>
-              <p>・本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。</p>
+              <p>{t("landing.noticeBody")}</p>
             </div>
             <div>
               <p className="flex items-center gap-1.5 font-medium text-[#6B6357] mb-1">
                 <HardDrive className="w-3.5 h-3.5" />
-                データの保存について
+                {t("landing.dataStorageTitle")}
               </p>
-              <p>・登録した写真・場所・メモ等のデータは、お使いの端末のブラウザ内（ローカルストレージ）にのみ保存されます。サーバーへの送信・クラウドへのバックアップは行われません。</p>
-              <p>・ブラウザの「閲覧データ削除」「キャッシュクリア」、端末の初期化・機種変更、ブラウザの変更等により、データが消失する場合があります。</p>
-              <p>・データの消失・破損に関して、当サービスは一切の責任を負いかねます。大切なデータは定期的に「バックアップ書き出し」ボタンでファイルに保存しておくことをお勧めします。</p>
+              <p>{t("landing.dataStorageBody1")}</p>
+              <p>{t("landing.dataStorageBody2")}</p>
+              <p>{t("landing.dataStorageBody3")}</p>
             </div>
           </div>
         </details>
@@ -839,18 +857,18 @@ function LifeMapClientInner() {
             <span className="w-8 h-8 rounded-[10px] bg-[#1C7A66] flex items-center justify-center shrink-0">
               <MapPin className="w-4 h-4 text-white" />
             </span>
-            <span className="font-extrabold text-sm text-[#2B2721]">人生体験マップ</span>
+            <span className="font-extrabold text-sm text-[#2B2721]">{t("app.title")}</span>
           </Link>
           <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#6B6357] font-medium">
-            <Link href="/" className="hover:text-[#2B2721]">AIドライブプランナー</Link>
-            <Link href="/heritage" className="hover:text-[#2B2721]">世界遺産パスポート</Link>
-            <Link href="/shiori" className="hover:text-[#2B2721]">AI旅行記メーカー</Link>
-            <Link href="/privacy" className="hover:text-[#2B2721]">プライバシーポリシー</Link>
-            <Link href="/cookie" className="hover:text-[#2B2721]">Cookieについて</Link>
+            <Link href="/" className="hover:text-[#2B2721]">{t("landing.footerBrandName")}</Link>
+            <Link href="/heritage" className="hover:text-[#2B2721]">{t("heritageLink")}</Link>
+            <Link href="/shiori" className="hover:text-[#2B2721]">{t("landing.journalName")}</Link>
+            <Link href="/privacy" className="hover:text-[#2B2721]">{t("landing.footerPrivacyLink")}</Link>
+            <Link href="/cookie" className="hover:text-[#2B2721]">{t("landing.footerCookieLink")}</Link>
           </nav>
         </div>
         <p className="text-center text-[11px] text-[#A79E8C] pb-6">
-          © {new Date().getFullYear()} AIドライブプランナー
+          © {new Date().getFullYear()} {t("landing.footerBrandName")}
         </p>
       </footer>
 
@@ -880,9 +898,15 @@ function LifeMapClientInner() {
 }
 
 // LanguageProviderでラップして export
-export default function LifeMapClient() {
+export default function LifeMapClient({
+  initialLang,
+  respectStoredLang,
+}: {
+  initialLang?: LangCode;
+  respectStoredLang?: boolean;
+} = {}) {
   return (
-    <LanguageProvider>
+    <LanguageProvider initialLang={initialLang} respectStoredLang={respectStoredLang}>
       <LifeMapClientInner />
     </LanguageProvider>
   );

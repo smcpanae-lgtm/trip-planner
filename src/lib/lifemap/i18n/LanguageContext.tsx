@@ -59,14 +59,30 @@ const LanguageContext = createContext<LanguageContextValue>({
   updateCustomCatLabel: () => undefined,
 });
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<LangCode>("ja");
+export function LanguageProvider({
+  children,
+  initialLang,
+  respectStoredLang = true,
+}: {
+  children: ReactNode;
+  /** サーバー側で確定させたい初期言語（例: /en/life-map なら "en"）。未指定時は "ja" */
+  initialLang?: LangCode;
+  /**
+   * falseの場合、初期言語は initialLang に固定し、localStorage保存値では上書きしない。
+   * URL自体が言語を表すページ（/en/life-map）専用。サーバーとクライアント最初のレンダーを
+   * 一致させるため、この値はpropsのみで決まりuseEffect内で変えない（ハイドレーション対策）。
+   */
+  respectStoredLang?: boolean;
+}) {
+  const [lang, setLangState] = useState<LangCode>(initialLang ?? "ja");
   const [homeCountry, setHomeCountryState] = useState<HomeCountry>(DEFAULT_COUNTRY);
   const [customCatLabels, setCustomCatLabels] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const savedLang = localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
-    if (savedLang && translations[savedLang]) setLangState(savedLang);
+    if (respectStoredLang) {
+      const savedLang = localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
+      if (savedLang && translations[savedLang]) setLangState(savedLang);
+    }
 
     const savedCountry = localStorage.getItem(COUNTRY_STORAGE_KEY) as HomeCountryCode | null;
     if (savedCountry) {

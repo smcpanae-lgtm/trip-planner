@@ -1,4 +1,4 @@
-const TOOLS = [
+const TOOLS_JA = [
   {
     href: "/",
     title: "AIドライブプランナー",
@@ -31,14 +31,44 @@ const TOOLS = [
   },
 ];
 
-export default function SiteFooter() {
+// /en/life-map からのリンク用。関連ツールのうち英語で案内できるものだけを掲載。
+const TOOLS_EN = [
+  {
+    href: "/",
+    title: "AI Drive Planner",
+    description: "Enter your start and destination — AI builds your road trip plan.",
+  },
+  {
+    href: "/heritage/en",
+    title: "World Heritage Passport",
+    description: "A private stamp rally for tracking the World Heritage Sites you've visited.",
+  },
+  {
+    href: "/shiori",
+    title: "AI Travel Journal Maker",
+    description: "Turn your photos and notes into a travel journal, free — no app required.",
+  },
+];
+
+export default function SiteFooter({
+  locale = "ja",
+}: {
+  locale?: "ja" | "en";
+} = {}) {
+  const tools = locale === "en" ? TOOLS_EN : TOOLS_JA;
+  const heading = locale === "en" ? "Related tools" : "関連ツール";
+  const copyright =
+    locale === "en"
+      ? `© ${new Date().getFullYear()} AI Drive Planner`
+      : `© ${new Date().getFullYear()} AI ドライブプランナー`;
+
   return (
     <footer className="relative z-10 border-t border-slate-200 bg-white">
       <div className="max-w-[1600px] mx-auto px-4 py-10">
-        <nav aria-label="関連ツール">
-          <h2 className="text-sm font-bold text-slate-500 mb-4">関連ツール</h2>
+        <nav aria-label={heading}>
+          <h2 className="text-sm font-bold text-slate-500 mb-4">{heading}</h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {TOOLS.map((tool) => (
+            {tools.map((tool) => (
               <li key={tool.href}>
                 <a
                   href={tool.href}
@@ -53,9 +83,7 @@ export default function SiteFooter() {
             ))}
           </ul>
         </nav>
-        <p className="text-xs text-slate-400 mt-8">
-          © {new Date().getFullYear()} AI ドライブプランナー
-        </p>
+        <p className="text-xs text-slate-400 mt-8">{copyright}</p>
       </div>
     </footer>
   );
