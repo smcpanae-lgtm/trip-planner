@@ -58,3 +58,214 @@ body {
   background: #cbd5e1;
   border-radius: 3px;
 }
+
+.shiori-print-document {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .shiori-print-document,
+  .shiori-print-document * {
+    visibility: visible;
+  }
+
+  .shiori-print-document {
+    color: #1c1917;
+    display: block !important;
+    font-family: "Meiryo", "メイリオ", "Hiragino Sans", "Noto Sans JP", sans-serif;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .shiori-print-sheet {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4mm;
+    height: 277mm;
+    overflow: hidden;
+    width: 190mm;
+  }
+
+  .shiori-print-hero {
+    display: grid;
+    gap: 6mm;
+    grid-template-columns: 1fr 74mm;
+    min-height: 58mm;
+  }
+
+  .shiori-print-hero-text {
+    align-self: center;
+  }
+
+  .shiori-print-kicker {
+    color: #7f1d1d;
+    font-size: 10pt;
+    font-weight: 800;
+    margin: 0 0 3mm;
+  }
+
+  .shiori-print-hero h1 {
+    color: #7f1d1d;
+    font-size: 24pt;
+    line-height: 1.22;
+    margin: 0 0 4mm;
+  }
+
+  .shiori-print-hero p {
+    color: #14532d;
+    font-size: 10.5pt;
+    margin: 0 0 2mm;
+  }
+
+  .shiori-print-hero-image img,
+  .shiori-print-hero-image span {
+    align-items: center;
+    background: #f1f5f9;
+    border-radius: 4mm;
+    color: #94a3b8;
+    display: flex;
+    font-size: 9pt;
+    height: 58mm;
+    justify-content: center;
+    object-fit: cover;
+    width: 74mm;
+  }
+  .shiori-print-meta-line {
+    border-bottom: 1px solid #ead9d9;
+    border-top: 1px solid #ead9d9;
+    color: #7f1d1d;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 8.5pt;
+    font-weight: 700;
+    gap: 5mm;
+    padding: 2mm 0;
+  }
+
+
+
+
+
+  .shiori-print-note {
+    background: #fff7ed;
+    border: 1px solid #ead9d9;
+    border-radius: 3mm;
+    color: #1c1917;
+    font-size: 9pt;
+    line-height: 1.55;
+    margin: 0;
+    max-height: 32mm;
+    overflow: hidden;
+    padding: 3mm;
+  }
+
+  .shiori-print-photo-strip {
+    display: grid;
+    gap: 3mm;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .shiori-print-photo-strip img {
+    border-radius: 3mm;
+    height: 24mm;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .shiori-print-photo-note,
+  .shiori-print-hidden-note {
+    color: #7f1d1d;
+    font-size: 8pt;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+
+  .shiori-print-single-story {
+    border-top: 1px solid #ead9d9;
+    padding-top: 5mm;
+  }
+
+  .shiori-print-single-story h2 {
+    color: #1c1917;
+    font-size: 15pt;
+    line-height: 1.35;
+    margin: 2mm 0 3mm;
+  }
+
+  .shiori-print-single-story p {
+    color: #44403c;
+    font-size: 10pt;
+    line-height: 1.65;
+    margin: 0;
+    white-space: pre-wrap;
+  }
+  .shiori-print-compact-timeline {
+    border-top: 1px solid #ead9d9;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .shiori-print-compact-entry {
+    border-bottom: 1px solid #ead9d9;
+    break-inside: avoid;
+    display: grid;
+    gap: 3mm;
+    grid-template-columns: 10mm 1fr;
+    padding: 2.4mm 0;
+    page-break-inside: avoid;
+  }
+
+  .shiori-print-compact-number {
+    color: #7f1d1d;
+    font-size: 10pt;
+    font-weight: 800;
+  }
+
+  .shiori-print-compact-meta {
+    color: #14532d;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 7.8pt;
+    font-weight: 700;
+    gap: 3mm;
+  }
+
+  .shiori-print-compact-entry h2 {
+    color: #1c1917;
+    font-size: 11pt;
+    line-height: 1.25;
+    margin: 1mm 0;
+  }
+
+  .shiori-print-compact-entry p {
+    color: #44403c;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    margin: 0;
+  }
+}
+
+
+
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#EFEAE0;font-family:'Noto Sans JP',system-ui,sans-serif;color:#2B2721;}
+</style>
+</helmet>
+
+<section style="padding:40px;">
+  <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:6px;">
+    <h1 style="margin:0;font-size:24px;font-weight:800;">人生体験マップ｜トップページ再デザイン</h1>
+    <span style="font-size:13px;color:#7A7264;font-weight:600;">Turn 1 — ヒーロー2案（色違い、以下は共通）</span>
+  </div>
+  <p style="margin:0 0 26px;font-size:13px;color:#7A7264;max-width:70ch;line-height:1.7;">見出しは Noto Sans JP、アイコンは線画（カテゴリのみ絵文字）。注意事項の文面は既存サイトのまま。<a href="#1a" style="color:#1C7A66;font-weight:700;">1a</a>＝ティール強め、<a href="#1b" style="color:#C57B33;font-weight:700;">1b</a>＝アンバー強め。ヒーロー以外は完全共通です。</p>
+
+  <div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;">
+
+    <div id="1a" style="flex:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="display:grid;place-items:center;min-width:34px;height:34px;padding:0 11px;border-radius:9px;background:#1C7A66;color:#fff;font-weight:800;font-size:14px;">1a</span>
+        <span style="font-size:15px;font-weight:700;">ティール強め</span>
+        <span style="font-size:12.5px;color:#8A8172;">落ち着いた深緑・端末内保存の安心感</span>
+      </div>
+      <div style="width:1080px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(43,39,33,.16);border:1px solid #E0D8C8;background:#FAF7F1;">
+        <dc-import name="人生体験マップ" hero-theme="teal" hint-size="1080px,1680px" style="width:1080px;"></dc-import>
+      </div>
+    </div>
+
+    <div id="1b" style="flex:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="display:grid;place-items:center;min-width:34px;height:34px;padding:0 11px;border-radius:9px;background:#C57B33;color:#fff;font-weight:800;font-size:14px;">1b</span>
+        <span style="font-size:15px;font-weight:700;">アンバー強め</span>
+        <span style="font-size:12.5px;color:#8A8172;">旅の温かみ・写真の思い出を前面に</span>
+      </div>
+      <div style="width:1080px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(43,39,33,.16);border:1px solid #E0D8C8;background:#FAF7F1;">
+        <dc-import name="人生体験マップ" hero-theme="amber" hint-size="1080px,1680px" style="width:1080px;"></dc-import>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

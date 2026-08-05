@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Map, X, Sparkles, Printer, Copy, Check, Globe } from "lucide-react";
+import { Map, X, Sparkles, Printer, Copy, Check, Globe, Share2, ImageDown } from "lucide-react";
+import { buildSharePostText, buildXShareUrl, generatePlanShareCard, downloadDataUrl } from "@/lib/shareCard";
+import { trackEvent } from "@/lib/analytics";
 import TripForm from "@/components/TripForm";
 import Itinerary from "@/components/Itinerary";
 import { geocode } from "@/lib/geocoding";
@@ -15,6 +17,8 @@ import type {
   HighwaySegment,
   MealStop,
   PlanVariantData,
+  DayPlan,
+  TravelerProfile,
 } from "@/types/trip";
 
 import SiteFooter from "@/components/SiteFooter";
@@ -256,6 +260,168 @@ async function fetchRoutePolylines(
   return polylines;
 }
 
+function buildDemoPlanVariant(): PlanVariantData {
+  const spots: GeocodedSpot[] = [
+    { name: "東京駅", lat: 35.6812, lng: 139.7671, parking: "", parkingNote: "", type: "departure", dayIndex: 0, orderIndex: 0 },
+    { name: "大涌谷", lat: 35.2436, lng: 139.0197, parking: "大涌谷駐車場", parkingNote: "土日は混雑するため午前中がおすすめ", type: "destination", dayIndex: 0, orderIndex: 1 },
+    { name: "箱根神社（芦ノ湖）", lat: 35.2018, lng: 139.0257, parking: "箱根神社第1駐車場", parkingNote: "", type: "destination", dayIndex: 0, orderIndex: 2 },
+    { name: "箱根園レストラン", lat: 35.2065, lng: 139.0234, parking: "箱根園駐車場", parkingNote: "", type: "destination", dayIndex: 0, orderIndex: 3 },
+    { name: "箱根湯本", lat: 35.2323, lng: 139.1069, parking: "", parkingNote: "", type: "arrival", dayIndex: 0, orderIndex: 4 },
+  ];
+
+  const items = [
+    {
+      spot: spots[0],
+      arrivalTime: "09:00",
+      departureTime: "09:00",
+      stayMinutes: 0,
+      distanceKm: 0,
+      travelMinutes: 0,
+    },
+    {
+      spot: spots[1],
+      arrivalTime: "10:40",
+      departureTime: "11:40",
+      stayMinutes: 60,
+      distanceKm: 95,
+      travelMinutes: 100,
+      highway: { entryIC: "東京IC", exitIC: "御殿場IC", entryHighway: "東名高速", exitHighway: "東名高速" },
+      description: "黒たまごで有名な活火山地帯。ロープウェイからの噴煙と富士山の眺めが見どころ。",
+      parkingInfo: "大涌谷駐車場（有料）",
+    },
+    {
+      spot: spots[2],
+      arrivalTime: "12:20",
+      departureTime: "13:20",
+      stayMinutes: 60,
+      distanceKm: 12,
+      travelMinutes: 30,
+      description: "芦ノ湖畔に佇む古社。湖上の平和鳥居は箱根屈指の撮影スポット。",
+      parkingInfo: "箱根神社第1駐車場",
+    },
+    {
+      spot: spots[3],
+      arrivalTime: "13:30",
+      departureTime: "14:30",
+      stayMinutes: 60,
+      distanceKm: 3,
+      travelMinutes: 10,
+      isMealSpot: "lunch" as const,
+      description: "芦ノ湖を望むレストランで、地元食材を使ったランチを提供。",
+    },
+    {
+      spot: spots[4],
+      arrivalTime: "15:10",
+      departureTime: "15:10",
+      stayMinutes: 0,
+      distanceKm: 20,
+      travelMinutes: 40,
+      description: "箱根の玄関口。土産物店や日帰り温泉も充実。",
+    },
+  ];
+
+  const itineraries: DayItinerary[] = [
+    {
+      dayIndex: 0,
+      items,
+      lunchGenre: "ランチ",
+      dinnerGenre: "",
+      lunchSpotInfo: {
+        name: "箱根園レストラン",
+        description: "芦ノ湖と富士山を眺めながら食事ができる、ドライブ休憩にぴったりのレストラン。",
+        nearSpot: "箱根園",
+        alternatives: ["成蔵", "はつ花そば 本店"],
+      },
+      commentary: {
+        removedSpots: [],
+        highlights: [
+          "大涌谷で名物の黒たまごを堪能",
+          "芦ノ湖畔の絶景ドライブ",
+          "箱根神社の平和鳥居で記念撮影",
+        ],
+        tips: [
+          "紅葉シーズンは大涌谷ロープウェイが混雑するため午前中の訪問がおすすめ",
+          "帰りの東名高速は夕方から渋滞しやすいので15時台の出発が安心",
+        ],
+        overallDescription: "東京から日帰りで楽しむ、箱根の定番スポットを効率よく巡るプランです。",
+      },
+    },
+  ];
+
+  return {
+    planName: "サンプルプラン",
+    planDescription: "東京→箱根 日帰りドライブ",
+    spots,
+    itineraries,
+  };
+}
+
+type ScenarioKey = "daytrip" | "dog" | "senior" | "rainy";
+
+const SCENARIO_TAGS: { key: ScenarioKey; emoji: string; label: string }[] = [
+  { key: "daytrip", emoji: "☀️", label: "日帰り" },
+  { key: "dog", emoji: "🐶", label: "犬連れ" },
+  { key: "senior", emoji: "👴", label: "シニア旅" },
+  { key: "rainy", emoji: "☔", label: "雨の日" },
+];
+
+function buildScenarioConfig(scenario: ScenarioKey, base: TripConfig | null): TripConfig {
+  const baseDay: DayPlan = base?.days?.[0]
+    ? { ...base.days[0] }
+    : {
+        dayIndex: 0,
+        departure: "",
+        departureTime: "09:00",
+        destinations: [{ id: crypto.randomUUID(), name: "", address: "", isOmakase: false }],
+        arrival: "",
+        arrivalTime: "20:00",
+        includeLunch: false,
+        lunchLocation: "",
+        lunchGenre: "",
+        includeDinner: false,
+        dinnerLocation: "",
+        dinnerGenre: "",
+      };
+
+  const travelerProfile: TravelerProfile = base?.travelerProfile
+    ? { ...base.travelerProfile }
+    : { partyType: "", ageRange: "", hobbies: "", hasChildren: false, childAges: "" };
+
+  let withDog = base?.withDog ?? false;
+
+  switch (scenario) {
+    case "dog":
+      withDog = true;
+      break;
+    case "senior":
+      travelerProfile.partyType = "senior";
+      travelerProfile.ageRange = "60s";
+      break;
+    case "rainy": {
+      const rainHint = "雨の日でも楽しめる屋内スポット";
+      travelerProfile.hobbies = travelerProfile.hobbies.includes(rainHint)
+        ? travelerProfile.hobbies
+        : travelerProfile.hobbies
+        ? `${travelerProfile.hobbies} ${rainHint}`
+        : rainHint;
+      break;
+    }
+    case "daytrip":
+    default:
+      break;
+  }
+
+  return {
+    nights: 0,
+    days: [{ ...baseDay, dayIndex: 0 }],
+    withDog,
+    aiOmakase: base?.aiOmakase ?? true,
+    useHighway: base?.useHighway ?? true,
+    travelDate: base?.travelDate,
+    travelerProfile,
+  };
+}
+
 function HomeContent() {
   const { t, lang, setLang, languages } = useTripLang();
 
@@ -269,7 +435,9 @@ function HomeContent() {
     orderIndex: number;
   } | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("form");
+  const [isDemoPlan, setIsDemoPlan] = useState(false);
   const [mobileShowMap, setMobileShowMap] = useState(false);
+  const leftPanelRef = useRef<HTMLDivElement>(null);
   const [lastConfig, setLastConfig] = useState<TripConfig | null>(null);
   const [turnstileSiteKey, setTurnstileSiteKey] = useState(TURNSTILE_SITE_KEY);
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -498,6 +666,7 @@ function HomeContent() {
     }
     setIsLoading(true);
     setLoadingMessage(t.loading.message);
+    trackEvent("plan_start", { nights: config.nights, withDog: config.withDog });
 
     try {
       const apiPayload = {
@@ -547,6 +716,7 @@ function HomeContent() {
           setPlanVariants(variants);
           setActivePlanIndex(0);
           setViewMode("result");
+          trackEvent("plan_created", { nights: config.nights, withDog: config.withDog });
 
           setLoadingMessage(t.loading.messageRoute);
           fetchRoutePolylines(variants[0].spots).then((polylines) => {
@@ -697,6 +867,31 @@ function HomeContent() {
     []
   );
 
+  const handleTryDemo = useCallback(() => {
+    const demo = buildDemoPlanVariant();
+    setPlanError(null);
+    setPlanVariants([demo]);
+    setActivePlanIndex(0);
+    setIsDemoPlan(true);
+    setViewMode("result");
+    leftPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleBackToFormFromDemo = useCallback(() => {
+    setIsDemoPlan(false);
+    setViewMode("form");
+    leftPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleScenarioTag = useCallback((scenario: ScenarioKey) => {
+    setIsDemoPlan(false);
+    setViewMode("form");
+    setLastConfig((prev) => buildScenarioConfig(scenario, prev));
+    setTimeout(() => {
+      document.getElementById("trip-day-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }, []);
+
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printSelection, setPrintSelection] = useState<"a" | "b" | "both">("both");
   const [copied, setCopied] = useState(false);
@@ -798,6 +993,33 @@ function HomeContent() {
     }
   }
 
+  function getShareRoute(): { from: string; to: string; daysLabel: string; spotNames: string[] } {
+    const days = lastConfig?.days || [];
+    const from = days[0]?.departure || "";
+    const to = days[days.length - 1]?.arrival || "";
+    const nights = lastConfig?.nights ?? 0;
+    const daysLabel = nights === 0 ? "日帰り" : `${nights}泊${nights + 1}日`;
+    const spotNames = (activeVariant?.spots || [])
+      .filter((s) => s.type === "destination")
+      .map((s) => s.name)
+      .filter((name) => name && name !== "お任せ");
+    return { from, to, daysLabel, spotNames };
+  }
+
+  function handleXShare() {
+    const { from, to } = getShareRoute();
+    const text = buildSharePostText(from, to);
+    window.open(buildXShareUrl(text), "_blank", "noopener,noreferrer");
+    trackEvent("share_clicked", { method: "x", from, to });
+  }
+
+  function handleShareImageDownload() {
+    const { from, to, daysLabel, spotNames } = getShareRoute();
+    const dataUrl = generatePlanShareCard({ from, to, daysLabel, spotNames });
+    downloadDataUrl(dataUrl, `${from}-${to}-ドライブプラン.png`);
+    trackEvent("share_clicked", { method: "image", from, to });
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -847,7 +1069,7 @@ function HomeContent() {
             </a>
             {viewMode === "result" && (
               <button
-                onClick={() => { setViewMode("form"); setPlanError(null); }}
+                onClick={() => { setViewMode("form"); setPlanError(null); setIsDemoPlan(false); }}
                 className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-all"
               >
                 {t.header.editPlan}
@@ -927,8 +1149,9 @@ function HomeContent() {
       )}
 
       {/* Main Layout */}
-      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-60px)]">
+      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-60px)] lg:overflow-hidden">
         <div
+          ref={leftPanelRef}
           className={`w-full lg:w-[440px] xl:w-[480px] shrink-0 lg:overflow-y-auto itinerary-scroll p-4 ${
             mobileShowMap ? "hidden lg:block" : ""
           }`}
@@ -944,6 +1167,33 @@ function HomeContent() {
                   </div>
                 </div>
               )}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 mb-4">
+                <p className="text-sm font-bold text-blue-900 mb-1">まずは完成イメージを見てみる</p>
+                <p className="text-xs text-blue-700 mb-3">入力不要で「東京→箱根 日帰り」のサンプルプランをすぐ表示します</p>
+                <button
+                  type="button"
+                  onClick={handleTryDemo}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  サンプルを見る
+                </button>
+              </div>
+              <div className="mb-4">
+                <p className="text-xs font-bold text-slate-500 mb-2">シーンから選んでかんたん設定</p>
+                <div className="flex flex-wrap gap-2">
+                  {SCENARIO_TAGS.map((tag) => (
+                    <button
+                      key={tag.key}
+                      type="button"
+                      onClick={() => handleScenarioTag(tag.key)}
+                      className="px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-300 text-sm font-medium text-slate-700 transition-all"
+                    >
+                      {tag.emoji} {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4 shadow-sm">
                 {turnstileSiteKey ? (
                   <>
@@ -1011,35 +1261,69 @@ function HomeContent() {
                 </div>
               )}
 
-              {/* Print / Copy buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    if (planVariants.length > 1) {
-                      setShowPrintModal(true);
-                    } else {
-                      handlePrint();
-                    }
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
-                >
-                  <Printer className="w-4 h-4" />
-                  {t.buttons.print}
-                </button>
-                <button
-                  onClick={() => {
-                    if (planVariants.length > 1) {
-                      setShowPrintModal(true);
-                    } else {
-                      handleCopyText();
-                    }
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
-                >
-                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                  {copied ? t.buttons.copied : t.buttons.copy}
-                </button>
-              </div>
+              {isDemoPlan ? (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-4">
+                  <p className="text-sm font-bold text-amber-900 mb-1">これはサンプルプランです</p>
+                  <p className="text-xs text-amber-700 mb-3">出発地や条件を入力すれば、AIがあなただけのオリジナルプランを作成します</p>
+                  <button
+                    type="button"
+                    onClick={handleBackToFormFromDemo}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition-all"
+                  >
+                    あなたの条件で作る
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Print / Copy buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (planVariants.length > 1) {
+                          setShowPrintModal(true);
+                        } else {
+                          handlePrint();
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+                    >
+                      <Printer className="w-4 h-4" />
+                      {t.buttons.print}
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (planVariants.length > 1) {
+                          setShowPrintModal(true);
+                        } else {
+                          handleCopyText();
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? t.buttons.copied : t.buttons.copy}
+                    </button>
+                  </div>
+
+                  {/* Share buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleXShare}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-black text-white text-sm font-medium transition-all"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      Xでシェア
+                    </button>
+                    <button
+                      onClick={handleShareImageDownload}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all"
+                    >
+                      <ImageDown className="w-4 h-4" />
+                      画像を保存
+                    </button>
+                  </div>
+                </>
+              )}
 
               <Itinerary
                 itineraries={itineraries}

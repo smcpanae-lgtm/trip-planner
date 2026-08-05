@@ -18,6 +18,8 @@ import {
   Save,
   Check,
   Route,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { searchPlaces } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
@@ -259,6 +261,15 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
   const [homeAddress, setHomeAddress] = useState("");
   const [homeEditMode, setHomeEditMode] = useState(false);
   const [homeSaved, setHomeSaved] = useState(false);
+  const [showTravelerProfile, setShowTravelerProfile] = useState(() =>
+    Boolean(
+      initialConfig?.travelerProfile &&
+        (initialConfig.travelerProfile.partyType ||
+          initialConfig.travelerProfile.ageRange ||
+          initialConfig.travelerProfile.hobbies.trim() ||
+          initialConfig.travelerProfile.hasChildren)
+    )
+  );
   const [travelerProfile, setTravelerProfile] = useState<TravelerProfile>(
     initialConfig?.travelerProfile ?? {
       partyType: "",
@@ -280,6 +291,14 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       setTravelDate(initialConfig.travelDate ?? "");
       if (initialConfig.travelerProfile) {
         setTravelerProfile(initialConfig.travelerProfile);
+        if (
+          initialConfig.travelerProfile.partyType ||
+          initialConfig.travelerProfile.ageRange ||
+          initialConfig.travelerProfile.hobbies.trim() ||
+          initialConfig.travelerProfile.hasChildren
+        ) {
+          setShowTravelerProfile(true);
+        }
       }
     }
   }, [initialConfig]);
@@ -497,6 +516,12 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             {t.form.xFollow}
           </a>
         </div>
+      </div>
+
+      {/* Benefit copy */}
+      <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5">
+        <Clock className="w-4 h-4 shrink-0" />
+        出発地・目的地を入力するだけ、最短30秒でプラン作成をリクエストできます
       </div>
 
       {/* Trip Duration */}
@@ -725,14 +750,31 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
         </button>
       </div>  {/* end AI Omakase + Dog-friendly + Highway toggles */}
 
-      {/* Traveler Profile */}
+      {/* Traveler Profile (collapsible, optional) */}
       <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-        <div className="flex items-center gap-2 mb-4">
+        <button
+          type="button"
+          onClick={() => setShowTravelerProfile((v) => !v)}
+          className="w-full flex items-center gap-2"
+        >
           <Users className="w-5 h-5 text-indigo-600" />
           <h2 className="font-bold text-lg">{t.form.traveler.title}</h2>
           <span className="text-xs text-slate-400 font-normal">{t.form.traveler.optional}</span>
-        </div>
+          <span className="flex-1" />
+          {showTravelerProfile ? (
+            <ChevronUp className="w-5 h-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-slate-400" />
+          )}
+        </button>
+        {!showTravelerProfile && (
+          <p className="mt-1 text-xs text-slate-400">
+            旅行者タイプや年代を伝えると、AIがより合った提案をします（入力しなくても作成可能）
+          </p>
+        )}
 
+        {showTravelerProfile && (
+        <div className="mt-4">
         {/* Party type */}
         <div className="mb-3">
           <label className="text-sm font-medium text-slate-600 mb-1.5 block">{t.form.traveler.partyType.label}</label>
@@ -818,6 +860,8 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             </div>
           )}
         </div>
+        </div>
+        )}
       </div>
 
       {/* Home Address Registration */}
@@ -903,6 +947,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       {days.map((day, dayIdx) => (
         <div
           key={dayIdx}
+          id={dayIdx === 0 ? "trip-day-form" : undefined}
           className="bg-white rounded-xl p-5 shadow-sm border border-slate-100"
         >
           <div className="flex items-center gap-2 mb-4">
@@ -916,11 +961,11 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           </div>
 
           {/* Departure */}
-          <div className="mb-4">
+          <div className="mb-4 pl-3 border-l-4 border-red-200">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
               <Navigation className="w-4 h-4 text-green-600" />
               {t.form.departure.label}
-              <span className="text-red-500 text-xs">{t.form.departure.required}</span>
+              <span className="text-[10px] font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5">{t.form.departure.required}</span>
             </label>
             <div className="flex gap-2">
               {homeAddress && !day.departure && dayIdx === 0 && (
@@ -969,11 +1014,11 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           </div>
 
           {/* Destinations */}
-          <div className="mb-4 space-y-3">
+          <div className="mb-4 pl-3 border-l-4 border-red-200 space-y-3">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
               <MapPin className="w-4 h-4 text-blue-600" />
               {t.form.destination.label}
-              <span className="text-red-500 text-xs">{t.form.destination.required}</span>
+              <span className="text-[10px] font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5">{t.form.destination.required}</span>
             </label>
             {day.destinations.map((spot, spotIdx) => (
               <div
@@ -1049,11 +1094,11 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           </div>
 
           {/* Arrival */}
-          <div className="mb-4">
+          <div className="mb-4 pl-3 border-l-4 border-red-200">
             <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-1.5">
               <Navigation className="w-4 h-4 text-red-500" />
               {t.form.arrival.label}
-              <span className="text-red-500 text-xs">{t.form.arrival.required}</span>
+              <span className="text-[10px] font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5">{t.form.arrival.required}</span>
             </label>
             <div className="flex gap-2">
               {homeAddress && !day.arrival && (

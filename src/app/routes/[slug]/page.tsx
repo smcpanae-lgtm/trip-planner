@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MapPin, Clock, Ticket, AlertTriangle, CalendarDays, Dog } from "lucide-react";
 import { ROUTES, getRouteBySlug } from "@/data/routes";
 import SiteFooter from "@/components/SiteFooter";
+import RouteCtaLink from "@/components/RouteCtaLink";
 
 export function generateStaticParams() {
   return ROUTES.map((route) => ({ slug: route.slug }));
@@ -128,13 +129,15 @@ export default async function RoutePage({
 
         <p className="mt-4 text-sm text-slate-600 leading-relaxed">{route.summary}</p>
 
-        <a
+        <RouteCtaLink
           href={ctaHref}
+          from={route.from}
+          to={route.to}
           className="mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl transition-colors"
         >
           <MapPin className="w-5 h-5" />
           このルートでAIプランを自動作成する
-        </a>
+        </RouteCtaLink>
 
         {/* Overview */}
         <section className="mt-8 bg-white rounded-xl border border-slate-200 p-5">
@@ -219,13 +222,15 @@ export default async function RoutePage({
         </section>
 
         <div className="mt-8 text-center">
-          <a
+          <RouteCtaLink
             href={ctaHref}
+            from={route.from}
+            to={route.to}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition-colors"
           >
             <MapPin className="w-5 h-5" />
             {route.from}から{route.to}のプランをAIで作る
-          </a>
+          </RouteCtaLink>
         </div>
 
         <div className="mt-6 text-center">

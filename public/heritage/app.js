@@ -3,14 +3,23 @@ const translations = {
     eyebrow: "Private travel tracker",
     appTitle: "世界遺産パスポート",
     profileNameLabel: "ユーザー登録名",
-    profileNamePlaceholder: "例: S.M. / 旅人A",
+    profileNamePlaceholder: "例: N.K. / 旅人A",
     profileNameNote: "ブラウザ内に保存され、バックアップにも含まれます。",
     export: "バックアップ",
     exportRecords: "写真なしバックアップ",
     import: "復元",
-    backupPhotoCaution: "写真なしバックアップにはアップロード写真は含まれません。元写真はご自身でも保管してください。",
+    backupPhotoCaution: "同じブラウザで再訪問した場合、写真と記録は残ります。PC交換や別ブラウザで使う場合はバックアップから復元してください。写真なしバックアップにはアップロード写真は含まれません。",
+    backupMergeNote: "復元は現在の記録にバックアップの記録をマージします。スマホとPCなど複数の端末で記録した場合も、それぞれのバックアップを読み込むことで、両方の記録をまとめることができます。写真なしバックアップにはアップロード写真は含まれません。元写真はご自身でも保管してください。",
+    dataStorageTitle: "💾 データの保存について",
+    dataStorageLocal: "登録した訪問記録・訪問日・メモ・写真などのデータは、お使いの端末のブラウザ内にのみ保存されます。当サイトのサーバーへの送信や、クラウドへの自動バックアップは行われません。",
+    dataStorageLoss: "ブラウザの「サイトデータの削除」、端末の初期化・機種変更、ブラウザの変更などにより、保存したデータが失われる場合があります。",
+    dataStorageBackup: "データの消失・破損について、当サービスでは責任を負いかねます。大切な記録は、定期的に「バックアップ」ボタンからファイルへ保存してください。写真を含めて保存する場合は「バックアップ」、記録だけを保存する場合は「写真なしバックアップ」をご利用ください。",
     heroTitle: "行った世界遺産を、写真つきのスタンプとして残す。",
-    heroBody: "記録はこのブラウザ内だけに保存されます。このサイトが写真や訪問情報を外部サーバーへ送信することはありません。",
+    heroBody: "記録はこのブラウザ内だけに保存されます。このサイトが写真や訪問情報を外部サーバーへ送信することはありません。写真は他人に公開されることはありません。",
+    travelJournalBannerKicker: "AI旅行記メーカー",
+    travelJournalBannerTitle: "保存した世界遺産の写真記録から、SNS投稿文・アイキャッチ画像を作る",
+    travelJournalBannerBody: "訪問日・写真・メモを読み込み、旅行後の思い出整理に使えます。",
+    travelJournalBannerAction: "AI旅行記へ",
     completed: "制覇",
     remaining: "残り",
     ageLabel: "現在の年齢",
@@ -19,9 +28,9 @@ const translations = {
     worldProgress: "世界の達成状況",
     privacyNote: "写真は端末内に保存",
     passport: "パスポート",
-    search: "世界遺産名・国で検索",
-    searchHelpCountries: "国から探すでは、検索中だけ国をまたいだ検索結果を表示します。地域を開いて国を選ぶと、その国の世界遺産だけを表示します。",
-    searchHelpHeritage: "全件一覧では、世界遺産名・国名で1,248件（2026年5月末時点）の一覧を検索します。",
+    search: "英語名・国名で検索（日本の世界遺産は日本語も可）",
+    searchHelpCountries: "検索は英語名・国名のアルファベット入力に対応しています。日本の世界遺産は日本語名でも検索できます。国から探すでは、検索中だけ国をまたいだ検索結果を表示します。地域を開いて国を選ぶと、その国の世界遺産だけを表示します。",
+    searchHelpHeritage: "検索は英語名・国名のアルファベット入力に対応しています。日本の世界遺産は日本語名でも検索できます。全件一覧では、1,273件（2026年8月時点）の一覧を検索します。",
     searchHelpVisited: "訪問済みでは、訪問済みにした世界遺産だけを検索します。",
     list: "世界遺産一覧",
     listSelectedCountry: "{country}の世界遺産",
@@ -47,12 +56,15 @@ const translations = {
     dataUpdateBody: "世界遺産リストは公式データをもとにした構造化データから読み込みます。表示項目は名称、国、地域、種別、登録年などの事実情報に絞っています。",
     resetSample: "サンプル20件に戻す",
     unofficialNotice: "このサイトはUNESCO/WHCの公式サイトではありません。世界遺産の詳細情報は各公式ページを参照してください。",
-    localNotice: "訪問記録と写真はこのブラウザ内に保存されます。バックアップは利用者の端末へJSONファイルを書き出す機能であり、このサイト運営者がバックアップ内容を閲覧・取得することはありません。",
+    localNotice: "訪問記録と写真はこのブラウザ内に保存されます。同じ端末・同じブラウザで再訪問した場合は保存済みの内容を引き続き利用できます。バックアップはPC交換や別ブラウザへ移すために、利用者の端末へJSONファイルを書き出す機能です。このサイト運営者がバックアップ内容を閲覧・取得することはありません。",
     memorialNotice: "地域内の世界遺産をすべて訪問済みにした時と、全世界遺産を制覇した時に、ブラウザ内の記録をもとにメモリアル演出を表示します。",
-    rightsNotice: "世界遺産の名称・国・登録年などの事実情報を扱い、UNESCO/WHC公式の説明文・写真・ロゴは使用していません。サイト内の代表画像は独自生成のイメージ画像です。",
+    rightsNotice: "世界遺産の名称・国・登録年などの事実情報を扱い、UNESCO/WHC公式の説明文・写真・ロゴは使用していません。サイト内の代表画像は独自生成のイメージ画像です。国旗アイコンはflag-icons（MIT License）を利用しています。",
     accuracyNotice: "掲載情報は公開データをもとにしていますが、最新性・完全性を保証するものではありません。旅行計画や公式確認には各公式ページを参照してください。",
+    copyrightNotice: "本サイト独自のソースコード、UIデザイン、文章、生成画像等の無断複製・転載・転用・再配布を禁止します。ただし、法令上認められる利用および各素材のライセンスで許諾される利用を除きます。",
     privacyPolicy: "プライバシーポリシー",
     cookiePolicy: "Cookieについて",
+    aboutPage: "サイトについて・使い方",
+    faqPage: "よくある質問",
     cookieBanner: "現在、このサイトは広告・解析Cookieを使用していません。訪問記録の保存にブラウザ内ストレージを使用します。",
     acceptEssential: "了解",
     jsonFormat: "対応JSON形式を見る",
@@ -74,17 +86,43 @@ const translations = {
     markUnvisited: "未訪問に戻す",
     details: "記録",
     official: "公式ページ",
+    detailPage: "詳細ページ",
     uploadPhoto: "写真を追加",
     photoUploadNote: "写真は1つの世界遺産につき1枚だけ保存できます。新しい写真を追加すると、前の写真は置き換わります。",
     removePhoto: "写真を削除",
+    createTravelJournal: "SNS投稿",
+    createTravelJournalNote: "この世界遺産の訪問日・メモ・写真をAI旅行記メーカーに読み込みます。写真そのものはAIに送信しません。",
+    createTravelJournalDisabled: "写真を保存するとSNS投稿を作れます。",
+    createTravelJournalUnsavedPhoto: "写真はまだ保存されていません。保存ボタンを押すとSNS投稿を作れます。",
     visitDate: "訪問日",
+    today: "今日",
+    dateYear: "年",
+    dateMonth: "月",
+    dateDay: "日",
+    stampType: "スタンプタイプ",
+    stampClassic: "クラシック",
+    stampSeal: "金印",
+    stampPostmark: "消印",
+    stampTicket: "チケット",
+    stampBadge: "バッジ",
+    homeCity: "居住地",
+    travelDistance: "累積移動距離",
+    travelDistanceBody: "{city}から訪問済み世界遺産までの往復直線距離の合計",
+    travelDistanceKm: "{km} km",
+    earthLaps: "地球約{laps}周分",
+    distanceNoData: "座標がある訪問済み世界遺産で計算します",
     memo: "メモ",
     save: "保存",
     noPhoto: "写真なし",
     stampsEmpty: "訪問済みにすると最新スタンプがここに表示されます",
     stampPreviewSummary: "最新{shown}件 / 訪問済み{visited}件",
     viewAllStamps: "すべてのスタンプを見る",
+    sampleBadge: "サンプル表示",
+    sampleCreateOwn: "自分のパスポートを作る",
     memorialButton: "完全制覇メモリアルを見る",
+    achievementShareX: "Xでシェア",
+    achievementShareImage: "実績画像を保存",
+    achievementShareText: "世界遺産パスポートで {visited}/{total} 制覇しました🏛️",
     memorialEyebrow: "Complete journey",
     memorialTitle: "世界遺産パスポート 完全制覇",
     memorialIntro: "訪問写真と記録を、日付順にすべて振り返ります。",
@@ -104,7 +142,7 @@ const translations = {
     showImageSamples: "画像ありの世界遺産を見る",
     imageReady: "代表画像",
     listCount: "{count}件を表示",
-    sampleDataStatus: "現在はサンプル{total}件 / 目標1,248件（2026年5月末時点）",
+    sampleDataStatus: "世界遺産リストを準備しています",
     importedDataStatus: "取り込み済み{total}件",
     remoteDataStatus: "UNESCO DataHubから{total}件を読み込み済み",
     dataLoadingStatus: "UNESCO DataHubから世界遺産リストを取得中",
@@ -112,21 +150,30 @@ const translations = {
     stampSummary: "{visited}/{total} stamps",
     exported: "バックアップを書き出しました。",
     exportedRecords: "写真なしバックアップを書き出しました。",
-    imported: "バックアップを復元しました。",
+    imported: "バックアップを現在の記録にマージしました。",
     importError: "バックアップを読み込めませんでした。"
   },
   en: {
     eyebrow: "Private travel tracker",
     appTitle: "World Heritage Passport",
     profileNameLabel: "Profile name",
-    profileNamePlaceholder: "e.g. S.M. / Traveler A",
+    profileNamePlaceholder: "e.g. N.K. / Traveler A",
     profileNameNote: "Stored in this browser and included in backups.",
     export: "Backup",
     exportRecords: "Backup without photos",
     import: "Restore",
-    backupPhotoCaution: "Backups without photos do not include uploaded photos. Please also keep your original photos yourself.",
+    backupPhotoCaution: "When you revisit with the same browser, your photos and records remain available. Use a backup to move them to a new PC or another browser. Backups without photos do not include uploaded photos.",
+    backupMergeNote: "Restore merges a backup into the records already in this browser. If you record visits on multiple devices, such as a phone and a PC, you can combine both sets of records by restoring each backup. Backups without photos do not include uploaded photos, so please also keep your originals.",
+    dataStorageTitle: "💾 About data storage",
+    dataStorageLocal: "Visit records, visit dates, notes, photos, and other data are stored only in the browser on your device. They are not sent to our server or backed up automatically to the cloud.",
+    dataStorageLoss: "Saved data may be lost if you delete browser site data, initialize or replace your device, or switch browsers.",
+    dataStorageBackup: "We cannot accept responsibility for lost or damaged data. Please regularly save important records to a file using Backup. Use Backup to include photos, or Backup without photos to save records only.",
     heroTitle: "Keep every World Heritage visit as a photo stamp.",
-    heroBody: "Your records stay in this browser. This site does not send photos or visit data to an external server.",
+    heroBody: "Your records stay in this browser. This site does not send photos or visit data to an external server. Your photos are never made public to others.",
+    travelJournalBannerKicker: "AI Travel Journal Maker",
+    travelJournalBannerTitle: "Turn saved World Heritage photo records into SNS posts and blog images",
+    travelJournalBannerBody: "Load visit dates, photos, and notes to organize memories after the trip.",
+    travelJournalBannerAction: "Open journal maker",
     completed: "Visited",
     remaining: "Left",
     ageLabel: "Current age",
@@ -135,9 +182,9 @@ const translations = {
     worldProgress: "World progress",
     privacyNote: "Photos stay on device",
     passport: "Passport",
-    search: "Search by site or country",
-    searchHelpCountries: "In By country, searching temporarily shows matching sites across countries. Open a region and choose a country to show only that country's sites.",
-    searchHelpHeritage: "In All sites, search the full list of 1,248 sites as of the end of May 2026 by World Heritage site or country.",
+    search: "Search by English site/country name; Japanese works for Japan",
+    searchHelpCountries: "Search supports English names using alphabet input. Japanese names also work for World Heritage sites in Japan. In By country, searching temporarily shows matching sites across countries. Open a region and choose a country to show only that country's sites.",
+    searchHelpHeritage: "Search supports English names using alphabet input. Japanese names also work for World Heritage sites in Japan. In All sites, search the full list of 1,273 sites as of August 2026.",
     searchHelpVisited: "In Visited, search only the sites you have marked as visited.",
     list: "World Heritage List",
     listSelectedCountry: "{country} World Heritage sites",
@@ -163,12 +210,15 @@ const translations = {
     dataUpdateBody: "The World Heritage list is loaded from structured data based on official sources. Displayed fields are limited to factual information such as name, country, region, category, and inscription year.",
     resetSample: "Restore 20 samples",
     unofficialNotice: "This is not an official UNESCO/WHC website. Please use each official page for detailed World Heritage information.",
-    localNotice: "Visit records and photos are stored in this browser. Backups are JSON files saved to your own device; this site operator cannot view or retrieve their contents.",
+    localNotice: "Visit records and photos are stored in this browser. If you revisit on the same device and browser, the saved content remains available. Backups are JSON files saved to your own device so you can restore records on a new PC or another browser; this site operator cannot view or retrieve their contents.",
     memorialNotice: "When you complete all sites in a region or complete the full World Heritage list, a memorial experience is shown from records stored in this browser.",
-    rightsNotice: "This site uses factual information such as site names, countries, and inscription years. It does not use official UNESCO/WHC descriptions, photos, logos, or emblems. Featured images are independently generated illustrative images.",
+    rightsNotice: "This site uses factual information such as site names, countries, and inscription years. It does not use official UNESCO/WHC descriptions, photos, logos, or emblems. Featured images are independently generated illustrative images. Country flag icons use flag-icons under the MIT License.",
     accuracyNotice: "Information is based on public data, but accuracy, completeness, and freshness are not guaranteed. Please check official pages for travel planning or formal confirmation.",
+    copyrightNotice: "Unauthorized copying, republication, reuse, redistribution, or adaptation of this site's original source code, UI design, text, generated images, and other original content is prohibited, except where permitted by law or by the applicable license for each material.",
     privacyPolicy: "Privacy Policy",
     cookiePolicy: "Cookie Policy",
+    aboutPage: "About & How to Use",
+    faqPage: "FAQ",
     cookieBanner: "This site does not currently use advertising or analytics cookies. It uses browser storage to save visit records.",
     acceptEssential: "OK",
     jsonFormat: "View JSON format",
@@ -190,17 +240,43 @@ const translations = {
     markUnvisited: "Mark unvisited",
     details: "Record",
     official: "Official page",
+    detailPage: "Details",
     uploadPhoto: "Add photo",
     photoUploadNote: "You can save one photo per World Heritage site. Adding a new photo replaces the previous one.",
     removePhoto: "Remove photo",
+    createTravelJournal: "SNS post",
+    createTravelJournalNote: "Load this visit date, memo, and photo into AI Travel Journal Maker. The photo itself is not sent to AI.",
+    createTravelJournalDisabled: "Save a photo first to create an SNS post.",
+    createTravelJournalUnsavedPhoto: "The photo has not been saved yet. Press Save to create an SNS post.",
     visitDate: "Visit date",
+    today: "Today",
+    dateYear: "Year",
+    dateMonth: "Month",
+    dateDay: "Day",
+    stampType: "Stamp type",
+    stampClassic: "Classic",
+    stampSeal: "Gold seal",
+    stampPostmark: "Postmark",
+    stampTicket: "Ticket",
+    stampBadge: "Badge",
+    homeCity: "Home city",
+    travelDistance: "Cumulative travel distance",
+    travelDistanceBody: "Round-trip great-circle distance from {city} to visited World Heritage sites",
+    travelDistanceKm: "{km} km",
+    earthLaps: "About {laps} trips around Earth",
+    distanceNoData: "Calculated for visited sites with coordinates",
     memo: "Memo",
     save: "Save",
     noPhoto: "No photo",
     stampsEmpty: "Visited sites will appear here as recent stamps",
     stampPreviewSummary: "Latest {shown} / {visited} visited",
     viewAllStamps: "View all stamps",
+    sampleBadge: "Sample preview",
+    sampleCreateOwn: "Create my own passport",
     memorialButton: "View completion memorial",
+    achievementShareX: "Share on X",
+    achievementShareImage: "Save achievement image",
+    achievementShareText: "I've conquered {visited}/{total} World Heritage sites with World Heritage Passport 🏛️",
     memorialEyebrow: "Complete journey",
     memorialTitle: "World Heritage Passport complete",
     memorialIntro: "Replay every visit photo and record in chronological order.",
@@ -220,7 +296,7 @@ const translations = {
     showImageSamples: "View sites with images",
     imageReady: "Featured image",
     listCount: "Showing {count}",
-    sampleDataStatus: "Sample data: {total} / target 1,248 as of the end of May 2026",
+    sampleDataStatus: "Preparing the World Heritage list",
     importedDataStatus: "Imported data: {total}",
     remoteDataStatus: "Loaded {total} sites from UNESCO DataHub",
     dataLoadingStatus: "Loading the World Heritage list from UNESCO DataHub",
@@ -228,7 +304,7 @@ const translations = {
     stampSummary: "{visited}/{total} stamps",
     exported: "Backup exported.",
     exportedRecords: "Backup without photos exported.",
-    imported: "Backup restored.",
+    imported: "Backup merged into the current records.",
     importError: "Could not import backup."
   },
   "zh-CN": {
@@ -268,16 +344,26 @@ const translations = {
     markUnvisited: "取消访问",
     details: "记录",
     official: "官方页面",
+    detailPage: "详情页",
     uploadPhoto: "添加照片",
     removePhoto: "删除照片",
     visitDate: "访问日期",
+    today: "今天",
+    dateYear: "年",
+    dateMonth: "月",
+    dateDay: "日",
     memo: "备注",
     save: "保存",
     noPhoto: "无照片",
     stampsEmpty: "已访问的地点会在这里显示为最新印章",
     stampPreviewSummary: "最新{shown}个 / 已访问{visited}个",
     viewAllStamps: "查看全部印章",
+    sampleBadge: "示例展示",
+    sampleCreateOwn: "制作我自己的护照",
     memorialButton: "查看完全完成回忆",
+    achievementShareX: "在X上分享",
+    achievementShareImage: "保存成就图片",
+    achievementShareText: "我在世界遗产护照中已征服 {visited}/{total} 处世界遗产🏛️",
     memorialEyebrow: "完整旅程",
     memorialTitle: "世界遗产护照 完全完成",
     memorialIntro: "按时间顺序回顾访问照片和记录。",
@@ -331,16 +417,26 @@ const translations = {
     markUnvisited: "取消造訪",
     details: "記錄",
     official: "官方頁面",
+    detailPage: "詳細頁",
     uploadPhoto: "新增照片",
     removePhoto: "刪除照片",
     visitDate: "造訪日期",
+    today: "今天",
+    dateYear: "年",
+    dateMonth: "月",
+    dateDay: "日",
     memo: "備註",
     save: "儲存",
     noPhoto: "無照片",
     stampsEmpty: "已造訪的地點會在這裡顯示為最新印章",
     stampPreviewSummary: "最新{shown}個 / 已造訪{visited}個",
     viewAllStamps: "查看全部印章",
+    sampleBadge: "範例展示",
+    sampleCreateOwn: "製作我自己的護照",
     memorialButton: "查看完全達成回憶",
+    achievementShareX: "在X上分享",
+    achievementShareImage: "保存成就圖片",
+    achievementShareText: "我在世界遺產護照中已征服 {visited}/{total} 處世界遺產🏛️",
     memorialEyebrow: "完整旅程",
     memorialTitle: "世界遺產護照 完全達成",
     memorialIntro: "依時間順序回顧造訪照片與紀錄。",
@@ -394,16 +490,26 @@ const translations = {
     markUnvisited: "미방문으로",
     details: "기록",
     official: "공식 페이지",
+    detailPage: "상세 페이지",
     uploadPhoto: "사진 추가",
     removePhoto: "사진 삭제",
     visitDate: "방문일",
+    today: "오늘",
+    dateYear: "년",
+    dateMonth: "월",
+    dateDay: "일",
     memo: "메모",
     save: "저장",
     noPhoto: "사진 없음",
     stampsEmpty: "방문한 장소가 최신 스탬프로 여기에 표시됩니다",
     stampPreviewSummary: "최신 {shown}개 / 방문 {visited}개",
     viewAllStamps: "모든 스탬프 보기",
+    sampleBadge: "샘플 보기",
+    sampleCreateOwn: "내 여권 만들기",
     memorialButton: "완전 달성 메모리얼 보기",
+    achievementShareX: "X에 공유",
+    achievementShareImage: "달성 이미지 저장",
+    achievementShareText: "세계유산 여권으로 {visited}/{total}곳을 정복했습니다🏛️",
     memorialEyebrow: "완전한 여정",
     memorialTitle: "세계유산 패스포트 완전 달성",
     memorialIntro: "방문 사진과 기록을 시간순으로 되돌아봅니다.",
@@ -457,16 +563,26 @@ const translations = {
     markUnvisited: "Desmarcar",
     details: "Registro",
     official: "Página oficial",
+    detailPage: "Página de detalles",
     uploadPhoto: "Añadir foto",
     removePhoto: "Eliminar foto",
     visitDate: "Fecha de visita",
+    today: "Hoy",
+    dateYear: "Año",
+    dateMonth: "Mes",
+    dateDay: "Día",
     memo: "Nota",
     save: "Guardar",
     noPhoto: "Sin foto",
     stampsEmpty: "Los sitios visitados aparecerán aquí como sellos recientes",
     stampPreviewSummary: "Últimos {shown} / {visited} visitados",
     viewAllStamps: "Ver todos los sellos",
+    sampleBadge: "Vista de ejemplo",
+    sampleCreateOwn: "Crear mi propio pasaporte",
     memorialButton: "Ver memorial de finalización",
+    achievementShareX: "Compartir en X",
+    achievementShareImage: "Guardar imagen de logro",
+    achievementShareText: "He conquistado {visited}/{total} sitios del Patrimonio Mundial con World Heritage Passport 🏛️",
     memorialEyebrow: "Viaje completo",
     memorialTitle: "Pasaporte del Patrimonio Mundial completado",
     memorialIntro: "Revive tus fotos y registros en orden cronológico.",
@@ -520,16 +636,26 @@ const translations = {
     markUnvisited: "Annuler",
     details: "Carnet",
     official: "Page officielle",
+    detailPage: "Page de détails",
     uploadPhoto: "Ajouter une photo",
     removePhoto: "Supprimer la photo",
     visitDate: "Date de visite",
+    today: "Aujourd'hui",
+    dateYear: "Année",
+    dateMonth: "Mois",
+    dateDay: "Jour",
     memo: "Mémo",
     save: "Enregistrer",
     noPhoto: "Aucune photo",
     stampsEmpty: "Les sites visités apparaîtront ici comme tampons récents",
     stampPreviewSummary: "{shown} récents / {visited} visités",
     viewAllStamps: "Voir tous les tampons",
+    sampleBadge: "Aperçu d'exemple",
+    sampleCreateOwn: "Créer mon propre passeport",
     memorialButton: "Voir le mémorial complet",
+    achievementShareX: "Partager sur X",
+    achievementShareImage: "Enregistrer l'image de réussite",
+    achievementShareText: "J'ai conquis {visited}/{total} sites du patrimoine mondial avec World Heritage Passport 🏛️",
     memorialEyebrow: "Voyage complet",
     memorialTitle: "Passeport du Patrimoine mondial complété",
     memorialIntro: "Revivez vos photos et carnets de visite dans l'ordre chronologique.",
@@ -587,24 +713,130 @@ const dbName = "world-heritage-passport";
 const recordKey = "whp.records";
 const siteKey = "whp.sites";
 const siteSourceKey = "whp.siteSource";
+const siteVersionKey = "whp.siteVersion";
+const SITE_DATA_VERSION = "2026-08-1273";
 const languageKey = "whp.language";
 const ageKey = "whp.age";
 const profileNameKey = "whp.profileName";
+const homeCityKey = "whp.homeCity";
 const cookieNoticeKey = "whp.cookieNoticeAccepted";
 const completionSeenKey = "whp.completionMemorialSeen";
 const regionCompletionSeenKey = "whp.regionCompletionMemorialSeen";
+const samplePassportDismissedKey = "whp.samplePassportDismissed";
+
+// サンプルパスポートに表示する有名世界遺産（UNESCO ID）。
+// 富士山・古都京都・万里の長城・タージマハル・ピラミッド・マチュピチュ。
+const SAMPLE_STAMP_UNESCO_IDS = ["1418", "688", "438", "252", "86", "274"];
+const SAMPLE_ACHIEVEMENT_PERCENT = 8;
 const unescoDataEndpoint = "https://data.unesco.org/api/explore/v2.1/catalog/datasets/whc001/records";
 const heritageImageManifestPath = "assets/heritage/manifest.json";
+const heritageSlugMapPath = "assets/heritage/slugs.json";
 const debugParams = new URLSearchParams(location.search);
 const debugImagesEnabled = debugParams.get("debug") === "images";
+let pendingOpenUnescoId = debugParams.get("open");
+const earthCircumferenceKm = 40075;
+const stampTypes = ["classic", "seal", "postmark", "ticket", "badge"];
+const homeCities = [
+  { key: "tokyo", ja: "日本・東京", en: "Tokyo, Japan", lat: 35.6762, lon: 139.6503 },
+  { key: "osaka", ja: "日本・大阪", en: "Osaka, Japan", lat: 34.6937, lon: 135.5023 },
+  { key: "sapporo", ja: "日本・札幌", en: "Sapporo, Japan", lat: 43.0618, lon: 141.3545 },
+  { key: "fukuoka", ja: "日本・福岡", en: "Fukuoka, Japan", lat: 33.5902, lon: 130.4017 },
+  { key: "seoul", ja: "韓国・ソウル", en: "Seoul, South Korea", lat: 37.5665, lon: 126.978 },
+  { key: "taipei", ja: "台湾・台北", en: "Taipei, Taiwan", lat: 25.033, lon: 121.5654 },
+  { key: "singapore", ja: "シンガポール", en: "Singapore", lat: 1.3521, lon: 103.8198 },
+  { key: "bangkok", ja: "タイ・バンコク", en: "Bangkok, Thailand", lat: 13.7563, lon: 100.5018 },
+  { key: "hongkong", ja: "香港", en: "Hong Kong", lat: 22.3193, lon: 114.1694 },
+  { key: "beijing", ja: "中国・北京", en: "Beijing, China", lat: 39.9042, lon: 116.4074 },
+  { key: "shanghai", ja: "中国・上海", en: "Shanghai, China", lat: 31.2304, lon: 121.4737 },
+  { key: "delhi", ja: "インド・デリー", en: "Delhi, India", lat: 28.6139, lon: 77.209 },
+  { key: "dubai", ja: "UAE・ドバイ", en: "Dubai, UAE", lat: 25.2048, lon: 55.2708 },
+  { key: "london", ja: "英国・ロンドン", en: "London, United Kingdom", lat: 51.5072, lon: -0.1276 },
+  { key: "paris", ja: "フランス・パリ", en: "Paris, France", lat: 48.8566, lon: 2.3522 },
+  { key: "rome", ja: "イタリア・ローマ", en: "Rome, Italy", lat: 41.9028, lon: 12.4964 },
+  { key: "newyork", ja: "米国・ニューヨーク", en: "New York, USA", lat: 40.7128, lon: -74.006 },
+  { key: "losangeles", ja: "米国・ロサンゼルス", en: "Los Angeles, USA", lat: 34.0522, lon: -118.2437 },
+  { key: "sydney", ja: "豪州・シドニー", en: "Sydney, Australia", lat: -33.8688, lon: 151.2093 }
+];
+const japanHeritageNamesJa = {
+  "660": "法隆寺地域の仏教建造物",
+  "661": "姫路城",
+  "662": "屋久島",
+  "663": "白神山地",
+  "688": "古都京都の文化財（京都市、宇治市、大津市）",
+  "734": "白川郷・五箇山の合掌造り集落",
+  "775": "広島平和記念碑（原爆ドーム）",
+  "776": "厳島神社",
+  "870": "古都奈良の文化財",
+  "913": "日光の社寺",
+  "972": "琉球王国のグスク及び関連遺産群",
+  "1142": "紀伊山地の霊場と参詣道",
+  "1193": "知床",
+  "1246": "石見銀山遺跡とその文化的景観",
+  "1277": "平泉－仏国土（浄土）を表す建築・庭園及び考古学的遺跡群",
+  "1321": "ル・コルビュジエの建築作品－近代建築運動への顕著な貢献",
+  "1362": "小笠原諸島",
+  "1418": "富士山－信仰の対象と芸術の源泉",
+  "1449": "富岡製糸場と絹産業遺産群",
+  "1484": "明治日本の産業革命遺産 製鉄・製鋼、造船、石炭産業",
+  "1495": "長崎と天草地方の潜伏キリシタン関連遺産",
+  "1535": "「神宿る島」宗像・沖ノ島と関連遺産群",
+  "1574": "奄美大島、徳之島、沖縄島北部及び西表島",
+  "1593": "百舌鳥・古市古墳群－古代日本の墳墓群",
+  "1632": "北海道・北東北の縄文遺跡群",
+  "1698": "佐渡島の金山",
+  "1757": "飛鳥・藤原の宮都とその関連資産群"
+};
 let heritageImageManifest = {};
+/** 代表画像一覧（manifest.json）の読み込み完了を待つための Promise */
+let heritageImageManifestReady = null;
+/** いま詳細ダイアログに表示している遺産の id */
+let openDialogItemId = null;
+/** 初回描画（bindEvents / render）が済んだか */
+let appInitialized = false;
+let heritageSlugMap = {};
+let htmlDecodeElement;
+
+/**
+ * 独立URLを持つ言語と、そのURLセグメントの対応。
+ * 日本語は既存URL（/heritage）を維持するためセグメントを持たない。
+ * ここに無い言語（韓国語・繁体字など）はページ内切替のみ。
+ *
+ * state の初期化（下の language: languageFromPath() ...）がこの定数を
+ * 参照するため、state より前で const 初期化を終えておく必要がある
+ * （後ろに置くと「Cannot access before initialization」エラーになる）。
+ */
+const localeSegments = { en: "en" };
+
+function localeAppPath(language) {
+  const segment = localeSegments[language];
+  return segment ? `/heritage/${segment}` : "/heritage";
+}
+
+/** 現在開いているページに対応するアプリのパス（末尾スラッシュを無視して比較する） */
+function currentAppPath() {
+  const path = location.pathname.replace(/\/+$/, "") || "/heritage";
+  const match = path.match(/^\/heritage\/(en)$/);
+  return match ? `/heritage/${match[1]}` : "/heritage";
+}
+
+/** URLから言語を決める。/heritage/en なら常に英語で表示する */
+function languageFromPath() {
+  const segment = currentAppPath().split("/")[2];
+  if (!segment) return null;
+  return Object.keys(localeSegments).find((lang) => localeSegments[lang] === segment) || null;
+}
+
 let state = {
-  language: localStorage.getItem(languageKey) || preferredLanguage(),
+  // URLで言語が指定されていればそれを最優先する（/heritage/fr は必ずフランス語）
+  language: languageFromPath() || localStorage.getItem(languageKey) || preferredLanguage(),
   sites: loadSites(),
   records: loadRecords(),
   photos: new Map(),
+  pendingPhotos: new Map(),
+  pendingDialogRecords: new Map(),
   age: localStorage.getItem(ageKey) || "",
   profileName: localStorage.getItem(profileNameKey) || "",
+  homeCity: localStorage.getItem(homeCityKey) || "tokyo",
   dataStatus: isSeedDataset(loadSites()) ? "sample" : "remote",
   viewMode: "countries",
   selectedCountry: "",
@@ -614,6 +846,33 @@ let state = {
 };
 
 const pageSize = 60;
+const countryFlagCodes = "AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW".split(" ");
+const countryFlagAliases = {
+  "bolivia plurinational state of": "BO",
+  "cabo verde": "CV",
+  "cote d ivoire": "CI",
+  "czechia": "CZ",
+  "democratic people s republic of korea": "KP",
+  "democratic republic of the congo": "CD",
+  "holy see": "VA",
+  "iran islamic republic of": "IR",
+  "korea democratic people s republic of": "KP",
+  "korea republic of": "KR",
+  "lao people s democratic republic": "LA",
+  "micronesia federated states of": "FM",
+  "moldova republic of": "MD",
+  "palestine": "PS",
+  "republic of korea": "KR",
+  "russian federation": "RU",
+  "syrian arab republic": "SY",
+  "tanzania united republic of": "TZ",
+  "turkiye": "TR",
+  "united kingdom of great britain and northern ireland": "GB",
+  "united states of america": "US",
+  "venezuela bolivarian republic of": "VE",
+  "viet nam": "VN"
+};
+let countryFlagNameMap;
 
 const $ = (selector) => document.querySelector(selector);
 const t = (key, vars = {}) => {
@@ -626,6 +885,19 @@ function preferredLanguage() {
   return supported.find((lang) => navigator.language.startsWith(lang)) || "ja";
 }
 
+/**
+ * 前回自分で選んだ言語に独立URLがある場合は、そのURLへ寄せる。
+ * 自動判定した言語では動かさず、明示的に切り替えた人だけが対象。
+ * 遷移先では languageFromPath() が一致するため、ループしない。
+ */
+(function applyStoredLanguageUrl() {
+  if (languageFromPath()) return;
+  const stored = localStorage.getItem(languageKey);
+  if (!stored) return;
+  const target = localeAppPath(stored);
+  if (target !== currentAppPath()) location.replace(target + location.search);
+})();
+
 const localNameKeysByLanguage = {
   ja: ["ja"],
   en: ["en"],
@@ -636,21 +908,154 @@ const localNameKeysByLanguage = {
   fr: ["fr"]
 };
 
+function cleanDataText(value) {
+  const text = String(value ?? "");
+  const withoutTags = text.replace(/<[^>]*>/g, "");
+  if (!withoutTags.includes("&")) return withoutTags.trim();
+  htmlDecodeElement ||= document.createElement("textarea");
+  htmlDecodeElement.innerHTML = withoutTags;
+  return htmlDecodeElement.value.trim();
+}
+
+function cleanLocalizedName(value) {
+  const entries = Object.entries(value || {});
+  return entries.reduce((cleaned, [key, text]) => {
+    cleaned[key] = cleanDataText(text);
+    return cleaned;
+  }, {});
+}
+
+function countryHasJapan(country) {
+  const countryNames = [country?.en, country?.ja].filter(Boolean).join(" / ");
+  return countryNames.split(/\s+\/\s+/).some((name) => cleanDataText(name) === "Japan" || name === "日本");
+}
+
+function siteUnescoId(item) {
+  return String(item?.unescoId || item?.id || "").replace(/^unesco-/, "");
+}
+
+function normalizeSiteData(sites) {
+  return Array.isArray(sites) ? sites.map(normalizeSite) : [];
+}
+
+function normalizeSite(item) {
+  const unescoId = siteUnescoId(item);
+  const cleanCountry = cleanLocalizedName(item.country);
+  const cleanName = cleanLocalizedName(item.name);
+  const japanName = japanHeritageNamesJa[unescoId];
+
+  if (japanName) cleanName.ja = japanName;
+  if (japanName && countryHasJapan(cleanCountry)) cleanCountry.ja = "日本";
+
+  return {
+    ...item,
+    country: cleanCountry,
+    name: cleanName,
+    criteria: cleanDataText(item.criteria || "")
+  };
+}
+
 function localName(value) {
   if (!value) return "";
   const languageKeys = localNameKeysByLanguage[state.language] || [state.language];
   for (const key of languageKeys) {
-    if (value[key]) return value[key];
+    if (value[key]) return cleanDataText(value[key]);
   }
-  return value.ja || value.en || Object.values(value)[0] || "";
+  return cleanDataText(value.ja || value.en || Object.values(value)[0] || "");
+}
+
+function normalizeCountryForFlag(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function countryFlagMap() {
+  if (countryFlagNameMap) return countryFlagNameMap;
+  countryFlagNameMap = new Map(Object.entries(countryFlagAliases));
+  const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+  countryFlagCodes.forEach((code) => {
+    const name = displayNames.of(code);
+    if (name) countryFlagNameMap.set(normalizeCountryForFlag(name), code);
+  });
+  return countryFlagNameMap;
+}
+
+function countryFlagItems(country, maxShown = 4) {
+  const sourceName = country?.en || country?.ja || "";
+  const parts = sourceName.split(/\s+\/\s+/).map((part) => part.trim()).filter(Boolean);
+  const map = countryFlagMap();
+  const codes = [];
+  parts.forEach((part) => {
+    const code = map.get(normalizeCountryForFlag(part));
+    if (code && !codes.includes(code)) codes.push(code);
+  });
+  const shownCodes = codes.slice(0, maxShown);
+  return {
+    flags: shownCodes.map((code) => ({ code, url: `https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.5.0/flags/4x3/${code.toLowerCase()}.svg` })),
+    hiddenCount: Math.max(0, codes.length - shownCodes.length)
+  };
+}
+
+function homeCityLabel(city) {
+  return state.language === "ja" ? city.ja : city.en;
+}
+
+function selectedHomeCity() {
+  return homeCities.find((city) => city.key === state.homeCity) || homeCities[0];
+}
+
+function radians(value) {
+  return value * Math.PI / 180;
+}
+
+function distanceKm(from, to) {
+  if (!from || !to || typeof to.lat !== "number" || typeof to.lon !== "number") return 0;
+  const earthRadiusKm = 6371;
+  const dLat = radians(to.lat - from.lat);
+  const dLon = radians(to.lon - from.lon);
+  const lat1 = radians(from.lat);
+  const lat2 = radians(to.lat);
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function travelDistanceStats() {
+  const home = selectedHomeCity();
+  const visitedWithCoordinates = state.sites.filter((item) => (
+    state.records[item.id]?.visited
+    && typeof item.coordinates?.lat === "number"
+    && typeof item.coordinates?.lon === "number"
+  ));
+  const totalKm = visitedWithCoordinates.reduce((sum, item) => (
+    sum + distanceKm(home, item.coordinates) * 2
+  ), 0);
+  return {
+    home,
+    totalKm,
+    earthLaps: totalKm / earthCircumferenceKm,
+    countedSites: visitedWithCoordinates.length
+  };
+}
+
+function formatNumber(value, digits = 0) {
+  return new Intl.NumberFormat(state.language, {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits
+  }).format(value);
 }
 
 function loadSites() {
   try {
     const savedSites = JSON.parse(localStorage.getItem(siteKey));
-    return Array.isArray(savedSites) && savedSites.length ? savedSites : seedSites;
+    return normalizeSiteData(Array.isArray(savedSites) && savedSites.length ? savedSites : seedSites);
   } catch {
-    return seedSites;
+    return normalizeSiteData(seedSites);
   }
 }
 
@@ -663,9 +1068,15 @@ function isSeedDataset(sites) {
 async function loadRemoteWorldHeritageSites() {
   const existingSource = localStorage.getItem(siteSourceKey);
   if (existingSource === "custom" && !isSeedDataset(state.sites)) return;
-  if (existingSource === "unesco-datahub-whc001" && state.sites.length >= 1200) {
+  const cachedVersion = localStorage.getItem(siteVersionKey);
+  if (
+    existingSource === "unesco-datahub-whc001"
+    && state.sites.length >= 1200
+    && cachedVersion === SITE_DATA_VERSION
+  ) {
     state.dataStatus = "remote";
     render();
+    tryOpenPendingSite();
     return;
   }
   state.dataStatus = "loading";
@@ -678,7 +1089,9 @@ async function loadRemoteWorldHeritageSites() {
       state.dataStatus = "remote";
       localStorage.setItem(siteKey, JSON.stringify(sites));
       localStorage.setItem(siteSourceKey, "unesco-datahub-whc001");
+      localStorage.setItem(siteVersionKey, SITE_DATA_VERSION);
       render();
+      tryOpenPendingSite();
     }
   } catch (error) {
     console.warn("Failed to load UNESCO DataHub sites", error);
@@ -709,30 +1122,34 @@ async function fetchUnescoDataHubSites() {
 
 function transformUnescoRecord(item) {
   const idNo = String(item.id_no);
-  const states = Array.isArray(item.states_names) ? item.states_names.join(" / ") : String(item.states_names || "");
-  return {
+  const stateNames = Array.isArray(item.states_names) ? item.states_names : [item.states_names];
+  const states = stateNames.map(cleanDataText).filter(Boolean).join(" / ");
+  const isJapanSite = stateNames.some((name) => cleanDataText(name) === "Japan");
+  const englishName = cleanDataText(item.name_en || "");
+  const site = {
     id: `unesco-${idNo}`,
     source: "UNESCO DataHub whc001",
     license: "CC BY-SA 4.0",
     sourceUrl: "https://data.unesco.org/explore/dataset/whc001/",
     officialUrl: `https://whc.unesco.org/en/list/${idNo}`,
     unescoId: idNo,
-    country: { ja: states, en: states },
+    country: { ja: isJapanSite ? "日本" : states, en: states },
     name: {
-      ja: item.name_en || "",
-      en: item.name_en || "",
-      zh: item.name_zh || "",
-      fr: item.name_fr || "",
-      es: item.name_es || "",
-      ar: item.name_ar || "",
-      ru: item.name_ru || ""
+      ja: japanHeritageNamesJa[idNo] || englishName,
+      en: englishName,
+      zh: cleanDataText(item.name_zh || ""),
+      fr: cleanDataText(item.name_fr || ""),
+      es: cleanDataText(item.name_es || ""),
+      ar: cleanDataText(item.name_ar || ""),
+      ru: cleanDataText(item.name_ru || "")
     },
     region: regionFromDataHub(item.region),
     category: categoryFromDataHub(item.category),
     year: item.date_inscribed ? Number(item.date_inscribed) : null,
-    criteria: item.criteria_txt || "",
+    criteria: cleanDataText(item.criteria_txt || ""),
     coordinates: item.coordinates ? { lat: item.coordinates.lat, lon: item.coordinates.lon } : null
   };
+  return normalizeSite(site);
 }
 
 function regionFromDataHub(value) {
@@ -826,9 +1243,18 @@ async function getPhoto(id) {
 }
 
 function setLanguage(language) {
+  localStorage.setItem(languageKey, language);
+
+  // 独立URLを持つ言語は、そのURLへ遷移させる（検索エンジンに言語別ページとして拾わせるため）。
+  // URLを持たない言語（韓国語・繁体字）は、これまで通りページ内で切り替える。
+  const target = localeAppPath(language);
+  if (target !== currentAppPath()) {
+    location.href = target + location.search;
+    return;
+  }
+
   state.language = language;
   document.documentElement.lang = language;
-  localStorage.setItem(languageKey, language);
   render();
 }
 
@@ -884,7 +1310,7 @@ function matchesQuery(item, query) {
     localName(item.country),
     item.country?.en,
     item.country?.ja
-  ].join(" ").toLowerCase();
+  ].map(cleanDataText).join(" ").toLowerCase();
   return searchText.includes(query);
 }
 
@@ -947,6 +1373,19 @@ function renderStats() {
   }
   $("#progressPercent").textContent = `${Math.round((visited / total) * 100) || 0}%`;
   $("#stampSummary").textContent = t("stampSummary", { visited, total });
+  renderTravelDistance();
+}
+
+function renderTravelDistance() {
+  const select = $("#homeCitySelect");
+  if (!select) return;
+  select.innerHTML = homeCities.map((city) => (
+    `<option value="${escapeHtml(city.key)}" ${city.key === state.homeCity ? "selected" : ""}>${escapeHtml(homeCityLabel(city))}</option>`
+  )).join("");
+  const stats = travelDistanceStats();
+  $("#travelDistanceKm").textContent = t("travelDistanceKm", { km: formatNumber(Math.round(stats.totalKm)) });
+  $("#travelDistanceNote").textContent = t("travelDistanceBody", { city: homeCityLabel(stats.home) });
+  $("#earthLaps").textContent = t("earthLaps", { laps: formatNumber(stats.earthLaps, 2) });
 }
 
 function renderRegions() {
@@ -970,6 +1409,69 @@ function renderRegions() {
   renderRegionCompletionAccess(completedRegions);
 }
 
+function stampTypeValue(record = {}) {
+  return stampTypes.includes(record.stampType) ? record.stampType : "classic";
+}
+
+function stampTypeLabel(type) {
+  return t({
+    classic: "stampClassic",
+    seal: "stampSeal",
+    postmark: "stampPostmark",
+    ticket: "stampTicket",
+    badge: "stampBadge"
+  }[type] || "stampClassic");
+}
+
+function stampTypeChoices(selectedType) {
+  return stampTypes.map((type) => {
+    const label = escapeHtml(stampTypeLabel(type));
+    return `
+      <label class="stamp-type-option">
+        <input type="radio" name="stampType" value="${type}" ${type === selectedType ? "checked" : ""}>
+        <span class="stamp stamp-preview stamp-${type}" aria-hidden="true">
+          <span>${label}</span>
+          <small>2026.06</small>
+        </span>
+        <span class="stamp-type-name">${label}</span>
+      </label>
+    `;
+  }).join("");
+}
+
+function isSamplePassportDismissed() {
+  return localStorage.getItem(samplePassportDismissedKey) === "true";
+}
+
+function dismissSamplePassport() {
+  localStorage.setItem(samplePassportDismissedKey, "true");
+  render();
+}
+
+function sampleStampItems() {
+  return SAMPLE_STAMP_UNESCO_IDS
+    .map((uid) => state.sites.find((item) => String(item.unescoId || "").replace(/\D/g, "") === uid))
+    .filter(Boolean);
+}
+
+function renderSamplePassport() {
+  const sampleItems = sampleStampItems();
+  $("#stampSummary").textContent = t("sampleBadge");
+  $("#stampSummary").classList.add("sample-mode");
+  $("#sampleProgressBar").hidden = false;
+  $("#createOwnPassportBtn").hidden = false;
+  $("#viewAllStampsBtn").hidden = true;
+  $("#stampGrid").innerHTML = sampleItems.map((item) => {
+    const presetImage = sitePresetImage(item);
+    return `
+      <div class="stamp stamp-ticket stamp-sample" aria-hidden="true">
+        ${presetImage ? `<img src="${presetImage}" alt="">` : ""}
+        <span>${escapeHtml(localName(item.name))}</span>
+      </div>
+    `;
+  }).join("");
+}
+
 function renderStamps() {
   const visited = state.sites
     .filter((item) => state.records[item.id]?.visited)
@@ -978,13 +1480,31 @@ function renderStamps() {
       const recordB = state.records[b.id] || {};
       return String(recordB.updatedAt || recordB.date || "").localeCompare(String(recordA.updatedAt || recordA.date || ""));
     });
+
+  if (visited.length === 0 && !isSamplePassportDismissed()) {
+    renderSamplePassport();
+    renderCompletionAccess(visited);
+    return;
+  }
+
+  $("#stampSummary").classList.remove("sample-mode");
+  $("#sampleProgressBar").hidden = true;
+  $("#createOwnPassportBtn").hidden = true;
   const latest = visited.slice(0, 12);
   $("#stampSummary").textContent = visited.length
     ? t("stampPreviewSummary", { shown: latest.length, visited: visited.length })
     : t("stampSummary", { visited: 0, total: state.sites.length });
   $("#viewAllStampsBtn").hidden = visited.length === 0;
   $("#stampGrid").innerHTML = visited.length
-    ? latest.map((item) => `<button class="stamp" type="button" data-open="${escapeHtml(item.id)}">${escapeHtml(localName(item.name))}</button>`).join("")
+    ? latest.map((item) => {
+      const record = state.records[item.id] || {};
+      return `
+        <button class="stamp stamp-${escapeHtml(stampTypeValue(record))}" type="button" data-open="${escapeHtml(item.id)}">
+          <span>${escapeHtml(localName(item.name))}</span>
+          <small>${escapeHtml(formatStampDate(item))}</small>
+        </button>
+      `;
+    }).join("")
     : `<div class="stamp empty">${escapeHtml(t("stampsEmpty"))}</div>`;
   renderCompletionAccess(visited);
 }
@@ -997,6 +1517,70 @@ function completionStats(visitedItems = null) {
     visited: visited.length,
     isComplete: total > 0 && visited.length === total
   };
+}
+
+function generateAchievementShareCard(stats) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 630;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("画像の生成に失敗しました");
+  const fontStack = '"Hiragino Kaku Gothic ProN", "Noto Sans JP", "Meiryo", sans-serif';
+
+  const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  bg.addColorStop(0, "#b45309");
+  bg.addColorStop(1, "#1c1917");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.beginPath();
+  ctx.arc(1020, 120, 260, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+
+  ctx.font = `700 24px ${fontStack}`;
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.fillText("🏛️ " + t("appTitle"), 60, 90);
+
+  ctx.font = `800 58px ${fontStack}`;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(`${t("completed")} ${stats.visited} / ${stats.total}`, 60, 260);
+
+  ctx.font = `500 30px ${fontStack}`;
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  const pct = Math.round((stats.visited / stats.total) * 100) || 0;
+  ctx.fillText(`${t("progress")} ${pct}%`, 60, 320);
+
+  ctx.font = `600 22px ${fontStack}`;
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.textAlign = "right";
+  ctx.fillText("ai-drive-planner.com/heritage", canvas.width - 40, canvas.height - 36);
+  ctx.textAlign = "left";
+
+  return canvas.toDataURL("image/png");
+}
+
+function handleAchievementShareX() {
+  const stats = completionStats();
+  const text = t("achievementShareText", stats);
+  const params = new URLSearchParams({
+    text,
+    url: "https://www.ai-drive-planner.com/heritage/",
+    hashtags: "世界遺産,世界遺産パスポート"
+  });
+  window.open(`https://twitter.com/intent/tweet?${params.toString()}`, "_blank", "noopener,noreferrer");
+}
+
+function handleAchievementShareImage() {
+  const stats = completionStats();
+  const dataUrl = generateAchievementShareCard(stats);
+  const anchor = document.createElement("a");
+  anchor.href = dataUrl;
+  anchor.download = "世界遺産パスポート-実績.png";
+  anchor.click();
 }
 
 function renderCompletionAccess(visitedItems) {
@@ -1049,6 +1633,11 @@ function formatRecordDate(item) {
   const record = state.records[item.id] || {};
   const value = record.date || record.updatedAt || "";
   return formatDateValue(value);
+}
+
+function formatStampDate(item) {
+  const record = state.records[item.id] || {};
+  return formatDateValue(record.date || "");
 }
 
 function formatDateValue(value) {
@@ -1176,8 +1765,13 @@ function renderCountryIndex() {
 
 function countryRow(country) {
   const active = state.selectedCountry === country.key;
+  const flagItems = countryFlagItems(country.country);
+  const flagsHtml = flagItems.flags.length
+    ? `<div class="country-flags" aria-hidden="true">${flagItems.flags.map((flag) => `<span title="${escapeHtml(flag.code)}"><img src="${escapeHtml(flag.url)}" alt="" loading="lazy" onerror="this.closest('span').hidden=true"></span>`).join("")}${flagItems.hiddenCount ? `<em>+${flagItems.hiddenCount}</em>` : ""}</div>`
+    : `<div class="country-flags empty" aria-hidden="true"></div>`;
   return `
     <button class="country-card ${active ? "active" : ""}" type="button" data-country="${escapeHtml(country.key)}">
+      ${flagsHtml}
       <strong>${escapeHtml(localName(country.country))}</strong>
       <span class="country-stat">${escapeHtml(t("sitesLabel", { count: country.total }))}</span>
       <span class="country-stat">${escapeHtml(t("visitedLabel", { count: country.visited }))}</span>
@@ -1235,16 +1829,58 @@ const legacySiteImageMap = {
   "1698": "assets/heritage/sado-gold-mines.webp"
 };
 
+// 静的生成した個別ページ(/heritage/sites/{slug})への対応表。
+// scripts/heritage-build-data.mjs が assets/heritage/slugs.json を書き出す。
+async function loadHeritageSlugMap() {
+  try {
+    const response = await fetch(heritageSlugMapPath);
+    if (!response.ok) return;
+    const payload = await response.json();
+    heritageSlugMap = payload?.slugs && typeof payload.slugs === "object" ? payload.slugs : {};
+    render();
+  } catch (error) {
+    console.warn("Failed to load heritage slug map", error);
+  }
+}
+
+function siteDetailPagePath(item) {
+  const id = String(item?.unescoId || "").replace(/\D/g, "");
+  const slug = heritageSlugMap[id];
+  if (!slug) return "";
+  // 表示中の言語に対応する個別ページへ送る（日本語は /heritage/sites/... のまま）
+  return `${localeAppPath(state.language)}/sites/${encodeURIComponent(slug)}`;
+}
+
 async function loadHeritageImageManifest() {
   try {
     const response = await fetch(heritageImageManifestPath);
     if (!response.ok) return;
     const payload = await response.json();
     heritageImageManifest = payload?.images && typeof payload.images === "object" ? payload.images : {};
+    // 初期化前に届いた場合は、初期化時の描画で反映されるので何もしない
+    if (!appInitialized) return;
     render();
+    // 既に開いているダイアログが簡易表示のままなら代表画像に差し替える
+    upgradeOpenDialogImage();
   } catch (error) {
     console.warn("Failed to load heritage image manifest", error);
   }
+}
+
+/**
+ * ダイアログは開いた時点の内容で固定されるため、後から代表画像が届いた場合に
+ * 画像部分だけを差し替える（入力中のメモや日付は触らない）。
+ */
+function upgradeOpenDialogImage() {
+  const dialog = $("#siteDialog");
+  if (!dialog?.open || !openDialogItemId) return;
+  const holder = dialog.querySelector(".dialog-photo");
+  if (!holder || !holder.querySelector(".placeholder-visual")) return;
+  const item = state.sites.find((siteItem) => siteItem.id === openDialogItemId);
+  if (!item) return;
+  const presetImage = sitePresetImage(item);
+  if (!presetImage) return;
+  holder.innerHTML = dialogPresetImageMarkup(presetImage, escapeHtml(localName(item.name)));
 }
 
 function categoryClass(item) {
@@ -1258,6 +1894,11 @@ function sitePresetImage(item) {
 
 function previewFallbackImage(path) {
   return path?.replace(/^assets\/heritage\//, "/generated-heritage/");
+}
+
+/** ダイアログに出す代表画像のHTML（読み込み失敗時は別フォルダの画像へ切り替える） */
+function dialogPresetImageMarkup(presetImage, imageAlt) {
+  return `<img src="${presetImage}" data-fallback="${previewFallbackImage(presetImage)}" alt="${imageAlt}" onerror="if (this.dataset.fallback && !this.dataset.triedFallback) { this.dataset.triedFallback = 'true'; this.src = this.dataset.fallback; }"><span>${escapeHtml(t("imageReady"))}</span>`;
 }
 
 function hasPresetImage(item) {
@@ -1314,6 +1955,7 @@ function renderList() {
   $("#siteList").innerHTML = visibleSites.map((item) => {
     const record = state.records[item.id] || {};
     const photo = state.photos.get(item.id);
+    const detailPath = siteDetailPagePath(item);
     return `
       <article class="site-tile ${record.visited ? "visited-tile" : ""}" data-open="${item.id}">
         ${siteTileImage(item, photo)}
@@ -1321,10 +1963,21 @@ function renderList() {
           <h4>${escapeHtml(localName(item.name))}</h4>
           <p>${escapeHtml(localName(item.country))} · ${item.year} · ${escapeHtml(t(item.category))}</p>
           <span>${escapeHtml(record.visited ? t("visitedOnly") : t("notVisited"))}</span>
+          ${detailPath ? `<a class="site-detail-link" href="${detailPath}">${escapeHtml(t("detailPage"))}</a>` : ""}
         </div>
       </article>
     `;
   }).join("");
+}
+
+function scrollToFirstVisibleSite() {
+  window.requestAnimationFrame(() => {
+    const target = $("#siteList .site-tile") || $("#listSection");
+    if (!target) return;
+    const toolbarHeight = $(".toolbar")?.getBoundingClientRect().height || 0;
+    const top = target.getBoundingClientRect().top + window.scrollY - toolbarHeight - 14;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  });
 }
 
 function renderDataStatus() {
@@ -1351,20 +2004,148 @@ function renderPagination(total, startIndex, visibleCount, shouldShowSites) {
   $("#nextPageBtn").disabled = end >= total;
 }
 
+function dateParts(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return match ? { year: match[1], month: match[2], day: match[3] } : { year: "", month: "", day: "" };
+}
+
+function paddedNumber(value) {
+  return String(value).padStart(2, "0");
+}
+
+function daysInMonth(year, month) {
+  if (!year || !month) return 31;
+  return new Date(Number(year), Number(month), 0).getDate();
+}
+
+function dateSelectOptions(type, selectedValue) {
+  const today = new Date();
+  if (type === "year") {
+    const currentYear = today.getFullYear();
+    const years = Array.from({ length: currentYear - 1977 }, (_, index) => currentYear - index);
+    return `<option value="">${escapeHtml(t("dateYear"))}</option>${years.map((year) => `<option value="${year}" ${String(year) === selectedValue ? "selected" : ""}>${year}</option>`).join("")}`;
+  }
+  if (type === "month") {
+    return `<option value="">${escapeHtml(t("dateMonth"))}</option>${Array.from({ length: 12 }, (_, index) => {
+      const value = paddedNumber(index + 1);
+      return `<option value="${value}" ${value === selectedValue ? "selected" : ""}>${index + 1}</option>`;
+    }).join("")}`;
+  }
+  return `<option value="">${escapeHtml(t("dateDay"))}</option>${Array.from({ length: 31 }, (_, index) => {
+    const value = paddedNumber(index + 1);
+    return `<option value="${value}" ${value === selectedValue ? "selected" : ""}>${index + 1}</option>`;
+  }).join("")}`;
+}
+
+function todayDateValue() {
+  const today = new Date();
+  return `${today.getFullYear()}-${paddedNumber(today.getMonth() + 1)}-${paddedNumber(today.getDate())}`;
+}
+
+function syncDatePartsFromInput() {
+  const parts = dateParts($("#visitDateInput").value);
+  $("#visitYearSelect").value = parts.year;
+  $("#visitMonthSelect").value = parts.month;
+  refreshDayOptions(parts.day);
+}
+
+function syncDateInputFromParts() {
+  const year = $("#visitYearSelect").value;
+  const month = $("#visitMonthSelect").value;
+  const day = $("#visitDaySelect").value;
+  if (year && month && day) $("#visitDateInput").value = `${year}-${month}-${day}`;
+}
+
+function refreshDayOptions(selectedDay = $("#visitDaySelect")?.value || "") {
+  const year = $("#visitYearSelect").value;
+  const month = $("#visitMonthSelect").value;
+  const maxDay = daysInMonth(year, month);
+  const safeDay = Number(selectedDay) > maxDay ? paddedNumber(maxDay) : selectedDay;
+  $("#visitDaySelect").innerHTML = `<option value="">${escapeHtml(t("dateDay"))}</option>${Array.from({ length: maxDay }, (_, index) => {
+    const value = paddedNumber(index + 1);
+    return `<option value="${value}" ${value === safeDay ? "selected" : ""}>${index + 1}</option>`;
+  }).join("")}`;
+}
+
+function currentDialogRecordDraft() {
+  return {
+    date: $("#visitDateInput").value,
+    stampType: document.querySelector('input[name="stampType"]:checked')?.value || "classic",
+    memo: $("#memoInput").value,
+  };
+}
+
+async function saveDialogRecord(item) {
+  const pendingPhoto = state.pendingPhotos.get(item.id);
+  if (pendingPhoto) {
+    await putPhoto(item.id, pendingPhoto);
+    state.pendingPhotos.delete(item.id);
+  }
+  const draft = currentDialogRecordDraft();
+  state.records[item.id] = {
+    ...state.records[item.id],
+    visited: true,
+    date: draft.date,
+    stampType: draft.stampType,
+    memo: draft.memo,
+    updatedAt: new Date().toISOString()
+  };
+  state.pendingDialogRecords.delete(item.id);
+  saveRecords();
+}
+
+async function openTravelJournalMaker(item) {
+  if (state.pendingPhotos.has(item.id)) {
+    alert(t("createTravelJournalUnsavedPhoto"));
+    return;
+  }
+  if (!state.photos.get(item.id)) {
+    alert(t("createTravelJournalDisabled"));
+    return;
+  }
+  saveSites();
+  await saveDialogRecord(item);
+  location.href = `/shiori?source=heritage&ids=${encodeURIComponent(item.id)}`;
+}
 function renderDialog(item) {
-  const record = state.records[item.id] || {};
-  const photo = state.photos.get(item.id);
+  openDialogItemId = item.id;
+  const record = { ...(state.records[item.id] || {}), ...(state.pendingDialogRecords.get(item.id) || {}) };
+  const savedPhoto = state.photos.get(item.id);
+  const pendingPhoto = state.pendingPhotos.get(item.id);
+  const photo = pendingPhoto || savedPhoto;
+  const canCreateTravelJournal = Boolean(savedPhoto) && !pendingPhoto;
+  const shioriNote = pendingPhoto
+    ? t("createTravelJournalUnsavedPhoto")
+    : canCreateTravelJournal
+    ? t("createTravelJournalNote")
+    : t("createTravelJournalDisabled");
   const presetImage = sitePresetImage(item);
   const imageAlt = escapeHtml(localName(item.name));
+  const detailPath = siteDetailPagePath(item);
+  const parts = dateParts(record.date);
   $("#dialogContent").innerHTML = `
     <div class="dialog-layout">
-      <div class="dialog-photo">${photo ? `<img src="${photo}" alt="${imageAlt}">` : presetImage ? `<img src="${presetImage}" data-fallback="${previewFallbackImage(presetImage)}" alt="${imageAlt}" onerror="if (this.dataset.fallback && !this.dataset.triedFallback) { this.dataset.triedFallback = 'true'; this.src = this.dataset.fallback; }"><span>${escapeHtml(t("imageReady"))}</span>` : `<div class="placeholder-visual ${categoryClass(item)}"></div>`}</div>
+      <div class="dialog-photo">${photo ? `<img src="${photo}" alt="${imageAlt}">` : presetImage ? dialogPresetImageMarkup(presetImage, imageAlt) : `<div class="placeholder-visual ${categoryClass(item)}"></div>`}</div>
       <div>
         <h3>${escapeHtml(localName(item.name))}</h3>
         <p class="site-meta">${escapeHtml(localName(item.country))} · ${item.year} · ${escapeHtml(t(item.region))} · ${escapeHtml(t(item.category))}</p>
         <button id="toggleVisitedBtn" class="${record.visited ? "visited" : ""}" type="button">${escapeHtml(record.visited ? t("markUnvisited") : t("markVisited"))}</button>
         <div class="dialog-fields">
-          <label>${escapeHtml(t("visitDate"))}<input id="visitDateInput" type="date" value="${escapeHtml(record.date || "")}"></label>
+          <label class="date-field">${escapeHtml(t("visitDate"))}
+            <div class="date-input-row">
+              <input id="visitDateInput" type="date" value="${escapeHtml(record.date || "")}">
+              <button id="todayDateBtn" class="ghost mini-button" type="button">${escapeHtml(t("today"))}</button>
+            </div>
+            <div class="date-select-row">
+              <select id="visitYearSelect" aria-label="${escapeHtml(t("dateYear"))}">${dateSelectOptions("year", parts.year)}</select>
+              <select id="visitMonthSelect" aria-label="${escapeHtml(t("dateMonth"))}">${dateSelectOptions("month", parts.month)}</select>
+              <select id="visitDaySelect" aria-label="${escapeHtml(t("dateDay"))}">${dateSelectOptions("day", parts.day)}</select>
+            </div>
+          </label>
+          <fieldset class="stamp-type-field">
+            <legend>${escapeHtml(t("stampType"))}</legend>
+            <div class="stamp-type-choices">${stampTypeChoices(stampTypeValue(record))}</div>
+          </fieldset>
           <label>${escapeHtml(t("memo"))}<textarea id="memoInput">${escapeHtml(record.memo || "")}</textarea></label>
           <div class="mini-actions">
             <label class="ghost file-label">
@@ -1373,9 +2154,12 @@ function renderDialog(item) {
             </label>
             <button id="saveRecordBtn" type="button">${escapeHtml(t("save"))}</button>
             <button id="removePhotoBtn" class="ghost" type="button">${escapeHtml(t("removePhoto"))}</button>
+            <button id="createShioriBtn" class="shiori-link-button" type="button" ${canCreateTravelJournal ? "" : "disabled"}>${escapeHtml(t("createTravelJournal"))}</button>
+            ${detailPath ? `<a class="ghost file-label" href="${detailPath}">${escapeHtml(t("detailPage"))}</a>` : ""}
             <a class="ghost file-label" href="${item.officialUrl}" target="_blank" rel="noreferrer">${escapeHtml(t("official"))}</a>
           </div>
           <p class="photo-note">${escapeHtml(t("photoUploadNote"))}</p>
+          <p class="shiori-link-note">${escapeHtml(shioriNote)}</p>
         </div>
       </div>
     </div>
@@ -1384,19 +2168,33 @@ function renderDialog(item) {
     toggleVisited(item.id);
     renderDialog(item);
   });
-  $("#saveRecordBtn").addEventListener("click", () => {
-    state.records[item.id] = {
-      ...state.records[item.id],
-      visited: true,
-      date: $("#visitDateInput").value,
-      memo: $("#memoInput").value,
-      updatedAt: new Date().toISOString()
-    };
-    saveRecords();
+  refreshDayOptions(parts.day);
+  $("#visitDateInput").addEventListener("change", syncDatePartsFromInput);
+  $("#todayDateBtn").addEventListener("click", () => {
+    $("#visitDateInput").value = todayDateValue();
+    syncDatePartsFromInput();
+  });
+  ["#visitYearSelect", "#visitMonthSelect"].forEach((selector) => {
+    $(selector).addEventListener("change", () => {
+      refreshDayOptions();
+      syncDateInputFromParts();
+    });
+  });
+  $("#visitDaySelect").addEventListener("change", syncDateInputFromParts);
+  $("#saveRecordBtn").addEventListener("click", async () => {
+    await saveDialogRecord(item);
     $("#siteDialog").close();
     render();
   });
+  $("#createShioriBtn").addEventListener("click", () => {
+    openTravelJournalMaker(item);
+  });
   $("#removePhotoBtn").addEventListener("click", async () => {
+    if (state.pendingPhotos.has(item.id)) {
+      state.pendingPhotos.delete(item.id);
+      renderDialog(item);
+      return;
+    }
     await deletePhoto(item.id);
     renderDialog(item);
     render();
@@ -1405,11 +2203,9 @@ function renderDialog(item) {
     const file = event.target.files[0];
     if (!file) return;
     const dataUrl = await resizeImage(file);
-    await putPhoto(item.id, dataUrl);
-    state.records[item.id] = { ...state.records[item.id], visited: true, updatedAt: new Date().toISOString() };
-    saveRecords();
+    state.pendingDialogRecords.set(item.id, currentDialogRecordDraft());
+    state.pendingPhotos.set(item.id, dataUrl);
     renderDialog(item);
-    render();
   });
 }
 
@@ -1479,6 +2275,43 @@ async function exportBackup(options = {}) {
   alert(t(includePhotos ? "exported" : "exportedRecords"));
 }
 
+function recordUpdatedAt(record) {
+  const timestamp = Date.parse(record?.updatedAt || "");
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function mergeRecord(currentRecord = {}, importedRecord = {}) {
+  const importedIsNewer = recordUpdatedAt(importedRecord) > recordUpdatedAt(currentRecord);
+  const newer = importedIsNewer ? importedRecord : currentRecord;
+  const older = importedIsNewer ? currentRecord : importedRecord;
+  return {
+    ...older,
+    ...newer,
+    visited: Boolean(currentRecord.visited || importedRecord.visited),
+    date: newer.date || older.date || "",
+    memo: newer.memo || older.memo || ""
+  };
+}
+
+function mergeRecords(currentRecords = {}, importedRecords = {}) {
+  const merged = { ...currentRecords };
+  Object.entries(importedRecords).forEach(([id, importedRecord]) => {
+    if (["__proto__", "constructor", "prototype"].includes(id)) return;
+    if (!importedRecord || typeof importedRecord !== "object" || Array.isArray(importedRecord)) return;
+    merged[id] = merged[id] ? mergeRecord(merged[id], importedRecord) : importedRecord;
+  });
+  return merged;
+}
+
+function mergeSites(currentSites = [], importedSites = []) {
+  const merged = new Map(currentSites.filter((item) => item?.id).map((item) => [item.id, item]));
+  importedSites.forEach((item) => {
+    if (!item?.id) return;
+    merged.set(item.id, merged.has(item.id) ? { ...item, ...merged.get(item.id) } : item);
+  });
+  return [...merged.values()];
+}
+
 async function importBackup(file) {
   try {
     const text = await file.text();
@@ -1489,18 +2322,26 @@ async function importBackup(file) {
       localStorage.setItem(siteSourceKey, "custom");
       saveSites();
     } else {
-      state.sites = Array.isArray(payload.sites) ? payload.sites : state.sites;
-      state.records = payload.records || {};
-      state.age = payload.age || "";
-      state.profileName = String(payload.profileName || "");
+      const currentRecords = state.records;
+      const importedRecords = payload.records && typeof payload.records === "object" && !Array.isArray(payload.records)
+        ? payload.records
+        : {};
+      state.sites = Array.isArray(payload.sites) ? mergeSites(state.sites, payload.sites) : state.sites;
+      state.records = mergeRecords(currentRecords, importedRecords);
+      state.age = state.age || payload.age || "";
+      state.profileName = state.profileName || String(payload.profileName || "");
       state.dataStatus = "imported";
       localStorage.setItem(ageKey, state.age);
       localStorage.setItem(profileNameKey, state.profileName);
       localStorage.setItem(siteSourceKey, "custom");
       saveSites();
       saveRecords();
-      if (payload.photos) {
-        await Promise.all(Object.entries(payload.photos).map(([id, data]) => putPhoto(id, data)));
+      if (payload.photos && typeof payload.photos === "object" && !Array.isArray(payload.photos)) {
+        await Promise.all(Object.entries(payload.photos).map(([id, data]) => {
+          if (typeof data !== "string") return Promise.resolve();
+          const importedIsNewer = recordUpdatedAt(importedRecords[id]) > recordUpdatedAt(currentRecords[id]);
+          return !state.photos.has(id) || importedIsNewer ? putPhoto(id, data) : Promise.resolve();
+        }));
       }
     }
     await loadPhotos();
@@ -1552,6 +2393,11 @@ function bindEvents() {
     state.profileName = event.target.value.trim();
     localStorage.setItem(profileNameKey, state.profileName);
   });
+  $("#homeCitySelect")?.addEventListener("change", (event) => {
+    state.homeCity = event.target.value;
+    localStorage.setItem(homeCityKey, state.homeCity);
+    renderTravelDistance();
+  });
   $("#searchInput").addEventListener("input", (event) => {
     state.filters.query = event.target.value;
     state.imageSamplesOnly = false;
@@ -1585,7 +2431,7 @@ function bindEvents() {
     state.page = 1;
     render();
     if (state.selectedCountry) {
-      $("#listSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollToFirstVisibleSite();
     }
   });
   $("#regionMap").addEventListener("click", (event) => {
@@ -1599,6 +2445,8 @@ function bindEvents() {
     render();
   });
   $("#siteList").addEventListener("click", (event) => {
+    // 個別ページへのリンクを押したときは記録ダイアログを開かない
+    if (event.target.closest("a")) return;
     const openId = event.target.closest("[data-open], .site-tile")?.dataset.open;
     if (openId) {
       const item = state.sites.find((siteItem) => siteItem.id === openId);
@@ -1615,7 +2463,10 @@ function bindEvents() {
     $("#siteDialog").showModal();
   });
   $("#viewAllStampsBtn").addEventListener("click", showVisitedStamps);
+  $("#createOwnPassportBtn")?.addEventListener("click", dismissSamplePassport);
   $("#memorialBtn")?.addEventListener("click", openMemorialDialog);
+  $("#achievementShareXBtn")?.addEventListener("click", handleAchievementShareX);
+  $("#achievementShareImageBtn")?.addEventListener("click", handleAchievementShareImage);
   $("#memorialDialog")?.addEventListener("click", (event) => {
     if (event.target.closest("[data-close-memorial]")) {
       $("#memorialDialog").close();
@@ -1665,11 +2516,39 @@ function render() {
   renderList();
 }
 
+let openingPendingSite = false;
+
+async function tryOpenPendingSite() {
+  if (!pendingOpenUnescoId || openingPendingSite) return;
+  const item = state.sites.find((siteItem) => siteUnescoId(siteItem) === pendingOpenUnescoId);
+  if (!item) return;
+  openingPendingSite = true;
+  // 個別ページのボタンから来た場合、代表画像の一覧が届く前に開くと簡易表示に
+  // なってしまうため、少しだけ待ってから開く（遅い回線でも開けるよう上限あり）。
+  await Promise.race([
+    heritageImageManifestReady,
+    new Promise((resolve) => setTimeout(resolve, 2500)),
+  ]);
+  openingPendingSite = false;
+  if (!pendingOpenUnescoId) return;
+  pendingOpenUnescoId = null;
+  renderDialog(item);
+  $("#siteDialog").showModal();
+  const url = new URL(location.href);
+  url.searchParams.delete("open");
+  history.replaceState(null, "", url);
+}
+
+// 代表画像の一覧は他の読み込みを待たずに取得を始める
+heritageImageManifestReady = loadHeritageImageManifest();
+
 loadPhotos().finally(() => {
   window.__passportFallbackAbort?.();
   bindEvents();
+  appInitialized = true;
   render();
-  loadHeritageImageManifest();
+  tryOpenPendingSite();
+  loadHeritageSlugMap();
   loadRemoteWorldHeritageSites();
   window.__passportReady = true;
 });

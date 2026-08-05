@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
   <head>
     <meta charset="utf-8">
@@ -23,8 +23,8 @@
     <meta property="og:title" content="世界遺産パスポート｜世界遺産の訪問記録・スタンプラリー">
     <meta property="og:description" content="世界遺産の訪問記録をブラウザ内だけに保存できる、写真付きスタンプ形式の世界遺産スタンプラリーサイトです。">
     <meta property="og:url" content="https://www.ai-drive-planner.com/heritage">
-    <meta property="og:image" content="https://www.ai-drive-planner.com/heritage/assets/social-card.png">
-    <meta property="og:image:secure_url" content="https://www.ai-drive-planner.com/heritage/assets/social-card.png">
+    <meta property="og:image" content="https://www.ai-drive-planner.com/heritage/assets/social-card-ja.png">
+    <meta property="og:image:secure_url" content="https://www.ai-drive-planner.com/heritage/assets/social-card-ja.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -32,11 +32,11 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="世界遺産パスポート｜世界遺産の訪問記録・スタンプラリー">
     <meta name="twitter:description" content="世界遺産の訪問記録をブラウザ内だけに保存できる、写真付きスタンプ形式の世界遺産スタンプラリーサイトです。">
-    <meta name="twitter:image" content="https://www.ai-drive-planner.com/heritage/assets/social-card.png">
+    <meta name="twitter:image" content="https://www.ai-drive-planner.com/heritage/assets/social-card-ja.png">
     <meta name="twitter:image:alt" content="世界遺産パスポートのカード画像">
     <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="./styles.css?v=passport-shiori-banner-v1">
+    <link rel="stylesheet" href="./styles.css?v=heritage-site-pages-v1">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -71,13 +71,16 @@
       ]
     }
     </script>
+    <link rel="alternate" hreflang="ja" href="https://www.ai-drive-planner.com/heritage">
+    <link rel="alternate" hreflang="en" href="https://www.ai-drive-planner.com/heritage/en">
+    <link rel="alternate" hreflang="x-default" href="https://www.ai-drive-planner.com/heritage/en">
   </head>
   <body>
     <header class="topbar">
       <div>
           <p class="eyebrow" data-i18n="eyebrow">Private travel tracker</p>
           <h1 data-i18n="appTitle">世界遺産パスポート</h1>
-          <p class="build-badge">ブラウザ内保存 / 写真スタンプ / 世界遺産1,248件（2026年5月末時点）対応 / since2026.6</p>
+          <p class="build-badge">ブラウザ内保存 / 写真スタンプ / 世界遺産1,273件（2026年8月時点）対応 / since2026.6</p>
           <a class="x-follow-banner" href="https://x.com/AIDRIVEPLAN" target="_blank" rel="noopener noreferrer" aria-label="X公式アカウント @AIDRIVEPLAN をフォロー">
             <span class="x-follow-mark" aria-hidden="true">X</span>
             <span class="x-follow-text">公式（@AIDRIVEPLAN）をフォロー</span>
@@ -165,9 +168,15 @@
             <h3 data-i18n="passport">パスポート</h3>
             <p id="stampSummary"></p>
           </div>
+          <div id="sampleProgressBar" class="bar sample-bar" hidden><span></span></div>
           <div id="stampGrid" class="stamp-grid"></div>
+          <button id="createOwnPassportBtn" class="passport-link" type="button" data-i18n="sampleCreateOwn" hidden>自分のパスポートを作る</button>
           <button id="viewAllStampsBtn" class="ghost passport-link" type="button" data-i18n="viewAllStamps">すべてのスタンプを見る</button>
           <button id="memorialBtn" class="memorial-link" type="button" data-i18n="memorialButton" hidden>完全制覇メモリアルを見る</button>
+          <div class="achievement-share-row">
+            <button id="achievementShareXBtn" class="ghost" type="button" data-i18n="achievementShareX">Xでシェア</button>
+            <button id="achievementShareImageBtn" class="ghost" type="button" data-i18n="achievementShareImage">実績画像を保存</button>
+          </div>
         </div>
       </section>
 
@@ -232,7 +241,7 @@
           <h3 id="listTitle" data-i18n="list">世界遺産一覧</h3>
           <div class="list-meta">
             <p id="listCount">20件を表示</p>
-            <p id="dataStatus">現在はサンプル20件 / 目標1,248件（2026年5月末時点）</p>
+            <p id="dataStatus"></p>
           </div>
         </div>
         <div id="siteList" class="site-list">
@@ -242,7 +251,7 @@
         </div>
         <div id="pagination" class="pagination">
           <button id="prevPageBtn" class="ghost" type="button" data-i18n="prevPage">前へ</button>
-          <span id="pageStatus">1-90 / 1248件</span>
+          <span id="pageStatus">1-90 / 1273件</span>
           <button id="nextPageBtn" class="ghost" type="button" data-i18n="nextPage">次へ</button>
         </div>
       </section>
@@ -253,9 +262,16 @@
         <p data-i18n="memorialNotice">地域内の世界遺産をすべて訪問済みにした時と、全世界遺産を制覇した時に、ブラウザ内の記録をもとにメモリアル演出を表示します。</p>
         <p data-i18n="rightsNotice">世界遺産の名称・国・登録年などの事実情報を扱い、UNESCO/WHC公式の説明文・写真・ロゴは使用していません。サイト内の代表画像は独自生成のイメージ画像です。</p>
         <p data-i18n="accuracyNotice">掲載情報は公開データをもとにしていますが、最新性・完全性を保証するものではありません。旅行計画や公式確認には各公式ページを参照してください。</p>
+        <nav class="footer-links" aria-label="サイト案内">
+          <a href="/heritage/about.html" data-i18n="aboutPage">サイトについて・使い方</a>
+          <a href="/heritage/faq.html" data-i18n="faqPage">よくある質問</a>
+        </nav>
         <nav class="footer-links" aria-label="Policies">
-          <a href="./privacy.html" data-i18n="privacyPolicy">プライバシーポリシー</a>
-          <a href="./cookie.html" data-i18n="cookiePolicy">Cookieについて</a>
+          <a href="/heritage/privacy.html" data-i18n="privacyPolicy">プライバシーポリシー</a>
+          <a href="/heritage/cookie.html" data-i18n="cookiePolicy">Cookieについて</a>
+        </nav>
+        <nav class="footer-links" aria-label="世界遺産の一覧">
+          <a href="/heritage/sites">世界遺産一覧（全1,273件の基本情報ページ）</a>
         </nav>
         <nav class="footer-links" aria-label="関連ツール">
           <a href="/">AIドライブプランナー（車旅行プラン自動作成）</a>
@@ -324,7 +340,7 @@
             card.hidden = view === "visited";
           });
           if (listCount) listCount.textContent = view === "visited" ? "訪問済み0件" : "サンプル3件を横3列で表示";
-          if (pageStatus) pageStatus.textContent = view === "heritage" ? "1-60 / 1248件" : "1-3 / 3件";
+          if (pageStatus) pageStatus.textContent = view === "heritage" ? "1-60 / 1273件" : "1-3 / 3件";
         };
 
         buttons.forEach((button) => {
@@ -352,7 +368,7 @@
         applyView("countries");
       }, 1900);
     </script>
-    <script src="./app.js?v=passport-shiori-banner-v1"></script>
+    <script src="./app.js?v=heritage-site-pages-v1"></script>
   </body>
 </html>
 

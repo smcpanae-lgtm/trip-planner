@@ -19,6 +19,7 @@ import PhotoUploader from "./PhotoUploader";
 import { CATEGORIES, CUSTOM_CAT_VALUES, type CustomCatKey } from "@/lib/lifemap/categories";
 import { PREFECTURES } from "@/lib/lifemap/prefectures";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
+import { parseLatLngPair } from "@/lib/lifemap/location";
 import type {
   LifeMapCategory,
   LocationPrecision,
@@ -239,6 +240,14 @@ export default function LifeMapEntryForm({
                           const val = parseFloat(e.target.value);
                           onChange({ lat: isNaN(val) ? undefined : val });
                         }}
+                        onPaste={(e) => {
+                          const pair = parseLatLngPair(
+                            e.clipboardData.getData("text")
+                          );
+                          if (!pair) return;
+                          e.preventDefault();
+                          onChange({ lat: pair.lat, lng: pair.lng });
+                        }}
                         className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                       />
                     </div>
@@ -252,6 +261,14 @@ export default function LifeMapEntryForm({
                         onChange={(e) => {
                           const val = parseFloat(e.target.value);
                           onChange({ lng: isNaN(val) ? undefined : val });
+                        }}
+                        onPaste={(e) => {
+                          const pair = parseLatLngPair(
+                            e.clipboardData.getData("text")
+                          );
+                          if (!pair) return;
+                          e.preventDefault();
+                          onChange({ lat: pair.lat, lng: pair.lng });
                         }}
                         className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                       />

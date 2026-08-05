@@ -24,11 +24,16 @@ const TOOLS = [
     title: "人気ドライブルート一覧",
     description: "出発地別の人気ドライブコースを距離・所要時間の目安つきで紹介",
   },
+  {
+    href: "/columns",
+    title: "ドライブ旅行コラム",
+    description: "持ち物リストや渋滞回避のコツなど、ドライブ旅行に役立つ情報をまとめて紹介",
+  },
 ];
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="relative z-10 border-t border-slate-200 bg-white">
       <div className="max-w-[1600px] mx-auto px-4 py-10">
         <nav aria-label="関連ツール">
           <h2 className="text-sm font-bold text-slate-500 mb-4">関連ツール</h2>

@@ -31,6 +31,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# heritage monthly check reports (local routine output)
+/scripts/reports/
+
 # vercel
 .vercel
 

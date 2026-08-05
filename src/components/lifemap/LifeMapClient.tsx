@@ -21,9 +21,7 @@ import {
   HardDrive,
   ChevronDown,
   Share2,
-  ImageDown,
 } from "lucide-react";
-import { buildXShareUrl, generateAchievementShareCard, downloadDataUrl } from "@/lib/shareCard";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { extractExifLocation } from "@/lib/lifemap/exif";
 import { compressImage } from "@/lib/lifemap/image";
@@ -42,6 +40,8 @@ import LifeMapEntryForm, {
 import LifeMapEntryList from "./LifeMapEntryList";
 import BackupButtons from "./BackupButtons";
 import MemoryReplay from "./MemoryReplay";
+import ShareImageModal from "./ShareImageModal";
+import LifeMapGuide from "./LifeMapGuide";
 import LifeMapEditModal from "./LifeMapEditModal";
 import { CategoryLegend } from "./PrefectureSummary";
 import {
@@ -77,6 +77,7 @@ function LifeMapClientInner() {
   const [error, setError] = useState<string | null>(null);
   const [loadErrorKey, setLoadErrorKey] = useState<string | null>(null);
   const [showReplay, setShowReplay] = useState(false);
+  const [showShareImage, setShowShareImage] = useState(false);
   const [editingEntry, setEditingEntry] = useState<LifeMapEntry | null>(null);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -95,41 +96,6 @@ function LifeMapClientInner() {
   }, []);
 
   const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
-
-  function getAchievementStats(): { headline: string; subline: string } {
-    if (homeCountry.isJapan) {
-      const prefectureCount = new Set(
-        entries.map((e) => e.prefecture).filter((p): p is string => !!p)
-      ).size;
-      return {
-        headline: `47都道府県中 ${prefectureCount}県 訪問`,
-        subline: `記録数 ${entries.length}件`,
-      };
-    }
-    return {
-      headline: `${entries.length}件の思い出を記録`,
-      subline: "人生でやりたいことリストの実績版",
-    };
-  }
-
-  function handleAchievementShare() {
-    const { headline } = getAchievementStats();
-    const text = `人生体験マップに${headline}しました🗺️`;
-    window.open(buildXShareUrl(text), "_blank", "noopener,noreferrer");
-  }
-
-  function handleAchievementImage() {
-    const { headline, subline } = getAchievementStats();
-    const dataUrl = generateAchievementShareCard({
-      brandLabel: "🗺️ 人生体験マップ",
-      headline,
-      subline,
-      accentFrom: "#1C7A66",
-      accentTo: "#2B2721",
-      siteLabel: "ai-drive-planner.com/life-map",
-    });
-    downloadDataUrl(dataUrl, "人生体験マップ-実績.png");
-  }
 
   // 起動時にIndexedDBから記録を読み込む
   useEffect(() => {
@@ -769,26 +735,23 @@ function LifeMapClientInner() {
             <div className="mb-4">
               <BackupButtons entries={entries} onRestored={setEntries} />
             </div>
-            {entries.length > 0 && (
-              <div className="mb-4 flex gap-2">
+            {/* シェア画像の生成（記録が0件のときは案内のみ） */}
+            <div className="mb-4">
+              {entries.length > 0 ? (
                 <button
                   type="button"
-                  onClick={handleAchievementShare}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+                  onClick={() => setShowShareImage(true)}
+                  className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 rounded-[11px] bg-[#1C7A66] hover:opacity-90 text-white text-[12.5px] font-semibold transition-all"
                 >
                   <Share2 className="w-4 h-4" />
-                  Xでシェア
+                  {t("share.buttonLabel")}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleAchievementImage}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition-colors"
-                >
-                  <ImageDown className="w-4 h-4" />
-                  実績画像を保存
-                </button>
-              </div>
-            )}
+              ) : (
+                <p className="text-[11.5px] text-[#8A8172]">
+                  {t("share.buttonLabel")}：{t("share.emptyHint")}
+                </p>
+              )}
+            </div>
             <LifeMapEntryList
               entries={entries}
               onShowOnMap={handleShowOnMap}
@@ -834,6 +797,9 @@ function LifeMapClientInner() {
           </div>
         </div>
       </div>
+
+      {/* 使い方・よくある質問（ヘッダーの #howto / #faq の着地先） */}
+      <LifeMapGuide />
 
       {/* 注意事項アコーディオン */}
       <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] mt-6">
@@ -890,6 +856,13 @@ function LifeMapClientInner() {
 
       {showReplay && (
         <MemoryReplay entries={entries} onClose={() => setShowReplay(false)} />
+      )}
+
+      {showShareImage && (
+        <ShareImageModal
+          entries={entries}
+          onClose={() => setShowShareImage(false)}
+        />
       )}
 
       {editingEntry && (

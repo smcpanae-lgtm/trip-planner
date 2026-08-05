@@ -14,7 +14,7 @@ import {
 import type { LifeMapEntry, LocationPrecision } from "@/types/lifemap";
 import { CATEGORIES } from "@/lib/lifemap/categories";
 import { PREFECTURES } from "@/lib/lifemap/prefectures";
-import { applyPrecision } from "@/lib/lifemap/location";
+import { applyPrecision, parseLatLngPair } from "@/lib/lifemap/location";
 import { reverseGeocodeRegion } from "@/lib/geocoding";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 
@@ -214,6 +214,7 @@ export default function LifeMapEditModal({
               <Navigation className="w-4 h-4" />
               {t("form.coordsMode")}
             </label>
+            <p className="text-xs text-[#8A8172] mb-2">{t("form.coordsHint")}</p>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <span className="text-xs text-[#8A8172] mb-1 block">
@@ -227,6 +228,13 @@ export default function LifeMapEditModal({
                   onChange={(e) => {
                     const val = parseFloat(e.target.value);
                     setLat(isNaN(val) ? undefined : val);
+                  }}
+                  onPaste={(e) => {
+                    const pair = parseLatLngPair(e.clipboardData.getData("text"));
+                    if (!pair) return;
+                    e.preventDefault();
+                    setLat(pair.lat);
+                    setLng(pair.lng);
                   }}
                   className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                 />
@@ -243,6 +251,13 @@ export default function LifeMapEditModal({
                   onChange={(e) => {
                     const val = parseFloat(e.target.value);
                     setLng(isNaN(val) ? undefined : val);
+                  }}
+                  onPaste={(e) => {
+                    const pair = parseLatLngPair(e.clipboardData.getData("text"));
+                    if (!pair) return;
+                    e.preventDefault();
+                    setLat(pair.lat);
+                    setLng(pair.lng);
                   }}
                   className="w-full px-3 py-2 rounded-lg border border-[#E4DCCC] focus:border-[#1C7A66] focus:ring-2 focus:ring-[#EAF3F0] outline-none text-sm"
                 />

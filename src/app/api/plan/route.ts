@@ -1,34 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createHash, randomUUID } from "crypto";
 
-// API key strategy: FREE tier first → PAID tier fallback (seamless to user)
-// GEMINI_API_KEY_FREE  = key from project WITHOUT billing (free, rate-limited)
-// GEMINI_API_KEY_PAID  = key from project WITH prepaid billing (charged per token)
-// Legacy: GEMINI_API_KEY / GEMINI_API_KEY_2 also supported
+export const runtime = "nodejs";
+
 interface ApiKeyEntry {
   key: string;
-  tier: "FREE" | "PAID";
+  tier: "FREE" | "DEFAULT";
 }
 
 function getApiKeys(): ApiKeyEntry[] {
   const keys: ApiKeyEntry[] = [];
-
-  // Free tier keys (tried first)
   const freeKey = process.env.GEMINI_API_KEY_FREE || process.env.GEMINI_API_KEY;
   if (freeKey && freeKey.length > 10) {
     keys.push({ key: freeKey, tier: "FREE" });
   }
-
-  // Paid tier keys (fallback)
-  const paidKey = process.env.GEMINI_API_KEY_PAID || process.env.GEMINI_API_KEY_2;
-  if (paidKey && paidKey.length > 10 && paidKey !== freeKey) {
-    keys.push({ key: paidKey, tier: "PAID" });
-  }
-
   return keys;
 }
 
+type PlanAuditError =
+  | "bad_method"
+  | "bad_origin"
+  | "bad_turnstile"
+  | "rate_limit_ip_minute"
+  | "rate_limit_ip_day"
+  | "rate_limit_session_day"
+  | "concurrent_ip"
+  | "bad_input"
+  | "duplicate"
+  | "missing_api_key"
+  | "gemini_error"
+  | "ok";
+
+const MAX_DAYS = 5;
+const MAX_DESTINATIONS_PER_DAY = 8;
+const MAX_TOTAL_TEXT_LENGTH = 8000;
+const MAX_OUTPUT_TOKENS = 4096;
+const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const planIpMinuteHits = new Map<string, number[]>();
+const planIpDayHits = new Map<string, number[]>();
+const planSessionDayHits = new Map<string, number[]>();
+const planActiveIpRuns = new Map<string, number>();
+const planRecentContent = new Map<string, number>();
+
 interface PlanRequest {
+  turnstileToken?: string;
+  sessionId?: string;
   days: {
     dayIndex: number;
     departure: string;
@@ -60,6 +80,181 @@ interface PlanRequest {
     hasChildren: boolean;
     childAges: string;
   };
+}
+
+function planJsonError(message: string, status: number, errorType: PlanAuditError) {
+  return NextResponse.json({ error: message, errorType }, { status });
+}
+
+function getIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return request.headers.get("cf-connecting-ip") || request.headers.get("x-real-ip") || forwarded || "unknown";
+}
+
+function hashValue(value: string): string {
+  const salt = process.env.AUDIT_LOG_SALT || "ai-drive-planner";
+  return createHash("sha256").update(`${salt}:${value}`).digest("hex").slice(0, 24);
+}
+
+function allowedOrigins(): string[] {
+  return [
+    "https://www.ai-drive-planner.com",
+    "https://ai-drive-planner.com",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.SITE_ORIGIN,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+  ].filter((origin): origin is string => Boolean(origin));
+}
+
+function verifyOrigin(request: NextRequest): boolean {
+  const allowed = allowedOrigins();
+  const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
+  if (origin) return allowed.includes(origin);
+  if (!referer) return false;
+  try {
+    return allowed.includes(new URL(referer).origin);
+  } catch {
+    return false;
+  }
+}
+
+async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret || !token || token.length > 2048) return false;
+  try {
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret,
+        response: token,
+        remoteip: ip,
+        idempotency_key: randomUUID(),
+      }),
+    });
+    const result = (await response.json()) as { success?: boolean };
+    return Boolean(result.success);
+  } catch {
+    return false;
+  }
+}
+
+function pruneHits(map: Map<string, number[]>, key: string, windowMs: number, now: number): number[] {
+  const hits = (map.get(key) || []).filter((timestamp) => now - timestamp < windowMs);
+  map.set(key, hits);
+  return hits;
+}
+
+function checkPlanRateLimit(ipHash: string, sessionId: string) {
+  const now = Date.now();
+  if (pruneHits(planIpMinuteHits, ipHash, MINUTE_MS, now).length >= 1) {
+    return { ok: false, status: 429, errorType: "rate_limit_ip_minute" as const, message: "短時間に複数回のAIプラン作成が行われました。1分ほど待ってから再度お試しください。" };
+  }
+  if (pruneHits(planIpDayHits, ipHash, DAY_MS, now).length >= 20) {
+    return { ok: false, status: 429, errorType: "rate_limit_ip_day" as const, message: "本日のAIプラン作成回数が上限に達しました。明日以降に再度お試しください。" };
+  }
+  if (pruneHits(planSessionDayHits, sessionId, DAY_MS, now).length >= 10) {
+    return { ok: false, status: 429, errorType: "rate_limit_session_day" as const, message: "このブラウザでの本日のAIプラン作成回数が上限に達しました。明日以降に再度お試しください。" };
+  }
+  if ((planActiveIpRuns.get(ipHash) || 0) >= 1) {
+    return { ok: false, status: 429, errorType: "concurrent_ip" as const, message: "同じ回線からAIプラン作成が実行中です。完了してから再度お試しください。" };
+  }
+  return { ok: true as const };
+}
+
+function recordAcceptedPlanRequest(ipHash: string, sessionId: string) {
+  const now = Date.now();
+  planIpMinuteHits.set(ipHash, [...(planIpMinuteHits.get(ipHash) || []), now]);
+  planIpDayHits.set(ipHash, [...(planIpDayHits.get(ipHash) || []), now]);
+  planSessionDayHits.set(sessionId, [...(planSessionDayHits.get(sessionId) || []), now]);
+  planActiveIpRuns.set(ipHash, (planActiveIpRuns.get(ipHash) || 0) + 1);
+}
+
+function releasePlanIp(ipHash: string) {
+  const next = Math.max(0, (planActiveIpRuns.get(ipHash) || 0) - 1);
+  if (next === 0) planActiveIpRuns.delete(ipHash);
+  else planActiveIpRuns.set(ipHash, next);
+}
+
+function contentHash(body: PlanRequest): string {
+  return createHash("sha256")
+    .update(JSON.stringify({
+      days: body.days?.map((day) => ({
+        departure: day.departure,
+        departureTime: day.departureTime,
+        destinations: day.destinations?.map((destination) => ({
+          name: destination.name,
+          lat: destination.lat,
+          lng: destination.lng,
+          isOmakase: destination.isOmakase,
+        })),
+        arrival: day.arrival,
+        arrivalTime: day.arrivalTime,
+        includeLunch: day.includeLunch,
+        lunchLocation: day.lunchLocation,
+        lunchGenre: day.lunchGenre,
+        includeDinner: day.includeDinner,
+        dinnerLocation: day.dinnerLocation,
+        dinnerGenre: day.dinnerGenre,
+      })),
+      withDog: body.withDog,
+      aiOmakase: body.aiOmakase,
+      useHighway: body.useHighway,
+      travelDate: body.travelDate,
+      travelerProfile: body.travelerProfile,
+    }))
+    .digest("hex");
+}
+
+function checkDuplicate(hash: string): boolean {
+  const now = Date.now();
+  for (const [key, timestamp] of planRecentContent) {
+    if (now - timestamp >= DUPLICATE_WINDOW_MS) planRecentContent.delete(key);
+  }
+  const previous = planRecentContent.get(hash);
+  if (previous && now - previous < DUPLICATE_WINDOW_MS) return false;
+  planRecentContent.set(hash, now);
+  return true;
+}
+
+function validatePlanInput(body: PlanRequest): { ok: true } | { ok: false; message: string } {
+  if (!body || !Array.isArray(body.days) || body.days.length === 0) {
+    return { ok: false, message: "プラン作成に必要な日程がありません。" };
+  }
+  if (body.days.length > MAX_DAYS) {
+    return { ok: false, message: `一度にAI作成できる日程は${MAX_DAYS}日までです。日数を減らしてからお試しください。` };
+  }
+  if (Array.isArray((body as unknown as { images?: unknown[] }).images) && (body as unknown as { images: unknown[] }).images.length > 0) {
+    return { ok: false, message: "画像データはAIプラン作成APIへ送信できません。" };
+  }
+  for (const day of body.days) {
+    if (!Array.isArray(day.destinations)) {
+      return { ok: false, message: "目的地の形式が正しくありません。" };
+    }
+    if (day.destinations.length > MAX_DESTINATIONS_PER_DAY) {
+      return { ok: false, message: `1日あたりの目的地は${MAX_DESTINATIONS_PER_DAY}件までにしてください。` };
+    }
+  }
+  if (JSON.stringify(body).length > MAX_TOTAL_TEXT_LENGTH) {
+    return { ok: false, message: "入力内容が長すぎます。目的地やプロフィールの内容を短くしてからお試しください。" };
+  }
+  return { ok: true };
+}
+
+function auditPlanLog(data: {
+  requestId: string;
+  ipHash: string;
+  userAgent: string;
+  sessionId: string;
+  errorType: PlanAuditError;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+}) {
+  console.log(JSON.stringify({ type: "plan_generate_audit", at: new Date().toISOString(), ...data }));
 }
 
 // Japanese national holidays (fixed dates + Happy Monday + substitute holidays)
@@ -213,21 +408,57 @@ ${seasonInfo || "特記事項なし"}
 }
 
 const MODEL_NAMES = [
-  "gemini-2.5-flash", // primary: 10,000 RPD paid / 20 RPD free
-  "gemini-2.0-flash", // fallback: unlimited RPD on paid tier
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
 ];
 
 export async function POST(request: NextRequest) {
+  const requestId = randomUUID();
+  const ip = getIp(request);
+  const ipHash = hashValue(ip);
+  const userAgent = request.headers.get("user-agent") || "";
+  let sessionId = "unknown";
+  let accepted = false;
+
   try {
     const body: PlanRequest = await request.json();
+    sessionId = body.sessionId || request.headers.get("x-plan-session-id") || "unknown";
+
+    if (!verifyOrigin(request)) {
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_origin" });
+      return planJsonError("このサイト以外からのAIプラン作成リクエストは受け付けていません。", 403, "bad_origin");
+    }
+
+    const inputCheck = validatePlanInput(body);
+    if (!inputCheck.ok) {
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_input" });
+      return planJsonError(inputCheck.message, 400, "bad_input");
+    }
+
+    if (!(await verifyTurnstile(body.turnstileToken, ip))) {
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_turnstile" });
+      return planJsonError("認証確認に失敗しました。画面を更新してからもう一度お試しください。", 403, "bad_turnstile");
+    }
+
+    const rateLimit = checkPlanRateLimit(ipHash, sessionId);
+    if (!rateLimit.ok) {
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: rateLimit.errorType });
+      return planJsonError(rateLimit.message, rateLimit.status, rateLimit.errorType);
+    }
+
+    if (!checkDuplicate(`${ipHash}:${sessionId}:${contentHash(body)}`)) {
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "duplicate" });
+      return planJsonError("同じ内容のAIプラン作成が短時間に送信されています。少し時間を置いてから再度お試しください。", 429, "duplicate");
+    }
 
     const apiKeys = getApiKeys();
     if (apiKeys.length === 0) {
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY is not configured" },
-        { status: 500 }
-      );
+      auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "missing_api_key" });
+      return planJsonError("AIプラン作成の設定が完了していません。しばらくしてから再度お試しください。", 503, "missing_api_key");
     }
+
+    recordAcceptedPlanRequest(ipHash, sessionId);
+    accepted = true;
 
     const prompt = buildPrompt(body);
     let lastError: unknown;
@@ -260,6 +491,7 @@ export async function POST(request: NextRequest) {
               contents: [{ role: "user", parts: [{ text: prompt }] }],
               generationConfig: {
                 temperature: 0.7,
+                maxOutputTokens: MAX_OUTPUT_TOKENS,
                 responseMimeType: "application/json",
               },
             });
@@ -278,6 +510,19 @@ export async function POST(request: NextRequest) {
             }
 
             console.log(`[${keyLabel}] Success with model: ${modelName}`);
+            const usage = (result.response as unknown as {
+              usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
+            }).usageMetadata;
+            auditPlanLog({
+              requestId,
+              ipHash,
+              userAgent,
+              sessionId,
+              errorType: "ok",
+              inputTokens: usage?.promptTokenCount,
+              outputTokens: usage?.candidatesTokenCount,
+              totalTokens: usage?.totalTokenCount,
+            });
             return NextResponse.json(plan);
           } catch (err) {
             const errMsg = err instanceof Error ? err.message : String(err);
@@ -351,13 +596,21 @@ export async function POST(request: NextRequest) {
     }
 
     console.error("Diagnosis:", diagMessage);
+    auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "gemini_error" });
     return NextResponse.json({ error: userMessage }, { status: 500 });
   } catch (error: unknown) {
     console.error("Gemini API error:", error);
     const message =
       error instanceof Error ? error.message : "AI plan generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_input" });
+    return NextResponse.json({ error: message }, { status: 400 });
+  } finally {
+    if (accepted) releasePlanIp(ipHash);
   }
+}
+
+export async function GET() {
+  return planJsonError("AIプラン作成APIはPOSTリクエストのみ受け付けています。", 405, "bad_method");
 }
 
 function buildPrompt(body: PlanRequest): string {

@@ -49,53 +49,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.ai-drive-planner.com"),
 };
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "AIドライブプランナーは無料で使えますか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "はい、出発地・目的地・時刻の入力からプラン作成まで無料でご利用いただけます。",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "犬連れドライブにも対応していますか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "対応しています。犬連れ旅行を選択すると、ドッグラン併設のSA/PAや休憩ポイントを考慮したプランを作成します。",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "会員登録は必要ですか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "会員登録は不要です。出発地・目的地などの条件を入力するだけで、すぐにプランを作成できます。",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "プランの所要時間や料金の精度はどれくらいですか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "AIが提案する所要時間・距離・高速料金などは目安です。実際の道路状況や料金改定により変動するため、出発前に最新情報をご確認ください。",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "作成したプランは保存やシェアができますか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "作成したプランは印刷やテキストコピーで保存でき、SNSでシェアすることもできます。",
-      },
-    },
-  ],
-};
-
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -139,10 +92,6 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HHWEKHRG56"

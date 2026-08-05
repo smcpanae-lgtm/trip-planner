@@ -112,6 +112,41 @@ export interface LifeMapDict {
     importError: string;
     hint: string;
   };
+  share: {
+    // UI
+    buttonLabel: string;
+    emptyHint: string;
+    modalTitle: string;
+    closeAria: string;
+    tabMap: string;
+    tabStats: string;
+    rangeAll: string;
+    rangeYear: string;
+    saveBtn: string;
+    shareImageBtn: string;
+    xBtn: string;
+    savedMsg: string;
+    saveError: string;
+    longPressHint: string;
+    privacyNote: string;
+    noJapanNote: string;
+    postText: string; // {{count}} placeholder
+    hashtags: string; // カンマ区切り（#は不要）
+    // 画像内に描画する文言
+    cardMapTitle: string;
+    cardStatsTitle: string;
+    cardPrefLabel: string;
+    cardTotalLabel: string;
+    cardCountValue: string; // {{count}} placeholder
+    cardCountUnit: string;
+    cardCategoryLabel: string;
+    cardSinceLabel: string;
+    cardDurationYM: string; // {{years}} / {{months}} placeholder
+    cardDurationM: string; // {{months}} placeholder
+    cardRangeYear: string;
+    cardRangeAll: string;
+    cardOthers: string; // {{count}} placeholder
+  };
   photo: {
     selectBtn: string;
     cameraBtn: string;
@@ -172,6 +207,15 @@ export interface LifeMapDict {
     other3: string;
   };
   disclaimer: string;
+  /** ページ下部の「使い方」「よくある質問」セクション */
+  guide: {
+    howtoTitle: string;
+    howtoLead: string;
+    steps: { title: string; body: string }[];
+    faqTitle: string;
+    faqLead: string;
+    faqs: { q: string; a: string }[];
+  };
   heritageLink: string;
 }
 
@@ -225,7 +269,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "緯度・経度を直接入力",
       coordsLatLabel: "緯度（Latitude）",
       coordsLngLabel: "経度（Longitude）",
-      coordsHint: "Google マップで場所を右クリック → 表示された数字をコピーして入力してください。",
+      coordsHint: "Google マップで場所を右クリック → 表示された数字をコピーして入力してください。「35.796402, 139.531056」のようにコンマ区切りのまま貼り付ければ、緯度と経度に自動で振り分けられます。",
       editCategoryBtn: "カテゴリ名を変更（絵文字も使えます）",
     },
     card: {
@@ -337,6 +381,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "その他③",
     },
     disclaimer: "本サービスは個人の記録目的で提供されます。記録データはすべてお使いの端末内にのみ保存され、外部サーバーへの送信は行いません。本サービスの利用により生じた損害について、運営者は一切の責任を負いません。コンテンツは予告なく変更・終了する場合があります。",
+    share: {
+      buttonLabel: "シェア画像を作る",
+      emptyHint: "記録してから使えます",
+      modalTitle: "シェア画像を作る",
+      closeAria: "閉じる",
+      tabMap: "都道府県制覇マップ",
+      tabStats: "体験統計カード",
+      rangeAll: "全期間",
+      rangeYear: "今年",
+      saveBtn: "画像を保存",
+      shareImageBtn: "画像ごとシェア",
+      xBtn: "Xでシェア",
+      savedMsg: "画像を保存しました。",
+      saveError: "画像の保存に失敗しました。もう一度お試しください。",
+      longPressHint: "保存できない場合は、上の画像を長押し（パソコンでは右クリック）して保存してください。",
+      privacyNote: "画像に含まれるのは件数と都道府県の色分けだけです。写真・メモ・地名は含まれません。",
+      noJapanNote: "日本国内の記録がないため、都道府県マップは作成できません。体験統計カードをご利用ください。",
+      postText: "人生体験マップで思い出を記録中📍 これまでに{{count}}件の体験を記録しました",
+      hashtags: "人生体験マップ,ライフログ",
+      cardMapTitle: "都道府県 制覇マップ",
+      cardStatsTitle: "体験の記録",
+      cardPrefLabel: "訪問した都道府県",
+      cardTotalLabel: "記録した体験",
+      cardCountValue: "{{count}}件",
+      cardCountUnit: "件",
+      cardCategoryLabel: "カテゴリ別の記録数",
+      cardSinceLabel: "記録開始",
+      cardDurationYM: "{{years}}年{{months}}か月",
+      cardDurationM: "{{months}}か月",
+      cardRangeYear: "今年",
+      cardRangeAll: "全期間",
+      cardOthers: "ほか {{count}}件",
+    },
+    guide: {
+      howtoTitle: "使い方",
+      howtoLead:
+        "写真を1枚選ぶところから始められます。登録も費用も不要で、記録はすべてお使いの端末内だけに保存されます。",
+      steps: [
+        {
+          title: "写真を選ぶ",
+          body: "「写真を選ぶ」または「カメラで撮影」から1枚選びます。「まとめて追加」を使えば複数枚を続けて登録できます。写真は端末内で長辺1600pxのJPEGに自動圧縮され、外部へ送信されることはありません。",
+        },
+        {
+          title: "場所と日付を確認する",
+          body: "写真に位置情報（Exif）が入っていれば、場所と日付が自動で入ります。入っていない場合は「地図から場所を選ぶ」「都道府県だけ登録する」「場所情報なしで保存する」から選べます。自宅などを正確に残したくないときは、保存精度を「おおよその場所」に切り替えられます。",
+        },
+        {
+          title: "カテゴリとメモをつけて保存",
+          body: "旅行・釣り・食事・犬連れ・温泉・お城など全12カテゴリから選び、日付・メモ・場所の名前を添えて保存します。「その他①〜③」は名前を自由に変更できるので、キャンプや登山など自分専用のカテゴリを作れます。",
+        },
+        {
+          title: "地図と一覧で振り返る",
+          body: "保存した体験は地図のピンと一覧の両方に並びます。一覧は「時系列」と「エリア別」で切り替えられ、「思い出を振り返る」ではスライドショーのように写真を流して見返せます。",
+        },
+        {
+          title: "シェア画像を作って投稿する",
+          body: "「シェア画像を作る」から、都道府県制覇マップと体験統計カードの2種類の画像（1200×630）を作れます。画像に入るのは記録件数と塗りつぶした都道府県だけで、写真・メモ・地名は含まれません。保存してXへ投稿できます。",
+        },
+        {
+          title: "定期的にバックアップする",
+          body: "データは端末内にしかありません。「バックアップ書き出し」でJSONファイルとして保存しておけば、機種変更やブラウザを変えたときに「バックアップ復元」から元に戻せます。",
+        },
+      ],
+      faqTitle: "よくある質問",
+      faqLead: "はじめての方からよくいただく質問をまとめました。",
+      faqs: [
+        {
+          q: "記録したデータはどこに保存されますか？",
+          a: "お使いの端末のブラウザ内（IndexedDB）にのみ保存されます。写真・メモ・位置情報を当サイトのサーバーへ送ることはなく、他の人に公開されることもありません。",
+        },
+        {
+          q: "会員登録は必要ですか？ 料金はかかりますか？",
+          a: "どちらも不要です。登録なし・無料でそのままお使いいただけます。",
+        },
+        {
+          q: "機種変更やブラウザを変えるとデータはどうなりますか？",
+          a: "端末やブラウザが変わると引き継がれません。ブラウザの「閲覧データの削除」でも消えてしまいます。「バックアップ書き出し」でファイルを保存し、新しい端末の同じページで「バックアップ復元」から読み込んでください。",
+        },
+        {
+          q: "写真に位置情報が入っていないときはどうすればいいですか？",
+          a: "地図をタップして場所を指定するか、都道府県だけを選んで登録できます。場所を残したくない場合は「場所情報なしで保存する」も選べます。",
+        },
+        {
+          q: "シェア画像に写真やメモは入りますか？",
+          a: "入りません。画像に描かれるのは記録件数・カテゴリ別の件数・訪問した都道府県の塗りつぶしだけです。写真・メモ・場所の名前・座標は一切含まれません。画像の生成もすべてブラウザ内で完結します。",
+        },
+        {
+          q: "シェア画像はどうやってXに投稿しますか？",
+          a: "「画像を保存」でPNGを保存し、「Xでシェア」で開いた投稿画面に添付してください。スマートフォンでは「画像ごとシェア」から、画像を付けたまま共有メニューに渡せます。",
+        },
+        {
+          q: "日本以外に住んでいますが使えますか？",
+          a: "使えます。地図は世界中に対応し、表示言語は7言語から選べます。都道府県制覇マップは日本国内の記録があるときだけ表示され、ないときは体験統計カードをお使いいただけます。",
+        },
+        {
+          q: "記録は何件まで保存できますか？",
+          a: "上限は端末の空き容量によります。写真は保存時に自動で圧縮されるため1件あたりの容量は抑えられていますが、容量が不足すると保存できなくなるため、こまめなバックアップをおすすめします。",
+        },
+      ],
+    },
     heritageLink: "世界遺産パスポート",
   },
 
@@ -389,7 +533,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "Enter coordinates (lat/lng)",
       coordsLatLabel: "Latitude",
       coordsLngLabel: "Longitude",
-      coordsHint: "Right-click a spot in Google Maps → copy the numbers shown.",
+      coordsHint: "Right-click a spot in Google Maps → copy the numbers shown. You can paste the whole comma-separated pair (e.g. 35.796402, 139.531056) and it will be split into latitude and longitude automatically.",
       editCategoryBtn: "Rename (emoji OK)",
     },
     card: {
@@ -501,6 +645,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "Custom 3",
     },
     disclaimer: "This service is provided for personal recording purposes. All data is stored solely on your device and is never sent to external servers. The operator accepts no responsibility for any damages arising from use of this service. Content may be changed or discontinued without notice.",
+    share: {
+      buttonLabel: "Create a share image",
+      emptyHint: "Available once you add a record",
+      modalTitle: "Create a share image",
+      closeAria: "Close",
+      tabMap: "Prefecture map",
+      tabStats: "Stats card",
+      rangeAll: "All time",
+      rangeYear: "This year",
+      saveBtn: "Save image",
+      shareImageBtn: "Share image",
+      xBtn: "Share on X",
+      savedMsg: "Image saved.",
+      saveError: "Could not save the image. Please try again.",
+      longPressHint: "If the download does not start, long-press the image above (right-click on a computer) to save it.",
+      privacyNote: "The image contains only record counts and the coloured prefectures. Photos, notes and place names are never included.",
+      noJapanNote: "No records in Japan yet, so the prefecture map is unavailable. Please use the stats card instead.",
+      postText: "Recording my memories on the Life Experience Map 📍 {{count}} experiences logged so far",
+      hashtags: "LifeMap,LifeLog",
+      cardMapTitle: "Japan prefecture map",
+      cardStatsTitle: "My experiences",
+      cardPrefLabel: "Prefectures visited",
+      cardTotalLabel: "Experiences recorded",
+      cardCountValue: "{{count}}",
+      cardCountUnit: "records",
+      cardCategoryLabel: "By category",
+      cardSinceLabel: "Since",
+      cardDurationYM: "{{years}}y {{months}}m",
+      cardDurationM: "{{months}} months",
+      cardRangeYear: "This year",
+      cardRangeAll: "All time",
+      cardOthers: "+{{count}} more",
+    },
+    guide: {
+      howtoTitle: "How it works",
+      howtoLead:
+        "You can start with a single photo. No sign-up, no cost, and every record stays on your own device.",
+      steps: [
+        {
+          title: "Pick a photo",
+          body: "Choose one photo with “Select photo” or “Take photo”. Use “Add multiple photos” to register several in a row. Photos are resized on your device to a JPEG with a 1600px long edge and are never uploaded anywhere.",
+        },
+        {
+          title: "Check the place and date",
+          body: "If the photo carries Exif location data, the place and date are filled in automatically. If not, choose “Pick a place on the map”, “Record the prefecture only”, or “Save without location”. When you would rather not pin down your home exactly, switch the accuracy to “Approximate area”.",
+        },
+        {
+          title: "Add a category and a note, then save",
+          body: "Pick from 12 categories such as travel, fishing, dining, dog trips, hot springs and castles, then add a date, a note and a place name. “Custom 1–3” can be renamed freely, so you can build your own categories for camping, hiking and anything else.",
+        },
+        {
+          title: "Look back on the map and in the list",
+          body: "Saved experiences appear both as map pins and in the list. Switch the list between “Timeline” and “By area”, or open “View memories” to play your photos back like a slideshow.",
+        },
+        {
+          title: "Create a share image and post it",
+          body: "“Create a share image” builds two kinds of 1200×630 images: the Japan prefecture map and the stats card. They contain only your record counts and the coloured prefectures — never photos, notes or place names. Save one and post it to X.",
+        },
+        {
+          title: "Back up regularly",
+          body: "Your data exists only on this device. Use “Save backup” to write a JSON file, and “Restore backup” to bring everything back when you change phones or browsers.",
+        },
+      ],
+      faqTitle: "Frequently asked questions",
+      faqLead: "The questions we hear most often from people getting started.",
+      faqs: [
+        {
+          q: "Where is my data stored?",
+          a: "Only inside your browser on this device (IndexedDB). Your photos, notes and locations are never sent to our servers and are never shown to anyone else.",
+        },
+        {
+          q: "Do I need an account? Does it cost anything?",
+          a: "Neither. There is no sign-up and no charge — just start using it.",
+        },
+        {
+          q: "What happens to my data if I change phones or browsers?",
+          a: "It does not carry over, and clearing your browsing data will erase it. Use “Save backup” to export a file, then load it with “Restore backup” on the same page on your new device.",
+        },
+        {
+          q: "What if my photo has no location data?",
+          a: "Tap the map to set the place, or record just the prefecture. If you would rather not keep any location, choose “Save without location”.",
+        },
+        {
+          q: "Do share images include my photos or notes?",
+          a: "No. The image shows only your record counts, the per-category counts and the coloured prefectures. Photos, notes, place names and coordinates are never included, and the image is generated entirely inside your browser.",
+        },
+        {
+          q: "How do I post a share image to X?",
+          a: "Use “Save image” to download the PNG, then attach it in the compose window opened by “Share on X”. On a smartphone, “Share with image” hands the picture straight to your share sheet.",
+        },
+        {
+          q: "I live outside Japan — can I still use it?",
+          a: "Yes. The map covers the whole world and the interface is available in 7 languages. The prefecture map appears only when you have records in Japan; otherwise you can use the stats card.",
+        },
+        {
+          q: "How many records can I save?",
+          a: "The limit depends on the free space on your device. Photos are compressed automatically so each record stays small, but saving will fail once storage runs out — so back up often.",
+        },
+      ],
+    },
     heritageLink: "World Heritage Passport",
   },
 
@@ -553,7 +797,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "위도·경도 직접 입력",
       coordsLatLabel: "위도（Latitude）",
       coordsLngLabel: "경도（Longitude）",
-      coordsHint: "Google 지도에서 장소를 우클릭 → 표시된 숫자를 복사해 입력하세요.",
+      coordsHint: "Google 지도에서 장소를 우클릭 → 표시된 숫자를 복사해 입력하세요. 「35.796402, 139.531056」처럼 쉼표로 구분된 상태로 붙여넣으면 위도와 경도로 자동 분리됩니다.",
       editCategoryBtn: "카테고리 이름 변경（이모지 가능）",
     },
     card: {
@@ -665,6 +909,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "기타③",
     },
     disclaimer: "본 서비스는 개인 기록 목적으로 제공됩니다. 모든 데이터는 기기에만 저장되며 외부 서버로 전송되지 않습니다. 본 서비스 이용으로 인한 손해에 대해 운영자는 일체의 책임을 지지 않습니다. 서비스 내용은 예고 없이 변경·종료될 수 있습니다.",
+    share: {
+      buttonLabel: "공유 이미지 만들기",
+      emptyHint: "기록을 추가하면 사용할 수 있습니다",
+      modalTitle: "공유 이미지 만들기",
+      closeAria: "닫기",
+      tabMap: "도도부현 정복 지도",
+      tabStats: "체험 통계 카드",
+      rangeAll: "전체 기간",
+      rangeYear: "올해",
+      saveBtn: "이미지 저장",
+      shareImageBtn: "이미지 공유",
+      xBtn: "X에 공유",
+      savedMsg: "이미지를 저장했습니다.",
+      saveError: "이미지를 저장하지 못했습니다. 다시 시도해 주세요.",
+      longPressHint: "저장이 시작되지 않으면 위 이미지를 길게 누르거나(PC에서는 우클릭) 저장해 주세요.",
+      privacyNote: "이미지에는 기록 수와 도도부현 색칠만 포함됩니다. 사진·메모·지명은 포함되지 않습니다.",
+      noJapanNote: "일본 내 기록이 없어 도도부현 지도를 만들 수 없습니다. 체험 통계 카드를 이용해 주세요.",
+      postText: "인생 체험 지도에 추억을 기록 중📍 지금까지 {{count}}건의 체험을 기록했습니다",
+      hashtags: "인생체험지도,라이프로그",
+      cardMapTitle: "일본 도도부현 지도",
+      cardStatsTitle: "나의 체험 기록",
+      cardPrefLabel: "방문한 도도부현",
+      cardTotalLabel: "기록한 체험",
+      cardCountValue: "{{count}}건",
+      cardCountUnit: "건",
+      cardCategoryLabel: "카테고리별 기록 수",
+      cardSinceLabel: "기록 시작",
+      cardDurationYM: "{{years}}년 {{months}}개월",
+      cardDurationM: "{{months}}개월",
+      cardRangeYear: "올해",
+      cardRangeAll: "전체 기간",
+      cardOthers: "그 외 {{count}}건",
+    },
+    guide: {
+      howtoTitle: "사용 방법",
+      howtoLead:
+        "사진 한 장이면 바로 시작할 수 있습니다. 가입도 요금도 필요 없으며, 기록은 모두 사용 중인 기기 안에만 저장됩니다.",
+      steps: [
+        {
+          title: "사진 고르기",
+          body: "「사진 선택」 또는 「카메라로 촬영」에서 사진을 한 장 고릅니다. 「한꺼번에 추가」를 사용하면 여러 장을 이어서 등록할 수 있습니다. 사진은 기기 안에서 긴 변 1600px의 JPEG로 자동 압축되며 외부로 전송되지 않습니다.",
+        },
+        {
+          title: "장소와 날짜 확인하기",
+          body: "사진에 위치 정보(Exif)가 있으면 장소와 날짜가 자동으로 입력됩니다. 없을 때는 「지도에서 장소 선택」 「광역 지자체만 등록」 「위치 정보 없이 저장」 중에서 고를 수 있습니다. 집 등을 정확히 남기고 싶지 않다면 저장 정밀도를 「대략적인 장소」로 바꿀 수 있습니다.",
+        },
+        {
+          title: "카테고리와 메모를 붙여 저장",
+          body: "여행·낚시·식사·반려견 동반·온천·성 등 12가지 카테고리에서 고르고, 날짜·메모·장소 이름을 함께 저장합니다. 「기타①~③」은 이름을 자유롭게 바꿀 수 있어 캠핑이나 등산 같은 나만의 카테고리를 만들 수 있습니다.",
+        },
+        {
+          title: "지도와 목록으로 돌아보기",
+          body: "저장한 체험은 지도의 핀과 목록에 함께 표시됩니다. 목록은 「시간순」과 「지역별」로 전환할 수 있고, 「추억 돌아보기」에서는 슬라이드쇼처럼 사진을 넘겨 볼 수 있습니다.",
+        },
+        {
+          title: "공유 이미지를 만들어 올리기",
+          body: "「공유 이미지 만들기」에서 광역 지자체 정복 지도와 체험 통계 카드 두 종류의 이미지(1200×630)를 만들 수 있습니다. 이미지에 담기는 것은 기록 건수와 색칠된 지역뿐이며 사진·메모·지명은 들어가지 않습니다. 저장해 X에 올릴 수 있습니다.",
+        },
+        {
+          title: "정기적으로 백업하기",
+          body: "데이터는 기기 안에만 있습니다. 「백업 저장」으로 JSON 파일을 만들어 두면 기기를 바꾸거나 브라우저를 바꿨을 때 「백업 복원」으로 되돌릴 수 있습니다.",
+        },
+      ],
+      faqTitle: "자주 묻는 질문",
+      faqLead: "처음 사용하는 분들이 자주 하시는 질문을 모았습니다.",
+      faqs: [
+        {
+          q: "기록한 데이터는 어디에 저장되나요?",
+          a: "사용 중인 기기의 브라우저 안(IndexedDB)에만 저장됩니다. 사진·메모·위치 정보를 저희 서버로 보내지 않으며 다른 사람에게 공개되지도 않습니다.",
+        },
+        {
+          q: "회원가입이 필요한가요? 요금이 드나요?",
+          a: "둘 다 필요 없습니다. 가입 없이 무료로 바로 사용할 수 있습니다.",
+        },
+        {
+          q: "기기를 바꾸거나 브라우저를 바꾸면 데이터는 어떻게 되나요?",
+          a: "기기나 브라우저가 바뀌면 이어지지 않습니다. 브라우저의 「인터넷 사용 기록 삭제」로도 지워집니다. 「백업 저장」으로 파일을 만든 뒤 새 기기의 같은 페이지에서 「백업 복원」으로 불러오세요.",
+        },
+        {
+          q: "사진에 위치 정보가 없을 때는 어떻게 하나요?",
+          a: "지도를 눌러 장소를 지정하거나 광역 지자체만 골라 등록할 수 있습니다. 장소를 남기고 싶지 않다면 「위치 정보 없이 저장」도 선택할 수 있습니다.",
+        },
+        {
+          q: "공유 이미지에 사진이나 메모가 들어가나요?",
+          a: "들어가지 않습니다. 이미지에 그려지는 것은 기록 건수, 카테고리별 건수, 방문한 지역의 색칠뿐입니다. 사진·메모·장소 이름·좌표는 전혀 포함되지 않으며 이미지 생성도 브라우저 안에서 모두 처리됩니다.",
+        },
+        {
+          q: "공유 이미지는 어떻게 X에 올리나요?",
+          a: "「이미지 저장」으로 PNG를 저장한 뒤 「X에 공유」로 열리는 작성 화면에 첨부하세요. 스마트폰에서는 「이미지와 함께 공유」로 이미지를 붙인 채 공유 메뉴에 넘길 수 있습니다.",
+        },
+        {
+          q: "일본 외 지역에 살고 있는데 사용할 수 있나요?",
+          a: "사용할 수 있습니다. 지도는 전 세계를 지원하고 표시 언어는 7개 중에서 고를 수 있습니다. 일본의 지역 정복 지도는 일본 내 기록이 있을 때만 표시되며, 없을 때는 체험 통계 카드를 사용하시면 됩니다.",
+        },
+        {
+          q: "기록은 몇 건까지 저장할 수 있나요?",
+          a: "상한은 기기의 남은 용량에 따라 달라집니다. 사진은 저장 시 자동으로 압축되어 건당 용량은 작지만, 용량이 부족해지면 저장할 수 없게 되므로 자주 백업하시길 권합니다.",
+        },
+      ],
+    },
     heritageLink: "세계유산 여권",
   },
 
@@ -717,7 +1061,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "直接输入经纬度",
       coordsLatLabel: "纬度（Latitude）",
       coordsLngLabel: "经度（Longitude）",
-      coordsHint: "在 Google 地图右键点击位置 → 复制显示的数字输入即可。",
+      coordsHint: "在 Google 地图右键点击位置 → 复制显示的数字输入即可。像「35.796402, 139.531056」这样带逗号直接粘贴，会自动拆分为纬度和经度。",
       editCategoryBtn: "修改分类名称（可用表情符号）",
     },
     card: {
@@ -829,6 +1173,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "其他③",
     },
     disclaimer: "本服务仅供个人记录使用。所有数据仅保存在您的设备上，不会发送至外部服务器。因使用本服务造成的任何损失，运营方概不负责。内容可能在不另行通知的情况下更改或终止。",
+    share: {
+      buttonLabel: "生成分享图片",
+      emptyHint: "添加记录后即可使用",
+      modalTitle: "生成分享图片",
+      closeAria: "关闭",
+      tabMap: "都道府县打卡地图",
+      tabStats: "体验统计卡片",
+      rangeAll: "全部时间",
+      rangeYear: "今年",
+      saveBtn: "保存图片",
+      shareImageBtn: "分享图片",
+      xBtn: "分享到 X",
+      savedMsg: "图片已保存。",
+      saveError: "图片保存失败，请重试。",
+      longPressHint: "如果没有开始下载，请长按上方图片（电脑上点击右键）另存为。",
+      privacyNote: "图片中仅包含记录数量和都道府县的着色，不含照片、备注和地名。",
+      noJapanNote: "暂无日本境内的记录，无法生成都道府县地图。请使用体验统计卡片。",
+      postText: "正在用人生体验地图记录回忆📍 目前已记录 {{count}} 条体验",
+      hashtags: "人生体验地图,生活记录",
+      cardMapTitle: "日本都道府县地图",
+      cardStatsTitle: "我的体验记录",
+      cardPrefLabel: "已访问的都道府县",
+      cardTotalLabel: "记录的体验",
+      cardCountValue: "{{count}} 条",
+      cardCountUnit: "条",
+      cardCategoryLabel: "各类别记录数",
+      cardSinceLabel: "开始记录",
+      cardDurationYM: "{{years}}年{{months}}个月",
+      cardDurationM: "{{months}}个月",
+      cardRangeYear: "今年",
+      cardRangeAll: "全部时间",
+      cardOthers: "其他 {{count}} 条",
+    },
+    guide: {
+      howtoTitle: "使用方法",
+      howtoLead:
+        "从选一张照片开始即可。无需注册、无需费用，所有记录只保存在您自己的设备中。",
+      steps: [
+        {
+          title: "选择照片",
+          body: "通过「选择照片」或「拍照」选一张照片。使用「批量添加」可以连续登记多张。照片会在设备内自动压缩为长边 1600px 的 JPEG，不会发送到外部。",
+        },
+        {
+          title: "确认地点和日期",
+          body: "如果照片包含位置信息（Exif），地点和日期会自动填入。若没有，可从「在地图上选择地点」「仅登记省级地区」「不保存位置信息」中选择。如果不想精确留下住家等位置，可以把保存精度切换为「大致位置」。",
+        },
+        {
+          title: "添加分类和备注后保存",
+          body: "从旅行、钓鱼、用餐、带狗出行、温泉、城堡等 12 个分类中选择，再附上日期、备注和地点名称保存。「其他①～③」可以自由改名，方便建立露营、登山等专属分类。",
+        },
+        {
+          title: "用地图和列表回顾",
+          body: "保存的体验会同时出现在地图图钉和列表中。列表可在「时间顺序」和「按区域」之间切换，「回顾回忆」则能像幻灯片一样播放照片。",
+        },
+        {
+          title: "生成分享图并发布",
+          body: "在「制作分享图」中可生成两种 1200×630 的图片：日本都道府县征服地图和体验统计卡。图中只包含记录数量和已填色的地区，不含照片、备注和地名。保存后即可发布到 X。",
+        },
+        {
+          title: "定期备份",
+          body: "数据只存在于本设备中。用「保存备份」导出 JSON 文件，换手机或换浏览器时即可通过「恢复备份」还原。",
+        },
+      ],
+      faqTitle: "常见问题",
+      faqLead: "以下是初次使用者最常提出的问题。",
+      faqs: [
+        {
+          q: "记录的数据保存在哪里？",
+          a: "仅保存在您设备的浏览器内（IndexedDB）。照片、备注和位置信息不会发送到我们的服务器，也不会向他人公开。",
+        },
+        {
+          q: "需要注册吗？会收费吗？",
+          a: "两者都不需要。无需注册，免费即可直接使用。",
+        },
+        {
+          q: "换手机或换浏览器后数据会怎样？",
+          a: "更换设备或浏览器后数据不会延续，清除浏览数据也会将其删除。请用「保存备份」导出文件，再在新设备的同一页面通过「恢复备份」载入。",
+        },
+        {
+          q: "照片没有位置信息时该怎么办？",
+          a: "可以点击地图指定地点，或只选择省级地区登记。如果不想留下位置，也可以选择「不保存位置信息」。",
+        },
+        {
+          q: "分享图中会包含照片或备注吗？",
+          a: "不会。图片中只呈现记录数量、各分类的数量以及已访问地区的填色。照片、备注、地点名称和坐标都不会包含在内，图片的生成也全部在浏览器内完成。",
+        },
+        {
+          q: "如何把分享图发布到 X？",
+          a: "先用「保存图片」下载 PNG，再在「分享到 X」打开的发布界面中添加附件。在手机上可通过「连同图片分享」直接把图片交给系统的分享菜单。",
+        },
+        {
+          q: "我住在日本以外的地区，也能使用吗？",
+          a: "可以。地图覆盖全球，界面语言可从 7 种中选择。都道府县征服地图仅在有日本境内记录时显示，没有时可以使用体验统计卡。",
+        },
+        {
+          q: "最多能保存多少条记录？",
+          a: "上限取决于设备的剩余空间。照片在保存时会自动压缩，单条占用较小，但空间不足时将无法保存，因此建议经常备份。",
+        },
+      ],
+    },
     heritageLink: "世界遗产护照",
   },
 
@@ -881,7 +1325,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "直接輸入經緯度",
       coordsLatLabel: "緯度（Latitude）",
       coordsLngLabel: "經度（Longitude）",
-      coordsHint: "在 Google 地圖右鍵點擊位置 → 複製顯示的數字輸入即可。",
+      coordsHint: "在 Google 地圖右鍵點擊位置 → 複製顯示的數字輸入即可。像「35.796402, 139.531056」這樣帶逗號直接貼上，會自動拆分為緯度和經度。",
       editCategoryBtn: "修改分類名稱（可用表情符號）",
     },
     card: {
@@ -993,6 +1437,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "其他③",
     },
     disclaimer: "本服務僅供個人記錄使用。所有資料僅保存在您的裝置上，不會傳送至外部伺服器。因使用本服務造成的任何損失，營運方概不負責。內容可能在不另行通知的情況下更改或終止。",
+    share: {
+      buttonLabel: "產生分享圖片",
+      emptyHint: "新增記錄後即可使用",
+      modalTitle: "產生分享圖片",
+      closeAria: "關閉",
+      tabMap: "都道府縣攻略地圖",
+      tabStats: "體驗統計卡片",
+      rangeAll: "全部期間",
+      rangeYear: "今年",
+      saveBtn: "儲存圖片",
+      shareImageBtn: "分享圖片",
+      xBtn: "分享到 X",
+      savedMsg: "圖片已儲存。",
+      saveError: "圖片儲存失敗，請再試一次。",
+      longPressHint: "若沒有開始下載，請長按上方圖片（電腦請按滑鼠右鍵）另存新檔。",
+      privacyNote: "圖片僅包含記錄數量與都道府縣的著色，不含照片、備註與地名。",
+      noJapanNote: "目前沒有日本境內的記錄，無法產生都道府縣地圖。請改用體驗統計卡片。",
+      postText: "正在用人生體驗地圖記錄回憶📍 目前已記錄 {{count}} 筆體驗",
+      hashtags: "人生體驗地圖,生活記錄",
+      cardMapTitle: "日本都道府縣地圖",
+      cardStatsTitle: "我的體驗記錄",
+      cardPrefLabel: "造訪過的都道府縣",
+      cardTotalLabel: "記錄的體驗",
+      cardCountValue: "{{count}} 筆",
+      cardCountUnit: "筆",
+      cardCategoryLabel: "各類別記錄數",
+      cardSinceLabel: "開始記錄",
+      cardDurationYM: "{{years}}年{{months}}個月",
+      cardDurationM: "{{months}}個月",
+      cardRangeYear: "今年",
+      cardRangeAll: "全部期間",
+      cardOthers: "其他 {{count}} 筆",
+    },
+    guide: {
+      howtoTitle: "使用方法",
+      howtoLead:
+        "從選一張照片開始即可。無須註冊、無須費用，所有紀錄只保存在您自己的裝置中。",
+      steps: [
+        {
+          title: "選擇照片",
+          body: "透過「選擇照片」或「拍照」選一張照片。使用「批次新增」可以連續登錄多張。照片會在裝置內自動壓縮為長邊 1600px 的 JPEG，不會傳送到外部。",
+        },
+        {
+          title: "確認地點與日期",
+          body: "如果照片含有位置資訊（Exif），地點與日期會自動填入。若沒有，可從「在地圖上選擇地點」「僅登錄縣市層級」「不保存位置資訊」中選擇。若不想精確留下住家等位置，可以把保存精度切換為「大致位置」。",
+        },
+        {
+          title: "加上分類與備註後儲存",
+          body: "從旅行、釣魚、用餐、帶狗出遊、溫泉、城堡等 12 種分類中選擇，再附上日期、備註與地點名稱儲存。「其他①～③」可以自由改名，方便建立露營、登山等專屬分類。",
+        },
+        {
+          title: "用地圖與清單回顧",
+          body: "儲存的體驗會同時出現在地圖圖釘與清單中。清單可在「時間順序」與「依區域」之間切換，「回顧回憶」則能像投影片一樣播放照片。",
+        },
+        {
+          title: "製作分享圖並發佈",
+          body: "在「製作分享圖」中可產生兩種 1200×630 的圖片：日本都道府縣征服地圖與體驗統計卡。圖中只包含紀錄數量與已填色的地區，不含照片、備註與地名。儲存後即可發佈到 X。",
+        },
+        {
+          title: "定期備份",
+          body: "資料只存在於本裝置中。用「儲存備份」匯出 JSON 檔案，換手機或換瀏覽器時即可透過「還原備份」復原。",
+        },
+      ],
+      faqTitle: "常見問題",
+      faqLead: "以下是初次使用者最常提出的問題。",
+      faqs: [
+        {
+          q: "紀錄的資料保存在哪裡？",
+          a: "僅保存在您裝置的瀏覽器內（IndexedDB）。照片、備註與位置資訊不會傳送到我們的伺服器，也不會向他人公開。",
+        },
+        {
+          q: "需要註冊嗎？會收費嗎？",
+          a: "兩者都不需要。無須註冊，免費即可直接使用。",
+        },
+        {
+          q: "換手機或換瀏覽器後資料會怎樣？",
+          a: "更換裝置或瀏覽器後資料不會延續，清除瀏覽資料也會將其刪除。請用「儲存備份」匯出檔案，再於新裝置的同一頁面透過「還原備份」載入。",
+        },
+        {
+          q: "照片沒有位置資訊時該怎麼辦？",
+          a: "可以點選地圖指定地點，或只選擇縣市層級登錄。若不想留下位置，也可以選擇「不保存位置資訊」。",
+        },
+        {
+          q: "分享圖中會包含照片或備註嗎？",
+          a: "不會。圖片中只呈現紀錄數量、各分類的數量以及已造訪地區的填色。照片、備註、地點名稱與座標都不會包含在內，圖片的產生也全部在瀏覽器內完成。",
+        },
+        {
+          q: "如何把分享圖發佈到 X？",
+          a: "先用「儲存圖片」下載 PNG，再於「分享到 X」開啟的發佈畫面中加入附件。在手機上可透過「連同圖片分享」直接把圖片交給系統的分享選單。",
+        },
+        {
+          q: "我住在日本以外的地區，也能使用嗎？",
+          a: "可以。地圖涵蓋全球，介面語言可從 7 種中選擇。都道府縣征服地圖僅在有日本境內紀錄時顯示，沒有時可以使用體驗統計卡。",
+        },
+        {
+          q: "最多能保存多少筆紀錄？",
+          a: "上限取決於裝置的剩餘空間。照片在儲存時會自動壓縮，單筆佔用較小，但空間不足時將無法儲存，因此建議經常備份。",
+        },
+      ],
+    },
     heritageLink: "世界遺產護照",
   },
 
@@ -1045,7 +1589,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "Ingresar coordenadas",
       coordsLatLabel: "Latitud",
       coordsLngLabel: "Longitud",
-      coordsHint: "Haz clic derecho en un lugar en Google Maps → copia los números que aparecen.",
+      coordsHint: "Haz clic derecho en un lugar en Google Maps → copia los números que aparecen. Puedes pegar el par completo separado por comas (p. ej. 35.796402, 139.531056) y se dividirá en latitud y longitud automáticamente.",
       editCategoryBtn: "Renombrar (emoji OK)",
     },
     card: {
@@ -1157,6 +1701,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "Personaliz. 3",
     },
     disclaimer: "Este servicio se ofrece con fines de registro personal. Todos los datos se almacenan únicamente en tu dispositivo y no se envían a servidores externos. El operador no se responsabiliza de ningún daño derivado del uso de este servicio. El contenido puede modificarse o interrumpirse sin previo aviso.",
+    share: {
+      buttonLabel: "Crear imagen para compartir",
+      emptyHint: "Disponible cuando añadas un registro",
+      modalTitle: "Crear imagen para compartir",
+      closeAria: "Cerrar",
+      tabMap: "Mapa de prefecturas",
+      tabStats: "Tarjeta de estadísticas",
+      rangeAll: "Todo el tiempo",
+      rangeYear: "Este año",
+      saveBtn: "Guardar imagen",
+      shareImageBtn: "Compartir imagen",
+      xBtn: "Compartir en X",
+      savedMsg: "Imagen guardada.",
+      saveError: "No se pudo guardar la imagen. Inténtalo de nuevo.",
+      longPressHint: "Si no empieza la descarga, mantén pulsada la imagen de arriba (clic derecho en el ordenador) para guardarla.",
+      privacyNote: "La imagen solo incluye el número de registros y las prefecturas coloreadas. Nunca incluye fotos, notas ni nombres de lugares.",
+      noJapanNote: "Aún no hay registros en Japón, así que el mapa de prefecturas no está disponible. Usa la tarjeta de estadísticas.",
+      postText: "Registrando mis recuerdos en el Mapa de Experiencias de Vida 📍 {{count}} experiencias registradas hasta ahora",
+      hashtags: "MapaDeExperiencias,LifeLog",
+      cardMapTitle: "Mapa de prefecturas de Japón",
+      cardStatsTitle: "Mis experiencias",
+      cardPrefLabel: "Prefecturas visitadas",
+      cardTotalLabel: "Experiencias registradas",
+      cardCountValue: "{{count}}",
+      cardCountUnit: "registros",
+      cardCategoryLabel: "Por categoría",
+      cardSinceLabel: "Desde",
+      cardDurationYM: "{{years}} a {{months}} m",
+      cardDurationM: "{{months}} meses",
+      cardRangeYear: "Este año",
+      cardRangeAll: "Todo el tiempo",
+      cardOthers: "+{{count}} más",
+    },
+    guide: {
+      howtoTitle: "Cómo funciona",
+      howtoLead:
+        "Puedes empezar con una sola foto. Sin registro ni coste, y todos los recuerdos se guardan únicamente en tu dispositivo.",
+      steps: [
+        {
+          title: "Elige una foto",
+          body: "Selecciona una foto con «Elegir foto» o «Hacer foto». Con «Añadir varias fotos» puedes registrar varias seguidas. Las fotos se comprimen en tu dispositivo a un JPEG de 1600 px en el lado largo y nunca se envían a ningún servidor.",
+        },
+        {
+          title: "Comprueba el lugar y la fecha",
+          body: "Si la foto lleva datos de ubicación (Exif), el lugar y la fecha se rellenan solos. Si no, elige entre «Elegir el lugar en el mapa», «Registrar solo la prefectura» o «Guardar sin ubicación». Si prefieres no señalar tu casa con exactitud, cambia la precisión a «Zona aproximada».",
+        },
+        {
+          title: "Añade categoría y nota, y guarda",
+          body: "Elige entre 12 categorías como viaje, pesca, comida, salidas con perro, aguas termales o castillos, y añade fecha, nota y nombre del lugar. «Personalizada 1–3» se puede renombrar libremente para crear tus propias categorías de acampada, senderismo o lo que quieras.",
+        },
+        {
+          title: "Repasa en el mapa y en la lista",
+          body: "Cada experiencia guardada aparece como chincheta en el mapa y en la lista. Puedes alternar la lista entre «Cronología» y «Por zona», o abrir «Ver recuerdos» para reproducir tus fotos como una presentación.",
+        },
+        {
+          title: "Crea una imagen para compartir",
+          body: "«Crear imagen para compartir» genera dos tipos de imagen de 1200×630: el mapa de prefecturas de Japón y la tarjeta de estadísticas. Solo contienen el número de registros y las prefecturas coloreadas: nunca fotos, notas ni nombres de lugares. Guárdala y publícala en X.",
+        },
+        {
+          title: "Haz copias de seguridad",
+          body: "Tus datos solo existen en este dispositivo. Usa «Guardar copia» para exportar un archivo JSON y «Restaurar copia» para recuperarlo todo al cambiar de móvil o de navegador.",
+        },
+      ],
+      faqTitle: "Preguntas frecuentes",
+      faqLead: "Las dudas más habituales de quienes empiezan a usarlo.",
+      faqs: [
+        {
+          q: "¿Dónde se guardan mis datos?",
+          a: "Solo en el navegador de tu dispositivo (IndexedDB). Tus fotos, notas y ubicaciones nunca se envían a nuestros servidores ni se muestran a nadie más.",
+        },
+        {
+          q: "¿Necesito una cuenta? ¿Tiene algún coste?",
+          a: "Ninguna de las dos cosas. No hay registro ni cargo alguno: puedes empezar directamente.",
+        },
+        {
+          q: "¿Qué pasa con mis datos si cambio de móvil o de navegador?",
+          a: "No se transfieren, y borrar los datos de navegación también los elimina. Exporta un archivo con «Guardar copia» y cárgalo con «Restaurar copia» en la misma página del nuevo dispositivo.",
+        },
+        {
+          q: "¿Y si mi foto no tiene datos de ubicación?",
+          a: "Toca el mapa para indicar el lugar o registra solo la prefectura. Si prefieres no guardar ninguna ubicación, elige «Guardar sin ubicación».",
+        },
+        {
+          q: "¿Las imágenes para compartir incluyen mis fotos o notas?",
+          a: "No. La imagen muestra únicamente el número de registros, el recuento por categoría y las prefecturas coloreadas. Nunca incluye fotos, notas, nombres de lugares ni coordenadas, y se genera por completo dentro de tu navegador.",
+        },
+        {
+          q: "¿Cómo publico una imagen en X?",
+          a: "Descarga el PNG con «Guardar imagen» y adjúntalo en la ventana de publicación que abre «Compartir en X». En el móvil, «Compartir con imagen» entrega la imagen directamente al menú de compartir.",
+        },
+        {
+          q: "Vivo fuera de Japón, ¿puedo usarlo igualmente?",
+          a: "Sí. El mapa cubre todo el mundo y la interfaz está disponible en 7 idiomas. El mapa de prefecturas solo aparece si tienes registros en Japón; si no, puedes usar la tarjeta de estadísticas.",
+        },
+        {
+          q: "¿Cuántos recuerdos puedo guardar?",
+          a: "El límite depende del espacio libre de tu dispositivo. Las fotos se comprimen automáticamente, así que cada registro ocupa poco, pero si te quedas sin espacio no podrás guardar más: haz copias con frecuencia.",
+        },
+      ],
+    },
     heritageLink: "Patrimonio Mundial",
   },
 
@@ -1209,7 +1853,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       coordsMode: "Ввести координаты вручную",
       coordsLatLabel: "Широта (Latitude)",
       coordsLngLabel: "Долгота (Longitude)",
-      coordsHint: "Нажмите правой кнопкой мыши на место в Google Maps → скопируйте числа.",
+      coordsHint: "Нажмите правой кнопкой мыши на место в Google Maps → скопируйте числа. Можно вставить всю пару через запятую (например, 35.796402, 139.531056) — она автоматически разделится на широту и долготу.",
       editCategoryBtn: "Переименовать (эмодзи OK)",
     },
     card: {
@@ -1321,6 +1965,106 @@ export const translations: Record<LangCode, LifeMapDict> = {
       other3: "Другое 3",
     },
     disclaimer: "Данный сервис предоставляется в личных целях записи воспоминаний. Все данные хранятся исключительно на вашем устройстве и не отправляются на внешние серверы. Оператор не несёт ответственности за любой ущерб, возникший в результате использования сервиса. Содержание может быть изменено или прекращено без предварительного уведомления.",
+    share: {
+      buttonLabel: "Создать изображение",
+      emptyHint: "Доступно после добавления записи",
+      modalTitle: "Создать изображение для публикации",
+      closeAria: "Закрыть",
+      tabMap: "Карта префектур",
+      tabStats: "Карточка статистики",
+      rangeAll: "За всё время",
+      rangeYear: "В этом году",
+      saveBtn: "Сохранить изображение",
+      shareImageBtn: "Поделиться изображением",
+      xBtn: "Поделиться в X",
+      savedMsg: "Изображение сохранено.",
+      saveError: "Не удалось сохранить изображение. Попробуйте ещё раз.",
+      longPressHint: "Если загрузка не началась, нажмите и удерживайте изображение выше (на компьютере — правой кнопкой мыши), чтобы сохранить его.",
+      privacyNote: "На изображении только количество записей и закрашенные префектуры. Фотографии, заметки и названия мест никогда не включаются.",
+      noJapanNote: "Записей в Японии пока нет, поэтому карта префектур недоступна. Используйте карточку статистики.",
+      postText: "Записываю воспоминания на Карте жизненного опыта 📍 Уже сохранено записей: {{count}}",
+      hashtags: "КартаЖизни,LifeLog",
+      cardMapTitle: "Карта префектур Японии",
+      cardStatsTitle: "Мои впечатления",
+      cardPrefLabel: "Посещено префектур",
+      cardTotalLabel: "Записей о впечатлениях",
+      cardCountValue: "{{count}}",
+      cardCountUnit: "записей",
+      cardCategoryLabel: "По категориям",
+      cardSinceLabel: "С",
+      cardDurationYM: "{{years}} г. {{months}} мес.",
+      cardDurationM: "{{months}} мес.",
+      cardRangeYear: "В этом году",
+      cardRangeAll: "За всё время",
+      cardOthers: "и ещё {{count}}",
+    },
+    guide: {
+      howtoTitle: "Как это работает",
+      howtoLead:
+        "Начать можно с одной фотографии. Регистрация и оплата не нужны, а все записи хранятся только на вашем устройстве.",
+      steps: [
+        {
+          title: "Выберите фотографию",
+          body: "Выберите снимок через «Выбрать фото» или «Сделать фото». Кнопка «Добавить несколько фото» позволяет загрузить сразу серию. Фотографии сжимаются прямо на устройстве в JPEG с длинной стороной 1600 px и никуда не отправляются.",
+        },
+        {
+          title: "Проверьте место и дату",
+          body: "Если в снимке есть геоданные (Exif), место и дата заполнятся автоматически. Если их нет, выберите «Указать место на карте», «Записать только префектуру» или «Сохранить без места». Чтобы не отмечать дом слишком точно, переключите точность на «Приблизительное место».",
+        },
+        {
+          title: "Добавьте категорию и заметку",
+          body: "Выберите одну из 12 категорий — путешествие, рыбалка, еда, прогулка с собакой, горячие источники, замки и другие — и добавьте дату, заметку и название места. «Своя 1–3» можно переименовать, создав собственные категории для кемпинга, походов и чего угодно ещё.",
+        },
+        {
+          title: "Просматривайте на карте и в списке",
+          body: "Каждая запись появляется и меткой на карте, и в списке. Список переключается между режимами «Хронология» и «По регионам», а «Посмотреть воспоминания» проигрывает фотографии как слайд-шоу.",
+        },
+        {
+          title: "Создайте картинку для публикации",
+          body: "Кнопка «Создать картинку» строит два вида изображений 1200×630: карту префектур Японии и карточку статистики. В них попадают только количество записей и закрашенные префектуры — никаких фотографий, заметок и названий мест. Сохраните и опубликуйте в X.",
+        },
+        {
+          title: "Регулярно делайте резервные копии",
+          body: "Данные существуют только на этом устройстве. «Сохранить копию» выгружает файл JSON, а «Восстановить копию» вернёт всё обратно при смене телефона или браузера.",
+        },
+      ],
+      faqTitle: "Частые вопросы",
+      faqLead: "То, о чём чаще всего спрашивают новые пользователи.",
+      faqs: [
+        {
+          q: "Где хранятся мои данные?",
+          a: "Только в браузере на вашем устройстве (IndexedDB). Фотографии, заметки и координаты не отправляются на наши серверы и никому не показываются.",
+        },
+        {
+          q: "Нужна ли учётная запись? Есть ли плата?",
+          a: "Ни то, ни другое. Регистрация не требуется, сервис бесплатный — просто начните пользоваться.",
+        },
+        {
+          q: "Что будет с данными при смене телефона или браузера?",
+          a: "Они не переносятся, а очистка данных браузера их удалит. Выгрузите файл через «Сохранить копию» и загрузите его через «Восстановить копию» на той же странице нового устройства.",
+        },
+        {
+          q: "Что делать, если в фотографии нет геоданных?",
+          a: "Укажите место касанием по карте или запишите только префектуру. Если место сохранять не хочется, выберите «Сохранить без места».",
+        },
+        {
+          q: "Попадают ли в картинку мои фотографии и заметки?",
+          a: "Нет. На изображении показаны только количество записей, число записей по категориям и закрашенные префектуры. Фотографии, заметки, названия мест и координаты не включаются никогда, а сама картинка целиком создаётся в браузере.",
+        },
+        {
+          q: "Как опубликовать картинку в X?",
+          a: "Скачайте PNG кнопкой «Сохранить картинку» и приложите его в окне публикации, которое открывает «Поделиться в X». На смартфоне «Поделиться с картинкой» передаёт изображение прямо в меню отправки.",
+        },
+        {
+          q: "Я живу не в Японии — сервис мне подойдёт?",
+          a: "Да. Карта охватывает весь мир, а интерфейс доступен на 7 языках. Карта префектур появляется только при наличии записей в Японии; в остальных случаях используйте карточку статистики.",
+        },
+        {
+          q: "Сколько записей можно сохранить?",
+          a: "Предел зависит от свободного места на устройстве. Фотографии сжимаются автоматически, поэтому каждая запись занимает немного, но при нехватке места сохранение перестанет работать — делайте копии почаще.",
+        },
+      ],
+    },
     heritageLink: "Всемирное наследие",
   },
 };
