@@ -19,10 +19,17 @@ export type ShioriSample = {
   keywords: string;
   /** 一覧ページの紹介文（ユーザー指定文言をそのまま使用） */
   listingIntro: string;
+  /** アイキャッチ画像のalt。画像パスは slug から導出する（sampleImagePath） */
+  imageAlt: string;
   memo: ShioriSampleMemoRow[];
   body: string[];
   sns: string;
 };
+
+/** アイキャッチ画像のパス。public/images/shiori-samples/<slug>.jpg（1200×630） */
+export function sampleImagePath(slug: string): string {
+  return `/images/shiori-samples/${slug}.jpg`;
+}
 
 export const SHIORI_SAMPLES: ShioriSample[] = [
   {
@@ -32,6 +39,7 @@ export const SHIORI_SAMPLES: ShioriSample[] = [
     keywords: "旅行記 書き方,旅行日記 例文,京都 旅行記",
     listingIntro:
       "紅葉シーズンの京都を1泊2日で。清水寺・嵐山といった定番を、混雑や疲れも含めて記録した歩く旅の例です。",
+    imageAlt: "紅葉の京都をイメージしたイラスト。石畳の坂と町家、遠くに五重塔のシルエット",
     memo: [
       { date: "11/15 14:00", place: "清水寺", note: "紅葉が見頃。人が多い" },
       { date: "11/15 16:00", place: "二年坂・産寧坂", note: "坂道の店をひやかす。八ツ橋を試食" },
@@ -55,6 +63,7 @@ export const SHIORI_SAMPLES: ShioriSample[] = [
     keywords: "ドライブ 旅行記,北海道 旅行記 例文",
     listingIntro:
       "レンタカーで走った真夏の北海道。ラベンダー畑と青い池、丘の道そのものを楽しんだドライブ旅行の記録です。",
+    imageAlt: "真夏の富良野・美瑛をイメージしたイラスト。パッチワーク状の畑が続く丘とカーブする道",
     memo: [
       { date: "7/20 11:00", place: "ファーム富田", note: "ラベンダー満開。香りがすごい" },
       { date: "7/20 15:00", place: "美瑛 パッチワークの路", note: "丘がずっと続く。運転が楽しい" },
@@ -78,6 +87,7 @@ export const SHIORI_SAMPLES: ShioriSample[] = [
     keywords: "家族旅行 記録,沖縄 旅行記 例文,子連れ 旅行記",
     listingIntro:
       "子ども連れの沖縄3泊4日。美ら海水族館や古宇利大橋など、移動の多い家族旅行をそのまま書き起こした例です。",
+    imageAlt: "沖縄をイメージしたイラスト。エメラルドグリーンの海に架かる白く長い橋とヤシの木",
     memo: [
       { date: "8/10 15:00", place: "瀬長島ウミカジテラス", note: "飛行機が真上を通る" },
       { date: "8/11 10:00", place: "美ら海水族館", note: "ジンベエザメ。子どもが動かなくなる" },
@@ -101,6 +111,7 @@ export const SHIORI_SAMPLES: ShioriSample[] = [
     keywords: "ひとり旅 旅行記,金沢 旅行記 例文",
     listingIntro:
       "三月の金沢と加賀をひとりで歩いた2泊3日。予定を削ってひとつの場所に長くいる、ひとり旅らしい記録です。",
+    imageAlt: "早春の金沢をイメージしたイラスト。格子戸の町並みと石畳、雪吊りの残る落ち着いた風景",
     memo: [
       { date: "3/5 13:00", place: "兼六園", note: "雪吊り。まだ残っていた" },
       { date: "3/5 15:30", place: "ひがし茶屋街", note: "格子の町並み。夕方は静か" },
@@ -124,6 +135,7 @@ export const SHIORI_SAMPLES: ShioriSample[] = [
     keywords: "サイクリング 旅行記,しまなみ海道 旅行記 例文",
     listingIntro:
       "尾道から自転車でしまなみ海道へ。全線は走らず途中で折り返した、無理をしないサイクリング旅行の例です。",
+    imageAlt: "しまなみ海道をイメージしたイラスト。瀬戸内の島々に架かる吊り橋と柑橘の段々畑",
     memo: [
       { date: "5/3 10:00", place: "尾道 千光寺", note: "ロープウェイで上がる。街と海が一望" },
       { date: "5/3 13:00", place: "猫の細道", note: "細い坂道。猫の置物" },

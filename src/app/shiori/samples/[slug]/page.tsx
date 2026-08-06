@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import { SITE_ORIGIN } from "@/lib/shiori/seo";
-import { SHIORI_SAMPLES, shioriSample } from "@/data/shiori-samples";
+import { SHIORI_SAMPLES, sampleImagePath, shioriSample } from "@/data/shiori-samples";
 
 /** 5本すべてをビルド時に静的生成する */
 export function generateStaticParams() {
@@ -37,6 +37,8 @@ export async function generateMetadata({
   const title = sampleTitle(sample.destination);
   const description = sampleDescription(sample.listingIntro);
   const url = sampleUrl(sample.slug);
+  // OGPは共通画像ではなく、そのサンプル自身のアイキャッチを指す
+  const ogImage = `${SITE_ORIGIN}${sampleImagePath(sample.slug)}`;
 
   return {
     title,
@@ -54,10 +56,10 @@ export async function generateMetadata({
       url,
       images: [
         {
-          url: `${SITE_ORIGIN}/ogp-shiori.jpg`,
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: sample.imageAlt,
         },
       ],
     },
@@ -65,7 +67,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_ORIGIN}/ogp-shiori.jpg`],
+      images: [ogImage],
     },
   };
 }
@@ -91,7 +93,7 @@ export default async function ShioriSamplePage({
       headline: sample.title,
       description,
       url,
-      image: `${SITE_ORIGIN}/ogp-shiori.jpg`,
+      image: `${SITE_ORIGIN}${sampleImagePath(sample.slug)}`,
       datePublished: "2026-08-06",
       dateModified: "2026-08-06",
       inLanguage: "ja",
@@ -157,6 +159,20 @@ export default async function ShioriSamplePage({
             {sample.title}
           </h1>
         </div>
+
+        <figure className="m-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={sampleImagePath(sample.slug)}
+            alt={sample.imageAlt}
+            width={1200}
+            height={630}
+            className="w-full h-auto rounded-xl border border-slate-200 bg-slate-50"
+          />
+          <figcaption className="mt-2 text-xs text-slate-500">
+            イラストはイメージです。実際の風景写真ではありません。
+          </figcaption>
+        </figure>
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm font-bold text-amber-900">
           これはAI旅行記メーカーで生成した文章の例です。実在の旅行記ではありません。

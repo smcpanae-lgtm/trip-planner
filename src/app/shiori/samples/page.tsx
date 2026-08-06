@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import { SITE_ORIGIN } from "@/lib/shiori/seo";
-import { SHIORI_SAMPLES } from "@/data/shiori-samples";
+import { SHIORI_SAMPLES, sampleImagePath } from "@/data/shiori-samples";
 
 const title = "旅行記のサンプル・例文5選｜AIが作った旅行日記の実例";
 const description =
@@ -101,15 +101,31 @@ export default function ShioriSamplesPage() {
             <li key={sample.slug}>
               <Link
                 href={`/shiori/samples/${sample.slug}`}
-                className="block h-full bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-rose-300 hover:bg-rose-50/30 transition-colors"
+                className="block h-full bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:border-rose-300 hover:bg-rose-50/30 transition-colors"
               >
-                <p className="text-xs font-bold text-rose-800">{sample.destination}</p>
-                <p className="mt-1.5 text-base font-bold text-stone-900">{sample.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{sample.listingIntro}</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={sampleImagePath(sample.slug)}
+                  alt={sample.imageAlt}
+                  width={1200}
+                  height={630}
+                  className="w-full h-auto bg-slate-50"
+                />
+                <div className="p-5">
+                  <p className="text-xs font-bold text-rose-800">{sample.destination}</p>
+                  <p className="mt-1.5 text-base font-bold text-stone-900">{sample.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                    {sample.listingIntro}
+                  </p>
+                </div>
               </Link>
             </li>
           ))}
         </ul>
+
+        <p className="text-xs text-slate-500">
+          イラストはイメージです。実際の風景写真ではありません。
+        </p>
 
         <div className="bg-rose-50 border border-rose-100 rounded-xl p-6 text-center">
           <p className="text-sm text-slate-700">あなたの旅行記も無料で作れます</p>
