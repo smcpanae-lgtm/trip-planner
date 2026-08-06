@@ -9,7 +9,7 @@ export const EN_LANDING = {
   headline: "Turn photos and notes into an AI travel journal, free.",
   tagline: "No dedicated travel-log app required.",
   intro:
-    "Using places, dates, and notes you've saved in Life Map — or photos you upload directly — AI writes a travel journal from the recorder's point of view. Save it as an SNS post caption, a blog eye-catch image, or a one-page A4 PDF. This is a tool for organizing memories after a trip, not for planning one.",
+    "Using places, dates, and notes you've saved in Life Experience Map — or photos you upload directly — AI writes a travel journal from the recorder's point of view. Save it as a social media caption, a blog cover image, or a one-page A4 PDF. This is a tool for organizing memories after a trip, not for planning one.",
   differentiators: [
     {
       title: "No app, no account",
@@ -21,11 +21,11 @@ export const EN_LANDING = {
     },
     {
       title: "Free to use",
-      body: "Journal generation, SNS captions, the eye-catch image, and PDF export are all free.",
+      body: "Journal generation, social media captions, the cover image, and PDF export are all free.",
     },
     {
       title: "Works with your existing records",
-      body: "Pulls straight from Life Map or World Heritage Passport entries you've already saved.",
+      body: "Pulls straight from Life Experience Map or World Heritage Passport entries you've already saved.",
     },
   ],
 } as const;

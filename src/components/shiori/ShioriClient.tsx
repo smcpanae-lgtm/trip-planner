@@ -441,8 +441,8 @@ function uiMessage(language: OutputLanguage, key: "copied" | "copyFailed" | "aiF
       aiFailed: "AI生成に失敗したため、AIなしの記録文で作成しました。文章はそのまま編集できます。",
     },
     en: {
-      copied: "SNS post text copied.",
-      copyFailed: "Could not copy the SNS post text. Please copy it manually from the text area.",
+      copied: "Social media post text copied.",
+      copyFailed: "Could not copy the social media post text. Please copy it manually from the text area.",
       aiFallback: "AI is unavailable, so a template journal was created. You can edit the text freely.",
       aiFailed: "AI generation failed, so a template journal was created. You can edit the text freely.",
     },
@@ -499,6 +499,19 @@ function uiLabel(
     | "copyPost"
     | "saveImage"
     | "savePdf"
+    | "photoPrivacy"
+    | "noticeTitle"
+    | "noticeBody"
+    | "dataTitle"
+    | "dataNote1"
+    | "dataNote2"
+    | "dataNote3"
+    | "cardLifeMapTitle"
+    | "cardLifeMapBody"
+    | "cardHeritageTitle"
+    | "cardHeritageBody"
+    | "cardPhotoTitle"
+    | "cardPhotoBody"
 ): string {
   const labels: Record<OutputLanguage, Record<typeof key, string>> = {
     ja: {
@@ -518,24 +531,50 @@ function uiLabel(
       copyPost: "SNS投稿文をコピー",
       saveImage: "アイキャッチ画像を保存",
       savePdf: "PDFでも保存する",
+      photoPrivacy: "写真は端末内で扱い、送信しません。送信するのは、地名・日付・メモ・タイトル・記録者名・設定などの文字情報だけです。",
+      noticeTitle: "ご利用上の注意",
+      noticeBody: "本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。",
+      dataTitle: "データの保存について",
+      dataNote1: "下書き保存を押した場合、写真・場所・メモ等のデータはこのブラウザ内のlocalStorageに保存されます。サーバー送信やクラウド自動バックアップは行いません。",
+      dataNote2: "ブラウザの閲覧データ削除、キャッシュクリア、端末の初期化・機種変更、ブラウザ変更等により、下書きデータが消失する場合があります。",
+      dataNote3: "データの消失・破損に関して、当サービスは責任を負いかねます。大切な旅行記は、SNS投稿文・アイキャッチ画像・PDFとして端末へ保存してください。",
+      cardLifeMapTitle: "人生体験マップの記録から作る",
+      cardLifeMapBody: "保存済みの写真・日付・場所・メモを読み込み、今回の旅だけに絞って、旅行記として文章と一緒に残します。",
+      cardHeritageTitle: "世界遺産パスポートの記録から作る",
+      cardHeritageBody: "世界遺産パスポートに保存した訪問日・写真・メモを読み込み、SNS投稿文やアイキャッチ画像にまとめます。",
+      cardPhotoTitle: "写真を選んで作る",
+      cardPhotoBody: "未保存の写真を選んで、撮影日・GPSを読み取りながら、旅の記録として文章と一緒に残します。",
     },
     en: {
       serviceName: "AI Travel Journal Maker",
       tagline: "Turn photos and notes into an AI travel journal.",
       backTop: "Back to top",
-      lifeMap: "Life Map",
+      lifeMap: "Life Experience Map",
       heritage: "World Heritage Passport",
       drivePlanner: "AI Drive Planner",
       heroTitle: "Turn photos and notes into an AI travel journal.",
-      heroBody: "Based on places, dates, and notes saved in Life Map, AI creates a travel journal from the recorder's point of view. Save it as SNS post text, a blog eye-catch image, or an A4 one-page PDF when needed. This is for organizing memories after a trip, not planning one.",
+      heroBody: "Based on places, dates, and notes saved in Life Experience Map, AI creates a travel journal from the recorder's point of view. Save it as social media post text, a blog cover image, or an A4 one-page PDF when needed. This is for organizing memories after a trip, not planning one.",
       outputLanguage: "Output language",
       settings: "Journal settings",
       generateAi: "Create an AI travel journal from source notes",
       generating: "Generating text...",
       template: "Create without AI",
-      copyPost: "Copy SNS post text",
-      saveImage: "Save eye-catch image",
+      copyPost: "Copy social media post text",
+      saveImage: "Save cover image",
       savePdf: "Save as PDF too",
+      photoPrivacy: "Photos are handled on your device and are never sent. Only text — place names, dates, your notes, and the title and settings you enter — is sent to generate your journal.",
+      noticeTitle: "Copyright notice",
+      noticeBody: "Unauthorized copying, reuse, or redistribution of this site's source code, design, and content is prohibited.",
+      dataTitle: "About saved data",
+      dataNote1: "When you tap Save draft, your photos, places, notes, and other data are stored in this browser's localStorage. Nothing is sent to a server, and there is no automatic cloud backup.",
+      dataNote2: "Draft data can be lost if you clear your browsing data or cache, reset or replace your device, or switch to a different browser.",
+      dataNote3: "We cannot take responsibility for lost or corrupted data. Save the journals that matter to you onto your own device as social media post text, a cover image, or a PDF.",
+      cardLifeMapTitle: "Create from Life Experience Map records",
+      cardLifeMapBody: "Load the photos, dates, places, and notes you have already saved, narrow them down to this one trip, and keep them as a written journal.",
+      cardHeritageTitle: "Create from World Heritage Passport records",
+      cardHeritageBody: "Load the visit dates, photos, and notes saved in World Heritage Passport, and bring them together as social media post text and a cover image.",
+      cardPhotoTitle: "Create by choosing photos",
+      cardPhotoBody: "Choose photos you have not saved yet. The date taken and GPS are read automatically, and everything is kept as a written record of your trip.",
     },
     "zh-CN": {
       serviceName: "AI旅行记生成器",
@@ -554,6 +593,19 @@ function uiLabel(
       copyPost: "复制SNS投稿文",
       saveImage: "保存封面图",
       savePdf: "也保存为PDF",
+      photoPrivacy: "照片仅在您的设备中处理，不会发送。发送的只有地点、日期、备忘、标题、记录者姓名、设置等文字信息。",
+      noticeTitle: "使用须知",
+      noticeBody: "禁止擅自复制、转用或再分发本站的源代码、设计和内容。",
+      dataTitle: "关于数据保存",
+      dataNote1: "点击保存草稿后，照片、地点、备忘等数据会保存在本浏览器的localStorage中。不会发送到服务器，也不会自动云端备份。",
+      dataNote2: "清除浏览数据或缓存、重置设备、更换机型、更换浏览器等操作，都可能导致草稿数据丢失。",
+      dataNote3: "对于数据丢失或损坏，本服务恕不负责。重要的旅行记请保存为SNS投稿文、封面图或PDF，存放到您的设备中。",
+      cardLifeMapTitle: "从人生体验地图的记录生成",
+      cardLifeMapBody: "读取已保存的照片、日期、地点和备忘，只筛选出这趟旅行的内容，连同文章一起留作旅行记。",
+      cardHeritageTitle: "从世界遗产护照的记录生成",
+      cardHeritageBody: "读取世界遗产护照中保存的到访日期、照片和备忘，整理成SNS投稿文和封面图。",
+      cardPhotoTitle: "选择照片生成",
+      cardPhotoBody: "选择尚未保存的照片，自动读取拍摄日期和GPS信息，连同文章一起留作旅行记录。",
     },
     fr: {
       serviceName: "Générateur de carnet de voyage IA",
@@ -572,6 +624,19 @@ function uiLabel(
       copyPost: "Copier le texte SNS",
       saveImage: "Enregistrer l'image d'accroche",
       savePdf: "Enregistrer aussi en PDF",
+      photoPrivacy: "Vos photos restent sur votre appareil et ne sont jamais envoyées. Seul du texte est transmis pour la rédaction : lieux, dates, notes, titre, nom de l'auteur et réglages.",
+      noticeTitle: "Conditions d'utilisation",
+      noticeBody: "Toute copie, réutilisation ou redistribution non autorisée du code source, du design et du contenu de ce site est interdite.",
+      dataTitle: "À propos des données enregistrées",
+      dataNote1: "Lorsque vous enregistrez un brouillon, les photos, lieux et notes sont stockés dans le localStorage de ce navigateur. Rien n'est envoyé à un serveur et aucune sauvegarde automatique dans le cloud n'est effectuée.",
+      dataNote2: "Les brouillons peuvent être perdus si vous effacez les données de navigation ou le cache, réinitialisez ou changez d'appareil, ou changez de navigateur.",
+      dataNote3: "Nous ne pouvons être tenus responsables de la perte ou de l'altération des données. Enregistrez les carnets auxquels vous tenez sur votre appareil, sous forme de texte pour réseaux sociaux, d'image d'accroche ou de PDF.",
+      cardLifeMapTitle: "Créer à partir de la Carte de vie",
+      cardLifeMapBody: "Chargez les photos, dates, lieux et notes déjà enregistrés, ne gardez que ce voyage-ci et conservez le tout sous forme de carnet rédigé.",
+      cardHeritageTitle: "Créer à partir du Passeport du patrimoine mondial",
+      cardHeritageBody: "Chargez les dates de visite, photos et notes enregistrées dans le Passeport du patrimoine mondial, puis réunissez-les en texte pour réseaux sociaux et image d'accroche.",
+      cardPhotoTitle: "Créer en choisissant des photos",
+      cardPhotoBody: "Choisissez des photos non encore enregistrées : la date de prise de vue et les données GPS sont lues automatiquement, et le tout est conservé comme récit de voyage.",
     },
     ko: {
       serviceName: "AI 여행기 메이커",
@@ -590,6 +655,19 @@ function uiLabel(
       copyPost: "SNS 게시글 복사",
       saveImage: "아이캐치 이미지 저장",
       savePdf: "PDF로도 저장",
+      photoPrivacy: "사진은 기기 안에서만 처리하며 전송하지 않습니다. 전송되는 것은 지명·날짜·메모·제목·기록자 이름·설정 등 문자 정보뿐입니다.",
+      noticeTitle: "이용 시 주의사항",
+      noticeBody: "본 사이트의 소스 코드·디자인·콘텐츠를 무단으로 복제·전용·재배포하는 것을 금지합니다.",
+      dataTitle: "데이터 저장에 대하여",
+      dataNote1: "임시저장을 누르면 사진·장소·메모 등의 데이터가 이 브라우저의 localStorage에 저장됩니다. 서버로 전송하거나 클라우드에 자동 백업하지 않습니다.",
+      dataNote2: "브라우저 방문 기록 삭제, 캐시 삭제, 기기 초기화·기기 변경, 브라우저 변경 등으로 임시저장 데이터가 사라질 수 있습니다.",
+      dataNote3: "데이터의 손실·손상에 대해 당 서비스는 책임지지 않습니다. 소중한 여행기는 SNS 게시글·아이캐치 이미지·PDF로 기기에 저장해 주세요.",
+      cardLifeMapTitle: "인생 체험 지도의 기록으로 만들기",
+      cardLifeMapBody: "저장해 둔 사진·날짜·장소·메모를 불러와 이번 여행만 골라내고, 여행기로 글과 함께 남깁니다.",
+      cardHeritageTitle: "세계유산 패스포트의 기록으로 만들기",
+      cardHeritageBody: "세계유산 패스포트에 저장한 방문일·사진·메모를 불러와 SNS 게시글과 아이캐치 이미지로 정리합니다.",
+      cardPhotoTitle: "사진을 선택해서 만들기",
+      cardPhotoBody: "아직 저장하지 않은 사진을 선택하면 촬영일과 GPS를 읽어들여, 여행의 기록으로 글과 함께 남깁니다.",
     },
     "zh-TW": {
       serviceName: "AI旅行記產生器",
@@ -608,6 +686,19 @@ function uiLabel(
       copyPost: "複製SNS貼文",
       saveImage: "保存首圖",
       savePdf: "也保存為PDF",
+      photoPrivacy: "照片僅在您的裝置中處理，不會傳送。傳送的只有地點、日期、備忘、標題、記錄者姓名、設定等文字資訊。",
+      noticeTitle: "使用須知",
+      noticeBody: "禁止擅自複製、轉用或再散布本站的原始碼、設計與內容。",
+      dataTitle: "關於資料保存",
+      dataNote1: "按下儲存草稿後，照片、地點、備忘等資料會保存在本瀏覽器的localStorage中。不會傳送到伺服器，也不會自動雲端備份。",
+      dataNote2: "清除瀏覽資料或快取、重設裝置、更換機型、更換瀏覽器等操作，都可能造成草稿資料遺失。",
+      dataNote3: "對於資料遺失或損毀，本服務恕不負責。重要的旅行記請保存為SNS貼文、首圖或PDF，存放到您的裝置中。",
+      cardLifeMapTitle: "從人生體驗地圖的記錄產生",
+      cardLifeMapBody: "讀取已保存的照片、日期、地點與備忘，只篩選出這趟旅行的內容，連同文章一起留作旅行記。",
+      cardHeritageTitle: "從世界遺產護照的記錄產生",
+      cardHeritageBody: "讀取世界遺產護照中保存的造訪日期、照片與備忘，整理成SNS貼文和首圖。",
+      cardPhotoTitle: "選擇照片產生",
+      cardPhotoBody: "選擇尚未保存的照片，自動讀取拍攝日期與GPS資訊，連同文章一起留作旅行記錄。",
     },
     de: {
       serviceName: "KI-Reisebericht-Generator",
@@ -626,9 +717,25 @@ function uiLabel(
       copyPost: "SNS-Beitrag kopieren",
       saveImage: "Titelbild speichern",
       savePdf: "Auch als PDF speichern",
+      photoPrivacy: "Fotos bleiben auf Ihrem Gerät und werden nie übertragen. Übertragen wird nur Text: Ortsnamen, Daten, Notizen, Titel, Name der verfassenden Person und Einstellungen.",
+      noticeTitle: "Nutzungshinweise",
+      noticeBody: "Das unbefugte Kopieren, Weiterverwenden oder Weiterverbreiten von Quellcode, Design und Inhalten dieser Website ist untersagt.",
+      dataTitle: "Hinweise zur Datenspeicherung",
+      dataNote1: "Wenn Sie einen Entwurf speichern, werden Fotos, Orte und Notizen im localStorage dieses Browsers abgelegt. Es erfolgt keine Übertragung an einen Server und kein automatisches Cloud-Backup.",
+      dataNote2: "Entwürfe können verloren gehen, wenn Sie Browserdaten oder den Cache löschen, das Gerät zurücksetzen oder wechseln oder einen anderen Browser verwenden.",
+      dataNote3: "Für Verlust oder Beschädigung von Daten übernehmen wir keine Haftung. Sichern Sie wichtige Reiseberichte als SNS-Beitrag, Titelbild oder PDF auf Ihrem Gerät.",
+      cardLifeMapTitle: "Aus Einträgen der Lebenskarte erstellen",
+      cardLifeMapBody: "Laden Sie gespeicherte Fotos, Daten, Orte und Notizen, beschränken Sie sie auf diese eine Reise und bewahren Sie alles als geschriebenen Reisebericht.",
+      cardHeritageTitle: "Aus Einträgen des Welterbe-Passes erstellen",
+      cardHeritageBody: "Laden Sie Besuchsdaten, Fotos und Notizen aus dem Welterbe-Pass und fassen Sie sie als SNS-Beitrag und Titelbild zusammen.",
+      cardPhotoTitle: "Mit ausgewählten Fotos erstellen",
+      cardPhotoBody: "Wählen Sie noch nicht gespeicherte Fotos – Aufnahmedatum und GPS werden automatisch ausgelesen – und bewahren Sie alles als geschriebenen Reisebericht.",
     },
   };
-  return labels[language][key];
+  // 型の上では全言語・全キーが必須だが、localStorage の古い値など想定外の入力でも
+  // 画面が壊れないよう、未定義の言語・キーは英語にフォールバックさせる。
+  const table = labels[language] ?? labels.en;
+  return table[key] ?? labels.en[key];
 }
 
 function buildTemplateTexts(
@@ -1397,23 +1504,23 @@ export default function ShioriClient({
           </p>
           <p className="mt-3 text-xs text-slate-500 flex items-start gap-1.5">
             <Lock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-            写真は端末内で扱います。文章づくりに送るのは地名・日付・元メモだけで、写真データは送りません。
+            {uiLabel(outputLanguage, "photoPrivacy")}
           </p>
         </section>
 
         <section className="grid md:grid-cols-2 gap-4">
           <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
-            <h2 className="text-sm font-bold text-slate-800">ご利用上の注意</h2>
+            <h2 className="text-sm font-bold text-slate-800">{uiLabel(outputLanguage, "noticeTitle")}</h2>
             <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-              本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。
+              {uiLabel(outputLanguage, "noticeBody")}
             </p>
           </div>
           <div className="bg-white border border-amber-100 shadow-sm rounded-xl p-4">
-            <h2 className="text-sm font-bold text-slate-800">データの保存について</h2>
+            <h2 className="text-sm font-bold text-slate-800">{uiLabel(outputLanguage, "dataTitle")}</h2>
             <ul className="mt-2 space-y-1.5 text-xs text-slate-500 leading-relaxed list-disc pl-5">
-              <li>下書き保存を押した場合、写真・場所・メモ等のデータはこのブラウザ内のlocalStorageに保存されます。サーバー送信やクラウド自動バックアップは行いません。</li>
-              <li>ブラウザの閲覧データ削除、キャッシュクリア、端末の初期化・機種変更、ブラウザ変更等により、下書きデータが消失する場合があります。</li>
-              <li>データの消失・破損に関して、当サービスは責任を負いかねます。大切な旅行記は、SNS投稿文・アイキャッチ画像・PDFとして端末へ保存してください。</li>
+              <li>{uiLabel(outputLanguage, "dataNote1")}</li>
+              <li>{uiLabel(outputLanguage, "dataNote2")}</li>
+              <li>{uiLabel(outputLanguage, "dataNote3")}</li>
             </ul>
           </div>
         </section>
@@ -1432,10 +1539,10 @@ export default function ShioriClient({
                 <MapPin className="w-5 h-5" />
               </div>
               <h2 className="text-lg font-bold text-slate-800">
-                人生体験マップの記録から作る
+                {uiLabel(outputLanguage, "cardLifeMapTitle")}
               </h2>
               <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                保存済みの写真・日付・場所・メモを読み込み、今回の旅だけに絞って、旅行記として文章と一緒に残します。
+                {uiLabel(outputLanguage, "cardLifeMapBody")}
               </p>
             </button>
 
@@ -1454,10 +1561,10 @@ export default function ShioriClient({
                 <BookOpen className="w-5 h-5" />
               </div>
               <h2 className="text-lg font-bold text-slate-800">
-                世界遺産パスポートの記録から作る
+                {uiLabel(outputLanguage, "cardHeritageTitle")}
               </h2>
               <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                世界遺産パスポートに保存した訪問日・写真・メモを読み込み、SNS投稿文やアイキャッチ画像にまとめます。
+                {uiLabel(outputLanguage, "cardHeritageBody")}
               </p>
             </button>
             <button
@@ -1475,10 +1582,10 @@ export default function ShioriClient({
                 <Camera className="w-5 h-5" />
               </div>
               <h2 className="text-lg font-bold text-slate-800">
-                写真を選んで作る
+                {uiLabel(outputLanguage, "cardPhotoTitle")}
               </h2>
               <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                未保存の写真を選んで、撮影日・GPSを読み取りながら、旅の記録として文章と一緒に残します。
+                {uiLabel(outputLanguage, "cardPhotoBody")}
               </p>
             </button>
           </section>

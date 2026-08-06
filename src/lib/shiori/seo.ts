@@ -72,10 +72,10 @@ const COPY: Record<ShioriLocale, LocaleCopy> = {
   en: {
     title: "AI Travel Diary Maker – Free Travel Journal from Photos & Notes (No App)",
     description:
-      "Create a free travel journal with AI from your photos, places, dates, and notes. Save your trip memories as an A4 PDF, an SNS post caption, or a blog eye-catch image. Your photos themselves are never sent to the AI, no dedicated travel-log app is required, and it's ready to use right after your trip to organize memories.",
+      "Create a free travel journal with AI from your photos, places, dates, and notes. Save your trip memories as an A4 PDF, a social media caption, or a blog cover image. Your photos themselves are never sent to the AI, no dedicated travel-log app is required, and it's ready to use right after your trip to organize memories.",
     ogTitle: "AI Travel Diary Maker – Create a Free Travel Journal",
     ogDescription:
-      "Create a free travel journal with AI from your photos, places, dates, and notes. Save it as a PDF, an SNS post caption, or a blog eye-catch image.",
+      "Create a free travel journal with AI from your photos, places, dates, and notes. Save it as a PDF, a social media caption, or a blog cover image.",
     twitterDescription:
       "Create a free AI travel journal from your photos, places, dates, and notes. No app required — perfect for organizing memories after a trip.",
     keywords:
@@ -156,7 +156,7 @@ const FAQS: Record<ShioriLocale, ShioriFaq[]> = {
   en: [
     {
       q: "Do I need a dedicated travel-log app?",
-      a: "No. You only need photos and notes — or records already saved in Life Map or World Heritage Passport — to create a travel journal on this page alone. No account or sign-up is required.",
+      a: "No. You only need photos and notes — or records already saved in Life Experience Map or World Heritage Passport — to create a travel journal on this page alone. No account or sign-up is required.",
     },
     {
       q: "Are my photos sent to the AI?",
@@ -168,7 +168,7 @@ const FAQS: Record<ShioriLocale, ShioriFaq[]> = {
     },
     {
       q: "Is there a fee?",
-      a: "It's completely free — creating the journal, generating an SNS post caption, saving the eye-catch image, and saving a PDF are all free to use.",
+      a: "It's completely free — creating the journal, generating a social media caption, saving the cover image, and saving a PDF are all free to use.",
     },
   ],
 };
