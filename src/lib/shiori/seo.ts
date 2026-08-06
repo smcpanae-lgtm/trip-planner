@@ -142,7 +142,7 @@ const FAQS: Record<ShioriLocale, ShioriFaq[]> = {
     },
     {
       q: "写真はAIに送信されますか？",
-      a: "写真そのものは端末内で処理され、AIには送信されません。AIによる文章生成に渡すのは地名・日付・元メモのテキストだけです。",
+      a: "写真そのものは端末内で扱い、AIには送信されません。送信するのは、地名・日付・メモ・タイトル・記録者名・設定などの文字情報だけです。",
     },
     {
       q: "作成したデータはどこに保存されますか？",
@@ -160,7 +160,7 @@ const FAQS: Record<ShioriLocale, ShioriFaq[]> = {
     },
     {
       q: "Are my photos sent to the AI?",
-      a: "Your photos themselves are processed on your own device and are never sent to the AI. Only text — place names, dates, and your original notes — is passed to the AI for writing.",
+      a: "Your photos themselves are handled on your device and are never sent to the AI. Only text — place names, dates, your notes, and the title and settings you enter — is sent to generate your journal.",
     },
     {
       q: "Where is my data stored?",

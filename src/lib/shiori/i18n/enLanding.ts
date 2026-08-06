@@ -17,7 +17,7 @@ export const EN_LANDING = {
     },
     {
       title: "Your photos stay on your device",
-      body: "Photos are processed locally. Only place names, dates, and your notes are sent to the AI.",
+      body: "Photos are handled on your device and are never sent. Only text goes to the AI — place names, dates, your notes, and the title and settings you enter.",
     },
     {
       title: "Free to use",

@@ -1940,7 +1940,7 @@ export default function ShioriClient({
                     {aiLoading ? uiLabel(outputLanguage, "generating") : uiLabel(outputLanguage, "generateAi")}
                   </button>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    AIは、読み込んだ各記録の「場所・日付・タグ・元メモ」だけをもとに旅行記を作ります。写真そのもの、下の編集済み文章、SNS/PDF出力内容はAIに送りません。
+                    AIは、読み込んだ各記録の「場所・都道府県・日付・タグ・元メモ」と、タイトル・記録者名・文体・出力言語などの設定だけをもとに旅行記を作ります。写真そのもの、下の編集済み文章、SNS/PDF出力内容はAIに送りません。
                   </p>
                   <button
                     type="button"
