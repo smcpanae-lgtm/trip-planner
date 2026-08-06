@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import "./globals.css";
 
-export const metadata: Metadata = {
+/**
+ * 全ページ共通の <html>/<head>/<body> シェル。
+ *
+ * App Router では <html> を描画できるのはルートレイアウトだけで、子レイアウトからは
+ * 上書きできない。またルートレイアウトはリクエストのパスを知る手段が無い
+ * （headers() を読むと動的レンダリングになりSSGが壊れる）。
+ * そのため言語別の <html lang> を静的に出力する唯一の方法として、
+ * ルートグループ (ja)/(en) ごとにルートレイアウトを分割している。
+ *
+ * head の内容・metadata・JSON-LD はこのファイルで一元管理し、
+ * 各グループのレイアウトは lang を渡すだけの薄い層に留める（二重管理を避けるため）。
+ */
+
+export const SITE_METADATA: Metadata = {
   title: "AI ドライブプランナー｜車旅行プランを自動作成",
   description:
     "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
@@ -79,16 +91,15 @@ const jsonLd = {
   },
 };
 
-export default function RootLayout({
+export default function RootShell({
+  lang,
   children,
 }: {
+  lang: "ja" | "en";
   children: React.ReactNode;
 }) {
   return (
-    // 既知の制約・対応見送り: ルートレイアウトが全ページ共通のため、/en/life-map でも
-    // lang="ja" のまま出力される。Googleの言語判定はhreflangと本文の実言語が主でhtml lang属性は
-    // ほぼ使われないため、ルートレイアウト分割（言語別layout）は今回のスコープ外とした。
-    <html lang="ja">
+    <html lang={lang}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
