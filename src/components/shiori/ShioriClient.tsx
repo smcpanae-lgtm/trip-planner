@@ -157,9 +157,39 @@ function safeJsonParse<T>(raw: string | null, fallback: T): T {
   }
 }
 
-function getHeritageLocalName(value?: HeritageLocalizedText): string {
+// whp.sites の name / country は世界遺産パスポート側が書き込む。
+// public/heritage/app.js の transformUnescoRecord を見ると、
+// name が持つキーは ja / en / zh / fr / es / ar / ru、country は ja / en だけ。
+// しおりの7言語をそのデータ側のキーに対応付ける（ko と de はデータが無いので空配列）。
+const HERITAGE_NAME_KEYS: Record<OutputLanguage, string[]> = {
+  ja: ["ja"],
+  en: ["en"],
+  "zh-CN": ["zh"],
+  fr: ["fr"],
+  ko: [],
+  "zh-TW": ["zh"],
+  de: [],
+};
+
+/**
+ * 出力言語に対応する遺産名・国名を返す。
+ *
+ * 日本語出力の挙動は従来のまま（ja → en → 最初に見つかった値）。
+ * 日本語以外は「その言語 → 英語 → 日本語 → 最初に見つかった値」の順にする。
+ * 英語を第2優先にする理由は、データ上 en が100%埋まっているのに対し、
+ * name.ja は app.js が `japanHeritageNamesJa[idNo] || englishName` で埋めているため
+ * 1,273件中1,246件が英語名そのもので、ja に倒しても得るものが無く、
+ * 日本の27件でだけ日本語が混ざるという不利益しか無いため。
+ */
+function getHeritageLocalName(value: HeritageLocalizedText | undefined, language: OutputLanguage): string {
   if (!value) return "";
-  return value.ja || value.en || Object.values(value).find((item): item is string => Boolean(item)) || "";
+  const order =
+    language === "ja" ? ["ja", "en"] : [...(HERITAGE_NAME_KEYS[language] ?? []), "en", "ja"];
+  for (const key of order) {
+    const hit = value[key];
+    if (hit) return hit;
+  }
+  return Object.values(value).find((item): item is string => Boolean(item)) || "";
 }
 
 function openHeritageDb(): Promise<IDBDatabase> {
@@ -204,8 +234,8 @@ async function loadHeritageEntries(
     candidates.map(async (site) => {
       const record = records[site.id] || {};
       const photo = await getHeritagePhoto(site.id);
-      const place = getHeritageLocalName(site.name) || uiLabel(language, "worldHeritage");
-      const country = getHeritageLocalName(site.country) || uiLabel(language, "worldHeritage");
+      const place = getHeritageLocalName(site.name, language) || uiLabel(language, "worldHeritage");
+      const country = getHeritageLocalName(site.country, language) || uiLabel(language, "worldHeritage");
       const date = record.date || todayStr();
       const updatedAt = record.updatedAt || new Date().toISOString();
       const memo = record.memo?.trim() || "";
