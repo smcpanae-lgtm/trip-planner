@@ -577,6 +577,44 @@ function uiLabel(
     | "fieldTraveler"
     | "travelerPlaceholder"
     | "fieldTone"
+    | "turnstileLoading"
+    | "turnstileError"
+    | "turnstileMissing"
+    | "aiScopeNote"
+    | "aiNotReady"
+    | "aiGenerateFailed"
+    | "precisionPrefecture"
+    | "precisionApproximate"
+    | "precisionExact"
+    | "mapUnset"
+    | "entryMemoLabel"
+    | "entryMemoPlaceholder"
+    | "entryMemoNote"
+    | "summaryTitle"
+    | "summaryAll"
+    | "summaryUsed"
+    | "summaryMapped"
+    | "summaryRange"
+    | "loadingRecords"
+    | "emptyTitle"
+    | "emptyDescPhoto"
+    | "emptyDescHeritage"
+    | "emptyDescLifemap"
+    | "emptyPickPhoto"
+    | "emptyCtaHeritage"
+    | "emptyCtaLifemap"
+    | "noMatchTitle"
+    | "noMatchDesc"
+    | "previewLabel"
+    | "previewCount"
+    | "sectionTextTitle"
+    | "sectionTextDesc"
+    | "bodyLabel"
+    | "bodyPlaceholder"
+    | "spotTitleLabel"
+    | "spotCaptionLabel"
+    | "spotCaptionPlaceholder"
+    | "memoryPlace"
     | "serviceName"
     | "tagline"
     | "backTop"
@@ -660,6 +698,44 @@ function uiLabel(
       fieldTraveler: "旅行者名",
       travelerPlaceholder: "例：山田家、たろう",
       fieldTone: "旅行記の語り口",
+      turnstileLoading: "自動送信対策を読み込んでいます。数秒お待ちください。",
+      turnstileError: "自動送信対策を読み込めませんでした。ページを再読み込みしてください。改善しない場合は、Cloudflare Turnstileのドメイン設定をご確認ください。",
+      turnstileMissing: "AI生成の不正利用対策が未設定です。Cloudflare Turnstile のサイトキーを設定するとAI生成を使えます。",
+      aiScopeNote: "AIは、読み込んだ各記録の「場所・都道府県・日付・タグ・元メモ」と、タイトル・記録者名・文体・出力言語などの設定だけをもとに旅行記を作ります。写真そのもの、下の編集済み文章、SNS/PDF出力内容はAIに送りません。",
+      aiNotReady: "AI生成の認証確認が完了していません。しばらく待ってから再度お試しください。",
+      aiGenerateFailed: "文章生成に失敗しました",
+      precisionPrefecture: "都道府県単位",
+      precisionApproximate: "おおよその位置",
+      precisionExact: "詳細位置",
+      mapUnset: "地図未設定",
+      entryMemoLabel: "AIに渡す元メモ（この画面内で編集）",
+      entryMemoPlaceholder: "例：その場所で感じたこと、印象に残った出来事、写真に残した理由など",
+      entryMemoNote: "メモ欄の編集内容は、AI旅行記メーカー画面内の素材として使われます。人生体験マップや世界遺産パスポートに戻っても、元データには反映されません。",
+      summaryTitle: "読み込んだ記録",
+      summaryAll: "全記録",
+      summaryUsed: "旅行記に使う記録",
+      summaryMapped: "地図",
+      summaryRange: "旅行記に使う期間:",
+      loadingRecords: "人生体験マップの記録を読み込んでいます...",
+      emptyTitle: "まだ記録がありません",
+      emptyDescPhoto: "写真を選択すると、ここに旅行記の記録として表示されます。",
+      emptyDescHeritage: "世界遺産パスポートの写真・訪問日・メモを読み込んで、ここに旅行記の記録として表示します。",
+      emptyDescLifemap: "人生体験マップの写真・場所・日付・メモを読み込んで、ここに旅行記の記録として表示します。",
+      emptyPickPhoto: "写真を選択する",
+      emptyCtaHeritage: "世界遺産パスポートで記録する",
+      emptyCtaLifemap: "人生体験マップで記録する",
+      noMatchTitle: "条件に合う記録がありません",
+      noMatchDesc: "日付・訪問地域・旅のタグの条件を広げると表示される可能性があります。",
+      previewLabel: "プレビュー",
+      previewCount: "{n}件の記録を時系列で表示中",
+      sectionTextTitle: "旅行記文章",
+      sectionTextDesc: "上で選ばれている記録の元メモから旅行記を作ります。ここから下は生成後の編集欄です。編集した文章はSNS投稿文やアイキャッチ画像、必要に応じてPDFにも使われます。",
+      bodyLabel: "旅行記本文（AI生成後に編集）",
+      bodyPlaceholder: "AIが元メモから作った旅行記本文がここに入ります。必要に応じて書き直せます。",
+      spotTitleLabel: "スポット見出し（AI生成後に編集）",
+      spotCaptionLabel: "スポット別文章（AI生成後に編集）",
+      spotCaptionPlaceholder: "AIが元メモから作ったスポット別文章が入ります。ここを編集しても、再生成するまではAIの入力にはなりません。",
+      memoryPlace: "思い出の場所",
       serviceName: "AI旅行記メーカー",
       tagline: "写真とメモから、旅の思い出をAI旅行記に。",
       backTop: "トップへ戻る",
@@ -738,6 +814,44 @@ function uiLabel(
       fieldTraveler: "Traveler name",
       travelerPlaceholder: "e.g. The Yamada family, Taro",
       fieldTone: "Voice of the journal",
+      turnstileLoading: "Loading the anti-bot check. This takes a few seconds.",
+      turnstileError: "The anti-bot check could not be loaded. Please reload the page. If that does not help, check the domain settings for Cloudflare Turnstile.",
+      turnstileMissing: "Abuse protection for AI generation is not configured. Set a Cloudflare Turnstile site key to enable AI generation.",
+      aiScopeNote: "The AI writes from the place, region, date, tag and original note of each loaded record, plus your settings such as title, author name, voice and output language. The photos themselves, the edited text below and the social or PDF output are never sent to the AI.",
+      aiNotReady: "The verification for AI generation has not finished yet. Please wait a moment and try again.",
+      aiGenerateFailed: "The text could not be generated",
+      precisionPrefecture: "Region level",
+      precisionApproximate: "Approximate location",
+      precisionExact: "Exact location",
+      mapUnset: "Not on the map",
+      entryMemoLabel: "Original note for the AI (edited on this screen)",
+      entryMemoPlaceholder: "e.g. how the place felt, what stayed with you, why you took the photo",
+      entryMemoNote: "What you edit in the note field is used as material inside the AI Travel Journal Maker screen. Going back to the Life Experience Map or the World Heritage Passport will not change the original data.",
+      summaryTitle: "Loaded records",
+      summaryAll: "All records",
+      summaryUsed: "Used in the journal",
+      summaryMapped: "On the map",
+      summaryRange: "Period covered by the journal:",
+      loadingRecords: "Loading records from the Life Experience Map...",
+      emptyTitle: "No records yet",
+      emptyDescPhoto: "Pick photos and they will appear here as journal records.",
+      emptyDescHeritage: "Load the photos, visit dates and notes from the World Heritage Passport, and they will appear here as journal records.",
+      emptyDescLifemap: "Load the photos, places, dates and notes from the Life Experience Map, and they will appear here as journal records.",
+      emptyPickPhoto: "Select photos",
+      emptyCtaHeritage: "Record a visit in the World Heritage Passport",
+      emptyCtaLifemap: "Record a memory in the Life Experience Map",
+      noMatchTitle: "No records match the filters",
+      noMatchDesc: "Widening the date, area or trip tag filters may bring records back.",
+      previewLabel: "Preview",
+      previewCount: "Showing {n} records in date order",
+      sectionTextTitle: "Journal text",
+      sectionTextDesc: "The journal is written from the original notes of the records selected above. Everything below is the editing area for the generated text. What you edit here is used for the social post, the cover image and, if you want one, the PDF.",
+      bodyLabel: "Main text (edit after AI generation)",
+      bodyPlaceholder: "The main text the AI wrote from your original notes appears here. You can rewrite it as you like.",
+      spotTitleLabel: "Spot heading (edit after AI generation)",
+      spotCaptionLabel: "Spot text (edit after AI generation)",
+      spotCaptionPlaceholder: "The per-spot text the AI wrote from your original notes appears here. Editing it does not feed back into the AI until you generate again.",
+      memoryPlace: "A place to remember",
       serviceName: "AI Travel Journal Maker",
       tagline: "Turn photos and notes into an AI travel journal.",
       backTop: "Back to top",
@@ -816,6 +930,44 @@ function uiLabel(
       fieldTraveler: "旅行者姓名",
       travelerPlaceholder: "例：山田一家、太郎",
       fieldTone: "旅行记的语气",
+      turnstileLoading: "正在加载自动提交防护。请稍等几秒。",
+      turnstileError: "无法加载自动提交防护。请重新加载页面。若仍未改善，请确认Cloudflare Turnstile的域名设置。",
+      turnstileMissing: "尚未设置AI生成的滥用防护。设置Cloudflare Turnstile的站点密钥后即可使用AI生成。",
+      aiScopeNote: "AI仅根据各条记录的地点、地区、日期、标签、原始备忘，以及标题、记录者姓名、文体、输出语言等设置来撰写旅行记。照片本身、下方已编辑的文字、SNS与PDF输出内容都不会发送给AI。",
+      aiNotReady: "AI生成的验证尚未完成。请稍候再试。",
+      aiGenerateFailed: "文章生成失败",
+      precisionPrefecture: "地区级别",
+      precisionApproximate: "大致位置",
+      precisionExact: "精确位置",
+      mapUnset: "未设置地图",
+      entryMemoLabel: "提供给AI的原始备忘（在本页面内编辑）",
+      entryMemoPlaceholder: "例：在那里的感受、印象深刻的事、拍下这张照片的理由等",
+      entryMemoNote: "备忘栏的编辑内容仅作为AI旅行记生成器页面内的素材使用。返回人生体验地图或世界遗产护照后，原始数据不会被改动。",
+      summaryTitle: "已读取的记录",
+      summaryAll: "全部记录",
+      summaryUsed: "用于旅行记",
+      summaryMapped: "地图",
+      summaryRange: "旅行记涵盖期间：",
+      loadingRecords: "正在读取人生体验地图的记录...",
+      emptyTitle: "还没有记录",
+      emptyDescPhoto: "选择照片后，会在这里显示为旅行记的记录。",
+      emptyDescHeritage: "读取世界遗产护照的照片、访问日期与备忘后，会在这里显示为旅行记的记录。",
+      emptyDescLifemap: "读取人生体验地图的照片、地点、日期与备忘后，会在这里显示为旅行记的记录。",
+      emptyPickPhoto: "选择照片",
+      emptyCtaHeritage: "在世界遗产护照中记录",
+      emptyCtaLifemap: "在人生体验地图中记录",
+      noMatchTitle: "没有符合条件的记录",
+      noMatchDesc: "放宽日期、到访地区、旅行标签的条件后，可能会重新显示。",
+      previewLabel: "预览",
+      previewCount: "正按时间顺序显示{n}条记录",
+      sectionTextTitle: "旅行记正文",
+      sectionTextDesc: "根据上方所选记录的原始备忘撰写旅行记。以下为生成后的编辑栏。编辑后的文字会用于SNS投稿文、封面图片，以及需要时的PDF。",
+      bodyLabel: "旅行记正文（AI生成后可编辑）",
+      bodyPlaceholder: "AI根据原始备忘撰写的旅行记正文会显示在这里。可以自由改写。",
+      spotTitleLabel: "地点标题（AI生成后可编辑）",
+      spotCaptionLabel: "各地点文字（AI生成后可编辑）",
+      spotCaptionPlaceholder: "AI根据原始备忘撰写的各地点文字会显示在这里。在重新生成之前，此处的编辑不会作为AI的输入。",
+      memoryPlace: "难忘的地点",
       serviceName: "AI旅行记生成器",
       tagline: "用照片和备忘，把旅行回忆整理成AI旅行记。",
       backTop: "返回顶部",
@@ -894,6 +1046,44 @@ function uiLabel(
       fieldTraveler: "Nom du voyageur",
       travelerPlaceholder: "ex. : Famille Yamada, Taro",
       fieldTone: "Ton du carnet",
+      turnstileLoading: "Chargement de la protection anti-robot. Cela prend quelques secondes.",
+      turnstileError: "La protection anti-robot n'a pas pu être chargée. Rechargez la page. Si le problème persiste, vérifiez les réglages de domaine de Cloudflare Turnstile.",
+      turnstileMissing: "La protection contre les abus de la génération par IA n'est pas configurée. Renseignez une clé de site Cloudflare Turnstile pour activer la génération par IA.",
+      aiScopeNote: "L'IA rédige à partir du lieu, de la région, de la date, du tag et de la note d'origine de chaque enregistrement, ainsi que de vos réglages : titre, nom de l'auteur, ton et langue de sortie. Les photos elles-mêmes, le texte modifié ci-dessous et les sorties réseaux sociaux ou PDF ne sont jamais envoyés à l'IA.",
+      aiNotReady: "La vérification de la génération par IA n'est pas terminée. Patientez un instant puis réessayez.",
+      aiGenerateFailed: "Échec de la génération du texte",
+      precisionPrefecture: "Au niveau de la région",
+      precisionApproximate: "Position approximative",
+      precisionExact: "Position exacte",
+      mapUnset: "Absent de la carte",
+      entryMemoLabel: "Note d'origine pour l'IA (modifiable sur cet écran)",
+      entryMemoPlaceholder: "ex. ce que vous avez ressenti sur place, ce qui vous a marqué, pourquoi cette photo",
+      entryMemoNote: "Ce que vous modifiez dans la note sert de matière première dans l'écran Créateur de carnet de voyage IA. Revenir à la Carte des expériences de vie ou au Passeport du patrimoine mondial ne modifie pas les données d'origine.",
+      summaryTitle: "Enregistrements importés",
+      summaryAll: "Tous les enregistrements",
+      summaryUsed: "Utilisés dans le carnet",
+      summaryMapped: "Sur la carte",
+      summaryRange: "Période couverte par le carnet :",
+      loadingRecords: "Chargement des enregistrements de la Carte des expériences de vie...",
+      emptyTitle: "Aucun enregistrement pour l'instant",
+      emptyDescPhoto: "Choisissez des photos et elles apparaîtront ici comme enregistrements du carnet.",
+      emptyDescHeritage: "Importez les photos, dates de visite et notes du Passeport du patrimoine mondial : elles apparaîtront ici comme enregistrements du carnet.",
+      emptyDescLifemap: "Importez les photos, lieux, dates et notes de la Carte des expériences de vie : ils apparaîtront ici comme enregistrements du carnet.",
+      emptyPickPhoto: "Choisir des photos",
+      emptyCtaHeritage: "Enregistrer une visite dans le Passeport du patrimoine mondial",
+      emptyCtaLifemap: "Enregistrer un souvenir dans la Carte des expériences de vie",
+      noMatchTitle: "Aucun enregistrement ne correspond aux filtres",
+      noMatchDesc: "Élargir les filtres de date, de région ou de tag peut faire réapparaître des enregistrements.",
+      previewLabel: "Aperçu",
+      previewCount: "Affichage de {n} enregistrements par ordre chronologique",
+      sectionTextTitle: "Texte du carnet",
+      sectionTextDesc: "Le carnet est rédigé à partir des notes d'origine des enregistrements sélectionnés ci-dessus. Tout ce qui suit est la zone d'édition du texte généré. Ce que vous y modifiez sert au message pour les réseaux sociaux, à l'image de couverture et, si vous le souhaitez, au PDF.",
+      bodyLabel: "Texte principal (modifiable après génération)",
+      bodyPlaceholder: "Le texte principal rédigé par l'IA à partir de vos notes d'origine apparaît ici. Vous pouvez le réécrire à votre guise.",
+      spotTitleLabel: "Titre du lieu (modifiable après génération)",
+      spotCaptionLabel: "Texte du lieu (modifiable après génération)",
+      spotCaptionPlaceholder: "Le texte par lieu rédigé par l'IA à partir de vos notes d'origine apparaît ici. Vos modifications ne sont pas reprises par l'IA tant que vous ne relancez pas la génération.",
+      memoryPlace: "Un lieu à retenir",
       serviceName: "Générateur de carnet de voyage IA",
       tagline: "Transformez photos et notes en carnet de voyage IA.",
       backTop: "Retour en haut",
@@ -972,6 +1162,44 @@ function uiLabel(
       fieldTraveler: "여행자 이름",
       travelerPlaceholder: "예: 야마다 가족, 타로",
       fieldTone: "여행기의 말투",
+      turnstileLoading: "자동 전송 방지 기능을 불러오는 중입니다. 몇 초만 기다려 주세요.",
+      turnstileError: "자동 전송 방지 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요. 그래도 해결되지 않으면 Cloudflare Turnstile의 도메인 설정을 확인해 주세요.",
+      turnstileMissing: "AI 생성의 악용 방지 기능이 설정되어 있지 않습니다. Cloudflare Turnstile 사이트 키를 설정하면 AI 생성을 사용할 수 있습니다.",
+      aiScopeNote: "AI는 불러온 각 기록의 장소·지역·날짜·태그·원본 메모와 제목, 기록자 이름, 문체, 출력 언어 등의 설정만으로 여행기를 만듭니다. 사진 자체, 아래의 편집된 문장, SNS·PDF 출력 내용은 AI에 보내지 않습니다.",
+      aiNotReady: "AI 생성의 인증 확인이 완료되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+      aiGenerateFailed: "문장 생성에 실패했습니다",
+      precisionPrefecture: "지역 단위",
+      precisionApproximate: "대략적인 위치",
+      precisionExact: "정확한 위치",
+      mapUnset: "지도 미설정",
+      entryMemoLabel: "AI에 전달할 원본 메모 (이 화면에서 편집)",
+      entryMemoPlaceholder: "예: 그곳에서 느낀 점, 인상에 남은 일, 사진을 남긴 이유 등",
+      entryMemoNote: "메모란의 편집 내용은 AI 여행기 메이커 화면 안에서만 소재로 사용됩니다. 인생 체험 지도나 세계유산 여권으로 돌아가도 원본 데이터에는 반영되지 않습니다.",
+      summaryTitle: "불러온 기록",
+      summaryAll: "전체 기록",
+      summaryUsed: "여행기에 사용",
+      summaryMapped: "지도",
+      summaryRange: "여행기에 사용할 기간:",
+      loadingRecords: "인생 체험 지도의 기록을 불러오는 중입니다...",
+      emptyTitle: "아직 기록이 없습니다",
+      emptyDescPhoto: "사진을 선택하면 여기에 여행기의 기록으로 표시됩니다.",
+      emptyDescHeritage: "세계유산 여권의 사진·방문일·메모를 불러오면 여기에 여행기의 기록으로 표시됩니다.",
+      emptyDescLifemap: "인생 체험 지도의 사진·장소·날짜·메모를 불러오면 여기에 여행기의 기록으로 표시됩니다.",
+      emptyPickPhoto: "사진 선택하기",
+      emptyCtaHeritage: "세계유산 여권에서 기록하기",
+      emptyCtaLifemap: "인생 체험 지도에서 기록하기",
+      noMatchTitle: "조건에 맞는 기록이 없습니다",
+      noMatchDesc: "날짜·방문 지역·여행 태그의 조건을 넓히면 다시 표시될 수 있습니다.",
+      previewLabel: "미리보기",
+      previewCount: "{n}건의 기록을 시간순으로 표시 중",
+      sectionTextTitle: "여행기 문장",
+      sectionTextDesc: "위에서 선택한 기록의 원본 메모로 여행기를 만듭니다. 여기부터 아래는 생성 후의 편집란입니다. 편집한 문장은 SNS 게시글과 대표 이미지, 필요에 따라 PDF에도 사용됩니다.",
+      bodyLabel: "여행기 본문 (AI 생성 후 편집)",
+      bodyPlaceholder: "AI가 원본 메모로 만든 여행기 본문이 여기에 들어갑니다. 필요에 따라 다시 쓸 수 있습니다.",
+      spotTitleLabel: "장소 제목 (AI 생성 후 편집)",
+      spotCaptionLabel: "장소별 문장 (AI 생성 후 편집)",
+      spotCaptionPlaceholder: "AI가 원본 메모로 만든 장소별 문장이 들어갑니다. 여기를 편집해도 다시 생성하기 전까지는 AI의 입력이 되지 않습니다.",
+      memoryPlace: "기억에 남는 장소",
       serviceName: "AI 여행기 메이커",
       tagline: "사진과 메모로 여행의 추억을 AI 여행기로 정리합니다.",
       backTop: "맨 위로 돌아가기",
@@ -1050,6 +1278,44 @@ function uiLabel(
       fieldTraveler: "旅行者姓名",
       travelerPlaceholder: "例：山田一家、太郎",
       fieldTone: "旅行記的語氣",
+      turnstileLoading: "正在載入自動送出防護。請稍候幾秒。",
+      turnstileError: "無法載入自動送出防護。請重新載入頁面。若仍未改善，請確認Cloudflare Turnstile的網域設定。",
+      turnstileMissing: "尚未設定AI產生的濫用防護。設定Cloudflare Turnstile的網站金鑰後即可使用AI產生。",
+      aiScopeNote: "AI僅根據各筆記錄的地點、地區、日期、標籤、原始備忘，以及標題、記錄者姓名、文體、輸出語言等設定來撰寫旅行記。照片本身、下方已編輯的文字、SNS與PDF輸出內容都不會傳送給AI。",
+      aiNotReady: "AI產生的驗證尚未完成。請稍後再試。",
+      aiGenerateFailed: "文章產生失敗",
+      precisionPrefecture: "地區層級",
+      precisionApproximate: "大致位置",
+      precisionExact: "精確位置",
+      mapUnset: "未設定地圖",
+      entryMemoLabel: "提供給AI的原始備忘（在本頁面內編輯）",
+      entryMemoPlaceholder: "例：在那裡的感受、印象深刻的事、拍下這張照片的理由等",
+      entryMemoNote: "備忘欄的編輯內容僅作為AI旅行記產生器頁面內的素材使用。返回人生體驗地圖或世界遺產護照後，原始資料不會被更動。",
+      summaryTitle: "已讀取的記錄",
+      summaryAll: "全部記錄",
+      summaryUsed: "用於旅行記",
+      summaryMapped: "地圖",
+      summaryRange: "旅行記涵蓋期間：",
+      loadingRecords: "正在讀取人生體驗地圖的記錄...",
+      emptyTitle: "還沒有記錄",
+      emptyDescPhoto: "選擇照片後，會在這裡顯示為旅行記的記錄。",
+      emptyDescHeritage: "讀取世界遺產護照的照片、造訪日期與備忘後，會在這裡顯示為旅行記的記錄。",
+      emptyDescLifemap: "讀取人生體驗地圖的照片、地點、日期與備忘後，會在這裡顯示為旅行記的記錄。",
+      emptyPickPhoto: "選擇照片",
+      emptyCtaHeritage: "在世界遺產護照中記錄",
+      emptyCtaLifemap: "在人生體驗地圖中記錄",
+      noMatchTitle: "沒有符合條件的記錄",
+      noMatchDesc: "放寬日期、造訪地區、旅行標籤的條件後，可能會重新顯示。",
+      previewLabel: "預覽",
+      previewCount: "正依時間順序顯示{n}筆記錄",
+      sectionTextTitle: "旅行記正文",
+      sectionTextDesc: "根據上方所選記錄的原始備忘撰寫旅行記。以下為產生後的編輯欄。編輯後的文字會用於SNS貼文、封面圖片，以及需要時的PDF。",
+      bodyLabel: "旅行記正文（AI產生後可編輯）",
+      bodyPlaceholder: "AI根據原始備忘撰寫的旅行記正文會顯示在這裡。可以自由改寫。",
+      spotTitleLabel: "地點標題（AI產生後可編輯）",
+      spotCaptionLabel: "各地點文字（AI產生後可編輯）",
+      spotCaptionPlaceholder: "AI根據原始備忘撰寫的各地點文字會顯示在這裡。在重新產生之前，此處的編輯不會作為AI的輸入。",
+      memoryPlace: "難忘的地點",
       serviceName: "AI旅行記產生器",
       tagline: "用照片和備忘，把旅行回憶整理成AI旅行記。",
       backTop: "返回頂部",
@@ -1128,6 +1394,44 @@ function uiLabel(
       fieldTraveler: "Name der reisenden Person",
       travelerPlaceholder: "z. B. Familie Yamada, Taro",
       fieldTone: "Ton des Reisetagebuchs",
+      turnstileLoading: "Der Bot-Schutz wird geladen. Das dauert ein paar Sekunden.",
+      turnstileError: "Der Bot-Schutz konnte nicht geladen werden. Bitte laden Sie die Seite neu. Hilft das nicht, prüfen Sie die Domain-Einstellungen von Cloudflare Turnstile.",
+      turnstileMissing: "Der Missbrauchsschutz für die KI-Generierung ist nicht eingerichtet. Hinterlegen Sie einen Cloudflare-Turnstile-Site-Key, um die KI-Generierung zu nutzen.",
+      aiScopeNote: "Die KI schreibt nur aus Ort, Region, Datum, Tag und Originalnotiz der geladenen Einträge sowie aus Ihren Einstellungen wie Titel, Name, Tonfall und Ausgabesprache. Die Fotos selbst, der bearbeitete Text unten und die Social-Media- oder PDF-Ausgabe werden nie an die KI gesendet.",
+      aiNotReady: "Die Prüfung für die KI-Generierung ist noch nicht abgeschlossen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+      aiGenerateFailed: "Der Text konnte nicht erzeugt werden",
+      precisionPrefecture: "Auf Regionsebene",
+      precisionApproximate: "Ungefähre Position",
+      precisionExact: "Genaue Position",
+      mapUnset: "Nicht auf der Karte",
+      entryMemoLabel: "Originalnotiz für die KI (auf diesem Bildschirm bearbeitbar)",
+      entryMemoPlaceholder: "z. B. wie sich der Ort angefühlt hat, was im Gedächtnis blieb, warum dieses Foto",
+      entryMemoNote: "Was Sie im Notizfeld ändern, dient als Material im Bildschirm des KI-Reisetagebuch-Machers. Eine Rückkehr zur Lebenserfahrungskarte oder zum Welterbe-Pass ändert die Originaldaten nicht.",
+      summaryTitle: "Geladene Einträge",
+      summaryAll: "Alle Einträge",
+      summaryUsed: "Im Tagebuch verwendet",
+      summaryMapped: "Auf der Karte",
+      summaryRange: "Vom Tagebuch abgedeckter Zeitraum:",
+      loadingRecords: "Einträge der Lebenserfahrungskarte werden geladen...",
+      emptyTitle: "Noch keine Einträge",
+      emptyDescPhoto: "Wählen Sie Fotos aus, dann erscheinen sie hier als Einträge des Reisetagebuchs.",
+      emptyDescHeritage: "Laden Sie Fotos, Besuchsdaten und Notizen aus dem Welterbe-Pass; sie erscheinen dann hier als Einträge des Reisetagebuchs.",
+      emptyDescLifemap: "Laden Sie Fotos, Orte, Daten und Notizen aus der Lebenserfahrungskarte; sie erscheinen dann hier als Einträge des Reisetagebuchs.",
+      emptyPickPhoto: "Fotos auswählen",
+      emptyCtaHeritage: "Im Welterbe-Pass festhalten",
+      emptyCtaLifemap: "In der Lebenserfahrungskarte festhalten",
+      noMatchTitle: "Keine Einträge passen zu den Filtern",
+      noMatchDesc: "Weiter gefasste Filter für Datum, Region oder Reise-Tag bringen möglicherweise wieder Einträge zum Vorschein.",
+      previewLabel: "Vorschau",
+      previewCount: "{n} Einträge werden chronologisch angezeigt",
+      sectionTextTitle: "Text des Reisetagebuchs",
+      sectionTextDesc: "Das Tagebuch entsteht aus den Originalnotizen der oben ausgewählten Einträge. Alles darunter ist der Bearbeitungsbereich für den erzeugten Text. Was Sie hier ändern, wird für den Social-Media-Beitrag, das Titelbild und bei Bedarf für das PDF verwendet.",
+      bodyLabel: "Haupttext (nach der KI-Generierung bearbeitbar)",
+      bodyPlaceholder: "Hier erscheint der Haupttext, den die KI aus Ihren Originalnotizen geschrieben hat. Sie können ihn frei umschreiben.",
+      spotTitleLabel: "Überschrift des Orts (nach der KI-Generierung bearbeitbar)",
+      spotCaptionLabel: "Text zum Ort (nach der KI-Generierung bearbeitbar)",
+      spotCaptionPlaceholder: "Hier erscheint der Text pro Ort, den die KI aus Ihren Originalnotizen geschrieben hat. Änderungen fließen erst bei einer erneuten Generierung in die KI ein.",
+      memoryPlace: "Ein Ort zum Erinnern",
       serviceName: "KI-Reisebericht-Generator",
       tagline: "Aus Fotos und Notizen wird ein KI-Reisebericht.",
       backTop: "Zurück nach oben",
@@ -1228,12 +1532,14 @@ function EntryCard({
   const cat = getCategory(entry.category);
   const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
   const pos = resolveEntryLatLng(entry);
-  const precisionLabel =
+  const precisionLabel = uiLabel(
+    language,
     entry.locationPrecision === "prefecture"
-      ? "都道府県単位"
+      ? "precisionPrefecture"
       : entry.locationPrecision === "approximate"
-      ? "おおよその位置"
-      : "詳細位置";
+      ? "precisionApproximate"
+      : "precisionExact"
+  );
 
   return (
     <article className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden flex flex-col sm:flex-row">
@@ -1270,23 +1576,23 @@ function EntryCard({
         </h3>
         <label className="mt-2 block rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2">
           <span className="text-[11px] font-bold text-emerald-900">
-            AIに渡す元メモ（この画面内で編集）
+            {uiLabel(language, "entryMemoLabel")}
           </span>
           <textarea
             value={entry.memo || ""}
             onChange={(event) => onMemoChange(entry.id, event.target.value)}
-            placeholder="例：その場所で感じたこと、印象に残った出来事、写真に残した理由など"
+            placeholder={uiLabel(language, "entryMemoPlaceholder")}
             rows={3}
             className="mt-1 w-full resize-y rounded-lg border border-emerald-100 bg-white/85 px-3 py-2 text-sm leading-relaxed text-slate-700 focus:outline-none focus:border-emerald-600"
           />
           <span className="mt-1 block text-[11px] text-slate-500 leading-relaxed">
-            メモ欄の編集内容は、AI旅行記メーカー画面内の素材として使われます。人生体験マップや世界遺産パスポートに戻っても、元データには反映されません。
+            {uiLabel(language, "entryMemoNote")}
           </span>
         </label>
         <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
             <MapPin className="w-3.5 h-3.5" />
-            {pos ? precisionLabel : "地図未設定"}
+            {pos ? precisionLabel : uiLabel(language, "mapUnset")}
           </span>
           {entry.prefecture && (
             <span className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
@@ -1757,7 +2063,7 @@ export default function ShioriClient({
   const handleAiGeneration = async () => {
     if (filteredEntries.length === 0) return;
     if (!aiVerificationReady) {
-      setAiError("AI生成の認証確認が完了していません。しばらく待ってから再度お試しください。");
+      setAiError(uiLabel(outputLanguage, "aiNotReady"));
       return;
     }
     setAiLoading(true);
@@ -1785,14 +2091,14 @@ export default function ShioriClient({
         error?: string;
       };
       if (!response.ok) {
-        throw new Error(data.error || "文章生成に失敗しました");
+        throw new Error(data.error || uiLabel(outputLanguage, "aiGenerateFailed"));
       }
       const fallback = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
       const nextSpots = { ...fallback.spots };
       for (const spot of data.spots || []) {
         if (!spot.id) continue;
         nextSpots[spot.id] = {
-          title: spot.title || nextSpots[spot.id]?.title || "思い出の場所",
+          title: spot.title || nextSpots[spot.id]?.title || uiLabel(outputLanguage, "memoryPlace"),
           caption: spot.caption || nextSpots[spot.id]?.caption || "",
         };
       }
@@ -2376,18 +2682,18 @@ export default function ShioriClient({
                         <div ref={turnstileContainerRef} className="min-h-[65px]" />
                         {!turnstileToken && turnstileStatus === "loading" && (
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            自動送信対策を読み込んでいます。数秒お待ちください。
+                            {uiLabel(outputLanguage, "turnstileLoading")}
                           </p>
                         )}
                         {turnstileStatus === "error" && (
                           <p className="text-xs text-amber-700 leading-relaxed">
-                            自動送信対策を読み込めませんでした。ページを再読み込みしてください。改善しない場合は、Cloudflare Turnstileのドメイン設定をご確認ください。
+                            {uiLabel(outputLanguage, "turnstileError")}
                           </p>
                         )}
                       </>
                     ) : (
                       <p className="text-xs text-amber-700 leading-relaxed">
-                        AI生成の不正利用対策が未設定です。Cloudflare Turnstile のサイトキーを設定するとAI生成を使えます。
+                        {uiLabel(outputLanguage, "turnstileMissing")}
                       </p>
                     )}
                   </div>
@@ -2401,7 +2707,7 @@ export default function ShioriClient({
                     {aiLoading ? uiLabel(outputLanguage, "generating") : uiLabel(outputLanguage, "generateAi")}
                   </button>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    AIは、読み込んだ各記録の「場所・都道府県・日付・タグ・元メモ」と、タイトル・記録者名・文体・出力言語などの設定だけをもとに旅行記を作ります。写真そのもの、下の編集済み文章、SNS/PDF出力内容はAIに送りません。
+                    {uiLabel(outputLanguage, "aiScopeNote")}
                   </p>
                   <button
                     type="button"
@@ -2482,23 +2788,23 @@ export default function ShioriClient({
               </section>
 
               <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
-                <h2 className="font-bold text-base">読み込んだ記録</h2>
+                <h2 className="font-bold text-base">{uiLabel(outputLanguage, "summaryTitle")}</h2>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                   <div className="rounded-lg bg-slate-50 border border-slate-100 p-2">
                     <div className="text-lg font-bold">{entries.length}</div>
-                    <div className="text-[11px] text-slate-500">全記録</div>
+                    <div className="text-[11px] text-slate-500">{uiLabel(outputLanguage, "summaryAll")}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 border border-slate-100 p-2">
                     <div className="text-lg font-bold">{filteredEntries.length}</div>
-                    <div className="text-[11px] text-slate-500">旅行記に使う記録</div>
+                    <div className="text-[11px] text-slate-500">{uiLabel(outputLanguage, "summaryUsed")}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 border border-slate-100 p-2">
                     <div className="text-lg font-bold">{mappedCount}</div>
-                    <div className="text-[11px] text-slate-500">地図</div>
+                    <div className="text-[11px] text-slate-500">{uiLabel(outputLanguage, "summaryMapped")}</div>
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-                  旅行記に使う期間: {formatRange(filteredEntries, outputLanguage)}
+                  {uiLabel(outputLanguage, "summaryRange")} {formatRange(filteredEntries, outputLanguage)}
                 </p>
               </section>
             </aside>
@@ -2506,7 +2812,7 @@ export default function ShioriClient({
             <section className="space-y-4 min-w-0">
               {loading && (
                 <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-6 text-center text-slate-500">
-                  人生体験マップの記録を読み込んでいます...
+                  {uiLabel(outputLanguage, "loadingRecords")}
                 </div>
               )}
 
@@ -2519,17 +2825,20 @@ export default function ShioriClient({
               {!loading && !loadError && entries.length === 0 && (
                 <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-6 text-center">
                   <BookOpen className="w-10 h-10 text-slate-400 mx-auto" />
-                  <h2 className="mt-3 text-lg font-bold">まだ記録がありません</h2>
+                  <h2 className="mt-3 text-lg font-bold">{uiLabel(outputLanguage, "emptyTitle")}</h2>
                   <p className="mt-2 text-sm text-slate-500">
-                    {source === "photo"
-                      ? "写真を選択すると、ここに旅行記の記録として表示されます。"
-                      : source === "heritage"
-                      ? "世界遺産パスポートの写真・訪問日・メモを読み込んで、ここに旅行記の記録として表示します。"
-                      : "人生体験マップの写真・場所・日付・メモを読み込んで、ここに旅行記の記録として表示します。"}
+                    {uiLabel(
+                      outputLanguage,
+                      source === "photo"
+                        ? "emptyDescPhoto"
+                        : source === "heritage"
+                        ? "emptyDescHeritage"
+                        : "emptyDescLifemap"
+                    )}
                   </p>
                   {source === "photo" ? (
                     <label className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-rose-900 hover:bg-rose-800 text-white text-sm font-bold transition-all cursor-pointer">
-                      写真を選択する
+                      {uiLabel(outputLanguage, "emptyPickPhoto")}
                       <input
                         type="file"
                         accept="image/*,.heic,.heif"
@@ -2547,7 +2856,7 @@ export default function ShioriClient({
                       href={source === "heritage" ? "/heritage" : "/life-map"}
                       className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-rose-900 hover:bg-rose-800 text-white text-sm font-bold transition-all"
                     >
-                      {source === "heritage" ? "世界遺産パスポートで記録する" : "人生体験マップで記録する"}
+                      {uiLabel(outputLanguage, source === "heritage" ? "emptyCtaHeritage" : "emptyCtaLifemap")}
                     </Link>
                   )}
                 </div>
@@ -2556,9 +2865,9 @@ export default function ShioriClient({
               {!loading && entries.length > 0 && filteredEntries.length === 0 && (
                 <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-6 text-center">
                   <BookOpen className="w-10 h-10 text-slate-400 mx-auto" />
-                  <h2 className="mt-3 text-lg font-bold">条件に合う記録がありません</h2>
+                  <h2 className="mt-3 text-lg font-bold">{uiLabel(outputLanguage, "noMatchTitle")}</h2>
                   <p className="mt-2 text-sm text-slate-500">
-                    日付・訪問地域・旅のタグの条件を広げると表示される可能性があります。
+                    {uiLabel(outputLanguage, "noMatchDesc")}
                   </p>
                 </div>
               )}
@@ -2568,13 +2877,13 @@ export default function ShioriClient({
                   <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                     <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
                       <div>
-                        <p className="text-xs font-bold text-slate-400">プレビュー</p>
+                        <p className="text-xs font-bold text-slate-400">{uiLabel(outputLanguage, "previewLabel")}</p>
                         <h2 className="text-xl font-bold text-slate-800">
                           {shioriTitle || tripTitle(formatRange(filteredEntries, outputLanguage), outputLanguage)}
                         </h2>
                       </div>
                       <p className="text-sm text-slate-500">
-                        {filteredEntries.length}件の記録を時系列で表示中
+                        {uiLabel(outputLanguage, "previewCount").replace("{n}", String(filteredEntries.length))}
                       </p>
                     </div>
                   </div>
@@ -2586,17 +2895,17 @@ export default function ShioriClient({
                   <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="w-4 h-4 text-slate-500" />
-                      <h2 className="font-bold text-base">旅行記文章</h2>
+                      <h2 className="font-bold text-base">{uiLabel(outputLanguage, "sectionTextTitle")}</h2>
                     </div>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                      上で選ばれている記録の元メモから旅行記を作ります。ここから下は生成後の編集欄です。編集した文章はSNS投稿文やアイキャッチ画像、必要に応じてPDFにも使われます。
+                      {uiLabel(outputLanguage, "sectionTextDesc")}
                     </p>
                     <label className="mt-4 block">
-                      <span className="text-xs font-bold text-slate-500 mb-1 block">旅行記本文（AI生成後に編集）</span>
+                      <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "bodyLabel")}</span>
                       <textarea
                         value={generatedSummary}
                         onChange={(e) => setGeneratedSummary(e.target.value)}
-                        placeholder="AIが元メモから作った旅行記本文がここに入ります。必要に応じて書き直せます。"
+                        placeholder={uiLabel(outputLanguage, "bodyPlaceholder")}
                         rows={4}
                         className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm leading-relaxed focus:outline-none focus:border-slate-400"
                       />
@@ -2616,7 +2925,7 @@ export default function ShioriClient({
                           />
                           <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                             <label className="block">
-                              <span className="text-xs font-bold text-slate-500 mb-1 block">スポット見出し（AI生成後に編集）</span>
+                              <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "spotTitleLabel")}</span>
                               <input
                                 type="text"
                                 value={generated?.title || getDisplayPlace(entry, outputLanguage)}
@@ -2625,11 +2934,11 @@ export default function ShioriClient({
                               />
                             </label>
                             <label className="mt-3 block">
-                              <span className="text-xs font-bold text-slate-500 mb-1 block">スポット別文章（AI生成後に編集）</span>
+                              <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "spotCaptionLabel")}</span>
                               <textarea
                                 value={generated?.caption || ""}
                                 onChange={(e) => updateSpotText(entry.id, { caption: e.target.value })}
-                                placeholder="AIが元メモから作ったスポット別文章が入ります。ここを編集しても、再生成するまではAIの入力にはなりません。"
+                                placeholder={uiLabel(outputLanguage, "spotCaptionPlaceholder")}
                                 rows={3}
                                 className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm leading-relaxed focus:outline-none focus:border-slate-400"
                               />
