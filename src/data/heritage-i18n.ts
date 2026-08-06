@@ -68,6 +68,9 @@ type Dict = {
   /** CTA */
   cta: string;
   ctaNote: string;
+  /** AI旅行記メーカーへの誘導CTA */
+  shioriCta: string;
+  shioriCtaNote: string;
 
   /** 危機遺産 */
   dangerTitle: string;
@@ -162,6 +165,8 @@ const DICTS: Record<HeritageLocale, Dict> = {
     sitesSuffix: "{count}件",
     cta: "このサイトで訪問記録をつける",
     ctaNote: "記録はお使いのブラウザ内だけに保存されます。会員登録は不要です。",
+    shioriCta: "この訪問記録から旅行記を作る → AI旅行記メーカー",
+    shioriCtaNote: "訪問記録・写真・メモをもとに、AIが旅行記を無料で作成します。",
     dangerTitle: "危機遺産リストに掲載",
     dangerBody:
       "この物件は「危機にさらされている世界遺産リスト」に掲載されています{since}。最新の状況は公式ページをご確認ください。",
@@ -246,6 +251,8 @@ const DICTS: Record<HeritageLocale, Dict> = {
     sitesSuffix: "{count} sites",
     cta: "Log your visit on this site",
     ctaNote: "Your records are saved only inside your own browser. No sign-up required.",
+    shioriCta: "Create a travel diary from this visit record → AI Travel Diary Maker",
+    shioriCtaNote: "AI creates a free travel diary from your visit records, photos and notes.",
     dangerTitle: "On the List of World Heritage in Danger",
     dangerBody:
       "This property is on the List of World Heritage in Danger{since}. Please check the official page for the latest status.",
@@ -333,6 +340,10 @@ const DICTS: Record<HeritageLocale, Dict> = {
     cta: "Enregistrer votre visite sur ce site",
     ctaNote:
       "Vos données sont enregistrées uniquement dans votre navigateur. Aucune inscription nécessaire.",
+    shioriCta:
+      "Créer un carnet de voyage à partir de cette visite → AI Travel Diary Maker (en anglais)",
+    shioriCtaNote:
+      "L'IA crée gratuitement un carnet de voyage à partir de vos visites, photos et notes.",
     dangerTitle: "Inscrit sur la Liste du patrimoine mondial en péril",
     dangerBody:
       "Ce bien figure sur la Liste du patrimoine mondial en péril{since}. Consultez la page officielle pour connaître la situation actuelle.",
@@ -421,6 +432,10 @@ const DICTS: Record<HeritageLocale, Dict> = {
     cta: "Registra tu visita en este sitio",
     ctaNote:
       "Tus registros se guardan únicamente en tu propio navegador. No hace falta registrarse.",
+    shioriCta:
+      "Crea un diario de viaje a partir de este registro → AI Travel Diary Maker (en inglés)",
+    shioriCtaNote:
+      "La IA crea gratis un diario de viaje a partir de tus registros, fotos y notas.",
     dangerTitle: "En la Lista del Patrimonio Mundial en Peligro",
     dangerBody:
       "Este bien figura en la Lista del Patrimonio Mundial en Peligro{since}. Consulta la página oficial para conocer la situación actual.",
@@ -508,6 +523,8 @@ const DICTS: Record<HeritageLocale, Dict> = {
     sitesSuffix: "{count}项",
     cta: "在本站记录访问",
     ctaNote: "记录仅保存在您自己的浏览器中，无需注册。",
+    shioriCta: "根据此访问记录制作旅行日记 → AI Travel Diary Maker（英文）",
+    shioriCtaNote: "AI 会根据您的访问记录、照片和备注免费生成旅行日记。",
     dangerTitle: "列入濒危世界遗产名录",
     dangerBody: "该遗产已列入《濒危世界遗产名录》{since}。最新情况请查阅官方页面。",
     dangerSince: "（记录：{value}）",

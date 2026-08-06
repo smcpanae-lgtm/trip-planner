@@ -763,7 +763,15 @@ function EntryCard({
   );
 }
 
-export default function ShioriClient() {
+export default function ShioriClient({
+  initialOutputLanguage,
+  respectStoredLang = true,
+}: {
+  /** /en/shiori など、既定の出力言語を変えたいページから渡す（未指定時は "ja"） */
+  initialOutputLanguage?: OutputLanguage;
+  /** falseの場合、ブラウザに保存済みの出力言語設定を無視して initialOutputLanguage を優先する */
+  respectStoredLang?: boolean;
+} = {}) {
   const [source, setSource] = useState<EntrySource>("landing");
   const [entries, setEntries] = useState<LifeMapEntry[]>([]);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
@@ -773,7 +781,7 @@ export default function ShioriClient() {
   const [shioriTitle, setShioriTitle] = useState("");
   const [travelerName, setTravelerName] = useState("");
   const [tone, setTone] = useState<ShioriTone>("warm");
-  const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>("ja");
+  const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>(initialOutputLanguage ?? "ja");
   const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const [selectedEntryIds, setSelectedEntryIds] = useState<string[] | null>(null);
   const [generatedSummary, setGeneratedSummary] = useState("");
@@ -799,9 +807,11 @@ export default function ShioriClient() {
         localStorage.setItem(SHIORI_SESSION_STORAGE_KEY, anonymousSessionId);
       }
       setSessionId(anonymousSessionId);
-      const savedLanguage = localStorage.getItem(SHIORI_LANG_STORAGE_KEY);
-      if (isOutputLanguage(savedLanguage)) {
-        setOutputLanguage(savedLanguage);
+      if (respectStoredLang) {
+        const savedLanguage = localStorage.getItem(SHIORI_LANG_STORAGE_KEY);
+        if (isOutputLanguage(savedLanguage)) {
+          setOutputLanguage(savedLanguage);
+        }
       }
       const params = new URLSearchParams(window.location.search);
       const incomingSource = params.get("source");
@@ -1373,7 +1383,9 @@ export default function ShioriClient() {
 
       <main className="max-w-[1400px] mx-auto px-4 py-5 space-y-5">
         <section className="bg-white border border-rose-100 shadow-sm rounded-xl p-5 sm:p-6">
-          <p className="text-xs font-bold text-rose-900 tracking-wide">AI旅行記メーカー</p>
+          <p className="text-xs font-bold text-rose-900 tracking-wide">
+            {uiLabel(outputLanguage, "serviceName")}
+          </p>
           <h2 className="mt-2 text-2xl sm:text-3xl font-bold leading-tight text-stone-900">
             {uiLabel(outputLanguage, "heroTitle")}
           </h2>

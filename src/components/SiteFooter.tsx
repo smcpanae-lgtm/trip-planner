@@ -44,7 +44,7 @@ const TOOLS_EN = [
     description: "A private stamp rally for tracking the World Heritage Sites you've visited.",
   },
   {
-    href: "/shiori",
+    href: "/en/shiori",
     title: "AI Travel Journal Maker",
     description: "Turn your photos and notes into a travel journal, free — no app required.",
   },

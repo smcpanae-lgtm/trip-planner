@@ -9,6 +9,7 @@ import {
   localeSiteUrl,
 } from "@/data/heritage-i18n";
 import { lifeMapUrl } from "@/lib/lifemap/seo";
+import { shioriUrl } from "@/lib/shiori/seo";
 
 /**
  * 世界遺産まわりのURL。
@@ -51,10 +52,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...heritageEntries,
     {
-      url: "https://www.ai-drive-planner.com/shiori",
+      url: shioriUrl("ja"),
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: shioriUrl("en"),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       // 末尾スラッシュなしが実際の配信形態（/life-map/ は308で /life-map へ正規化される）。

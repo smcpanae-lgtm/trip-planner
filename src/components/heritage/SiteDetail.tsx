@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Globe2, MapPin, Stamp } from "lucide-react";
+import { AlertTriangle, BookOpen, Globe2, MapPin, Stamp } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
 import {
   HERITAGE_TOTAL,
@@ -117,6 +117,9 @@ export default function SiteDetail({
   const appPath = localeAppPath(locale);
   const indexPath = localeIndexPath(locale);
   const ctaHref = `${appPath}?source=sites&open=${encodeURIComponent(site.id)}`;
+  // AI旅行記メーカーは ja/en のみ独立URLを持つため、それ以外の言語は英語版に誘導する
+  const shioriBasePath = locale === "ja" ? "/shiori" : "/en/shiori";
+  const shioriHref = `${shioriBasePath}?source=heritage&ids=${encodeURIComponent(site.id)}`;
 
   /** h1 の名称と、その下に出す英語名は「各言語での名称」から除いて重複を避ける */
   const showsEnglishSubtitle = name !== site.nameEn;
@@ -240,6 +243,15 @@ export default function SiteDetail({
           {d.cta}
         </a>
         <p className="mt-2 text-xs text-slate-400">{d.ctaNote}</p>
+
+        <a
+          href={shioriHref}
+          className="mt-3 inline-flex items-center gap-2 border border-emerald-700 text-emerald-800 hover:bg-emerald-50 font-bold px-5 py-3 rounded-xl transition-colors"
+        >
+          <BookOpen className="w-5 h-5" />
+          {d.shioriCta}
+        </a>
+        <p className="mt-2 text-xs text-slate-400">{d.shioriCtaNote}</p>
 
         {site.danger ? (
           <div className="mt-6 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
