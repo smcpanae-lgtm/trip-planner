@@ -539,6 +539,44 @@ function uiLabel(
     | "worldHeritage"
     | "downloadFallbackName"
     | "coverFileSuffix"
+    | "samplesTitle"
+    | "samplesDesc"
+    | "samplesCta"
+    | "photoTitle"
+    | "photoDesc"
+    | "photoPick"
+    | "photoPickNote"
+    | "photoProcessing"
+    | "filterTitle"
+    | "filterClear"
+    | "filterDescHeritage"
+    | "filterDescLifemap"
+    | "filterFrom"
+    | "filterTo"
+    | "filterRegion"
+    | "filterRegionAll"
+    | "filterTag"
+    | "filterTagAll"
+    | "filterKeyword"
+    | "filterKeywordPlaceholder"
+    | "filterKeywordNoteHeritage"
+    | "filterKeywordNoteLifemap"
+    | "photoEditTitle"
+    | "photoEditDesc"
+    | "photoPlacePlaceholder"
+    | "photoDeleteLabel"
+    | "photoMemoLabel"
+    | "photoMemoPlaceholder"
+    | "photoMemoNote"
+    | "photoPrefPlaceholder"
+    | "photoLatPlaceholder"
+    | "photoLngPlaceholder"
+    | "photoGpsYes"
+    | "photoGpsNo"
+    | "fieldTitle"
+    | "fieldTraveler"
+    | "travelerPlaceholder"
+    | "fieldTone"
     | "serviceName"
     | "tagline"
     | "backTop"
@@ -584,6 +622,44 @@ function uiLabel(
       worldHeritage: "世界遺産",
       downloadFallbackName: "旅行記",
       coverFileSuffix: "-旅行記アイキャッチ",
+      samplesTitle: "AIが作った旅行記の実例を見る",
+      samplesDesc: "京都・北海道・沖縄など5本のサンプルを公開しています。どんな文章になるか、作る前に確認できます。",
+      samplesCta: "5本を見る →",
+      photoTitle: "写真を選んで旅行記を作る",
+      photoDesc: "選んだ写真はこの画面内だけでリサイズされます。JPEGのEXIFに撮影日・GPSがあれば自動で読み取ります。",
+      photoPick: "写真をまとめて選択",
+      photoPickNote: "スマホではカメラ撮影も選べます",
+      photoProcessing: "写真を端末内で処理しています...",
+      filterTitle: "旅行の日付・記録の絞り込み",
+      filterClear: "条件クリア",
+      filterDescHeritage: "世界遺産パスポートから読み込んだ訪問記録のうち、旅行記に使うものだけを選ぶための条件です。未入力なら読み込んだ記録をすべて使います。",
+      filterDescLifemap: "人生体験マップから読み込んだ記録のうち、今回の旅行記に使うものだけを選ぶための条件です。未入力なら読み込んだ記録をすべて使います。",
+      filterFrom: "旅行開始日",
+      filterTo: "旅行終了日",
+      filterRegion: "訪問地域",
+      filterRegionAll: "すべての訪問地域",
+      filterTag: "旅のタグ",
+      filterTagAll: "すべての旅タグ",
+      filterKeyword: "場所名・元メモで絞り込み",
+      filterKeywordPlaceholder: "人生体験マップの元メモ、場所名、印象に残った言葉など",
+      filterKeywordNoteHeritage: "世界遺産パスポートから読み込んだ元メモ・世界遺産名・国名を検索します。生成後の文章欄は検索対象ではありません。",
+      filterKeywordNoteLifemap: "人生体験マップから読み込んだ元メモを検索します。生成後の文章欄は検索対象ではありません。",
+      photoEditTitle: "写真情報の編集",
+      photoEditDesc: "GPSがない写真は、場所名・都道府県・緯度経度のいずれかを入力してください。「AIに渡す元メモ」に書いた内容が旅行記文章の材料になります。",
+      photoPlacePlaceholder: "場所名（例：箱根、兼六園）",
+      photoDeleteLabel: "写真を削除",
+      photoMemoLabel: "AIに渡す元メモ（写真の説明・その時の記録）",
+      photoMemoPlaceholder: "例：海辺で釣りをした。風が強かった。家族で休憩した。",
+      photoMemoNote: "メモ欄の編集内容は、AI旅行記メーカー画面内の素材として使われます。写真そのものはAIに送信しません。",
+      photoPrefPlaceholder: "都道府県・訪問地域",
+      photoLatPlaceholder: "緯度",
+      photoLngPlaceholder: "経度",
+      photoGpsYes: "位置情報あり。地図に表示できます。",
+      photoGpsNo: "GPSなし。場所名や都道府県だけでも旅行記には使えます。",
+      fieldTitle: "タイトル",
+      fieldTraveler: "旅行者名",
+      travelerPlaceholder: "例：山田家、たろう",
+      fieldTone: "旅行記の語り口",
       serviceName: "AI旅行記メーカー",
       tagline: "写真とメモから、旅の思い出をAI旅行記に。",
       backTop: "トップへ戻る",
@@ -624,6 +700,44 @@ function uiLabel(
       worldHeritage: "World Heritage site",
       downloadFallbackName: "travel-journal",
       coverFileSuffix: "-travel-journal-cover",
+      samplesTitle: "See real travel journals written by AI",
+      samplesDesc: "Five samples are published, including Kyoto, Hokkaido and Okinawa. See what the writing looks like before you make your own.",
+      samplesCta: "View all five →",
+      photoTitle: "Pick photos and build a travel journal",
+      photoDesc: "The photos you pick are resized on this screen only. If a JPEG has EXIF date or GPS data, it is read automatically.",
+      photoPick: "Select photos together",
+      photoPickNote: "On a phone you can also take a photo",
+      photoProcessing: "Processing photos on your device...",
+      filterTitle: "Trip dates and record filter",
+      filterClear: "Clear filters",
+      filterDescHeritage: "These filters pick which of the visit records loaded from the World Heritage Passport go into the travel journal. Leave them empty to use every record you loaded.",
+      filterDescLifemap: "These filters pick which of the records loaded from the Life Experience Map go into this travel journal. Leave them empty to use every record you loaded.",
+      filterFrom: "Trip start date",
+      filterTo: "Trip end date",
+      filterRegion: "Area visited",
+      filterRegionAll: "All areas visited",
+      filterTag: "Trip tag",
+      filterTagAll: "All trip tags",
+      filterKeyword: "Filter by place name or original note",
+      filterKeywordPlaceholder: "Original notes from the Life Experience Map, place names, words that stayed with you",
+      filterKeywordNoteHeritage: "Searches the original notes, World Heritage site names and country names loaded from the World Heritage Passport. The generated text fields are not searched.",
+      filterKeywordNoteLifemap: "Searches the original notes loaded from the Life Experience Map. The generated text fields are not searched.",
+      photoEditTitle: "Edit photo details",
+      photoEditDesc: "For photos without GPS, enter a place name, a region, or latitude and longitude. What you write in \"Original note for the AI\" becomes the material for the journal text.",
+      photoPlacePlaceholder: "Place name (e.g. Hakone, Kenrokuen)",
+      photoDeleteLabel: "Delete photo",
+      photoMemoLabel: "Original note for the AI (what the photo shows, what happened)",
+      photoMemoPlaceholder: "e.g. Fished by the sea. The wind was strong. The family took a break.",
+      photoMemoNote: "What you edit in the note field is used as material inside the AI Travel Journal Maker screen. The photos themselves are never sent to the AI.",
+      photoPrefPlaceholder: "Region or area visited",
+      photoLatPlaceholder: "Latitude",
+      photoLngPlaceholder: "Longitude",
+      photoGpsYes: "Location data present. It can be shown on the map.",
+      photoGpsNo: "No GPS. A place name or region alone is still enough for the journal.",
+      fieldTitle: "Title",
+      fieldTraveler: "Traveller name",
+      travelerPlaceholder: "e.g. The Yamada family, Taro",
+      fieldTone: "Voice of the journal",
       serviceName: "AI Travel Journal Maker",
       tagline: "Turn photos and notes into an AI travel journal.",
       backTop: "Back to top",
@@ -664,6 +778,44 @@ function uiLabel(
       worldHeritage: "世界遗产",
       downloadFallbackName: "travel-journal",
       coverFileSuffix: "-旅行记封面图",
+      samplesTitle: "查看AI生成的旅行记实例",
+      samplesDesc: "已公开京都、北海道、冲绳等5篇范例。制作前可以先确认文章的风格。",
+      samplesCta: "查看全部5篇 →",
+      photoTitle: "选择照片制作旅行记",
+      photoDesc: "所选照片仅在本页面内缩放。若JPEG的EXIF中含有拍摄日期或GPS信息，将自动读取。",
+      photoPick: "批量选择照片",
+      photoPickNote: "手机上也可以直接拍照",
+      photoProcessing: "正在本机处理照片...",
+      filterTitle: "旅行日期与记录筛选",
+      filterClear: "清除条件",
+      filterDescHeritage: "用于从世界遗产护照读取的访问记录中，挑选要用于旅行记的部分。留空则使用全部已读取的记录。",
+      filterDescLifemap: "用于从人生体验地图读取的记录中，挑选本次旅行记要使用的部分。留空则使用全部已读取的记录。",
+      filterFrom: "旅行开始日",
+      filterTo: "旅行结束日",
+      filterRegion: "到访地区",
+      filterRegionAll: "全部到访地区",
+      filterTag: "旅行标签",
+      filterTagAll: "全部旅行标签",
+      filterKeyword: "按地点名称或原始备忘筛选",
+      filterKeywordPlaceholder: "人生体验地图的原始备忘、地点名称、印象深刻的词句等",
+      filterKeywordNoteHeritage: "搜索从世界遗产护照读取的原始备忘、世界遗产名称与国家名称。生成后的文章栏不在搜索范围内。",
+      filterKeywordNoteLifemap: "搜索从人生体验地图读取的原始备忘。生成后的文章栏不在搜索范围内。",
+      photoEditTitle: "编辑照片信息",
+      photoEditDesc: "没有GPS的照片，请填写地点名称、地区或经纬度中的任意一项。填写在「提供给AI的原始备忘」中的内容将成为旅行记文章的素材。",
+      photoPlacePlaceholder: "地点名称（例：箱根、兼六园）",
+      photoDeleteLabel: "删除照片",
+      photoMemoLabel: "提供给AI的原始备忘（照片说明、当时的记录）",
+      photoMemoPlaceholder: "例：在海边钓鱼。风很大。和家人一起休息了一会儿。",
+      photoMemoNote: "备忘栏的编辑内容仅作为AI旅行记制作页面内的素材使用。照片本身不会发送给AI。",
+      photoPrefPlaceholder: "地区・到访地区",
+      photoLatPlaceholder: "纬度",
+      photoLngPlaceholder: "经度",
+      photoGpsYes: "含位置信息。可以在地图上显示。",
+      photoGpsNo: "无GPS。仅有地点名称或地区也可以用于旅行记。",
+      fieldTitle: "标题",
+      fieldTraveler: "旅行者姓名",
+      travelerPlaceholder: "例：山田一家、太郎",
+      fieldTone: "旅行记的语气",
       serviceName: "AI旅行记生成器",
       tagline: "用照片和备忘，把旅行回忆整理成AI旅行记。",
       backTop: "返回顶部",
@@ -704,6 +856,44 @@ function uiLabel(
       worldHeritage: "Site du patrimoine mondial",
       downloadFallbackName: "carnet-de-voyage",
       coverFileSuffix: "-couverture-carnet-de-voyage",
+      samplesTitle: "Voir des exemples de carnets écrits par l'IA",
+      samplesDesc: "Cinq exemples sont publiés, dont Kyoto, Hokkaido et Okinawa. Vous pouvez voir le style des textes avant de créer le vôtre.",
+      samplesCta: "Voir les cinq →",
+      photoTitle: "Choisir des photos et créer un carnet de voyage",
+      photoDesc: "Les photos choisies sont redimensionnées uniquement sur cet écran. Si un JPEG contient une date ou des données GPS dans ses EXIF, elles sont lues automatiquement.",
+      photoPick: "Sélectionner plusieurs photos",
+      photoPickNote: "Sur téléphone, vous pouvez aussi prendre une photo",
+      photoProcessing: "Traitement des photos sur votre appareil...",
+      filterTitle: "Dates du voyage et filtre des enregistrements",
+      filterClear: "Effacer les filtres",
+      filterDescHeritage: "Ces filtres choisissent, parmi les visites importées du Passeport du patrimoine mondial, celles qui entreront dans le carnet. Laissez vide pour utiliser tous les enregistrements importés.",
+      filterDescLifemap: "Ces filtres choisissent, parmi les enregistrements importés de la Carte des expériences de vie, ceux qui entreront dans ce carnet. Laissez vide pour utiliser tous les enregistrements importés.",
+      filterFrom: "Date de début du voyage",
+      filterTo: "Date de fin du voyage",
+      filterRegion: "Région visitée",
+      filterRegionAll: "Toutes les régions visitées",
+      filterTag: "Étiquette de voyage",
+      filterTagAll: "Toutes les étiquettes",
+      filterKeyword: "Filtrer par lieu ou note d'origine",
+      filterKeywordPlaceholder: "Notes d'origine de la Carte des expériences de vie, noms de lieux, mots qui vous sont restés",
+      filterKeywordNoteHeritage: "Recherche dans les notes d'origine, les noms de sites du patrimoine mondial et les noms de pays importés du Passeport. Les textes générés ne sont pas inclus dans la recherche.",
+      filterKeywordNoteLifemap: "Recherche dans les notes d'origine importées de la Carte des expériences de vie. Les textes générés ne sont pas inclus dans la recherche.",
+      photoEditTitle: "Modifier les informations des photos",
+      photoEditDesc: "Pour les photos sans GPS, indiquez un nom de lieu, une région, ou la latitude et la longitude. Ce que vous écrivez dans « Note d'origine pour l'IA » sert de matière au texte du carnet.",
+      photoPlacePlaceholder: "Nom du lieu (ex. : Hakone, Kenrokuen)",
+      photoDeleteLabel: "Supprimer la photo",
+      photoMemoLabel: "Note d'origine pour l'IA (ce que montre la photo, ce qui s'est passé)",
+      photoMemoPlaceholder: "ex. : Pêche au bord de la mer. Le vent était fort. Pause en famille.",
+      photoMemoNote: "Ce que vous modifiez dans le champ de note sert de matière à l'intérieur de l'écran du créateur de carnet. Les photos elles-mêmes ne sont jamais envoyées à l'IA.",
+      photoPrefPlaceholder: "Région ou zone visitée",
+      photoLatPlaceholder: "Latitude",
+      photoLngPlaceholder: "Longitude",
+      photoGpsYes: "Données de localisation présentes. Affichage possible sur la carte.",
+      photoGpsNo: "Pas de GPS. Un nom de lieu ou une région suffit pour le carnet.",
+      fieldTitle: "Titre",
+      fieldTraveler: "Nom du voyageur",
+      travelerPlaceholder: "ex. : Famille Yamada, Taro",
+      fieldTone: "Ton du carnet",
       serviceName: "Générateur de carnet de voyage IA",
       tagline: "Transformez photos et notes en carnet de voyage IA.",
       backTop: "Retour en haut",
@@ -744,6 +934,44 @@ function uiLabel(
       worldHeritage: "세계유산",
       downloadFallbackName: "travel-journal",
       coverFileSuffix: "-여행기-커버이미지",
+      samplesTitle: "AI가 만든 여행기 실제 예시 보기",
+      samplesDesc: "교토·홋카이도·오키나와 등 5편의 샘플을 공개하고 있습니다. 어떤 문장이 되는지 만들기 전에 확인할 수 있습니다.",
+      samplesCta: "5편 모두 보기 →",
+      photoTitle: "사진을 골라 여행기 만들기",
+      photoDesc: "선택한 사진은 이 화면 안에서만 크기가 조정됩니다. JPEG의 EXIF에 촬영일이나 GPS가 있으면 자동으로 읽어들입니다.",
+      photoPick: "사진 한번에 선택",
+      photoPickNote: "휴대폰에서는 카메라 촬영도 선택할 수 있습니다",
+      photoProcessing: "기기 안에서 사진을 처리하고 있습니다...",
+      filterTitle: "여행 날짜·기록 필터",
+      filterClear: "조건 지우기",
+      filterDescHeritage: "세계유산 여권에서 불러온 방문 기록 중 여행기에 사용할 것만 고르는 조건입니다. 비워 두면 불러온 기록을 모두 사용합니다.",
+      filterDescLifemap: "인생 경험 지도에서 불러온 기록 중 이번 여행기에 사용할 것만 고르는 조건입니다. 비워 두면 불러온 기록을 모두 사용합니다.",
+      filterFrom: "여행 시작일",
+      filterTo: "여행 종료일",
+      filterRegion: "방문 지역",
+      filterRegionAll: "모든 방문 지역",
+      filterTag: "여행 태그",
+      filterTagAll: "모든 여행 태그",
+      filterKeyword: "장소명·원본 메모로 필터",
+      filterKeywordPlaceholder: "인생 경험 지도의 원본 메모, 장소명, 인상에 남은 말 등",
+      filterKeywordNoteHeritage: "세계유산 여권에서 불러온 원본 메모·세계유산 이름·국가명을 검색합니다. 생성된 문장란은 검색 대상이 아닙니다.",
+      filterKeywordNoteLifemap: "인생 경험 지도에서 불러온 원본 메모를 검색합니다. 생성된 문장란은 검색 대상이 아닙니다.",
+      photoEditTitle: "사진 정보 편집",
+      photoEditDesc: "GPS가 없는 사진은 장소명·지역·위도경도 중 하나를 입력해 주세요. 「AI에 전달할 원본 메모」에 쓴 내용이 여행기 문장의 재료가 됩니다.",
+      photoPlacePlaceholder: "장소명(예: 하코네, 겐로쿠엔)",
+      photoDeleteLabel: "사진 삭제",
+      photoMemoLabel: "AI에 전달할 원본 메모(사진 설명·그때의 기록)",
+      photoMemoPlaceholder: "예: 바닷가에서 낚시를 했다. 바람이 강했다. 가족과 함께 쉬었다.",
+      photoMemoNote: "메모란의 편집 내용은 AI 여행기 메이커 화면 안의 재료로 사용됩니다. 사진 자체는 AI에 보내지 않습니다.",
+      photoPrefPlaceholder: "지역·방문 지역",
+      photoLatPlaceholder: "위도",
+      photoLngPlaceholder: "경도",
+      photoGpsYes: "위치 정보 있음. 지도에 표시할 수 있습니다.",
+      photoGpsNo: "GPS 없음. 장소명이나 지역만으로도 여행기에 사용할 수 있습니다.",
+      fieldTitle: "제목",
+      fieldTraveler: "여행자 이름",
+      travelerPlaceholder: "예: 야마다 가족, 타로",
+      fieldTone: "여행기의 말투",
       serviceName: "AI 여행기 메이커",
       tagline: "사진과 메모로 여행의 추억을 AI 여행기로 정리합니다.",
       backTop: "맨 위로 돌아가기",
@@ -784,6 +1012,44 @@ function uiLabel(
       worldHeritage: "世界遺產",
       downloadFallbackName: "travel-journal",
       coverFileSuffix: "-旅行記封面圖",
+      samplesTitle: "查看AI產生的旅行記實例",
+      samplesDesc: "已公開京都、北海道、沖繩等5篇範例。製作前可以先確認文章的風格。",
+      samplesCta: "查看全部5篇 →",
+      photoTitle: "選擇照片製作旅行記",
+      photoDesc: "所選照片僅在本頁面內縮放。若JPEG的EXIF中含有拍攝日期或GPS資訊，將自動讀取。",
+      photoPick: "批次選擇照片",
+      photoPickNote: "手機上也可以直接拍照",
+      photoProcessing: "正在本機處理照片...",
+      filterTitle: "旅行日期與記錄篩選",
+      filterClear: "清除條件",
+      filterDescHeritage: "用於從世界遺產護照讀取的造訪記錄中，挑選要用於旅行記的部分。留空則使用全部已讀取的記錄。",
+      filterDescLifemap: "用於從人生體驗地圖讀取的記錄中，挑選本次旅行記要使用的部分。留空則使用全部已讀取的記錄。",
+      filterFrom: "旅行開始日",
+      filterTo: "旅行結束日",
+      filterRegion: "造訪地區",
+      filterRegionAll: "全部造訪地區",
+      filterTag: "旅行標籤",
+      filterTagAll: "全部旅行標籤",
+      filterKeyword: "以地點名稱或原始備忘篩選",
+      filterKeywordPlaceholder: "人生體驗地圖的原始備忘、地點名稱、印象深刻的詞句等",
+      filterKeywordNoteHeritage: "搜尋從世界遺產護照讀取的原始備忘、世界遺產名稱與國家名稱。產生後的文章欄不在搜尋範圍內。",
+      filterKeywordNoteLifemap: "搜尋從人生體驗地圖讀取的原始備忘。產生後的文章欄不在搜尋範圍內。",
+      photoEditTitle: "編輯照片資訊",
+      photoEditDesc: "沒有GPS的照片，請填寫地點名稱、地區或經緯度其中一項。填寫在「提供給AI的原始備忘」中的內容將成為旅行記文章的素材。",
+      photoPlacePlaceholder: "地點名稱（例：箱根、兼六園）",
+      photoDeleteLabel: "刪除照片",
+      photoMemoLabel: "提供給AI的原始備忘（照片說明、當時的記錄）",
+      photoMemoPlaceholder: "例：在海邊釣魚。風很大。和家人一起休息了一會兒。",
+      photoMemoNote: "備忘欄的編輯內容僅作為AI旅行記製作頁面內的素材使用。照片本身不會傳送給AI。",
+      photoPrefPlaceholder: "地區・造訪地區",
+      photoLatPlaceholder: "緯度",
+      photoLngPlaceholder: "經度",
+      photoGpsYes: "含位置資訊。可以在地圖上顯示。",
+      photoGpsNo: "無GPS。僅有地點名稱或地區也可以用於旅行記。",
+      fieldTitle: "標題",
+      fieldTraveler: "旅行者姓名",
+      travelerPlaceholder: "例：山田一家、太郎",
+      fieldTone: "旅行記的語氣",
       serviceName: "AI旅行記產生器",
       tagline: "用照片和備忘，把旅行回憶整理成AI旅行記。",
       backTop: "返回頂部",
@@ -824,6 +1090,44 @@ function uiLabel(
       worldHeritage: "Welterbestätte",
       downloadFallbackName: "reisetagebuch",
       coverFileSuffix: "-reisetagebuch-titelbild",
+      samplesTitle: "Echte Beispiele von KI-Reisetagebüchern ansehen",
+      samplesDesc: "Fünf Beispiele sind veröffentlicht, darunter Kyoto, Hokkaido und Okinawa. So sehen Sie den Schreibstil, bevor Sie selbst eines erstellen.",
+      samplesCta: "Alle fünf ansehen →",
+      photoTitle: "Fotos auswählen und ein Reisetagebuch erstellen",
+      photoDesc: "Die ausgewählten Fotos werden nur auf diesem Bildschirm verkleinert. Enthält ein JPEG Aufnahmedatum oder GPS in den EXIF-Daten, werden diese automatisch gelesen.",
+      photoPick: "Mehrere Fotos auswählen",
+      photoPickNote: "Auf dem Handy können Sie auch direkt fotografieren",
+      photoProcessing: "Fotos werden auf Ihrem Gerät verarbeitet...",
+      filterTitle: "Reisedaten und Filter für Einträge",
+      filterClear: "Filter zurücksetzen",
+      filterDescHeritage: "Mit diesen Filtern wählen Sie aus den vom Welterbe-Pass geladenen Besuchen aus, welche ins Reisetagebuch kommen. Leer lassen, um alle geladenen Einträge zu verwenden.",
+      filterDescLifemap: "Mit diesen Filtern wählen Sie aus den von der Lebenserfahrungskarte geladenen Einträgen aus, welche in dieses Reisetagebuch kommen. Leer lassen, um alle geladenen Einträge zu verwenden.",
+      filterFrom: "Beginn der Reise",
+      filterTo: "Ende der Reise",
+      filterRegion: "Besuchte Region",
+      filterRegionAll: "Alle besuchten Regionen",
+      filterTag: "Reise-Tag",
+      filterTagAll: "Alle Reise-Tags",
+      filterKeyword: "Nach Ortsname oder Ursprungsnotiz filtern",
+      filterKeywordPlaceholder: "Ursprungsnotizen der Lebenserfahrungskarte, Ortsnamen, Worte, die geblieben sind",
+      filterKeywordNoteHeritage: "Durchsucht die vom Welterbe-Pass geladenen Ursprungsnotizen, Welterbe-Namen und Ländernamen. Die erzeugten Textfelder werden nicht durchsucht.",
+      filterKeywordNoteLifemap: "Durchsucht die von der Lebenserfahrungskarte geladenen Ursprungsnotizen. Die erzeugten Textfelder werden nicht durchsucht.",
+      photoEditTitle: "Fotoangaben bearbeiten",
+      photoEditDesc: "Geben Sie für Fotos ohne GPS einen Ortsnamen, eine Region oder Breiten- und Längengrad an. Was Sie unter „Ursprungsnotiz für die KI\" schreiben, wird zum Material für den Text.",
+      photoPlacePlaceholder: "Ortsname (z. B. Hakone, Kenrokuen)",
+      photoDeleteLabel: "Foto löschen",
+      photoMemoLabel: "Ursprungsnotiz für die KI (was das Foto zeigt, was geschehen ist)",
+      photoMemoPlaceholder: "z. B. Am Meer geangelt. Der Wind war stark. Die Familie machte Pause.",
+      photoMemoNote: "Was Sie im Notizfeld bearbeiten, dient als Material innerhalb des Reisetagebuch-Editors. Die Fotos selbst werden nie an die KI gesendet.",
+      photoPrefPlaceholder: "Region oder besuchtes Gebiet",
+      photoLatPlaceholder: "Breitengrad",
+      photoLngPlaceholder: "Längengrad",
+      photoGpsYes: "Standortdaten vorhanden. Anzeige auf der Karte möglich.",
+      photoGpsNo: "Kein GPS. Ein Ortsname oder eine Region genügt für das Reisetagebuch.",
+      fieldTitle: "Titel",
+      fieldTraveler: "Name der reisenden Person",
+      travelerPlaceholder: "z. B. Familie Yamada, Taro",
+      fieldTone: "Ton des Reisetagebuchs",
       serviceName: "KI-Reisebericht-Generator",
       tagline: "Aus Fotos und Notizen wird ein KI-Reisebericht.",
       backTop: "Zurück nach oben",
@@ -1758,12 +2062,12 @@ export default function ShioriClient({
                 <FileText className="w-5 h-5" />
               </div>
               <h2 className="text-lg font-bold text-slate-800">
-                AIが作った旅行記の実例を見る
+                {uiLabel(outputLanguage, "samplesTitle")}
               </h2>
               <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-                京都・北海道・沖縄など5本のサンプルを公開しています。どんな文章になるか、作る前に確認できます。
+                {uiLabel(outputLanguage, "samplesDesc")}
               </p>
-              <p className="mt-3 text-sm font-bold text-rose-800">5本を見る →</p>
+              <p className="mt-3 text-sm font-bold text-rose-800">{uiLabel(outputLanguage, "samplesCta")}</p>
             </Link>
           </section>
         )}
@@ -1775,16 +2079,16 @@ export default function ShioriClient({
                 <Camera className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-bold text-base">写真を選んで旅行記を作る</h2>
+                <h2 className="font-bold text-base">{uiLabel(outputLanguage, "photoTitle")}</h2>
                 <p className="mt-1 text-sm text-slate-500 leading-relaxed">
-                  選んだ写真はこの画面内だけでリサイズされます。JPEGのEXIFに撮影日・GPSがあれば自動で読み取ります。
+                  {uiLabel(outputLanguage, "photoDesc")}
                 </p>
               </div>
             </div>
             <label className="flex flex-col items-center justify-center gap-2 min-h-36 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-all px-4 py-6 text-center">
               <Upload className="w-7 h-7 text-slate-500" />
-              <span className="text-sm font-bold text-slate-700">写真をまとめて選択</span>
-              <span className="text-xs text-slate-500">スマホではカメラ撮影も選べます</span>
+              <span className="text-sm font-bold text-slate-700">{uiLabel(outputLanguage, "photoPick")}</span>
+              <span className="text-xs text-slate-500">{uiLabel(outputLanguage, "photoPickNote")}</span>
               <input
                 type="file"
                 accept="image/*,.heic,.heif"
@@ -1799,7 +2103,7 @@ export default function ShioriClient({
             </label>
             {photoProcessing && (
               <div className="rounded-lg bg-rose-900 text-white px-4 py-3 text-sm font-medium">
-                写真を端末内で処理しています...
+                {uiLabel(outputLanguage, "photoProcessing")}
               </div>
             )}
             {photoError && (
@@ -1815,25 +2119,25 @@ export default function ShioriClient({
             <aside className="space-y-4 lg:sticky lg:top-[84px]">
               <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3 mb-2">
-                  <h2 className="font-bold text-base">旅行の日付・記録の絞り込み</h2>
+                  <h2 className="font-bold text-base">{uiLabel(outputLanguage, "filterTitle")}</h2>
                   <button
                     type="button"
                     onClick={resetFilters}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    条件クリア
+                    {uiLabel(outputLanguage, "filterClear")}
                   </button>
                 </div>
                 <p className="mb-4 text-xs text-slate-500 leading-relaxed">
-                  {source === "heritage" ? "世界遺産パスポートから読み込んだ訪問記録のうち、旅行記に使うものだけを選ぶための条件です。未入力なら読み込んだ記録をすべて使います。" : "人生体験マップから読み込んだ記録のうち、今回の旅行記に使うものだけを選ぶための条件です。未入力なら読み込んだ記録をすべて使います。"}
+                  {uiLabel(outputLanguage, source === "heritage" ? "filterDescHeritage" : "filterDescLifemap")}
                 </p>
 
                 <div className="space-y-3">
                   <label className="block">
                     <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-1">
                       <CalendarDays className="w-3.5 h-3.5" />
-                      旅行開始日
+                      {uiLabel(outputLanguage, "filterFrom")}
                     </span>
                     <input
                       type="date"
@@ -1845,7 +2149,7 @@ export default function ShioriClient({
                   <label className="block">
                     <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-1">
                       <CalendarDays className="w-3.5 h-3.5" />
-                      旅行終了日
+                      {uiLabel(outputLanguage, "filterTo")}
                     </span>
                     <input
                       type="date"
@@ -1857,14 +2161,14 @@ export default function ShioriClient({
                   <label className="block">
                     <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-1">
                       <MapPin className="w-3.5 h-3.5" />
-                      訪問地域
+                      {uiLabel(outputLanguage, "filterRegion")}
                     </span>
                     <select
                       value={filters.region}
                       onChange={(e) => updateFilter("region", e.target.value)}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     >
-                      <option value="">すべての訪問地域</option>
+                      <option value="">{uiLabel(outputLanguage, "filterRegionAll")}</option>
                       {regionOptions.map((region) => (
                         <option key={region} value={region}>
                           {region}
@@ -1875,7 +2179,7 @@ export default function ShioriClient({
                   <label className="block">
                     <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-1">
                       <Tag className="w-3.5 h-3.5" />
-                      旅のタグ
+                      {uiLabel(outputLanguage, "filterTag")}
                     </span>
                     <select
                       value={filters.category}
@@ -1884,7 +2188,7 @@ export default function ShioriClient({
                       }
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     >
-                      <option value="all">すべての旅タグ</option>
+                      <option value="all">{uiLabel(outputLanguage, "filterTagAll")}</option>
                       {CATEGORIES.map((cat) => (
                         <option key={cat.value} value={cat.value}>
                           {cat.emoji} {getCategoryLabel(cat.value, customCatLabels, outputLanguage)}
@@ -1894,17 +2198,17 @@ export default function ShioriClient({
                   </label>
                   <label className="block">
                     <span className="text-xs font-bold text-slate-500 mb-1 block">
-                      場所名・元メモで絞り込み
+                      {uiLabel(outputLanguage, "filterKeyword")}
                     </span>
                     <input
                       type="search"
                       value={filters.keyword}
                       onChange={(e) => updateFilter("keyword", e.target.value)}
-                      placeholder="人生体験マップの元メモ、場所名、印象に残った言葉など"
+                      placeholder={uiLabel(outputLanguage, "filterKeywordPlaceholder")}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     />
                     <span className="mt-1.5 block text-[11px] text-slate-500 leading-relaxed">
-                      {source === "heritage" ? "世界遺産パスポートから読み込んだ元メモ・世界遺産名・国名を検索します。生成後の文章欄は検索対象ではありません。" : "人生体験マップから読み込んだ元メモを検索します。生成後の文章欄は検索対象ではありません。"}
+                      {uiLabel(outputLanguage, source === "heritage" ? "filterKeywordNoteHeritage" : "filterKeywordNoteLifemap")}
                     </span>
                   </label>
                 </div>
@@ -1912,9 +2216,9 @@ export default function ShioriClient({
 
               {source === "photo" && entries.length > 0 && (
                 <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
-                  <h2 className="font-bold text-base">写真情報の編集</h2>
+                  <h2 className="font-bold text-base">{uiLabel(outputLanguage, "photoEditTitle")}</h2>
                   <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                    GPSがない写真は、場所名・都道府県・緯度経度のいずれかを入力してください。「AIに渡す元メモ」に書いた内容が旅行記文章の材料になります。
+                    {uiLabel(outputLanguage, "photoEditDesc")}
                   </p>
                   <div className="mt-4 space-y-4">
                     {entries.map((entry) => (
@@ -1933,7 +2237,7 @@ export default function ShioriClient({
                               type="text"
                               value={entry.locationName || ""}
                               onChange={(e) => updatePhotoEntry(entry.id, { locationName: e.target.value })}
-                              placeholder="場所名（例：箱根、兼六園）"
+                              placeholder={uiLabel(outputLanguage, "photoPlacePlaceholder")}
                               className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                             />
                             <div className="grid grid-cols-2 gap-2">
@@ -1960,24 +2264,24 @@ export default function ShioriClient({
                             type="button"
                             onClick={() => removePhotoEntry(entry.id)}
                             className="w-9 h-9 inline-flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:bg-red-50 shrink-0"
-                            aria-label="写真を削除"
+                            aria-label={uiLabel(outputLanguage, "photoDeleteLabel")}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                         <label className="block">
                           <span className="text-[11px] font-bold text-emerald-900 mb-1 block">
-                            AIに渡す元メモ（写真の説明・その時の記録）
+                            {uiLabel(outputLanguage, "photoMemoLabel")}
                           </span>
                           <textarea
                             value={entry.memo || ""}
                             onChange={(e) => updatePhotoEntry(entry.id, { memo: e.target.value })}
-                            placeholder="例：海辺で釣りをした。風が強かった。家族で休憩した。"
+                            placeholder={uiLabel(outputLanguage, "photoMemoPlaceholder")}
                             rows={2}
                             className="w-full px-3 py-2 rounded-lg border border-emerald-200 bg-white text-sm leading-relaxed focus:outline-none focus:border-emerald-600"
                           />
                           <span className="mt-1 block text-[11px] text-slate-500 leading-relaxed">
-                            メモ欄の編集内容は、AI旅行記メーカー画面内の素材として使われます。写真そのものはAIに送信しません。
+                            {uiLabel(outputLanguage, "photoMemoNote")}
                           </span>
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1985,7 +2289,7 @@ export default function ShioriClient({
                             type="text"
                             value={entry.prefecture || ""}
                             onChange={(e) => updatePhotoEntry(entry.id, { prefecture: e.target.value || undefined })}
-                            placeholder="都道府県・訪問地域"
+                            placeholder={uiLabel(outputLanguage, "photoPrefPlaceholder")}
                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                           />
                           <input
@@ -1993,7 +2297,7 @@ export default function ShioriClient({
                             step="any"
                             value={entry.lat ?? ""}
                             onChange={(e) => updatePhotoEntry(entry.id, { lat: e.target.value === "" ? undefined : Number(e.target.value) })}
-                            placeholder="緯度"
+                            placeholder={uiLabel(outputLanguage, "photoLatPlaceholder")}
                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                           />
                           <input
@@ -2001,13 +2305,13 @@ export default function ShioriClient({
                             step="any"
                             value={entry.lng ?? ""}
                             onChange={(e) => updatePhotoEntry(entry.id, { lng: e.target.value === "" ? undefined : Number(e.target.value) })}
-                            placeholder="経度"
+                            placeholder={uiLabel(outputLanguage, "photoLngPlaceholder")}
                             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                           />
                         </div>
                         <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
                           <Navigation className="w-3 h-3" />
-                          {entry.lat != null && entry.lng != null ? "位置情報あり。地図に表示できます。" : "GPSなし。場所名や都道府県だけでも旅行記には使えます。"}
+                          {uiLabel(outputLanguage, entry.lat != null && entry.lng != null ? "photoGpsYes" : "photoGpsNo")}
                         </p>
                       </div>
                     ))}
@@ -2019,27 +2323,27 @@ export default function ShioriClient({
                 <h2 className="font-bold text-base">{uiLabel(outputLanguage, "settings")}</h2>
                 <div className="mt-3 space-y-3">
                   <label className="block">
-                    <span className="text-xs font-bold text-slate-500 mb-1 block">タイトル</span>
+                    <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "fieldTitle")}</span>
                     <input
                       type="text"
                       value={shioriTitle}
                       onChange={(e) => setShioriTitle(e.target.value)}
-                      placeholder={`${formatRange(filteredEntries, outputLanguage)} の旅`}
+                      placeholder={tripTitle(formatRange(filteredEntries, outputLanguage), outputLanguage)}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     />
                   </label>
                   <label className="block">
-                    <span className="text-xs font-bold text-slate-500 mb-1 block">旅行者名</span>
+                    <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "fieldTraveler")}</span>
                     <input
                       type="text"
                       value={travelerName}
                       onChange={(e) => setTravelerName(e.target.value)}
-                      placeholder="例：山田家、たろう"
+                      placeholder={uiLabel(outputLanguage, "travelerPlaceholder")}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     />
                   </label>
                   <label className="block">
-                    <span className="text-xs font-bold text-slate-500 mb-1 block">旅行記の語り口</span>
+                    <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "fieldTone")}</span>
                     <select
                       value={tone}
                       onChange={(e) => setTone(e.target.value as ShioriTone)}
@@ -2266,7 +2570,7 @@ export default function ShioriClient({
                       <div>
                         <p className="text-xs font-bold text-slate-400">プレビュー</p>
                         <h2 className="text-xl font-bold text-slate-800">
-                          {shioriTitle || `${formatRange(filteredEntries, outputLanguage)} の旅`}
+                          {shioriTitle || tripTitle(formatRange(filteredEntries, outputLanguage), outputLanguage)}
                         </h2>
                       </div>
                       <p className="text-sm text-slate-500">
