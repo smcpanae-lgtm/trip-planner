@@ -61,33 +61,70 @@ export const SITE_METADATA: Metadata = {
   metadataBase: new URL("https://www.ai-drive-planner.com"),
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "AI ドライブプランナー",
-  description:
-    "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
-  url: "https://www.ai-drive-planner.com",
-  applicationCategory: "TravelApplication",
-  operatingSystem: "Web",
-  inLanguage: "ja",
-  isAccessibleForFree: true,
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "JPY",
-  },
-  featureList: [
-    "AIによる車旅行プラン自動作成",
-    "高速道路ルート・IC情報",
-    "SA/PAでの食事提案",
-    "犬連れ旅行対応",
-    "Googleマップ連携",
-    "日帰り〜複数泊プラン対応",
-  ],
-  creator: {
-    "@type": "Organization",
+/**
+ * サイト共通の WebApplication JSON-LD（ドライブプランナー本体の説明）。
+ * ページ固有の JSON-LD は各ページ側で別途出力しており、ここでは扱わない。
+ * 英語ページで日本語の名前・説明・inLanguage が出るのを避けるため lang 別に持つ。
+ * url は英語トップページが存在しないため両言語ともサイトルートを指す。
+ */
+const SITE_JSON_LD: Record<"ja" | "en", Record<string, unknown>> = {
+  ja: {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
     name: "AI ドライブプランナー",
+    description:
+      "出発地・目的地・時刻を入力するだけでAIが車旅行プランを自動作成。高速道路ルート・SA/PA食事・犬連れ対応。",
+    url: "https://www.ai-drive-planner.com",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "Web",
+    inLanguage: "ja",
+    isAccessibleForFree: true,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "JPY",
+    },
+    featureList: [
+      "AIによる車旅行プラン自動作成",
+      "高速道路ルート・IC情報",
+      "SA/PAでの食事提案",
+      "犬連れ旅行対応",
+      "Googleマップ連携",
+      "日帰り〜複数泊プラン対応",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "AI ドライブプランナー",
+    },
+  },
+  en: {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "AI Drive Planner",
+    description:
+      "AI builds a car trip plan automatically from your departure point, destination, and times — expressway routes, meals at service areas, and dog-friendly travel.",
+    url: "https://www.ai-drive-planner.com",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "Web",
+    inLanguage: "en",
+    isAccessibleForFree: true,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "JPY",
+    },
+    featureList: [
+      "AI-generated car trip plans",
+      "Expressway routes and interchange info",
+      "Meal suggestions at service and parking areas",
+      "Dog-friendly travel",
+      "Google Maps integration",
+      "Day trips to multi-night plans",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "AI Drive Planner",
+    },
   },
 };
 
@@ -105,7 +142,7 @@ export default function RootShell({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSON_LD[lang]) }}
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HHWEKHRG56"
