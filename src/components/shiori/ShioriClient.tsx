@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -882,6 +883,8 @@ export default function ShioriClient({
   /** 日本語のサンプル一覧(/shiori/samples)への導線カードを出すか。/en/shiori では出さない */
   showSamplesLink?: boolean;
 } = {}) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [source, setSource] = useState<EntrySource>("landing");
   const [entries, setEntries] = useState<LifeMapEntry[]>([]);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
@@ -906,6 +909,25 @@ export default function ShioriClient({
   const [sessionId, setSessionId] = useState("");
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | null>(null);
+
+  // 出力言語セレクトの onChange 専用。/life-map の LifeMapClient と同じ方式で、
+  // English を選んだら /en/shiori へ、/en/shiori で日本語に戻したら /shiori へ遷移する。
+  // 専用URLを持たない5言語（zh-CN, fr, ko, zh-TW, de）は従来どおりページ内切替のみ。
+  //
+  // ここ以外（state初期化・localStorage復元・下書き復元・useEffect）からは絶対に呼ばないこと。
+  // /en/shiori は初期値が "en" のため、読み込み時に呼ぶと自分自身への遷移を繰り返す。
+  // 同じ理由で、保存済み言語やブラウザの言語設定による自動リダイレクトも実装しない。
+  const handleOutputLanguageChange = useCallback(
+    (next: OutputLanguage) => {
+      setOutputLanguage(next);
+      if (next === "en" && pathname !== "/en/shiori") {
+        router.push("/en/shiori");
+      } else if (next === "ja" && pathname === "/en/shiori") {
+        router.push("/shiori");
+      }
+    },
+    [pathname, router]
+  );
 
   useEffect(() => {
     try {
@@ -1449,7 +1471,7 @@ export default function ShioriClient({
           <div className="flex items-center gap-2 flex-wrap">
             <select
               value={outputLanguage}
-              onChange={(e) => setOutputLanguage(e.target.value as OutputLanguage)}
+              onChange={(e) => handleOutputLanguageChange(e.target.value as OutputLanguage)}
               aria-label={uiLabel(outputLanguage, "outputLanguage")}
               className="px-3 py-2 rounded-lg bg-white border border-rose-100 text-slate-700 text-xs font-medium focus:outline-none focus:border-rose-400"
             >
@@ -1899,7 +1921,7 @@ export default function ShioriClient({
                     <span className="text-xs font-bold text-slate-500 mb-1 block">{uiLabel(outputLanguage, "outputLanguage")}</span>
                     <select
                       value={outputLanguage}
-                      onChange={(e) => setOutputLanguage(e.target.value as OutputLanguage)}
+                      onChange={(e) => handleOutputLanguageChange(e.target.value as OutputLanguage)}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     >
                       {OUTPUT_LANGUAGE_OPTIONS.map((option) => (
