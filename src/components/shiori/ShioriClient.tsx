@@ -766,11 +766,14 @@ function EntryCard({
 export default function ShioriClient({
   initialOutputLanguage,
   respectStoredLang = true,
+  showSamplesLink = false,
 }: {
   /** /en/shiori など、既定の出力言語を変えたいページから渡す（未指定時は "ja"） */
   initialOutputLanguage?: OutputLanguage;
   /** falseの場合、ブラウザに保存済みの出力言語設定を無視して initialOutputLanguage を優先する */
   respectStoredLang?: boolean;
+  /** 日本語のサンプル一覧(/shiori/samples)への導線カードを出すか。/en/shiori では出さない */
+  showSamplesLink?: boolean;
 } = {}) {
   const [source, setSource] = useState<EntrySource>("landing");
   const [entries, setEntries] = useState<LifeMapEntry[]>([]);
@@ -1478,6 +1481,26 @@ export default function ShioriClient({
                 未保存の写真を選んで、撮影日・GPSを読み取りながら、旅の記録として文章と一緒に残します。
               </p>
             </button>
+          </section>
+        )}
+
+        {source === "landing" && showSamplesLink && (
+          <section className="pb-10">
+            <Link
+              href="/shiori/samples"
+              className="block bg-white border border-slate-100 hover:border-rose-200 shadow-sm rounded-xl p-5 transition-all focus:outline-none focus:ring-2 focus:ring-rose-200"
+            >
+              <div className="w-11 h-11 rounded-lg bg-slate-700 text-white flex items-center justify-center mb-4">
+                <FileText className="w-5 h-5" />
+              </div>
+              <h2 className="text-lg font-bold text-slate-800">
+                AIが作った旅行記の実例を見る
+              </h2>
+              <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                京都・北海道・沖縄など5本のサンプルを公開しています。どんな文章になるか、作る前に確認できます。
+              </p>
+              <p className="mt-3 text-sm font-bold text-rose-800">5本を見る →</p>
+            </Link>
           </section>
         )}
 

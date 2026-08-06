@@ -55,12 +55,7 @@ export default function ShioriPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ShioriClient />
-      <p className="max-w-[1400px] mx-auto px-4 py-8 text-center">
-        <a href="/shiori/samples" className="text-xs text-slate-500 underline hover:text-slate-700">
-          AIが作った旅行記の実例を見る（5本）
-        </a>
-      </p>
+      <ShioriClient showSamplesLink />
       <SiteFooter />
     </>
   );
