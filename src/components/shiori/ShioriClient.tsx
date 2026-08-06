@@ -22,7 +22,8 @@ import {
   Tag,
 } from "lucide-react";
 import type { LifeMapCategory, LifeMapEntry } from "@/types/lifemap";
-import { CATEGORIES, CUSTOM_CAT_STORAGE_KEY, CUSTOM_CAT_VALUES, getCategory } from "@/lib/lifemap/categories";
+import { CATEGORIES, CUSTOM_CAT_STORAGE_KEY, getCategory } from "@/lib/lifemap/categories";
+import { shioriCategoryLabel } from "@/lib/shiori/i18n/categoryLabels";
 import { extractExifLocation } from "@/lib/lifemap/exif";
 import { compressImage } from "@/lib/lifemap/image";
 import { getAllEntries } from "@/lib/lifemap/storage";
@@ -92,11 +93,12 @@ declare global {
   }
 }
 
-const TONE_OPTIONS: { value: ShioriTone; label: string }[] = [
-  { value: "warm", label: "自分の記憶をやさしく振り返る" },
-  { value: "simple", label: "短く素直な記録文" },
-  { value: "diary", label: "日記のような一人称" },
-  { value: "guide", label: "場所の魅力も少し添える" },
+// 表示名は出力言語によって変わるため、ここでは値とラベルのキーだけを持つ。
+const TONE_OPTIONS: { value: ShioriTone; labelKey: "toneWarm" | "toneSimple" | "toneDiary" | "toneGuide" }[] = [
+  { value: "warm", labelKey: "toneWarm" },
+  { value: "simple", labelKey: "toneSimple" },
+  { value: "diary", labelKey: "toneDiary" },
+  { value: "guide", labelKey: "toneGuide" },
 ];
 
 const OUTPUT_LANGUAGE_OPTIONS: { value: OutputLanguage; label: string }[] = [
@@ -186,7 +188,10 @@ async function getHeritagePhoto(id: string): Promise<string> {
   }
 }
 
-async function loadHeritageEntries(selectedIds: string[] | null): Promise<LifeMapEntry[]> {
+async function loadHeritageEntries(
+  selectedIds: string[] | null,
+  language: OutputLanguage
+): Promise<LifeMapEntry[]> {
   const records = safeJsonParse<Record<string, HeritageRecord>>(localStorage.getItem("whp.records"), {});
   const sites = safeJsonParse<HeritageSite[]>(localStorage.getItem("whp.sites"), []);
   const selected = selectedIds && selectedIds.length > 0 ? new Set(selectedIds) : null;
@@ -199,8 +204,8 @@ async function loadHeritageEntries(selectedIds: string[] | null): Promise<LifeMa
     candidates.map(async (site) => {
       const record = records[site.id] || {};
       const photo = await getHeritagePhoto(site.id);
-      const place = getHeritageLocalName(site.name) || "世界遺産";
-      const country = getHeritageLocalName(site.country) || "世界遺産";
+      const place = getHeritageLocalName(site.name) || uiLabel(language, "worldHeritage");
+      const country = getHeritageLocalName(site.country) || uiLabel(language, "worldHeritage");
       const date = record.date || todayStr();
       const updatedAt = record.updatedAt || new Date().toISOString();
       const memo = record.memo?.trim() || "";
@@ -223,35 +228,45 @@ async function loadHeritageEntries(selectedIds: string[] | null): Promise<LifeMa
     })
   );
 }
-function getCategoryLabel(category: LifeMapCategory, customLabels: Record<string, string>): string {
-  if ((CUSTOM_CAT_VALUES as readonly string[]).includes(category) && customLabels[category]) {
-    return customLabels[category];
-  }
-  return getCategory(category).label;
+function getCategoryLabel(
+  category: LifeMapCategory,
+  customLabels: Record<string, string>,
+  language: OutputLanguage
+): string {
+  return shioriCategoryLabel(language, category, customLabels);
 }
 
-function getDisplayPlace(entry: LifeMapEntry): string {
-  return entry.locationName || entry.prefecture || "場所未設定";
+function getDisplayPlace(entry: LifeMapEntry, language: OutputLanguage): string {
+  return entry.locationName || entry.prefecture || uiLabel(language, "placeUnset");
 }
 
-function safeDownloadName(value: string): string {
-  const cleaned = value
+function safeDownloadName(value: string, language: OutputLanguage): string {
+  let cleaned = value
     .replace(/[\\/:*?"<>|]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim()
     .slice(0, 48);
-  return cleaned || "旅行記";
+  // 英語出力では英数字のみに落とす。日本語などのファイル名は環境によって文字化けするため。
+  // 日本語・中国語・韓国語はその言語圏の環境で問題にならないため、従来どおりそのまま使う。
+  if (language === "en") {
+    cleaned = cleaned
+      .replace(/[^A-Za-z0-9\-_]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+  return cleaned || uiLabel(language, "downloadFallbackName");
 }
 
 function matchesKeyword(
   entry: LifeMapEntry,
   keyword: string,
-  customLabels: Record<string, string>
+  customLabels: Record<string, string>,
+  language: OutputLanguage
 ): boolean {
   const normalized = keyword.trim().toLowerCase();
   if (!normalized) return true;
-  const categoryLabel = getCategoryLabel(entry.category, customLabels);
+  const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
   const values = [
     entry.memo,
     entry.locationName,
@@ -265,7 +280,8 @@ function matchesKeyword(
 function filterEntries(
   entries: LifeMapEntry[],
   filters: Filters,
-  customLabels: Record<string, string>
+  customLabels: Record<string, string>,
+  language: OutputLanguage
 ): LifeMapEntry[] {
   return entries
     .filter((entry) => {
@@ -275,18 +291,18 @@ function filterEntries(
         return false;
       }
       if (filters.region) {
-        const place = getDisplayPlace(entry);
+        const place = getDisplayPlace(entry, language);
         if (entry.prefecture !== filters.region && place !== filters.region) {
           return false;
         }
       }
-      return matchesKeyword(entry, filters.keyword, customLabels);
+      return matchesKeyword(entry, filters.keyword, customLabels, language);
     })
     .sort((a, b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt));
 }
 
-function formatRange(entries: LifeMapEntry[]): string {
-  if (entries.length === 0) return "範囲未選択";
+function formatRange(entries: LifeMapEntry[], language: OutputLanguage): string {
+  if (entries.length === 0) return uiLabel(language, "rangeUnset");
   const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
   const first = sorted[0]?.date;
   const last = sorted[sorted.length - 1]?.date;
@@ -484,6 +500,15 @@ function uiMessage(language: OutputLanguage, key: "copied" | "copyFailed" | "aiF
 function uiLabel(
   language: OutputLanguage,
   key:
+    | "toneWarm"
+    | "toneSimple"
+    | "toneDiary"
+    | "toneGuide"
+    | "placeUnset"
+    | "rangeUnset"
+    | "worldHeritage"
+    | "downloadFallbackName"
+    | "coverFileSuffix"
     | "serviceName"
     | "tagline"
     | "backTop"
@@ -514,8 +539,21 @@ function uiLabel(
     | "cardPhotoTitle"
     | "cardPhotoBody"
 ): string {
-  const labels: Record<OutputLanguage, Record<typeof key, string>> = {
+  // ja / en は全キー必須。それ以外の5言語はキーを省略でき、その場合は英語にフォールバックする。
+  const labels: Partial<Record<OutputLanguage, Partial<Record<typeof key, string>>>> & {
+    ja: Record<typeof key, string>;
+    en: Record<typeof key, string>;
+  } = {
     ja: {
+      toneWarm: "自分の記憶をやさしく振り返る",
+      toneSimple: "短く素直な記録文",
+      toneDiary: "日記のような一人称",
+      toneGuide: "場所の魅力も少し添える",
+      placeUnset: "場所未設定",
+      rangeUnset: "範囲未選択",
+      worldHeritage: "世界遺産",
+      downloadFallbackName: "旅行記",
+      coverFileSuffix: "-旅行記アイキャッチ",
       serviceName: "AI旅行記メーカー",
       tagline: "写真とメモから、旅の思い出をAI旅行記に。",
       backTop: "トップへ戻る",
@@ -547,6 +585,15 @@ function uiLabel(
       cardPhotoBody: "未保存の写真を選んで、撮影日・GPSを読み取りながら、旅の記録として文章と一緒に残します。",
     },
     en: {
+      toneWarm: "Look back gently on your own memories",
+      toneSimple: "Short, plain record",
+      toneDiary: "First person, like a diary",
+      toneGuide: "With a touch of what makes each place special",
+      placeUnset: "Place not set",
+      rangeUnset: "No period selected",
+      worldHeritage: "World Heritage site",
+      downloadFallbackName: "travel-journal",
+      coverFileSuffix: "-travel-journal-cover",
       serviceName: "AI Travel Journal Maker",
       tagline: "Turn photos and notes into an AI travel journal.",
       backTop: "Back to top",
@@ -578,6 +625,15 @@ function uiLabel(
       cardPhotoBody: "Choose photos you have not saved yet. The date taken and GPS are read automatically, and everything is kept as a written record of your trip.",
     },
     "zh-CN": {
+      toneWarm: "温柔地回顾自己的记忆",
+      toneSimple: "简短朴实的记录文",
+      toneDiary: "日记式的第一人称",
+      toneGuide: "略微介绍地点的魅力",
+      placeUnset: "未设置地点",
+      rangeUnset: "未选择范围",
+      worldHeritage: "世界遗产",
+      downloadFallbackName: "travel-journal",
+      coverFileSuffix: "-旅行记封面图",
       serviceName: "AI旅行记生成器",
       tagline: "用照片和备忘，把旅行回忆整理成AI旅行记。",
       backTop: "返回顶部",
@@ -609,6 +665,15 @@ function uiLabel(
       cardPhotoBody: "选择尚未保存的照片，自动读取拍摄日期和GPS信息，连同文章一起留作旅行记录。",
     },
     fr: {
+      toneWarm: "Revenir avec douceur sur ses souvenirs",
+      toneSimple: "Un texte court et simple",
+      toneDiary: "À la première personne, comme un journal",
+      toneGuide: "Avec un aperçu du charme des lieux",
+      placeUnset: "Lieu non renseigné",
+      rangeUnset: "Aucune période sélectionnée",
+      worldHeritage: "Site du patrimoine mondial",
+      downloadFallbackName: "carnet-de-voyage",
+      coverFileSuffix: "-couverture-carnet-de-voyage",
       serviceName: "Générateur de carnet de voyage IA",
       tagline: "Transformez photos et notes en carnet de voyage IA.",
       backTop: "Retour en haut",
@@ -640,6 +705,15 @@ function uiLabel(
       cardPhotoBody: "Choisissez des photos non encore enregistrées : la date de prise de vue et les données GPS sont lues automatiquement, et le tout est conservé comme récit de voyage.",
     },
     ko: {
+      toneWarm: "자신의 기억을 부드럽게 되돌아보기",
+      toneSimple: "짧고 담백한 기록문",
+      toneDiary: "일기 같은 1인칭",
+      toneGuide: "장소의 매력도 조금 곁들이기",
+      placeUnset: "장소 미설정",
+      rangeUnset: "기간 미선택",
+      worldHeritage: "세계유산",
+      downloadFallbackName: "travel-journal",
+      coverFileSuffix: "-여행기-커버이미지",
       serviceName: "AI 여행기 메이커",
       tagline: "사진과 메모로 여행의 추억을 AI 여행기로 정리합니다.",
       backTop: "맨 위로 돌아가기",
@@ -671,6 +745,15 @@ function uiLabel(
       cardPhotoBody: "아직 저장하지 않은 사진을 선택하면 촬영일과 GPS를 읽어들여, 여행의 기록으로 글과 함께 남깁니다.",
     },
     "zh-TW": {
+      toneWarm: "溫柔地回顧自己的記憶",
+      toneSimple: "簡短樸實的記錄文",
+      toneDiary: "日記式的第一人稱",
+      toneGuide: "略微介紹地點的魅力",
+      placeUnset: "未設定地點",
+      rangeUnset: "未選擇範圍",
+      worldHeritage: "世界遺產",
+      downloadFallbackName: "travel-journal",
+      coverFileSuffix: "-旅行記封面圖",
       serviceName: "AI旅行記產生器",
       tagline: "用照片和備忘，把旅行回憶整理成AI旅行記。",
       backTop: "返回頂部",
@@ -702,6 +785,15 @@ function uiLabel(
       cardPhotoBody: "選擇尚未保存的照片，自動讀取拍攝日期與GPS資訊，連同文章一起留作旅行記錄。",
     },
     de: {
+      toneWarm: "Sanft auf die eigenen Erinnerungen zurückblicken",
+      toneSimple: "Kurzer, schlichter Bericht",
+      toneDiary: "Erste Person, wie ein Tagebuch",
+      toneGuide: "Mit einem Hinweis auf den Reiz der Orte",
+      placeUnset: "Ort nicht angegeben",
+      rangeUnset: "Kein Zeitraum ausgewählt",
+      worldHeritage: "Welterbestätte",
+      downloadFallbackName: "reisetagebuch",
+      coverFileSuffix: "-reisetagebuch-titelbild",
       serviceName: "KI-Reisebericht-Generator",
       tagline: "Aus Fotos und Notizen wird ein KI-Reisebericht.",
       backTop: "Zurück nach oben",
@@ -733,8 +825,8 @@ function uiLabel(
       cardPhotoBody: "Wählen Sie noch nicht gespeicherte Fotos – Aufnahmedatum und GPS werden automatisch ausgelesen – und bewahren Sie alles als geschriebenen Reisebericht.",
     },
   };
-  // 型の上では全言語・全キーが必須だが、localStorage の古い値など想定外の入力でも
-  // 画面が壊れないよう、未定義の言語・キーは英語にフォールバックさせる。
+  // ja / en 以外はキーを省略でき、その場合は英語を使う。
+  // localStorage の古い値など想定外の言語コードが来た場合も同様に英語へ倒す。
   const table = labels[language] ?? labels.en;
   return table[key] ?? labels.en[key];
 }
@@ -746,13 +838,13 @@ function buildTemplateTexts(
   customLabels: Record<string, string>,
   language: OutputLanguage
 ): { summary: string; spots: Record<string, GeneratedSpotText> } {
-  const range = formatRange(entries);
-  const places = entries.map((entry) => getDisplayPlace(entry)).filter(Boolean);
+  const range = formatRange(entries, language);
+  const places = entries.map((entry) => getDisplayPlace(entry, language)).filter(Boolean);
   const summary = fallbackSummaryText(language, title, range, traveler, places);
   const spots = Object.fromEntries(
     entries.map((entry) => {
-      const categoryLabel = getCategoryLabel(entry.category, customLabels);
-      const place = getDisplayPlace(entry);
+      const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
+      const place = getDisplayPlace(entry, language);
       return [
         entry.id,
         {
@@ -781,8 +873,8 @@ function buildAiPayload(
     spots: entries.map((entry) => ({
       id: entry.id,
       date: entry.date,
-      place: getDisplayPlace(entry),
-      category: getCategoryLabel(entry.category, customLabels),
+      place: getDisplayPlace(entry, language),
+      category: getCategoryLabel(entry.category, customLabels, language),
       memo: entry.memo,
       prefecture: entry.prefecture,
     })),
@@ -792,13 +884,15 @@ function EntryCard({
   entry,
   customLabels,
   onMemoChange,
+  language,
 }: {
   entry: LifeMapEntry;
   customLabels: Record<string, string>;
   onMemoChange: (id: string, memo: string) => void;
+  language: OutputLanguage;
 }) {
   const cat = getCategory(entry.category);
-  const categoryLabel = getCategoryLabel(entry.category, customLabels);
+  const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
   const pos = resolveEntryLatLng(entry);
   const precisionLabel =
     entry.locationPrecision === "prefecture"
@@ -814,7 +908,7 @@ function EntryCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={entry.thumbnailDataUrl}
-            alt={entry.memo || getDisplayPlace(entry)}
+            alt={entry.memo || getDisplayPlace(entry, language)}
             className="w-full h-full object-cover"
           />
         ) : (
@@ -838,7 +932,7 @@ function EntryCard({
           </span>
         </div>
         <h3 className="mt-2 text-base font-bold text-slate-800 truncate">
-          {getDisplayPlace(entry)}
+          {getDisplayPlace(entry, language)}
         </h3>
         <label className="mt-2 block rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2">
           <span className="text-[11px] font-bold text-emerald-900">
@@ -909,6 +1003,13 @@ export default function ShioriClient({
   const [sessionId, setSessionId] = useState("");
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | null>(null);
+  // 世界遺産パスポートの読み込み時にだけ参照する出力言語。
+  // 読み込み用の useEffect の依存に outputLanguage を足すと、言語を変えるたびに記録が再読み込みされ、
+  // 画面で編集した元メモが失われてしまうため、依存に含めずrefで現在値だけを渡す。
+  const outputLanguageRef = useRef(outputLanguage);
+  useEffect(() => {
+    outputLanguageRef.current = outputLanguage;
+  }, [outputLanguage]);
 
   // 出力言語セレクトの onChange 専用。/life-map の LifeMapClient と同じ方式で、
   // English を選んだら /en/shiori へ、/en/shiori で日本語に戻したら /shiori へ遷移する。
@@ -1035,7 +1136,7 @@ export default function ShioriClient({
     setLoadError(null);
     const loader = source === "lifemap"
       ? getAllEntries().then((loaded) => selectedEntryIds ? loaded.filter((entry) => selectedEntryIds.includes(entry.id)) : loaded)
-      : loadHeritageEntries(selectedEntryIds);
+      : loadHeritageEntries(selectedEntryIds, outputLanguageRef.current);
 
     loader
       .then((loaded) => {
@@ -1061,8 +1162,8 @@ export default function ShioriClient({
   }, [entries]);
 
   const filteredEntries = useMemo(
-    () => filterEntries(entries, filters, customCatLabels),
-    [entries, filters, customCatLabels]
+    () => filterEntries(entries, filters, customCatLabels, outputLanguage),
+    [entries, filters, customCatLabels, outputLanguage]
   );
 
   const mappedCount = useMemo(
@@ -1199,7 +1300,7 @@ export default function ShioriClient({
     ctx.fillStyle = bottomShade;
     ctx.fillRect(0, 440, canvas.width, 190);
 
-    const range = formatRange(filteredEntries);
+    const range = formatRange(filteredEntries, outputLanguage);
     const title = shioriTitle || tripTitle(range, outputLanguage);
     const summary =
       generatedSummary ||
@@ -1281,21 +1382,21 @@ export default function ShioriClient({
 
     const link = document.createElement("a");
     link.href = canvas.toDataURL("image/png");
-    link.download = `${safeDownloadName(title)}-旅行記アイキャッチ.png`;
+    link.download = `${safeDownloadName(title, outputLanguage)}${uiLabel(outputLanguage, "coverFileSuffix")}.png`;
     link.click();
   };
 
 
   const handleSocialPostCopy = async () => {
     if (filteredEntries.length === 0) return;
-    const range = formatRange(filteredEntries);
+    const range = formatRange(filteredEntries, outputLanguage);
     const title = shioriTitle || tripTitle(range, outputLanguage);
     const body =
       generatedSummary ||
       Object.values(generatedSpots).find((spot) => spot.caption?.trim())?.caption ||
       filteredEntries.find((entry) => entry.memo?.trim())?.memo ||
       "";
-    const places = [...new Set(filteredEntries.map((entry) => getDisplayPlace(entry)).filter(Boolean))].slice(0, 3);
+    const places = [...new Set(filteredEntries.map((entry) => getDisplayPlace(entry, outputLanguage)).filter(Boolean))].slice(0, 3);
     const tags = ["#AI旅行記メーカー", "#AITravelJournal", "#旅行記", ...places.map((place) => `#${place.replace(/\s+/g, "")}`)];
     const postText = [title, body, tags.join(" ")].filter(Boolean).join("\n\n");
     try {
@@ -1442,7 +1543,7 @@ export default function ShioriClient({
     setGeneratedSpots((prev) => ({
       ...prev,
       [id]: {
-        title: prev[id]?.title || getDisplayPlace(filteredEntries.find((entry) => entry.id === id)!),
+        title: prev[id]?.title || getDisplayPlace(filteredEntries.find((entry) => entry.id === id)!, outputLanguage),
         caption: prev[id]?.caption || "",
         ...patch,
       },
@@ -1756,7 +1857,7 @@ export default function ShioriClient({
                       <option value="all">すべての旅タグ</option>
                       {CATEGORIES.map((cat) => (
                         <option key={cat.value} value={cat.value}>
-                          {cat.emoji} {getCategoryLabel(cat.value, customCatLabels)}
+                          {cat.emoji} {getCategoryLabel(cat.value, customCatLabels, outputLanguage)}
                         </option>
                       ))}
                     </select>
@@ -1791,7 +1892,7 @@ export default function ShioriClient({
                         <div className="flex gap-3">
                           {entry.thumbnailDataUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={entry.thumbnailDataUrl} alt={getDisplayPlace(entry)} className="w-20 h-20 object-cover rounded-lg bg-white shrink-0" />
+                            <img src={entry.thumbnailDataUrl} alt={getDisplayPlace(entry, outputLanguage)} className="w-20 h-20 object-cover rounded-lg bg-white shrink-0" />
                           ) : (
                             <div className="w-20 h-20 rounded-lg bg-white flex items-center justify-center text-slate-400 shrink-0">
                               <ImageOff className="w-6 h-6" />
@@ -1819,7 +1920,7 @@ export default function ShioriClient({
                               >
                                 {CATEGORIES.map((cat) => (
                                   <option key={cat.value} value={cat.value}>
-                                    {cat.emoji} {getCategoryLabel(cat.value, customCatLabels)}
+                                    {cat.emoji} {getCategoryLabel(cat.value, customCatLabels, outputLanguage)}
                                   </option>
                                 ))}
                               </select>
@@ -1893,7 +1994,7 @@ export default function ShioriClient({
                       type="text"
                       value={shioriTitle}
                       onChange={(e) => setShioriTitle(e.target.value)}
-                      placeholder={`${formatRange(filteredEntries)} の旅`}
+                      placeholder={`${formatRange(filteredEntries, outputLanguage)} の旅`}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     />
                   </label>
@@ -1916,7 +2017,7 @@ export default function ShioriClient({
                     >
                       {TONE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
-                          {option.label}
+                          {uiLabel(outputLanguage, option.labelKey)}
                         </option>
                       ))}
                     </select>
@@ -2063,7 +2164,7 @@ export default function ShioriClient({
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-                  旅行記に使う期間: {formatRange(filteredEntries)}
+                  旅行記に使う期間: {formatRange(filteredEntries, outputLanguage)}
                 </p>
               </section>
             </aside>
@@ -2135,7 +2236,7 @@ export default function ShioriClient({
                       <div>
                         <p className="text-xs font-bold text-slate-400">プレビュー</p>
                         <h2 className="text-xl font-bold text-slate-800">
-                          {shioriTitle || `${formatRange(filteredEntries)} の旅`}
+                          {shioriTitle || `${formatRange(filteredEntries, outputLanguage)} の旅`}
                         </h2>
                       </div>
                       <p className="text-sm text-slate-500">
@@ -2177,13 +2278,14 @@ export default function ShioriClient({
                             entry={entry}
                             customLabels={customCatLabels}
                             onMemoChange={updateEntryMemo}
+                            language={outputLanguage}
                           />
                           <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                             <label className="block">
                               <span className="text-xs font-bold text-slate-500 mb-1 block">スポット見出し（AI生成後に編集）</span>
                               <input
                                 type="text"
-                                value={generated?.title || getDisplayPlace(entry)}
+                                value={generated?.title || getDisplayPlace(entry, outputLanguage)}
                                 onChange={(e) => updateSpotText(entry.id, { title: e.target.value })}
                                 className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                               />

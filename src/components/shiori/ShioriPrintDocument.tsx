@@ -1,27 +1,22 @@
 ﻿"use client";
 
 import type { LifeMapCategory, LifeMapEntry } from "@/types/lifemap";
-import {
-  CUSTOM_CAT_VALUES,
-  getCategory,
-} from "@/lib/lifemap/categories";
+import { shioriCategoryLabel } from "@/lib/shiori/i18n/categoryLabels";
 
 function getCategoryLabel(
   category: LifeMapCategory,
-  customLabels: Record<string, string>
+  customLabels: Record<string, string>,
+  language: OutputLanguage
 ): string {
-  if ((CUSTOM_CAT_VALUES as readonly string[]).includes(category) && customLabels[category]) {
-    return customLabels[category];
-  }
-  return getCategory(category).label;
+  return shioriCategoryLabel(language, category, customLabels);
 }
 
-function getDisplayPlace(entry: LifeMapEntry): string {
-  return entry.locationName || entry.prefecture || "場所未設定";
+function getDisplayPlace(entry: LifeMapEntry, language: OutputLanguage): string {
+  return entry.locationName || entry.prefecture || langText(language, "placeUnset");
 }
 
-function formatRange(entries: LifeMapEntry[]): string {
-  if (entries.length === 0) return "範囲未選択";
+function formatRange(entries: LifeMapEntry[], language: OutputLanguage): string {
+  if (entries.length === 0) return langText(language, "rangeUnset");
   const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
   const first = sorted[0]?.date;
   const last = sorted[sorted.length - 1]?.date;
@@ -30,8 +25,12 @@ function formatRange(entries: LifeMapEntry[]): string {
 
 type OutputLanguage = "ja" | "en" | "zh-CN" | "fr" | "ko" | "zh-TW" | "de";
 
-function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "traveler" | "created" | "noPhoto" | "repPhoto" | "singleFallback" | "noteFallback" | "entryFallback"): string {
-  const texts: Record<OutputLanguage, Record<typeof key, string>> = {
+function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "traveler" | "created" | "noPhoto" | "repPhoto" | "singleFallback" | "noteFallback" | "entryFallback" | "placeUnset" | "rangeUnset"): string {
+  // ja / en は全キー必須。それ以外の5言語はキーを省略でき、その場合は英語にフォールバックする。
+  const texts: Partial<Record<OutputLanguage, Partial<Record<typeof key, string>>>> & {
+    ja: Record<typeof key, string>;
+    en: Record<typeof key, string>;
+  } = {
     ja: {
       brand: "AI旅行記メーカー",
       tripSuffix: "の旅",
@@ -42,6 +41,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "この旅で残しておきたい記録です。",
       noteFallback: "この旅で見た場所や感じたことを、あとから1枚で見返せる旅行記として残します。",
       entryFallback: "この場所での記録です。",
+      placeUnset: "場所未設定",
+      rangeUnset: "範囲未選択",
     },
     en: {
       brand: "AI Travel Journal Maker",
@@ -53,6 +54,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "A memory kept from this trip.",
       noteFallback: "I gathered this trip into a one-page record so it can be revisited at a glance.",
       entryFallback: "A memory kept from this stop.",
+      placeUnset: "Place not set",
+      rangeUnset: "No period selected",
     },
     "zh-CN": {
       brand: "AI旅行记生成器",
@@ -64,6 +67,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "这是这段旅程中想要留下的记录。",
       noteFallback: "把旅途中看到的地方和感受整理成一页，方便以后回看。",
       entryFallback: "这是在这个地点留下的记录。",
+      placeUnset: "未设置地点",
+      rangeUnset: "未选择范围",
     },
     fr: {
       brand: "Générateur de carnet de voyage IA",
@@ -75,6 +80,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "Un souvenir à garder de ce voyage.",
       noteFallback: "Ce voyage est rassemblé sur une page pour pouvoir le relire facilement.",
       entryFallback: "Un souvenir gardé de cette étape.",
+      placeUnset: "Lieu non renseigné",
+      rangeUnset: "Aucune période sélectionnée",
     },
     ko: {
       brand: "AI 여행기 메이커",
@@ -86,6 +93,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "이 여행에서 남겨 두고 싶은 기록입니다.",
       noteFallback: "이 여행에서 본 장소와 느낀 점을 한 장으로 다시 볼 수 있게 정리합니다.",
       entryFallback: "이 장소에서 남긴 기록입니다.",
+      placeUnset: "장소 미설정",
+      rangeUnset: "기간 미선택",
     },
     "zh-TW": {
       brand: "AI旅行記產生器",
@@ -97,6 +106,8 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "這是這段旅程中想要留下的紀錄。",
       noteFallback: "把旅途中看到的地方和感受整理成一頁，方便以後回看。",
       entryFallback: "這是在這個地點留下的紀錄。",
+      placeUnset: "未設定地點",
+      rangeUnset: "未選擇範圍",
     },
     de: {
       brand: "KI-Reisebericht-Generator",
@@ -108,9 +119,12 @@ function langText(language: OutputLanguage, key: "brand" | "tripSuffix" | "trave
       singleFallback: "Eine Erinnerung, die ich von dieser Reise behalten möchte.",
       noteFallback: "Diese Reise wird auf einer Seite festgehalten, damit sie später schnell wieder betrachtet werden kann.",
       entryFallback: "Eine Erinnerung an diesen Ort.",
+      placeUnset: "Ort nicht angegeben",
+      rangeUnset: "Kein Zeitraum ausgewählt",
     },
   };
-  return texts[language][key];
+  const table = texts[language] ?? texts.en;
+  return table[key] ?? texts.en[key];
 }
 
 function tripTitle(range: string, language: OutputLanguage): string {
@@ -168,7 +182,7 @@ export default function ShioriPrintDocument({
   customLabels: Record<string, string>;
   language?: OutputLanguage;
 }) {
-  const range = formatRange(entries);
+  const range = formatRange(entries, language);
   const locale = language === "en" ? "en-US" : language === "fr" ? "fr-FR" : language === "ko" ? "ko-KR" : language === "de" ? "de-DE" : language === "zh-CN" ? "zh-CN" : language === "zh-TW" ? "zh-TW" : "ja-JP";
   const photos = entries.filter((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
   const firstImage = photos[0];
@@ -247,7 +261,7 @@ export default function ShioriPrintDocument({
           <div className="shiori-print-photo-strip">
             {compactPhotos.map((entry) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={entry.id} src={entry.thumbnailDataUrl || entry.imageDataUrl} alt={getDisplayPlace(entry)} />
+              <img key={entry.id} src={entry.thumbnailDataUrl || entry.imageDataUrl} alt={getDisplayPlace(entry, language)} />
             ))}
           </div>
         )}
@@ -258,18 +272,18 @@ export default function ShioriPrintDocument({
           <article className="shiori-print-single-story">
             <div className="shiori-print-compact-meta">
               <span>{singleEntry.date}</span>
-              <span>{getCategoryLabel(singleEntry.category, customLabels)}</span>
+              <span>{getCategoryLabel(singleEntry.category, customLabels, language)}</span>
               {singleEntry.prefecture && <span>{singleEntry.prefecture}</span>}
             </div>
-            <h2>{singleGenerated?.title || getDisplayPlace(singleEntry)}</h2>
+            <h2>{singleGenerated?.title || getDisplayPlace(singleEntry, language)}</h2>
             <p>{truncateText(singleStory, 260)}</p>
           </article>
         ) : (
           <div className="shiori-print-compact-timeline">
             {compactEntries.map((entry, index) => {
-              const categoryLabel = getCategoryLabel(entry.category, customLabels);
+              const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
               const generated = generatedSpots[entry.id];
-              const place = generated?.title || getDisplayPlace(entry);
+              const place = generated?.title || getDisplayPlace(entry, language);
               const caption = generated?.caption || entry.memo || langText(language, "entryFallback");
               return (
                 <article key={entry.id} className="shiori-print-compact-entry">
