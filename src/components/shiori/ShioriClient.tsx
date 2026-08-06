@@ -920,10 +920,14 @@ export default function ShioriClient({
   const handleOutputLanguageChange = useCallback(
     (next: OutputLanguage) => {
       setOutputLanguage(next);
+      // 現在のクエリをそのまま引き継ぐ。世界遺産・人生体験マップからの導線は
+      // ?source=...&ids=... 形式のため、落とすと読み込み済みの記録が消えてしまう。
+      // クエリが無いときは "" になるため、余計な "?" は付かない。
+      const query = window.location.search;
       if (next === "en" && pathname !== "/en/shiori") {
-        router.push("/en/shiori");
+        router.push(`/en/shiori${query}`);
       } else if (next === "ja" && pathname === "/en/shiori") {
-        router.push("/shiori");
+        router.push(`/shiori${query}`);
       }
     },
     [pathname, router]
