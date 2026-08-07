@@ -128,6 +128,10 @@ const SHIORI_LANG_STORAGE_KEY = "shiori-output-language";
 const SHIORI_SESSION_STORAGE_KEY = "shiori-anonymous-session-id";
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
+// 一度にAI生成できる記録の上限。サーバー側の MAX_SPOTS と同じ値。
+// 超えるとサーバーが errorCode: "too_many_entries" を返す。
+const MAX_AI_SPOTS = 20;
+
 type ShioriDraft = {
   source: EntrySource;
   entries: LifeMapEntry[];
@@ -535,6 +539,157 @@ function uiMessage(language: OutputLanguage, key: "copied" | "copyFailed" | "aiF
     },
   };
   return messages[language][key];
+}
+
+/**
+ * AI生成APIのエラー文言。サーバーが返す errorCode で引く。
+ *
+ * サーバーは日本語の文面（レスポンスの error）を従来どおり返しており、
+ * クライアントを介さない呼び出しではそちらがそのまま使われる。画面には
+ * 出力言語の文面を出したいので、コードを見てここで差し替える。
+ *
+ * 日本語の13件はサーバーの文面と同一文字列で、日本語表示は従来と変わらない。
+ * 自動送信対策の呼び方（英語の anti-bot check など）は、同じ画面の
+ * turnstileLoading / turnstileError で使っている語にそろえてある。
+ */
+type ApiErrorCode =
+  | "method_not_allowed"
+  | "bad_origin"
+  | "no_entries"
+  | "too_many_entries"
+  | "images_not_allowed"
+  | "input_too_long"
+  | "bad_request"
+  | "turnstile_failed"
+  | "rate_limit_minute"
+  | "rate_limit_day"
+  | "rate_limit_session_day"
+  | "concurrent"
+  | "duplicate";
+
+const API_ERROR_MESSAGES: Record<OutputLanguage, Record<ApiErrorCode, string>> = {
+  ja: {
+    method_not_allowed: "AI生成APIはPOSTリクエストのみ受け付けています。",
+    bad_origin: "このサイト以外からのAI生成リクエストは受け付けていません。",
+    no_entries: "旅行記に使う記録がありません。",
+    too_many_entries: `一度にAI生成できる記録は${MAX_AI_SPOTS}件までです。範囲を絞ってからお試しください。`,
+    images_not_allowed: "写真データはAI生成APIへ送信できません。場所・日付・メモだけで作成してください。",
+    input_too_long: "入力内容が長すぎます。記録数やメモを短くしてからお試しください。",
+    bad_request: "AI生成リクエストを処理できませんでした。入力内容を確認してから再度お試しください。",
+    turnstile_failed: "認証確認に失敗しました。画面を更新してからもう一度お試しください。",
+    rate_limit_minute: "短時間に複数回のAI生成が行われました。1分ほど待ってから再度お試しください。",
+    rate_limit_day: "本日のAI生成回数が上限に達しました。明日以降に再度お試しください。",
+    rate_limit_session_day: "このブラウザでの本日のAI生成回数が上限に達しました。明日以降に再度お試しください。",
+    concurrent: "同じ回線からAI生成が実行中です。完了してから再度お試しください。",
+    duplicate: "同じ内容のAI生成が短時間に送信されています。少し時間を置いてから再度お試しください。",
+  },
+  en: {
+    method_not_allowed: "The AI generation API only accepts POST requests.",
+    bad_origin: "AI generation requests from outside this site are not accepted.",
+    no_entries: "There are no records to build the journal from.",
+    too_many_entries: `You can generate up to ${MAX_AI_SPOTS} records at a time. Narrow the range and try again.`,
+    images_not_allowed: "Photo data cannot be sent to the AI generation API. Use only places, dates, and notes.",
+    input_too_long: "The input is too long. Shorten the notes or reduce the number of records and try again.",
+    bad_request: "The AI generation request could not be processed. Check the input and try again.",
+    turnstile_failed: "The anti-bot check failed. Reload the page and try again.",
+    rate_limit_minute: "AI generation was run several times in a short period. Wait about a minute and try again.",
+    rate_limit_day: "Today's AI generation limit has been reached. Please try again tomorrow.",
+    rate_limit_session_day: "Today's AI generation limit for this browser has been reached. Please try again tomorrow.",
+    concurrent: "AI generation is already running from the same connection. Wait for it to finish and try again.",
+    duplicate: "The same content was submitted for AI generation a moment ago. Wait a little and try again.",
+  },
+  "zh-CN": {
+    method_not_allowed: "AI生成API仅接受POST请求。",
+    bad_origin: "不接受来自本站以外的AI生成请求。",
+    no_entries: "没有可用于生成旅行记的记录。",
+    too_many_entries: `一次最多可生成${MAX_AI_SPOTS}条记录。请缩小范围后再试。`,
+    images_not_allowed: "照片数据无法发送到AI生成API。请只使用地点、日期和备忘。",
+    input_too_long: "输入内容过长。请减少记录数或缩短备忘后再试。",
+    bad_request: "无法处理AI生成请求。请确认输入内容后再试。",
+    turnstile_failed: "自动提交防护的验证失败。请重新加载页面后再试。",
+    rate_limit_minute: "短时间内多次执行了AI生成。请等待约1分钟后再试。",
+    rate_limit_day: "今日的AI生成次数已达上限。请明日以后再试。",
+    rate_limit_session_day: "此浏览器今日的AI生成次数已达上限。请明日以后再试。",
+    concurrent: "同一线路正在执行AI生成。请等待完成后再试。",
+    duplicate: "短时间内提交了相同内容的AI生成。请稍候片刻后再试。",
+  },
+  fr: {
+    method_not_allowed: "L'API de génération par IA n'accepte que les requêtes POST.",
+    bad_origin: "Les requêtes de génération par IA provenant d'un autre site ne sont pas acceptées.",
+    no_entries: "Aucun enregistrement n'est disponible pour créer le carnet.",
+    too_many_entries: `Vous pouvez générer jusqu'à ${MAX_AI_SPOTS} enregistrements à la fois. Réduisez la sélection et réessayez.`,
+    images_not_allowed: "Les photos ne peuvent pas être envoyées à l'API de génération. Utilisez seulement les lieux, les dates et les notes.",
+    input_too_long: "Le contenu saisi est trop long. Réduisez le nombre d'enregistrements ou raccourcissez les notes, puis réessayez.",
+    bad_request: "La requête de génération par IA n'a pas pu être traitée. Vérifiez la saisie et réessayez.",
+    turnstile_failed: "La protection anti-robot a échoué. Rechargez la page et réessayez.",
+    rate_limit_minute: "La génération par IA a été lancée plusieurs fois en peu de temps. Attendez environ une minute et réessayez.",
+    rate_limit_day: "La limite de générations par IA pour aujourd'hui est atteinte. Réessayez demain.",
+    rate_limit_session_day: "La limite de générations par IA pour ce navigateur est atteinte pour aujourd'hui. Réessayez demain.",
+    concurrent: "Une génération par IA est déjà en cours depuis la même connexion. Attendez la fin et réessayez.",
+    duplicate: "Le même contenu vient d'être envoyé pour une génération par IA. Patientez un instant et réessayez.",
+  },
+  ko: {
+    method_not_allowed: "AI 생성 API는 POST 요청만 받습니다.",
+    bad_origin: "이 사이트 외부에서 보낸 AI 생성 요청은 받지 않습니다.",
+    no_entries: "여행기를 만들 기록이 없습니다.",
+    too_many_entries: `한 번에 AI로 생성할 수 있는 기록은 ${MAX_AI_SPOTS}건까지입니다. 범위를 좁혀서 다시 시도해 주세요.`,
+    images_not_allowed: "사진 데이터는 AI 생성 API로 보낼 수 없습니다. 장소, 날짜, 메모만으로 만들어 주세요.",
+    input_too_long: "입력 내용이 너무 깁니다. 기록 수를 줄이거나 메모를 짧게 한 뒤 다시 시도해 주세요.",
+    bad_request: "AI 생성 요청을 처리하지 못했습니다. 입력 내용을 확인한 뒤 다시 시도해 주세요.",
+    turnstile_failed: "자동 전송 방지 확인에 실패했습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요.",
+    rate_limit_minute: "짧은 시간에 AI 생성이 여러 번 실행되었습니다. 1분 정도 기다린 뒤 다시 시도해 주세요.",
+    rate_limit_day: "오늘의 AI 생성 횟수가 상한에 도달했습니다. 내일 이후에 다시 시도해 주세요.",
+    rate_limit_session_day: "이 브라우저의 오늘 AI 생성 횟수가 상한에 도달했습니다. 내일 이후에 다시 시도해 주세요.",
+    concurrent: "같은 회선에서 AI 생성이 실행 중입니다. 완료된 뒤에 다시 시도해 주세요.",
+    duplicate: "같은 내용의 AI 생성이 조금 전에 전송되었습니다. 잠시 뒤에 다시 시도해 주세요.",
+  },
+  "zh-TW": {
+    method_not_allowed: "AI產生API僅接受POST請求。",
+    bad_origin: "不接受來自本站以外的AI產生請求。",
+    no_entries: "沒有可用於製作旅行記的紀錄。",
+    too_many_entries: `一次最多可產生${MAX_AI_SPOTS}筆紀錄。請縮小範圍後再試。`,
+    images_not_allowed: "照片資料無法傳送到AI產生API。請只使用地點、日期和備忘。",
+    input_too_long: "輸入內容過長。請減少紀錄筆數或縮短備忘後再試。",
+    bad_request: "無法處理AI產生請求。請確認輸入內容後再試。",
+    turnstile_failed: "自動送出防護的驗證失敗。請重新載入頁面後再試。",
+    rate_limit_minute: "短時間內多次執行了AI產生。請等待約1分鐘後再試。",
+    rate_limit_day: "今日的AI產生次數已達上限。請明日以後再試。",
+    rate_limit_session_day: "此瀏覽器今日的AI產生次數已達上限。請明日以後再試。",
+    concurrent: "同一線路正在執行AI產生。請等待完成後再試。",
+    duplicate: "短時間內送出了相同內容的AI產生。請稍候片刻後再試。",
+  },
+  de: {
+    method_not_allowed: "Die KI-Erstellungs-API nimmt nur POST-Anfragen an.",
+    bad_origin: "Anfragen zur KI-Erstellung von außerhalb dieser Website werden nicht angenommen.",
+    no_entries: "Es sind keine Einträge vorhanden, aus denen ein Reisebericht erstellt werden kann.",
+    too_many_entries: `Es können höchstens ${MAX_AI_SPOTS} Einträge auf einmal erzeugt werden. Grenzen Sie die Auswahl ein und versuchen Sie es erneut.`,
+    images_not_allowed: "Fotodaten können nicht an die KI-Erstellungs-API gesendet werden. Verwenden Sie nur Orte, Daten und Notizen.",
+    input_too_long: "Die Eingabe ist zu lang. Kürzen Sie die Notizen oder verringern Sie die Zahl der Einträge und versuchen Sie es erneut.",
+    bad_request: "Die Anfrage zur KI-Erstellung konnte nicht verarbeitet werden. Prüfen Sie die Eingabe und versuchen Sie es erneut.",
+    turnstile_failed: "Der Bot-Schutz hat die Prüfung abgelehnt. Laden Sie die Seite neu und versuchen Sie es erneut.",
+    rate_limit_minute: "Die KI-Erstellung wurde in kurzer Zeit mehrfach ausgeführt. Warten Sie etwa eine Minute und versuchen Sie es erneut.",
+    rate_limit_day: "Das heutige Limit für KI-Erstellungen ist erreicht. Bitte versuchen Sie es morgen erneut.",
+    rate_limit_session_day: "Das heutige Limit für KI-Erstellungen in diesem Browser ist erreicht. Bitte versuchen Sie es morgen erneut.",
+    concurrent: "Aus derselben Verbindung läuft bereits eine KI-Erstellung. Warten Sie, bis sie abgeschlossen ist, und versuchen Sie es erneut.",
+    duplicate: "Derselbe Inhalt wurde gerade zur KI-Erstellung gesendet. Warten Sie einen Moment und versuchen Sie es erneut.",
+  },
+};
+
+/**
+ * サーバーのエラーレスポンスを、画面に出す1文にする。
+ *
+ * 対応表にないコード（サーバー側にあとから増えたものなど）はサーバーの文面を
+ * そのまま出す。クライアントが知らないというだけで何も表示されない、という
+ * 状態にしないため。
+ */
+function apiErrorMessage(
+  language: OutputLanguage,
+  code: string | undefined,
+  serverMessage: string | undefined
+): string {
+  const table = API_ERROR_MESSAGES[language] || API_ERROR_MESSAGES.ja;
+  const known = code && Object.prototype.hasOwnProperty.call(table, code) ? table[code as ApiErrorCode] : "";
+  return known || serverMessage || uiLabel(language, "aiGenerateFailed");
 }
 
 type UiLabelKey =
@@ -2289,11 +2444,20 @@ export default function ShioriClient({
         spots?: { id: string; title?: string; caption?: string }[];
         fallback?: boolean;
         error?: string;
+        errorCode?: string;
       };
       if (!response.ok) {
-        throw new Error(data.error || uiLabel(outputLanguage, "aiGenerateFailed"));
+        throw new Error(apiErrorMessage(outputLanguage, data.errorCode, data.error));
       }
       const fallback = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
+      // AIを使えなかったとき、サーバーは日本語のテンプレート文を fallback: true で返す。
+      // 同じ内容の出力言語版がクライアントにあるので、サーバーの文面は採用しない。
+      // （採用すると英語やフランス語を選んでいても日本語が表示されてしまう）
+      if (data.fallback) {
+        applyGeneratedTexts(fallback.summary, fallback.spots);
+        setAiError(uiMessage(outputLanguage, "aiFallback"));
+        return;
+      }
       const nextSpots = { ...fallback.spots };
       for (const spot of data.spots || []) {
         if (!spot.id) continue;
@@ -2303,9 +2467,6 @@ export default function ShioriClient({
         };
       }
       applyGeneratedTexts(data.summary || fallback.summary, nextSpots);
-      if (data.fallback) {
-        setAiError(uiMessage(outputLanguage, "aiFallback"));
-      }
     } catch (error) {
       const generated = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
       applyGeneratedTexts(generated.summary, generated.spots);

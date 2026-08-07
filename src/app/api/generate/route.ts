@@ -21,6 +21,33 @@ type AuditError =
   | "gemini_error"
   | "ok";
 
+/**
+ * 画面に出すエラー文言の識別子。クライアントがこれを見て出力言語の文面に差し替える。
+ *
+ * 監査ログの AuditError とは別物。AuditError は集計のための分類で、bad_input は
+ * 「記録なし」「件数超過」「画像混入」「長すぎ」「例外時の総括」の5つの文面を共有している。
+ * AuditError を細分化すると既存のログ集計が変わってしまうため、表示用は別フィールドにする。
+ * 対応は多対一（複数の ErrorCode が同じ AuditError を指す）。
+ *
+ * レスポンスの error（日本語の文面）は従来どおり返す。クライアントを介さない呼び出しで
+ * 文面が空にならないようにするためで、クライアントが対応していないコードを受け取ったときも
+ * この文面をそのまま表示する。
+ */
+type ErrorCode =
+  | "method_not_allowed"
+  | "bad_origin"
+  | "no_entries"
+  | "too_many_entries"
+  | "images_not_allowed"
+  | "input_too_long"
+  | "bad_request"
+  | "turnstile_failed"
+  | "rate_limit_minute"
+  | "rate_limit_day"
+  | "rate_limit_session_day"
+  | "concurrent"
+  | "duplicate";
+
 interface ShioriSpotInput {
   id: string;
   date: string;
@@ -90,8 +117,8 @@ function getApiKeys(): string[] {
   return [...new Set(candidates.filter((key): key is string => Boolean(key && key.length > 10)))];
 }
 
-function jsonError(message: string, status: number, errorType: AuditError) {
-  return NextResponse.json({ error: message, errorType }, { status });
+function jsonError(message: string, status: number, errorType: AuditError, errorCode: ErrorCode) {
+  return NextResponse.json({ error: message, errorType, errorCode }, { status });
 }
 
 function getIp(request: NextRequest): string {
@@ -160,16 +187,16 @@ function pruneHits(map: Map<string, number[]>, key: string, windowMs: number, no
 function checkRateLimit(ipHash: string, sessionId: string) {
   const now = Date.now();
   if (pruneHits(ipMinuteHits, ipHash, MINUTE_MS, now).length >= 1) {
-    return { ok: false, status: 429, errorType: "rate_limit_ip_minute" as const, message: "短時間に複数回のAI生成が行われました。1分ほど待ってから再度お試しください。" };
+    return { ok: false, status: 429, errorType: "rate_limit_ip_minute" as const, errorCode: "rate_limit_minute" as const, message: "短時間に複数回のAI生成が行われました。1分ほど待ってから再度お試しください。" };
   }
   if (pruneHits(ipDayHits, ipHash, DAY_MS, now).length >= 20) {
-    return { ok: false, status: 429, errorType: "rate_limit_ip_day" as const, message: "本日のAI生成回数が上限に達しました。明日以降に再度お試しください。" };
+    return { ok: false, status: 429, errorType: "rate_limit_ip_day" as const, errorCode: "rate_limit_day" as const, message: "本日のAI生成回数が上限に達しました。明日以降に再度お試しください。" };
   }
   if (pruneHits(sessionDayHits, sessionId, DAY_MS, now).length >= 10) {
-    return { ok: false, status: 429, errorType: "rate_limit_session_day" as const, message: "このブラウザでの本日のAI生成回数が上限に達しました。明日以降に再度お試しください。" };
+    return { ok: false, status: 429, errorType: "rate_limit_session_day" as const, errorCode: "rate_limit_session_day" as const, message: "このブラウザでの本日のAI生成回数が上限に達しました。明日以降に再度お試しください。" };
   }
   if ((activeIpRuns.get(ipHash) || 0) >= 1) {
-    return { ok: false, status: 429, errorType: "concurrent_ip" as const, message: "同じ回線からAI生成が実行中です。完了してから再度お試しください。" };
+    return { ok: false, status: 429, errorType: "concurrent_ip" as const, errorCode: "concurrent" as const, message: "同じ回線からAI生成が実行中です。完了してから再度お試しください。" };
   }
   return { ok: true as const };
 }
@@ -217,13 +244,13 @@ function isOutputLanguage(value: unknown): value is OutputLanguage {
 
 function validateAndNormalizeBody(body: ShioriRequest) {
   if (!body || !Array.isArray(body.spots) || body.spots.length === 0) {
-    return { ok: false as const, message: "旅行記に使う記録がありません。" };
+    return { ok: false as const, errorCode: "no_entries" as const, message: "旅行記に使う記録がありません。" };
   }
   if (body.spots.length > MAX_SPOTS) {
-    return { ok: false as const, message: `一度にAI生成できる記録は${MAX_SPOTS}件までです。範囲を絞ってからお試しください。` };
+    return { ok: false as const, errorCode: "too_many_entries" as const, message: `一度にAI生成できる記録は${MAX_SPOTS}件までです。範囲を絞ってからお試しください。` };
   }
   if (Array.isArray((body as unknown as { images?: unknown[] }).images) && (body as unknown as { images: unknown[] }).images.length > 0) {
-    return { ok: false as const, message: "写真データはAI生成APIへ送信できません。場所・日付・メモだけで作成してください。" };
+    return { ok: false as const, errorCode: "images_not_allowed" as const, message: "写真データはAI生成APIへ送信できません。場所・日付・メモだけで作成してください。" };
   }
 
   const safeBody: ShioriRequest = {
@@ -249,7 +276,7 @@ function validateAndNormalizeBody(body: ShioriRequest) {
     spots: safeBody.spots,
   }).length;
   if (totalTextLength > MAX_TOTAL_TEXT_LENGTH) {
-    return { ok: false as const, message: "入力内容が長すぎます。記録数やメモを短くしてからお試しください。" };
+    return { ok: false as const, errorCode: "input_too_long" as const, message: "入力内容が長すぎます。記録数やメモを短くしてからお試しください。" };
   }
   return { ok: true as const, value: safeBody };
 }
@@ -554,31 +581,31 @@ export async function POST(request: NextRequest) {
   try {
     if (!verifyOrigin(request)) {
       auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_origin" });
-      return jsonError("このサイト以外からのAI生成リクエストは受け付けていません。", 403, "bad_origin");
+      return jsonError("このサイト以外からのAI生成リクエストは受け付けていません。", 403, "bad_origin", "bad_origin");
     }
 
     const normalized = validateAndNormalizeBody((await request.json()) as ShioriRequest);
     if (!normalized.ok) {
       auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_input" });
-      return jsonError(normalized.message, 400, "bad_input");
+      return jsonError(normalized.message, 400, "bad_input", normalized.errorCode);
     }
     const safeBody = normalized.value;
     sessionId = safeBody.sessionId || request.headers.get("x-shiori-session-id") || "unknown";
 
     if (!(await verifyTurnstile(safeBody.turnstileToken, ip))) {
       auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_turnstile" });
-      return jsonError("認証確認に失敗しました。画面を更新してからもう一度お試しください。", 403, "bad_turnstile");
+      return jsonError("認証確認に失敗しました。画面を更新してからもう一度お試しください。", 403, "bad_turnstile", "turnstile_failed");
     }
 
     const rateLimit = checkRateLimit(ipHash, sessionId);
     if (!rateLimit.ok) {
       auditLog({ requestId, ipHash, userAgent, sessionId, errorType: rateLimit.errorType });
-      return jsonError(rateLimit.message, rateLimit.status, rateLimit.errorType);
+      return jsonError(rateLimit.message, rateLimit.status, rateLimit.errorType, rateLimit.errorCode);
     }
 
     if (!checkDuplicate(`${ipHash}:${sessionId}:${contentHash(safeBody)}`)) {
       auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "duplicate" });
-      return jsonError("同じ内容のAI生成が短時間に送信されています。少し時間を置いてから再度お試しください。", 429, "duplicate");
+      return jsonError("同じ内容のAI生成が短時間に送信されています。少し時間を置いてから再度お試しください。", 429, "duplicate", "duplicate");
     }
 
     const apiKeys = getApiKeys();
@@ -666,12 +693,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Generate API error", error);
     auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_input" });
-    return jsonError("AI生成リクエストを処理できませんでした。入力内容を確認してから再度お試しください。", 400, "bad_input");
+    return jsonError("AI生成リクエストを処理できませんでした。入力内容を確認してから再度お試しください。", 400, "bad_input", "bad_request");
   } finally {
     if (accepted) releaseIp(ipHash);
   }
 }
 
 export async function GET() {
-  return jsonError("AI生成APIはPOSTリクエストのみ受け付けています。", 405, "bad_method");
+  return jsonError("AI生成APIはPOSTリクエストのみ受け付けています。", 405, "bad_method", "method_not_allowed");
 }
