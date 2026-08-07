@@ -2049,18 +2049,22 @@ export default function ShioriClient({
         return;
       }
       const draft = JSON.parse(raw) as Partial<ShioriDraft>;
+      // 復元で画面全体が下書きの言語に切り替わるため、完了メッセージも同じ言語で出す。
+      const restoredLanguage = isOutputLanguage(draft.outputLanguage) ? draft.outputLanguage : "ja";
       setSource(draft.source === "photo" || draft.source === "lifemap" || draft.source === "heritage" ? draft.source : "photo");
       setEntries(Array.isArray(draft.entries) ? draft.entries : []);
       setFilters(draft.filters || emptyFilters);
       setShioriTitle(draft.shioriTitle || "");
       setTravelerName(draft.travelerName || "");
       setTone(draft.tone || "warm");
-      setOutputLanguage(isOutputLanguage(draft.outputLanguage) ? draft.outputLanguage : "ja");
+      setOutputLanguage(restoredLanguage);
       setGeneratedSummary(draft.generatedSummary || "");
       setGeneratedSpots(draft.generatedSpots || {});
       setSelectedEntryIds(null);
-      setDraftMessage(uiLabel(outputLanguage, "draftRestored"));
+      setDraftMessage(uiLabel(restoredLanguage, "draftRestored"));
     } catch {
+      // ここへ来るのは JSON.parse が失敗したときだけで、下書きの言語はまだ判明していない。
+      // 画面の言語も切り替わっていないため、現在の出力言語のままで正しい。
       setDraftMessage(uiLabel(outputLanguage, "draftRestoreFailed"));
     }
   };
