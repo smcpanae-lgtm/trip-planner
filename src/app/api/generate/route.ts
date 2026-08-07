@@ -317,6 +317,34 @@ function toneLabel(tone: ShioriTone): string {
   }
 }
 
+/**
+ * 固有名詞と文体の追加制約。出力言語がCJK以外のときだけプロンプトに足す。
+ *
+ * 固有名詞: 実機の英語出力で「城前橋」が "the castle bridge" と意味で訳された。
+ * 読みをローマ字にしたうえで、初出だけ括弧で原語を併記させる。誤ったローマ字は
+ * 読めても検索できないが、括弧の原語表記があれば地図アプリで辿り着けるため。
+ *
+ * 文体: 同じ出力に "a lovely, unhurried time" のような、誰が書いても同じになる
+ * 評価語が並んでいた。形容詞で言い切らせず、行動と観察で書かせる。
+ *
+ * 日本語・中国語では原語の表記をそのまま使えるため、韓国語は音写であって意味訳に
+ * ならないため、いずれもこのブロックは渡さない（プロンプトは従来と完全に同一になる）。
+ */
+const CJK_LANGUAGES: OutputLanguage[] = ["ja", "zh-CN", "zh-TW", "ko"];
+
+function extraLanguageConstraints(language: OutputLanguage): string {
+  if (CJK_LANGUAGES.includes(language)) return "";
+  return `- 地名・施設名・橋や川の名称などの固有名詞は、意味で訳さずに読みをそのまま出力言語の文字（英語ならローマ字）で表記する
+- 元の名称がラテン文字以外で書かれている場合のみ、その名称が最初に出てくるときだけ括弧で原語表記を添える（例: Shiromae Bridge (城前橋)、Yanase River (柳瀬川)）
+- 同じ名称が二度目以降に出てくるときは括弧を付けない
+- 元の名称がすでにラテン文字の場合は括弧を付けない
+- 「川」「橋」「公園」「駅」など種別を表す部分だけは、必要に応じて出力言語の一般名詞に置き換えてよい
+- lovely / wonderful / pleasant / tranquil / truly worthwhile のような、評価を述べるだけの形容詞に頼らない（出力言語が英語以外の場合も、その言語で同じ働きをする語に頼らない）
+- 感想は形容詞で言い切らず、その場でしたこと・見えたもの・気づいたことで示す
+- 元メモに書かれた事実を手がかりにして、その場の実感が伝わる書き方にする
+`;
+}
+
 function fallbackResponse(body: ShioriRequest): ShioriResponse {
   const places = body.spots.map((spot) => spot.place).filter(Boolean);
   const range = body.spots.length > 0 ? body.spots[0].date : "旅";
@@ -331,7 +359,9 @@ function fallbackResponse(body: ShioriRequest): ShioriResponse {
 }
 
 function buildPrompt(body: ShioriRequest): string {
-  const outputLanguage = outputLanguageName(body.language || "ja");
+  const language = body.language || "ja";
+  const outputLanguage = outputLanguageName(language);
+  const extraConstraints = extraLanguageConstraints(language);
   const spots = body.spots
     .map((spot, index) =>
       [
@@ -357,7 +387,7 @@ function buildPrompt(body: ShioriRequest): string {
 - 各スポットのcaptionは80〜140文字程度
 - summaryは120〜220文字程度
 - spotのidは素材の番号（1〜${body.spots.length}）を整数でそのまま返す
-- 必ずJSONだけを返す
+${extraConstraints}- 必ずJSONだけを返す
 
 旅行記タイトル: ${body.title || "未設定"}
 旅行者名: ${body.traveler || "未設定"}
