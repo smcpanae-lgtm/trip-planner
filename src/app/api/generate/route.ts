@@ -303,18 +303,65 @@ function outputLanguageName(language: OutputLanguage): string {
   }
 }
 
-function toneLabel(tone: ShioriTone): string {
-  switch (tone) {
-    case "simple":
-      return "一人称で、短く素直な記録文";
-    case "diary":
-      return "日記のようにあたたかく、記録者の余韻が残る文";
-    case "guide":
-      return "記録者の体験を中心に、場所の魅力も少し添える文";
-    case "warm":
-    default:
-      return "記録者の視点で、やさしく思い出を振り返る文";
-  }
+/**
+ * 文体の指示は出力言語で書く。
+ *
+ * 日本語で「日記のようにあたたかく」と指示しても、英語やフランス語で書かせるときは
+ * その語感が伝わらない。指示そのものを出力言語で与えれば、書かせたい語り口を
+ * 指示文の書きぶりが同時に示すことになる。
+ *
+ * 文言は画面の文体選択肢（ShioriClient の toneWarm / toneSimple / toneDiary / toneGuide）に
+ * そろえてある。利用者が選んだ選択肢の説明と、AIへの指示がずれないようにするため。
+ * 日本語の4つは従来の toneLabel と同一の文字列で、日本語出力のプロンプトは変わらない。
+ */
+const TONE_LABELS: Record<OutputLanguage, Record<ShioriTone, string>> = {
+  ja: {
+    warm: "記録者の視点で、やさしく思い出を振り返る文",
+    simple: "一人称で、短く素直な記録文",
+    diary: "日記のようにあたたかく、記録者の余韻が残る文",
+    guide: "記録者の体験を中心に、場所の魅力も少し添える文",
+  },
+  en: {
+    warm: "First person, looking back gently on the writer's own memories",
+    simple: "First person, short and plain, staying with what actually happened",
+    diary: "First person, like a diary entry, warm, leaving a feeling that lingers",
+    guide: "Centered on what the writer experienced, with a little of what makes the place worth seeing",
+  },
+  "zh-CN": {
+    warm: "以第一人称，温柔地回顾自己的记忆",
+    simple: "以第一人称，简短朴实地记录当时的事",
+    diary: "像日记一样，以第一人称写，留下当时的余韵",
+    guide: "以自己的体验为主，略微提及地点的魅力",
+  },
+  fr: {
+    warm: "À la première personne, un retour tout en douceur sur ses propres souvenirs",
+    simple: "À la première personne, un texte court et simple qui s'en tient aux faits",
+    diary: "À la première personne, comme une page de journal, chaleureuse et qui laisse une résonance",
+    guide: "Centré sur ce que l'auteur a vécu, avec un aperçu de ce qui fait le charme du lieu",
+  },
+  ko: {
+    warm: "1인칭으로, 자신의 기억을 부드럽게 되돌아보는 글",
+    simple: "1인칭으로, 짧고 담백하게 그때 있었던 일을 적는 글",
+    diary: "일기처럼 1인칭으로, 그때의 여운이 남는 글",
+    guide: "자신의 체험을 중심으로, 장소의 매력도 조금 곁들인 글",
+  },
+  "zh-TW": {
+    warm: "以第一人稱，溫柔地回顧自己的記憶",
+    simple: "以第一人稱，簡短樸實地記錄當時的事",
+    diary: "像日記一樣，以第一人稱寫，留下當時的餘韻",
+    guide: "以自己的體驗為主，略微提及地點的魅力",
+  },
+  de: {
+    warm: "In der ersten Person, ein sanfter Rückblick auf die eigenen Erinnerungen",
+    simple: "In der ersten Person, kurz und schlicht, nah an dem, was tatsächlich geschehen ist",
+    diary: "In der ersten Person, wie ein Tagebucheintrag, warm und mit einem Nachklang",
+    guide: "Auf das eigene Erleben gestützt, mit einem Hinweis auf den Reiz des Ortes",
+  },
+};
+
+function toneLabel(tone: ShioriTone, language: OutputLanguage): string {
+  const labels = TONE_LABELS[language] || TONE_LABELS.ja;
+  return labels[tone] || labels.warm;
 }
 
 /**
@@ -391,7 +438,7 @@ ${extraConstraints}- 必ずJSONだけを返す
 
 旅行記タイトル: ${body.title || "未設定"}
 旅行者名: ${body.traveler || "未設定"}
-文体: ${toneLabel(body.tone)}
+文体: ${toneLabel(body.tone, language)}
 
 素材:
 ${spots}
