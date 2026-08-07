@@ -34,7 +34,7 @@ const ShioriMap = dynamic(() => import("./ShioriMap"), {
   ssr: false,
   loading: () => (
     <div className="h-full min-h-[320px] flex items-center justify-center bg-slate-100 text-slate-500 text-sm">
-      地図を読み込んでいます...
+      {uiLabel(mapLoadingLanguage, "mapLoading")}
     </div>
   ),
 });
@@ -43,6 +43,16 @@ type EntrySource = "landing" | "lifemap" | "photo" | "heritage";
 
 type ShioriTone = "warm" | "simple" | "diary" | "guide";
 type OutputLanguage = "ja" | "en" | "zh-CN" | "fr" | "ko" | "zh-TW" | "de";
+
+/**
+ * 地図チャンク読込中のプレースホルダ用の出力言語。
+ *
+ * dynamic() の loading は module スコープで評価されるため、コンポーネントの state を
+ * 直接参照できない。ShioriClient の描画時にここへ現在の出力言語を退避しておき、
+ * loading 側はその値を読む。ShioriMap は ShioriClient の内側にしか現れないので、
+ * loading が呼ばれる時点では必ず代入済みになる。
+ */
+let mapLoadingLanguage: OutputLanguage = "ja";
 
 type GeneratedSpotText = {
   title: string;
@@ -527,123 +537,145 @@ function uiMessage(language: OutputLanguage, key: "copied" | "copyFailed" | "aiF
   return messages[language][key];
 }
 
+type UiLabelKey =
+  | "toneWarm"
+  | "toneSimple"
+  | "toneDiary"
+  | "toneGuide"
+  | "placeUnset"
+  | "rangeUnset"
+  | "worldHeritage"
+  | "downloadFallbackName"
+  | "coverFileSuffix"
+  | "samplesTitle"
+  | "samplesDesc"
+  | "samplesCta"
+  | "photoTitle"
+  | "photoDesc"
+  | "photoPick"
+  | "photoPickNote"
+  | "photoProcessing"
+  | "filterTitle"
+  | "filterClear"
+  | "filterDescHeritage"
+  | "filterDescLifemap"
+  | "filterFrom"
+  | "filterTo"
+  | "filterRegion"
+  | "filterRegionAll"
+  | "filterTag"
+  | "filterTagAll"
+  | "filterKeyword"
+  | "filterKeywordPlaceholder"
+  | "filterKeywordNoteHeritage"
+  | "filterKeywordNoteLifemap"
+  | "photoEditTitle"
+  | "photoEditDesc"
+  | "photoPlacePlaceholder"
+  | "photoDeleteLabel"
+  | "photoMemoLabel"
+  | "photoMemoPlaceholder"
+  | "photoMemoNote"
+  | "photoPrefPlaceholder"
+  | "photoLatPlaceholder"
+  | "photoLngPlaceholder"
+  | "photoGpsYes"
+  | "photoGpsNo"
+  | "fieldTitle"
+  | "fieldTraveler"
+  | "travelerPlaceholder"
+  | "fieldTone"
+  | "turnstileLoading"
+  | "turnstileError"
+  | "turnstileMissing"
+  | "aiScopeNote"
+  | "aiNotReady"
+  | "aiGenerateFailed"
+  | "precisionPrefecture"
+  | "precisionApproximate"
+  | "precisionExact"
+  | "mapUnset"
+  | "entryMemoLabel"
+  | "entryMemoPlaceholder"
+  | "entryMemoNote"
+  | "summaryTitle"
+  | "summaryAll"
+  | "summaryUsed"
+  | "summaryMapped"
+  | "summaryRange"
+  | "loadingRecords"
+  | "emptyTitle"
+  | "emptyDescPhoto"
+  | "emptyDescHeritage"
+  | "emptyDescLifemap"
+  | "emptyPickPhoto"
+  | "emptyCtaHeritage"
+  | "emptyCtaLifemap"
+  | "noMatchTitle"
+  | "noMatchDesc"
+  | "previewLabel"
+  | "previewCount"
+  | "previewCountOne"
+  | "sectionTextTitle"
+  | "sectionTextDesc"
+  | "bodyLabel"
+  | "bodyPlaceholder"
+  | "spotTitleLabel"
+  | "spotCaptionLabel"
+  | "spotCaptionPlaceholder"
+  | "memoryPlace"
+  | "loadErrorHeritage"
+  | "loadErrorLifemap"
+  | "draftSave"
+  | "draftRestore"
+  | "draftDelete"
+  | "draftNote"
+  | "draftSaved"
+  | "draftSaveFailed"
+  | "draftNone"
+  | "draftRestored"
+  | "draftRestoreFailed"
+  | "draftDeleted"
+  | "draftDeleteFailed"
+  | "hashtags"
+  | "photoHeicWarn"
+  | "photoNone"
+  | "photoImportFailed"
+  | "pdfNote"
+  | "mapLoading"
+  | "serviceName"
+  | "tagline"
+  | "backTop"
+  | "lifeMap"
+  | "heritage"
+  | "drivePlanner"
+  | "heroTitle"
+  | "heroBody"
+  | "outputLanguage"
+  | "settings"
+  | "generateAi"
+  | "generating"
+  | "template"
+  | "copyPost"
+  | "saveImage"
+  | "savePdf"
+  | "photoPrivacy"
+  | "noticeTitle"
+  | "noticeBody"
+  | "dataTitle"
+  | "dataNote1"
+  | "dataNote2"
+  | "dataNote3"
+  | "cardLifeMapTitle"
+  | "cardLifeMapBody"
+  | "cardHeritageTitle"
+  | "cardHeritageBody"
+  | "cardPhotoTitle"
+  | "cardPhotoBody"
+
 function uiLabel(
   language: OutputLanguage,
-  key:
-    | "toneWarm"
-    | "toneSimple"
-    | "toneDiary"
-    | "toneGuide"
-    | "placeUnset"
-    | "rangeUnset"
-    | "worldHeritage"
-    | "downloadFallbackName"
-    | "coverFileSuffix"
-    | "samplesTitle"
-    | "samplesDesc"
-    | "samplesCta"
-    | "photoTitle"
-    | "photoDesc"
-    | "photoPick"
-    | "photoPickNote"
-    | "photoProcessing"
-    | "filterTitle"
-    | "filterClear"
-    | "filterDescHeritage"
-    | "filterDescLifemap"
-    | "filterFrom"
-    | "filterTo"
-    | "filterRegion"
-    | "filterRegionAll"
-    | "filterTag"
-    | "filterTagAll"
-    | "filterKeyword"
-    | "filterKeywordPlaceholder"
-    | "filterKeywordNoteHeritage"
-    | "filterKeywordNoteLifemap"
-    | "photoEditTitle"
-    | "photoEditDesc"
-    | "photoPlacePlaceholder"
-    | "photoDeleteLabel"
-    | "photoMemoLabel"
-    | "photoMemoPlaceholder"
-    | "photoMemoNote"
-    | "photoPrefPlaceholder"
-    | "photoLatPlaceholder"
-    | "photoLngPlaceholder"
-    | "photoGpsYes"
-    | "photoGpsNo"
-    | "fieldTitle"
-    | "fieldTraveler"
-    | "travelerPlaceholder"
-    | "fieldTone"
-    | "turnstileLoading"
-    | "turnstileError"
-    | "turnstileMissing"
-    | "aiScopeNote"
-    | "aiNotReady"
-    | "aiGenerateFailed"
-    | "precisionPrefecture"
-    | "precisionApproximate"
-    | "precisionExact"
-    | "mapUnset"
-    | "entryMemoLabel"
-    | "entryMemoPlaceholder"
-    | "entryMemoNote"
-    | "summaryTitle"
-    | "summaryAll"
-    | "summaryUsed"
-    | "summaryMapped"
-    | "summaryRange"
-    | "loadingRecords"
-    | "emptyTitle"
-    | "emptyDescPhoto"
-    | "emptyDescHeritage"
-    | "emptyDescLifemap"
-    | "emptyPickPhoto"
-    | "emptyCtaHeritage"
-    | "emptyCtaLifemap"
-    | "noMatchTitle"
-    | "noMatchDesc"
-    | "previewLabel"
-    | "previewCount"
-    | "sectionTextTitle"
-    | "sectionTextDesc"
-    | "bodyLabel"
-    | "bodyPlaceholder"
-    | "spotTitleLabel"
-    | "spotCaptionLabel"
-    | "spotCaptionPlaceholder"
-    | "memoryPlace"
-    | "serviceName"
-    | "tagline"
-    | "backTop"
-    | "lifeMap"
-    | "heritage"
-    | "drivePlanner"
-    | "heroTitle"
-    | "heroBody"
-    | "outputLanguage"
-    | "settings"
-    | "generateAi"
-    | "generating"
-    | "template"
-    | "copyPost"
-    | "saveImage"
-    | "savePdf"
-    | "photoPrivacy"
-    | "noticeTitle"
-    | "noticeBody"
-    | "dataTitle"
-    | "dataNote1"
-    | "dataNote2"
-    | "dataNote3"
-    | "cardLifeMapTitle"
-    | "cardLifeMapBody"
-    | "cardHeritageTitle"
-    | "cardHeritageBody"
-    | "cardPhotoTitle"
-    | "cardPhotoBody"
+  key: UiLabelKey
 ): string {
   // ja / en は全キー必須。それ以外の5言語はキーを省略でき、その場合は英語にフォールバックする。
   const labels: Partial<Record<OutputLanguage, Partial<Record<typeof key, string>>>> & {
@@ -728,6 +760,7 @@ function uiLabel(
       noMatchDesc: "日付・訪問地域・旅のタグの条件を広げると表示される可能性があります。",
       previewLabel: "プレビュー",
       previewCount: "{n}件の記録を時系列で表示中",
+      previewCountOne: "{n}件の記録を時系列で表示中",
       sectionTextTitle: "旅行記文章",
       sectionTextDesc: "上で選ばれている記録の元メモから旅行記を作ります。ここから下は生成後の編集欄です。編集した文章はSNS投稿文やアイキャッチ画像、必要に応じてPDFにも使われます。",
       bodyLabel: "旅行記本文（AI生成後に編集）",
@@ -736,6 +769,25 @@ function uiLabel(
       spotCaptionLabel: "スポット別文章（AI生成後に編集）",
       spotCaptionPlaceholder: "AIが元メモから作ったスポット別文章が入ります。ここを編集しても、再生成するまではAIの入力にはなりません。",
       memoryPlace: "思い出の場所",
+      loadErrorHeritage: "世界遺産パスポートの記録を読み込めませんでした。同じドメインの /heritage で保存した記録があるか確認してください。",
+      loadErrorLifemap: "人生体験マップの記録を読み込めませんでした。ブラウザの保存機能が使える状態か確認してください。",
+      draftSave: "下書き保存",
+      draftRestore: "下書き復元",
+      draftDelete: "下書き削除",
+      draftNote: "下書きはこのブラウザだけに保存されます。写真入口の下書きは画像も含むため、枚数が多い場合は保存できないことがあります。",
+      draftSaved: "下書きをこのブラウザに保存しました。",
+      draftSaveFailed: "下書きを保存できませんでした。写真が多い場合はブラウザ容量を超えている可能性があります。",
+      draftNone: "保存済みの下書きはありません。",
+      draftRestored: "下書きを復元しました。",
+      draftRestoreFailed: "下書きを復元できませんでした。",
+      draftDeleted: "下書きを削除しました。",
+      draftDeleteFailed: "下書きを削除できませんでした。",
+      hashtags: "#AI旅行記メーカー #AITravelJournal #旅行記",
+      photoHeicWarn: "HEIC写真はこのブラウザで直接表示できない場合があります。表示できない場合はiPhone側でJPEGとして共有してからお試しください。",
+      photoNone: "取り込める写真がありませんでした。JPEG / PNG / WebP 形式をお試しください。",
+      photoImportFailed: "写真の取り込みに失敗しました",
+      pdfNote: "この画面ではSNS投稿文とブログ用アイキャッチ画像の作成を中心にしています。PDF保存は補助機能として、A4 1枚で手元に残したい場合に使えます。",
+      mapLoading: "地図を読み込んでいます...",
       serviceName: "AI旅行記メーカー",
       tagline: "写真とメモから、旅の思い出をAI旅行記に。",
       backTop: "トップへ戻る",
@@ -844,6 +896,7 @@ function uiLabel(
       noMatchDesc: "Widening the date, area or trip tag filters may bring records back.",
       previewLabel: "Preview",
       previewCount: "Showing {n} records in date order",
+      previewCountOne: "Showing {n} record in date order",
       sectionTextTitle: "Journal text",
       sectionTextDesc: "The journal is written from the original notes of the records selected above. Everything below is the editing area for the generated text. What you edit here is used for the social post, the cover image and, if you want one, the PDF.",
       bodyLabel: "Main text (edit after AI generation)",
@@ -852,6 +905,25 @@ function uiLabel(
       spotCaptionLabel: "Spot text (edit after AI generation)",
       spotCaptionPlaceholder: "The per-spot text the AI wrote from your original notes appears here. Editing it does not feed back into the AI until you generate again.",
       memoryPlace: "A place to remember",
+      loadErrorHeritage: "The records from the World Heritage Passport could not be loaded. Check that you have records saved at /heritage on this same domain.",
+      loadErrorLifemap: "The records from the Life Experience Map could not be loaded. Check that this browser allows local storage.",
+      draftSave: "Save draft",
+      draftRestore: "Restore draft",
+      draftDelete: "Delete draft",
+      draftNote: "Drafts are stored only in this browser. Drafts started from photos include the images themselves, so saving can fail when there are many of them.",
+      draftSaved: "Draft saved in this browser.",
+      draftSaveFailed: "The draft could not be saved. With many photos it may exceed this browser's storage limit.",
+      draftNone: "There is no saved draft.",
+      draftRestored: "Draft restored.",
+      draftRestoreFailed: "The draft could not be restored.",
+      draftDeleted: "Draft deleted.",
+      draftDeleteFailed: "The draft could not be deleted.",
+      hashtags: "#TravelJournal #TravelDiary #AITravelJournal",
+      photoHeicWarn: "Some browsers cannot show HEIC photos directly. If a photo does not appear, share it as JPEG from your iPhone and try again.",
+      photoNone: "No photos could be imported. Try JPEG, PNG or WebP files.",
+      photoImportFailed: "The photos could not be imported",
+      pdfNote: "This screen is mainly for creating the social post text and the blog cover image. Saving a PDF is a secondary option, for when you want a single A4 page to keep.",
+      mapLoading: "Loading the map...",
       serviceName: "AI Travel Journal Maker",
       tagline: "Turn photos and notes into an AI travel journal.",
       backTop: "Back to top",
@@ -960,6 +1032,7 @@ function uiLabel(
       noMatchDesc: "放宽日期、到访地区、旅行标签的条件后，可能会重新显示。",
       previewLabel: "预览",
       previewCount: "正按时间顺序显示{n}条记录",
+      previewCountOne: "正按时间顺序显示{n}条记录",
       sectionTextTitle: "旅行记正文",
       sectionTextDesc: "根据上方所选记录的原始备忘撰写旅行记。以下为生成后的编辑栏。编辑后的文字会用于SNS投稿文、封面图片，以及需要时的PDF。",
       bodyLabel: "旅行记正文（AI生成后可编辑）",
@@ -968,6 +1041,25 @@ function uiLabel(
       spotCaptionLabel: "各地点文字（AI生成后可编辑）",
       spotCaptionPlaceholder: "AI根据原始备忘撰写的各地点文字会显示在这里。在重新生成之前，此处的编辑不会作为AI的输入。",
       memoryPlace: "难忘的地点",
+      loadErrorHeritage: "无法读取世界遗产护照的记录。请确认同一域名下的 /heritage 中是否有已保存的记录。",
+      loadErrorLifemap: "无法读取人生体验地图的记录。请确认本浏览器的本地存储功能是否可用。",
+      draftSave: "保存草稿",
+      draftRestore: "恢复草稿",
+      draftDelete: "删除草稿",
+      draftNote: "草稿只保存在本浏览器中。从照片入口保存的草稿包含图片，数量较多时可能无法保存。",
+      draftSaved: "草稿已保存到本浏览器。",
+      draftSaveFailed: "草稿保存失败。照片较多时可能超出浏览器的存储容量。",
+      draftNone: "没有已保存的草稿。",
+      draftRestored: "草稿已恢复。",
+      draftRestoreFailed: "草稿恢复失败。",
+      draftDeleted: "草稿已删除。",
+      draftDeleteFailed: "草稿删除失败。",
+      hashtags: "#旅行日记 #旅行记录 #AITravelJournal",
+      photoHeicWarn: "HEIC照片在部分浏览器中可能无法直接显示。如果无法显示，请先在iPhone上以JPEG格式共享后再试。",
+      photoNone: "没有可导入的照片。请尝试 JPEG / PNG / WebP 格式。",
+      photoImportFailed: "照片导入失败",
+      pdfNote: "本页面主要用于生成SNS投稿文和博客封面图。PDF保存是辅助功能，适合想以A4一页保存在手边的情况。",
+      mapLoading: "正在加载地图...",
       serviceName: "AI旅行记生成器",
       tagline: "用照片和备忘，把旅行回忆整理成AI旅行记。",
       backTop: "返回顶部",
@@ -1076,6 +1168,7 @@ function uiLabel(
       noMatchDesc: "Élargir les filtres de date, de région ou de tag peut faire réapparaître des enregistrements.",
       previewLabel: "Aperçu",
       previewCount: "Affichage de {n} enregistrements par ordre chronologique",
+      previewCountOne: "Affichage de {n} enregistrement par ordre chronologique",
       sectionTextTitle: "Texte du carnet",
       sectionTextDesc: "Le carnet est rédigé à partir des notes d'origine des enregistrements sélectionnés ci-dessus. Tout ce qui suit est la zone d'édition du texte généré. Ce que vous y modifiez sert au message pour les réseaux sociaux, à l'image de couverture et, si vous le souhaitez, au PDF.",
       bodyLabel: "Texte principal (modifiable après génération)",
@@ -1084,6 +1177,25 @@ function uiLabel(
       spotCaptionLabel: "Texte du lieu (modifiable après génération)",
       spotCaptionPlaceholder: "Le texte par lieu rédigé par l'IA à partir de vos notes d'origine apparaît ici. Vos modifications ne sont pas reprises par l'IA tant que vous ne relancez pas la génération.",
       memoryPlace: "Un lieu à retenir",
+      loadErrorHeritage: "Les enregistrements du Passeport du patrimoine mondial n'ont pas pu être chargés. Vérifiez que des enregistrements ont bien été sauvegardés sur /heritage du même domaine.",
+      loadErrorLifemap: "Les enregistrements de la Carte de vie n'ont pas pu être chargés. Vérifiez que le stockage local de ce navigateur est disponible.",
+      draftSave: "Enregistrer le brouillon",
+      draftRestore: "Restaurer le brouillon",
+      draftDelete: "Supprimer le brouillon",
+      draftNote: "Les brouillons ne sont conservés que dans ce navigateur. Ceux créés à partir de photos contiennent les images, leur enregistrement peut donc échouer s'il y en a beaucoup.",
+      draftSaved: "Brouillon enregistré dans ce navigateur.",
+      draftSaveFailed: "Le brouillon n'a pas pu être enregistré. Avec beaucoup de photos, la capacité du navigateur peut être dépassée.",
+      draftNone: "Aucun brouillon enregistré.",
+      draftRestored: "Brouillon restauré.",
+      draftRestoreFailed: "Le brouillon n'a pas pu être restauré.",
+      draftDeleted: "Brouillon supprimé.",
+      draftDeleteFailed: "Le brouillon n'a pas pu être supprimé.",
+      hashtags: "#CarnetDeVoyage #JournalDeVoyage #AITravelJournal",
+      photoHeicWarn: "Certains navigateurs ne peuvent pas afficher directement les photos HEIC. Si une photo ne s'affiche pas, partagez-la en JPEG depuis votre iPhone puis réessayez.",
+      photoNone: "Aucune photo n'a pu être importée. Essayez les formats JPEG, PNG ou WebP.",
+      photoImportFailed: "L'importation des photos a échoué",
+      pdfNote: "Cet écran sert avant tout à créer le texte pour les réseaux sociaux et l'image d'accroche du blog. L'enregistrement en PDF est une option secondaire, pour garder une page A4 sous la main.",
+      mapLoading: "Chargement de la carte...",
       serviceName: "Générateur de carnet de voyage IA",
       tagline: "Transformez photos et notes en carnet de voyage IA.",
       backTop: "Retour en haut",
@@ -1192,6 +1304,7 @@ function uiLabel(
       noMatchDesc: "날짜·방문 지역·여행 태그의 조건을 넓히면 다시 표시될 수 있습니다.",
       previewLabel: "미리보기",
       previewCount: "{n}건의 기록을 시간순으로 표시 중",
+      previewCountOne: "{n}건의 기록을 시간순으로 표시 중",
       sectionTextTitle: "여행기 문장",
       sectionTextDesc: "위에서 선택한 기록의 원본 메모로 여행기를 만듭니다. 여기부터 아래는 생성 후의 편집란입니다. 편집한 문장은 SNS 게시글과 대표 이미지, 필요에 따라 PDF에도 사용됩니다.",
       bodyLabel: "여행기 본문 (AI 생성 후 편집)",
@@ -1200,6 +1313,25 @@ function uiLabel(
       spotCaptionLabel: "장소별 문장 (AI 생성 후 편집)",
       spotCaptionPlaceholder: "AI가 원본 메모로 만든 장소별 문장이 들어갑니다. 여기를 편집해도 다시 생성하기 전까지는 AI의 입력이 되지 않습니다.",
       memoryPlace: "기억에 남는 장소",
+      loadErrorHeritage: "세계유산 여권의 기록을 불러오지 못했습니다. 같은 도메인의 /heritage에 저장한 기록이 있는지 확인해 주세요.",
+      loadErrorLifemap: "인생 체험 지도의 기록을 불러오지 못했습니다. 이 브라우저의 저장 기능을 사용할 수 있는 상태인지 확인해 주세요.",
+      draftSave: "임시저장",
+      draftRestore: "임시저장 복원",
+      draftDelete: "임시저장 삭제",
+      draftNote: "임시저장은 이 브라우저에만 저장됩니다. 사진에서 시작한 임시저장은 이미지도 포함하므로 장수가 많으면 저장하지 못할 수 있습니다.",
+      draftSaved: "임시저장을 이 브라우저에 저장했습니다.",
+      draftSaveFailed: "임시저장에 실패했습니다. 사진이 많으면 브라우저 용량을 초과했을 수 있습니다.",
+      draftNone: "저장된 임시저장이 없습니다.",
+      draftRestored: "임시저장을 복원했습니다.",
+      draftRestoreFailed: "임시저장을 복원하지 못했습니다.",
+      draftDeleted: "임시저장을 삭제했습니다.",
+      draftDeleteFailed: "임시저장을 삭제하지 못했습니다.",
+      hashtags: "#여행기록 #여행일기 #AITravelJournal",
+      photoHeicWarn: "HEIC 사진은 이 브라우저에서 바로 표시되지 않을 수 있습니다. 표시되지 않으면 iPhone에서 JPEG로 공유한 뒤 다시 시도해 주세요.",
+      photoNone: "가져올 수 있는 사진이 없습니다. JPEG / PNG / WebP 형식을 사용해 주세요.",
+      photoImportFailed: "사진을 가져오지 못했습니다",
+      pdfNote: "이 화면은 SNS 게시글과 블로그 아이캐치 이미지 만들기를 중심으로 합니다. PDF 저장은 보조 기능으로, A4 1장으로 남기고 싶을 때 사용할 수 있습니다.",
+      mapLoading: "지도를 불러오는 중입니다...",
       serviceName: "AI 여행기 메이커",
       tagline: "사진과 메모로 여행의 추억을 AI 여행기로 정리합니다.",
       backTop: "맨 위로 돌아가기",
@@ -1308,6 +1440,7 @@ function uiLabel(
       noMatchDesc: "放寬日期、造訪地區、旅行標籤的條件後，可能會重新顯示。",
       previewLabel: "預覽",
       previewCount: "正依時間順序顯示{n}筆記錄",
+      previewCountOne: "正依時間順序顯示{n}筆記錄",
       sectionTextTitle: "旅行記正文",
       sectionTextDesc: "根據上方所選記錄的原始備忘撰寫旅行記。以下為產生後的編輯欄。編輯後的文字會用於SNS貼文、封面圖片，以及需要時的PDF。",
       bodyLabel: "旅行記正文（AI產生後可編輯）",
@@ -1316,6 +1449,25 @@ function uiLabel(
       spotCaptionLabel: "各地點文字（AI產生後可編輯）",
       spotCaptionPlaceholder: "AI根據原始備忘撰寫的各地點文字會顯示在這裡。在重新產生之前，此處的編輯不會作為AI的輸入。",
       memoryPlace: "難忘的地點",
+      loadErrorHeritage: "無法讀取世界遺產護照的紀錄。請確認同一網域下的 /heritage 中是否有已儲存的紀錄。",
+      loadErrorLifemap: "無法讀取人生體驗地圖的紀錄。請確認本瀏覽器的本機儲存功能是否可用。",
+      draftSave: "儲存草稿",
+      draftRestore: "還原草稿",
+      draftDelete: "刪除草稿",
+      draftNote: "草稿只儲存在本瀏覽器中。從照片入口儲存的草稿包含圖片，數量較多時可能無法儲存。",
+      draftSaved: "草稿已儲存到本瀏覽器。",
+      draftSaveFailed: "草稿儲存失敗。照片較多時可能超出瀏覽器的儲存容量。",
+      draftNone: "沒有已儲存的草稿。",
+      draftRestored: "草稿已還原。",
+      draftRestoreFailed: "草稿還原失敗。",
+      draftDeleted: "草稿已刪除。",
+      draftDeleteFailed: "草稿刪除失敗。",
+      hashtags: "#旅行日記 #旅行記錄 #AITravelJournal",
+      photoHeicWarn: "HEIC照片在部分瀏覽器中可能無法直接顯示。若無法顯示，請先在iPhone上以JPEG格式分享後再試。",
+      photoNone: "沒有可匯入的照片。請嘗試 JPEG / PNG / WebP 格式。",
+      photoImportFailed: "照片匯入失敗",
+      pdfNote: "本頁面主要用於產生SNS貼文和部落格首圖。PDF儲存是輔助功能，適合想以A4一頁保存在手邊的情況。",
+      mapLoading: "正在載入地圖...",
       serviceName: "AI旅行記產生器",
       tagline: "用照片和備忘，把旅行回憶整理成AI旅行記。",
       backTop: "返回頂部",
@@ -1424,6 +1576,7 @@ function uiLabel(
       noMatchDesc: "Weiter gefasste Filter für Datum, Region oder Reise-Tag bringen möglicherweise wieder Einträge zum Vorschein.",
       previewLabel: "Vorschau",
       previewCount: "{n} Einträge werden chronologisch angezeigt",
+      previewCountOne: "{n} Eintrag wird chronologisch angezeigt",
       sectionTextTitle: "Text des Reisetagebuchs",
       sectionTextDesc: "Das Tagebuch entsteht aus den Originalnotizen der oben ausgewählten Einträge. Alles darunter ist der Bearbeitungsbereich für den erzeugten Text. Was Sie hier ändern, wird für den Social-Media-Beitrag, das Titelbild und bei Bedarf für das PDF verwendet.",
       bodyLabel: "Haupttext (nach der KI-Generierung bearbeitbar)",
@@ -1432,6 +1585,25 @@ function uiLabel(
       spotCaptionLabel: "Text zum Ort (nach der KI-Generierung bearbeitbar)",
       spotCaptionPlaceholder: "Hier erscheint der Text pro Ort, den die KI aus Ihren Originalnotizen geschrieben hat. Änderungen fließen erst bei einer erneuten Generierung in die KI ein.",
       memoryPlace: "Ein Ort zum Erinnern",
+      loadErrorHeritage: "Die Einträge aus dem Welterbe-Pass konnten nicht geladen werden. Prüfen Sie, ob unter /heritage derselben Domain Einträge gespeichert sind.",
+      loadErrorLifemap: "Die Einträge aus der Lebenskarte konnten nicht geladen werden. Prüfen Sie, ob der lokale Speicher dieses Browsers verfügbar ist.",
+      draftSave: "Entwurf speichern",
+      draftRestore: "Entwurf wiederherstellen",
+      draftDelete: "Entwurf löschen",
+      draftNote: "Entwürfe werden nur in diesem Browser gespeichert. Entwürfe aus dem Foto-Einstieg enthalten auch die Bilder, daher kann das Speichern bei vielen Fotos fehlschlagen.",
+      draftSaved: "Entwurf in diesem Browser gespeichert.",
+      draftSaveFailed: "Der Entwurf konnte nicht gespeichert werden. Bei vielen Fotos kann der Speicherplatz des Browsers überschritten werden.",
+      draftNone: "Es ist kein Entwurf gespeichert.",
+      draftRestored: "Entwurf wiederhergestellt.",
+      draftRestoreFailed: "Der Entwurf konnte nicht wiederhergestellt werden.",
+      draftDeleted: "Entwurf gelöscht.",
+      draftDeleteFailed: "Der Entwurf konnte nicht gelöscht werden.",
+      hashtags: "#Reisetagebuch #Reisebericht #AITravelJournal",
+      photoHeicWarn: "Manche Browser können HEIC-Fotos nicht direkt anzeigen. Wird ein Foto nicht angezeigt, teilen Sie es auf dem iPhone als JPEG und versuchen Sie es erneut.",
+      photoNone: "Es konnten keine Fotos importiert werden. Versuchen Sie die Formate JPEG, PNG oder WebP.",
+      photoImportFailed: "Die Fotos konnten nicht importiert werden",
+      pdfNote: "Dieser Bildschirm dient vor allem dem SNS-Beitragstext und dem Blog-Titelbild. Das Speichern als PDF ist eine Zusatzfunktion, wenn Sie eine einseitige A4-Fassung behalten möchten.",
+      mapLoading: "Karte wird geladen...",
       serviceName: "KI-Reisebericht-Generator",
       tagline: "Aus Fotos und Notizen wird ein KI-Reisebericht.",
       backTop: "Zurück nach oben",
@@ -1467,6 +1639,24 @@ function uiLabel(
   // localStorage の古い値など想定外の言語コードが来た場合も同様に英語へ倒す。
   const table = labels[language] ?? labels.en;
   return table[key] ?? labels.en[key];
+}
+
+/**
+ * 数値を埋め込む文言で単数形・複数形を出し分ける。
+ *
+ * 英語・ドイツ語は 1 のときだけ単数形、フランス語は 0 と 1 の両方が単数形（CLDR の
+ * 複数形カテゴリに準拠）。日本語・中国語・韓国語は単複変化が無いため常に複数形キーを
+ * 使う（単数形キーにも同じ文言を入れてあるので、どちらを引いても表示は変わらない）。
+ */
+function countLabel(
+  language: OutputLanguage,
+  key: UiLabelKey,
+  oneKey: UiLabelKey,
+  count: number
+): string {
+  const singular =
+    language === "fr" ? count === 0 || count === 1 : language === "en" || language === "de" ? count === 1 : false;
+  return uiLabel(language, singular ? oneKey : key).replace("{n}", String(count));
 }
 
 function buildTemplateTexts(
@@ -1651,6 +1841,11 @@ export default function ShioriClient({
     outputLanguageRef.current = outputLanguage;
   }, [outputLanguage]);
 
+  // 地図チャンクの読込プレースホルダ（module スコープ）へ現在の出力言語を渡す。
+  // 描画中に代入するのは、チャンクの読込が useEffect の実行より先に終わる可能性があるため。
+  // 値の書き換えだけで再描画も副作用も伴わないため、二重描画されても結果は変わらない。
+  mapLoadingLanguage = outputLanguage;
+
   // 出力言語セレクトの onChange 専用。/life-map の LifeMapClient と同じ方式で、
   // English を選んだら /en/shiori へ、/en/shiori で日本語に戻したら /shiori へ遷移する。
   // 専用URLを持たない5言語（zh-CN, fr, ko, zh-TW, de）は従来どおりページ内切替のみ。
@@ -1784,9 +1979,7 @@ export default function ShioriClient({
       })
       .catch(() =>
         setLoadError(
-          source === "heritage"
-            ? "世界遺産パスポートの記録を読み込めませんでした。同じドメインの /heritage で保存した記録があるか確認してください。"
-            : "人生体験マップの記録を読み込めませんでした。ブラウザの保存機能が使える状態か確認してください。"
+          uiLabel(outputLanguage, source === "heritage" ? "loadErrorHeritage" : "loadErrorLifemap")
         )
       )
       .finally(() => setLoading(false));
@@ -1842,9 +2035,9 @@ export default function ShioriClient({
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(SHIORI_DRAFT_STORAGE_KEY, JSON.stringify(draft));
-      setDraftMessage("下書きをこのブラウザに保存しました。");
+      setDraftMessage(uiLabel(outputLanguage, "draftSaved"));
     } catch {
-      setDraftMessage("下書きを保存できませんでした。写真が多い場合はブラウザ容量を超えている可能性があります。");
+      setDraftMessage(uiLabel(outputLanguage, "draftSaveFailed"));
     }
   };
 
@@ -1852,7 +2045,7 @@ export default function ShioriClient({
     try {
       const raw = localStorage.getItem(SHIORI_DRAFT_STORAGE_KEY);
       if (!raw) {
-        setDraftMessage("保存済みの下書きはありません。");
+        setDraftMessage(uiLabel(outputLanguage, "draftNone"));
         return;
       }
       const draft = JSON.parse(raw) as Partial<ShioriDraft>;
@@ -1866,18 +2059,18 @@ export default function ShioriClient({
       setGeneratedSummary(draft.generatedSummary || "");
       setGeneratedSpots(draft.generatedSpots || {});
       setSelectedEntryIds(null);
-      setDraftMessage("下書きを復元しました。");
+      setDraftMessage(uiLabel(outputLanguage, "draftRestored"));
     } catch {
-      setDraftMessage("下書きを復元できませんでした。");
+      setDraftMessage(uiLabel(outputLanguage, "draftRestoreFailed"));
     }
   };
 
   const handleDeleteDraft = () => {
     try {
       localStorage.removeItem(SHIORI_DRAFT_STORAGE_KEY);
-      setDraftMessage("下書きを削除しました。");
+      setDraftMessage(uiLabel(outputLanguage, "draftDeleted"));
     } catch {
-      setDraftMessage("下書きを削除できませんでした。");
+      setDraftMessage(uiLabel(outputLanguage, "draftDeleteFailed"));
     }
   };
 
@@ -2037,7 +2230,10 @@ export default function ShioriClient({
       filteredEntries.find((entry) => entry.memo?.trim())?.memo ||
       "";
     const places = [...new Set(filteredEntries.map((entry) => getDisplayPlace(entry, outputLanguage)).filter(Boolean))].slice(0, 3);
-    const tags = ["#AI旅行記メーカー", "#AITravelJournal", "#旅行記", ...places.map((place) => `#${place.replace(/\s+/g, "")}`)];
+    const tags = [
+      ...uiLabel(outputLanguage, "hashtags").split(" "),
+      ...places.map((place) => `#${place.replace(/\s+/g, "")}`),
+    ];
     const postText = [title, body, tags.join(" ")].filter(Boolean).join("\n\n");
     try {
       await navigator.clipboard.writeText(postText);
@@ -2130,7 +2326,7 @@ export default function ShioriClient({
           continue;
         }
         if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
-          setPhotoError("HEIC写真はこのブラウザで直接表示できない場合があります。表示できない場合はiPhone側でJPEGとして共有してからお試しください。");
+          setPhotoError(uiLabel(outputLanguage, "photoHeicWarn"));
         }
         const [compressed, exif] = await Promise.all([
           compressImage(file),
@@ -2154,10 +2350,10 @@ export default function ShioriClient({
       }
       setEntries((prev) => [...prev, ...imported]);
       if (imported.length === 0 && !photoError) {
-        setPhotoError("取り込める写真がありませんでした。JPEG / PNG / WebP 形式をお試しください。");
+        setPhotoError(uiLabel(outputLanguage, "photoNone"));
       }
     } catch (error) {
-      setPhotoError(error instanceof Error ? error.message : "写真の取り込みに失敗しました");
+      setPhotoError(error instanceof Error ? error.message : uiLabel(outputLanguage, "photoImportFailed"));
     } finally {
       setPhotoProcessing(false);
     }
@@ -2751,7 +2947,7 @@ export default function ShioriClient({
                     {uiLabel(outputLanguage, "savePdf")}
                   </button>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    この画面ではSNS投稿文とブログ用アイキャッチ画像の作成を中心にしています。PDF保存は補助機能として、A4 1枚で手元に残したい場合に使えます。
+                    {uiLabel(outputLanguage, "pdfNote")}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
                     <button
@@ -2759,21 +2955,21 @@ export default function ShioriClient({
                       onClick={handleSaveDraft}
                       className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
                     >
-                      下書き保存
+                      {uiLabel(outputLanguage, "draftSave")}
                     </button>
                     <button
                       type="button"
                       onClick={handleRestoreDraft}
                       className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
                     >
-                      下書き復元
+                      {uiLabel(outputLanguage, "draftRestore")}
                     </button>
                     <button
                       type="button"
                       onClick={handleDeleteDraft}
                       className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-white hover:bg-red-50 text-red-700 border border-red-100 text-xs font-bold transition-all"
                     >
-                      下書き削除
+                      {uiLabel(outputLanguage, "draftDelete")}
                     </button>
                   </div>
                   {draftMessage && (
@@ -2782,7 +2978,7 @@ export default function ShioriClient({
                     </p>
                   )}
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    下書きはこのブラウザだけに保存されます。写真入口の下書きは画像も含むため、枚数が多い場合は保存できないことがあります。
+                    {uiLabel(outputLanguage, "draftNote")}
                   </p>
                 </div>
               </section>
@@ -2883,13 +3079,13 @@ export default function ShioriClient({
                         </h2>
                       </div>
                       <p className="text-sm text-slate-500">
-                        {uiLabel(outputLanguage, "previewCount").replace("{n}", String(filteredEntries.length))}
+                        {countLabel(outputLanguage, "previewCount", "previewCountOne", filteredEntries.length)}
                       </p>
                     </div>
                   </div>
 
                   <div className="h-[360px] lg:h-[460px] rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-                    <ShioriMap entries={filteredEntries} />
+                    <ShioriMap entries={filteredEntries} language={outputLanguage} />
                   </div>
 
                   <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
