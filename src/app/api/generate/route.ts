@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, type GenerationConfig } from "@google/generative-ai";
 
 export const runtime = "nodejs";
 
@@ -17,6 +17,7 @@ type AuditError =
   | "bad_input"
   | "duplicate"
   | "missing_api_key"
+  | "gemini_attempt_failed"
   | "gemini_error"
   | "ok";
 
@@ -53,7 +54,24 @@ interface ShioriResponse {
 const MODEL_NAMES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
 const OUTPUT_LANGUAGES: OutputLanguage[] = ["ja", "en", "zh-CN", "fr", "ko", "zh-TW", "de"];
 const MAX_SPOTS = 20;
-const MAX_OUTPUT_TOKENS = 700;
+
+/**
+ * 出力トークン上限は記録数から算出する。
+ *
+ * Gemini の実トークナイザで、このプロンプトが指示している長さ（caption 80〜140字、
+ * summary 120〜220字）の返却JSONを整形出力で数えると、20件で日本語 2278 / 英語 2481
+ * トークンになる。以前の固定値 700 では 6件目あたりから途中で切れ、不完全なJSONが
+ * JSON.parse に落ちてフォールバック文へ落ちていた。
+ *
+ * 1件あたり 160 は上記の実測（1件あたり最大 118 トークン）に約 1.35 倍の余裕を見た値。
+ * 上限 3600 は MAX_SPOTS = 20 のときの算出値と一致するため通常は効かず、
+ * MAX_SPOTS を増やしたときの歯止めとして残している。
+ */
+const OUTPUT_TOKENS_BASE = 400;
+const OUTPUT_TOKENS_PER_SPOT = 160;
+const OUTPUT_TOKENS_MIN = 900;
+const OUTPUT_TOKENS_MAX = 3600;
+
 const MAX_TOTAL_TEXT_LENGTH = 6000;
 const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
@@ -168,6 +186,29 @@ function releaseIp(ipHash: string) {
   const next = Math.max(0, (activeIpRuns.get(ipHash) || 0) - 1);
   if (next === 0) activeIpRuns.delete(ipHash);
   else activeIpRuns.set(ipHash, next);
+}
+
+function maxOutputTokensFor(spotCount: number): number {
+  const needed = OUTPUT_TOKENS_BASE + OUTPUT_TOKENS_PER_SPOT * spotCount;
+  return Math.min(OUTPUT_TOKENS_MAX, Math.max(OUTPUT_TOKENS_MIN, needed));
+}
+
+/**
+ * 思考トークンは maxOutputTokens を消費するため、本文用の枠を確定させる目的で無効化する。
+ * この処理は固定スキーマへの書き換えで多段推論を必要とせず、思考を切ってもJSONの質は落ちない。
+ *
+ * thinkingConfig はこのSDK（@google/generative-ai）の GenerationConfig 型には無いが、
+ * リクエストは JSON.stringify でそのまま送られるためAPIには届く。万一APIが受理しない場合に
+ * 備えて、呼び出し側は同じモデルを thinkingConfig 無しでもう一度試す。
+ */
+function buildGenerationConfig(maxOutputTokens: number, disableThinking: boolean): GenerationConfig {
+  const base: GenerationConfig = {
+    temperature: 0.65,
+    maxOutputTokens,
+    responseMimeType: "application/json",
+  };
+  if (!disableThinking) return base;
+  return { ...base, thinkingConfig: { thinkingBudget: 0 } } as GenerationConfig;
 }
 
 function isOutputLanguage(value: unknown): value is OutputLanguage {
@@ -294,7 +335,7 @@ function buildPrompt(body: ShioriRequest): string {
   const spots = body.spots
     .map((spot, index) =>
       [
-        `${index + 1}. id=${spot.id}`,
+        `${index + 1}.`,
         `日付: ${spot.date}`,
         `場所: ${spot.place}`,
         `地域: ${spot.prefecture || "未設定"}`,
@@ -315,7 +356,7 @@ function buildPrompt(body: ShioriRequest): string {
 - 外から紹介する観光案内ではなく、旅を振り返るナラティブな文章にする
 - 各スポットのcaptionは80〜140文字程度
 - summaryは120〜220文字程度
-- spotのidは入力と完全一致させる
+- spotのidは素材の番号（1〜${body.spots.length}）を整数でそのまま返す
 - 必ずJSONだけを返す
 
 旅行記タイトル: ${body.title || "未設定"}
@@ -329,32 +370,79 @@ ${spots}
 {
   "summary": "記録者の視点で旅全体を振り返る文章",
   "spots": [
-    { "id": "入力id", "title": "短い見出し", "caption": "その場所での記憶を一人称で振り返る文章" }
+    { "id": 1, "title": "短い見出し", "caption": "その場所での記憶を一人称で振り返る文章" }
   ]
 }`;
 }
 
+/**
+ * AIが返した id を素材の番号として解釈する。
+ *
+ * 数値・数字だけの文字列（"1" / "01"）のどちらでも受ける。
+ * 番号ではなく入力の id をそのまま返してきた場合の保険として indexById も引く。
+ * 解釈できない値は null を返し、呼び出し側で無視する。
+ */
+function resolveSpotIndex(value: unknown, indexById: Map<string, number>): number | null {
+  if (typeof value === "number") return Number.isInteger(value) ? value : null;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  const byId = indexById.get(trimmed);
+  if (byId !== undefined) return byId;
+  return /^\d+$/.test(trimmed) ? Number.parseInt(trimmed, 10) : null;
+}
+
+/**
+ * AIの返却を入力の並びへ戻す。
+ *
+ * id は素材の通し番号（1 始まり）で返させている。写真入口の id は `photo-<uuid>` で、
+ * Gemini のトークナイザではUUIDが1件36トークンになるため、そのまま往復させると
+ * 20件で 725 トークン——出力枠の大半——を id だけが占めてしまうため。
+ *
+ * 番号の異常はすべてここで吸収する。
+ * - 範囲外・非整数・id欠損 … その要素を無視する
+ * - 同じ番号の重複      … 最初の1件を採用する
+ * - 番号の欠落          … その記録だけAIなしのテンプレート文で埋める（他の記録の生成文は残す）
+ *
+ * 返却する id は必ず入力の id に戻すため、クライアントから見た形式は変わらない。
+ */
 function normalizeResponse(parsed: unknown, body: ShioriRequest): ShioriResponse {
   const fallback = fallbackResponse(body);
   if (!parsed || typeof parsed !== "object") return fallback;
   const record = parsed as Record<string, unknown>;
   const rawSpots = Array.isArray(record.spots) ? record.spots : [];
-  const spotsById = new Map<string, GeneratedSpot>();
+
+  const indexById = new Map(body.spots.map((spot, index) => [spot.id, index + 1]));
+  const byIndex = new Map<number, { title: string; caption: string }>();
   for (const item of rawSpots) {
     if (!item || typeof item !== "object") continue;
     const spot = item as Record<string, unknown>;
-    const id = typeof spot.id === "string" ? spot.id : "";
-    if (!id) continue;
-    spotsById.set(id, {
-      id,
-      title: typeof spot.title === "string" && spot.title.trim() ? spot.title.trim() : fallback.spots.find((s) => s.id === id)?.title || "思い出の場所",
-      caption: typeof spot.caption === "string" && spot.caption.trim() ? spot.caption.trim() : fallback.spots.find((s) => s.id === id)?.caption || "",
+    const index = resolveSpotIndex(spot.id, indexById);
+    if (index === null || index < 1 || index > body.spots.length) continue;
+    if (byIndex.has(index)) continue;
+    byIndex.set(index, {
+      title: typeof spot.title === "string" ? spot.title.trim() : "",
+      caption: typeof spot.caption === "string" ? spot.caption.trim() : "",
     });
   }
+
   return {
     summary: typeof record.summary === "string" && record.summary.trim() ? record.summary.trim() : fallback.summary,
-    spots: body.spots.map((input) => spotsById.get(input.id) || fallback.spots.find((spot) => spot.id === input.id)!),
+    spots: body.spots.map((input, index): GeneratedSpot => {
+      const template = fallback.spots[index];
+      const generated = byIndex.get(index + 1);
+      return {
+        id: input.id,
+        title: generated?.title || template.title,
+        caption: generated?.caption || template.caption,
+      };
+    }),
   };
+}
+
+interface GeminiUsage {
+  promptTokenCount?: number;
+  candidatesTokenCount?: number;
+  totalTokenCount?: number;
 }
 
 function auditLog(data: {
@@ -366,6 +454,14 @@ function auditLog(data: {
   inputTokens?: number;
   outputTokens?: number;
   totalTokens?: number;
+  // 以下は生成の試行ごとの内訳。打ち切り（finishReason: MAX_TOKENS）を
+  // 通常のAPIエラーと区別するために、成功時だけでなく失敗時にも残す。
+  model?: string;
+  spotCount?: number;
+  maxOutputTokens?: number;
+  thinkingDisabled?: boolean;
+  finishReason?: string;
+  reason?: string;
 }) {
   console.log(JSON.stringify({ type: "shiori_generate_audit", at: new Date().toISOString(), ...data }));
 }
@@ -418,43 +514,77 @@ export async function POST(request: NextRequest) {
     accepted = true;
 
     const prompt = buildPrompt(safeBody);
+    const spotCount = safeBody.spots.length;
+    const maxOutputTokens = maxOutputTokensFor(spotCount);
     let lastError: unknown;
+
     for (const apiKey of apiKeys) {
       const genAI = new GoogleGenerativeAI(apiKey);
       for (const modelName of MODEL_NAMES) {
-        try {
-          const model = genAI.getGenerativeModel({ model: modelName });
-          const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.65,
-              maxOutputTokens: MAX_OUTPUT_TOKENS,
-              responseMimeType: "application/json",
-            },
-          });
-          const parsed = JSON.parse(result.response.text());
-          const usage = (result.response as unknown as {
-            usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
-          }).usageMetadata;
-          auditLog({
-            requestId,
-            ipHash,
-            userAgent,
-            sessionId,
-            errorType: "ok",
-            inputTokens: usage?.promptTokenCount,
-            outputTokens: usage?.candidatesTokenCount,
-            totalTokens: usage?.totalTokenCount,
-          });
-          return NextResponse.json(normalizeResponse(parsed, safeBody));
-        } catch (error) {
-          lastError = error;
+        // thinkingConfig 付きで1回、APIに拒否された場合だけ無指定でもう1回。
+        for (const thinkingDisabled of [true, false]) {
+          let responded = false;
+          let usage: GeminiUsage | undefined;
+          let finishReason: string | undefined;
+          try {
+            const model = genAI.getGenerativeModel({ model: modelName });
+            const result = await model.generateContent({
+              contents: [{ role: "user", parts: [{ text: prompt }] }],
+              generationConfig: buildGenerationConfig(maxOutputTokens, thinkingDisabled),
+            });
+            responded = true;
+            const response = result.response as unknown as {
+              candidates?: { finishReason?: string }[];
+              usageMetadata?: GeminiUsage;
+            };
+            usage = response.usageMetadata;
+            finishReason = response.candidates?.[0]?.finishReason;
+
+            // 打ち切られた応答は不完全なJSONとしてここで例外になり、下の catch で記録される。
+            const parsed = JSON.parse(result.response.text());
+            auditLog({
+              requestId,
+              ipHash,
+              userAgent,
+              sessionId,
+              errorType: "ok",
+              inputTokens: usage?.promptTokenCount,
+              outputTokens: usage?.candidatesTokenCount,
+              totalTokens: usage?.totalTokenCount,
+              model: modelName,
+              spotCount,
+              maxOutputTokens,
+              thinkingDisabled,
+              finishReason,
+            });
+            return NextResponse.json(normalizeResponse(parsed, safeBody));
+          } catch (error) {
+            lastError = error;
+            auditLog({
+              requestId,
+              ipHash,
+              userAgent,
+              sessionId,
+              errorType: "gemini_attempt_failed",
+              inputTokens: usage?.promptTokenCount,
+              outputTokens: usage?.candidatesTokenCount,
+              totalTokens: usage?.totalTokenCount,
+              model: modelName,
+              spotCount,
+              maxOutputTokens,
+              thinkingDisabled,
+              finishReason,
+              reason: error instanceof Error ? error.message.slice(0, 300) : String(error).slice(0, 300),
+            });
+          }
+          // 応答が返っていれば thinkingConfig は受理されている。無指定での再試行は意味がない。
+          if (responded) break;
         }
       }
     }
 
     console.error("Shiori AI generation failed", lastError);
-    auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "gemini_error" });
+    auditLog({ requestId, ipHash, userAgent, sessionId, errorType: "gemini_error", spotCount, maxOutputTokens });
     return NextResponse.json({ ...fallbackResponse(safeBody), fallback: true });
   } catch (error) {
     console.error("Generate API error", error);
