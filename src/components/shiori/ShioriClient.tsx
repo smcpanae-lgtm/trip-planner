@@ -9,6 +9,8 @@ import {
   BookOpen,
   CalendarDays,
   Camera,
+  Check,
+  CircleAlert,
   Download,
   Upload,
   Trash2,
@@ -160,6 +162,14 @@ type SelectionState = {
 const ALL_SELECTED: SelectionState = { mode: "all-except", ids: [] };
 const NONE_SELECTED: SelectionState = { mode: "only", ids: [] };
 
+/** ボタンを押した結果を、そのボタン自身で返すための状態。数秒後に "idle" へ戻す。 */
+type ActionFeedback = "idle" | "done" | "failed";
+/** 成功は一目で分かるので短く、失敗は次の手順を読む時間が要るので長めに出す。 */
+const FEEDBACK_MS: Record<Exclude<ActionFeedback, "idle">, number> = {
+  done: 3000,
+  failed: 5000,
+};
+
 type ShioriDraft = {
   source: EntrySource;
   entries: LifeMapEntry[];
@@ -195,6 +205,33 @@ const emptyFilters: Filters = {
 
 const FONT_STACK =
   '"Meiryo", "メイリオ", "Hiragino Sans", "Noto Sans JP", sans-serif';
+
+/**
+ * アイキャッチ画像の行頭に置いてはいけない文字（禁則処理）。
+ * 句読点や閉じ括弧が行の先頭に来ると読みづらいため、幅を超えても前の行にぶら下げる。
+ * 空白で語を区切らない言語（日本語・中国語・韓国語）でのみ使う。
+ */
+const NO_LINE_START = "。、．，！？）」』】〉》”’ー・…";
+
+/** 空白で語を区切る言語か。単語の途中で改行しないための判定に使う。 */
+function usesSpaceSeparatedWords(language: OutputLanguage): boolean {
+  return language === "en" || language === "fr" || language === "de";
+}
+
+/**
+ * その位置が「文の区切り」か。読点は含めない（文として不完全になるため）。
+ * 英文のピリオドは「Mr.」「3.5」のように文末でないことがあるので、
+ * 直後が空白か文末のときだけ区切りとみなす。
+ */
+function isSentenceEnd(text: string, index: number): boolean {
+  const char = text[index];
+  if ("。．！？".includes(char)) return true;
+  if (".!?".includes(char)) {
+    const next = text[index + 1];
+    return next === undefined || next === " ";
+  }
+  return false;
+}
 
 function todayStr(): string {
   const d = new Date();
@@ -538,47 +575,36 @@ function aiBrandLabel(language: OutputLanguage): string {
   }
 }
 
-function uiMessage(language: OutputLanguage, key: "copied" | "copyFailed" | "aiFallback" | "aiFailed"): string {
-  const messages: Record<OutputLanguage, Record<"copied" | "copyFailed" | "aiFallback" | "aiFailed", string>> = {
+// コピー・画像保存の結果は uiLabel の copyDone / imageDone 系でボタン自身に出す。
+// （以前ここにあった copied / copyFailed は、下書き用のメッセージ欄に相乗りしており
+//   ボタンから遠すぎて反応が分からなかったため廃止した。）
+function uiMessage(language: OutputLanguage, key: "aiFallback" | "aiFailed"): string {
+  const messages: Record<OutputLanguage, Record<"aiFallback" | "aiFailed", string>> = {
     ja: {
-      copied: "SNS投稿文をコピーしました。",
-      copyFailed: "SNS投稿文をコピーできませんでした。文章欄から手動でコピーしてください。",
       aiFallback: "AIが使えないため、AIなしの記録文で作成しました。文章はそのまま編集できます。",
       aiFailed: "AI生成に失敗したため、AIなしの記録文で作成しました。文章はそのまま編集できます。",
     },
     en: {
-      copied: "Social media post text copied.",
-      copyFailed: "Could not copy the social media post text. Please copy it manually from the text area.",
       aiFallback: "AI is unavailable, so a template journal was created. You can edit the text freely.",
       aiFailed: "AI generation failed, so a template journal was created. You can edit the text freely.",
     },
     "zh-CN": {
-      copied: "已复制SNS投稿文。",
-      copyFailed: "无法复制SNS投稿文。请从文本栏手动复制。",
       aiFallback: "AI暂时不可用，已生成不使用AI的旅行记。文字可以继续编辑。",
       aiFailed: "AI生成失败，已生成不使用AI的旅行记。文字可以继续编辑。",
     },
     fr: {
-      copied: "Le texte pour les réseaux sociaux a été copié.",
-      copyFailed: "Impossible de copier le texte. Veuillez le copier manuellement depuis la zone de texte.",
       aiFallback: "L'IA est indisponible. Un texte modèle a été créé et peut être modifié.",
       aiFailed: "La génération par IA a échoué. Un texte modèle a été créé et peut être modifié.",
     },
     ko: {
-      copied: "SNS 게시글 문장을 복사했습니다.",
-      copyFailed: "SNS 게시글 문장을 복사하지 못했습니다. 글 영역에서 직접 복사해 주세요.",
       aiFallback: "AI를 사용할 수 없어 템플릿 여행기를 만들었습니다. 문장은 자유롭게 편집할 수 있습니다.",
       aiFailed: "AI 생성에 실패해 템플릿 여행기를 만들었습니다. 문장은 자유롭게 편집할 수 있습니다.",
     },
     "zh-TW": {
-      copied: "已複製SNS貼文。",
-      copyFailed: "無法複製SNS貼文。請從文字欄手動複製。",
       aiFallback: "AI暫時無法使用，已產生不使用AI的旅行記。文字可繼續編輯。",
       aiFailed: "AI產生失敗，已產生不使用AI的旅行記。文字可繼續編輯。",
     },
     de: {
-      copied: "Der SNS-Beitragstext wurde kopiert.",
-      copyFailed: "Der SNS-Beitragstext konnte nicht kopiert werden. Bitte kopieren Sie ihn manuell aus dem Textfeld.",
       aiFallback: "KI ist nicht verfügbar. Ein Vorlagentext wurde erstellt und kann bearbeitet werden.",
       aiFailed: "Die KI-Erstellung ist fehlgeschlagen. Ein Vorlagentext wurde erstellt und kann bearbeitet werden.",
     },
@@ -876,6 +902,16 @@ type UiLabelKey =
   | "copyPost"
   | "saveImage"
   | "savePdf"
+  // ボタンを押した直後、ボタン自身のラベルを一時的に差し替えるための文言。
+  // ラベルは短く、次にすることは直下の Hint に分けている（独仏で1行に収めるため）。
+  | "copyDone"
+  | "copyDoneHint"
+  | "copyFailedLabel"
+  | "copyFailedHint"
+  | "imageDone"
+  | "imageDoneHint"
+  | "imageFailedLabel"
+  | "imageFailedHint"
   | "photoPrivacy"
   | "noticeTitle"
   | "noticeBody"
@@ -1038,6 +1074,14 @@ function uiLabel(
       copyPost: "SNS投稿文をコピー",
       saveImage: "アイキャッチ画像を保存",
       savePdf: "PDFでも保存する",
+      copyDone: "コピーしました",
+      copyDoneHint: "SNSアプリを開いて貼り付けてください。",
+      copyFailedLabel: "コピーできませんでした",
+      copyFailedHint: "下の文章欄を選んで、手動でコピーしてください。",
+      imageDone: "画像を保存しました",
+      imageDoneHint: "端末のダウンロード先に保存しました。SNSの投稿に添付してください。",
+      imageFailedLabel: "画像を保存できませんでした",
+      imageFailedHint: "写真を読み込み直すか、少し時間をおいてもう一度お試しください。",
       photoPrivacy: "写真は端末内で扱い、送信しません。送信するのは、地名・日付・メモ・タイトル・記録者名・設定などの文字情報だけです。",
       noticeTitle: "ご利用上の注意",
       noticeBody: "本サイトのソースコード・デザイン・コンテンツの無断複製・転用・再配布を禁止します。",
@@ -1191,6 +1235,14 @@ function uiLabel(
       copyPost: "Copy social media post text",
       saveImage: "Save cover image",
       savePdf: "Save as PDF too",
+      copyDone: "Copied",
+      copyDoneHint: "Open your social media app and paste it in.",
+      copyFailedLabel: "Could not copy",
+      copyFailedHint: "Select the text below and copy it manually.",
+      imageDone: "Image saved",
+      imageDoneHint: "Saved to your downloads. Attach it to your post.",
+      imageFailedLabel: "Could not save the image",
+      imageFailedHint: "Reload the photo, or try again in a moment.",
       photoPrivacy: "Photos are handled on your device and are never sent. Only text — place names, dates, your notes, and the title and settings you enter — is sent to generate your journal.",
       noticeTitle: "Copyright notice",
       noticeBody: "Unauthorized copying, reuse, or redistribution of this site's source code, design, and content is prohibited.",
@@ -1344,6 +1396,14 @@ function uiLabel(
       copyPost: "复制SNS投稿文",
       saveImage: "保存封面图",
       savePdf: "也保存为PDF",
+      copyDone: "已复制",
+      copyDoneHint: "请打开SNS应用粘贴。",
+      copyFailedLabel: "复制失败",
+      copyFailedHint: "请选中下方文本栏，手动复制。",
+      imageDone: "已保存图片",
+      imageDoneHint: "已保存到下载位置，请添加到投稿中。",
+      imageFailedLabel: "图片保存失败",
+      imageFailedHint: "请重新载入照片，或稍后再试。",
       photoPrivacy: "照片仅在您的设备中处理，不会发送。发送的只有地点、日期、备忘、标题、记录者姓名、设置等文字信息。",
       noticeTitle: "使用须知",
       noticeBody: "禁止擅自复制、转用或再分发本站的源代码、设计和内容。",
@@ -1497,6 +1557,14 @@ function uiLabel(
       copyPost: "Copier le texte SNS",
       saveImage: "Enregistrer l'image d'accroche",
       savePdf: "Enregistrer aussi en PDF",
+      copyDone: "Copié",
+      copyDoneHint: "Ouvrez votre application et collez le texte.",
+      copyFailedLabel: "Échec de la copie",
+      copyFailedHint: "Sélectionnez le texte ci-dessous et copiez-le manuellement.",
+      imageDone: "Image enregistrée",
+      imageDoneHint: "Enregistrée dans vos téléchargements. Joignez-la à votre publication.",
+      imageFailedLabel: "Échec de l'enregistrement",
+      imageFailedHint: "Rechargez la photo ou réessayez dans un instant.",
       photoPrivacy: "Vos photos restent sur votre appareil et ne sont jamais envoyées. Seul du texte est transmis pour la rédaction : lieux, dates, notes, titre, nom de l'auteur et réglages.",
       noticeTitle: "Conditions d'utilisation",
       noticeBody: "Toute copie, réutilisation ou redistribution non autorisée du code source, du design et du contenu de ce site est interdite.",
@@ -1650,6 +1718,14 @@ function uiLabel(
       copyPost: "SNS 게시글 복사",
       saveImage: "아이캐치 이미지 저장",
       savePdf: "PDF로도 저장",
+      copyDone: "복사했습니다",
+      copyDoneHint: "SNS 앱을 열고 붙여넣어 주세요.",
+      copyFailedLabel: "복사하지 못했습니다",
+      copyFailedHint: "아래 글 영역을 선택해 직접 복사해 주세요.",
+      imageDone: "이미지를 저장했습니다",
+      imageDoneHint: "다운로드 위치에 저장했습니다. 게시글에 첨부해 주세요.",
+      imageFailedLabel: "이미지를 저장하지 못했습니다",
+      imageFailedHint: "사진을 다시 불러오거나 잠시 후 다시 시도해 주세요.",
       photoPrivacy: "사진은 기기 안에서만 처리하며 전송하지 않습니다. 전송되는 것은 지명·날짜·메모·제목·기록자 이름·설정 등 문자 정보뿐입니다.",
       noticeTitle: "이용 시 주의사항",
       noticeBody: "본 사이트의 소스 코드·디자인·콘텐츠를 무단으로 복제·전용·재배포하는 것을 금지합니다.",
@@ -1803,6 +1879,14 @@ function uiLabel(
       copyPost: "複製SNS貼文",
       saveImage: "保存首圖",
       savePdf: "也保存為PDF",
+      copyDone: "已複製",
+      copyDoneHint: "請開啟SNS應用程式貼上。",
+      copyFailedLabel: "複製失敗",
+      copyFailedHint: "請選取下方文字欄，手動複製。",
+      imageDone: "已保存圖片",
+      imageDoneHint: "已保存至下載位置，請附加到貼文中。",
+      imageFailedLabel: "圖片保存失敗",
+      imageFailedHint: "請重新載入照片，或稍後再試。",
       photoPrivacy: "照片僅在您的裝置中處理，不會傳送。傳送的只有地點、日期、備忘、標題、記錄者姓名、設定等文字資訊。",
       noticeTitle: "使用須知",
       noticeBody: "禁止擅自複製、轉用或再散布本站的原始碼、設計與內容。",
@@ -1956,6 +2040,14 @@ function uiLabel(
       copyPost: "SNS-Beitrag kopieren",
       saveImage: "Titelbild speichern",
       savePdf: "Auch als PDF speichern",
+      copyDone: "Kopiert",
+      copyDoneHint: "Öffnen Sie Ihre App und fügen Sie den Text ein.",
+      copyFailedLabel: "Kopieren fehlgeschlagen",
+      copyFailedHint: "Markieren Sie den Text unten und kopieren Sie ihn manuell.",
+      imageDone: "Bild gespeichert",
+      imageDoneHint: "In Ihren Downloads gespeichert. Fügen Sie es Ihrem Beitrag bei.",
+      imageFailedLabel: "Speichern fehlgeschlagen",
+      imageFailedHint: "Laden Sie das Foto neu oder versuchen Sie es später erneut.",
       photoPrivacy: "Fotos bleiben auf Ihrem Gerät und werden nie übertragen. Übertragen wird nur Text: Ortsnamen, Daten, Notizen, Titel, Name der verfassenden Person und Einstellungen.",
       noticeTitle: "Nutzungshinweise",
       noticeBody: "Das unbefugte Kopieren, Weiterverwenden oder Weiterverbreiten von Quellcode, Design und Inhalten dieser Website ist untersagt.",
@@ -2191,6 +2283,13 @@ export default function ShioriClient({
   const [tone, setTone] = useState<ShioriTone>("warm");
   const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>(initialOutputLanguage ?? "ja");
   const [draftMessage, setDraftMessage] = useState<string | null>(null);
+  // コピー・画像保存の結果は、ボタン自身のラベルを一時的に差し替えて返す。
+  // draftMessage（下書き欄）に相乗りしていた頃は、表示位置がボタンの170〜280px下
+  // （モバイルでは画面外）で、押しても反応が分からなかった。
+  const [copyState, setCopyState] = useState<ActionFeedback>("idle");
+  const [imageState, setImageState] = useState<ActionFeedback>("idle");
+  const copyTimerRef = useRef<number | null>(null);
+  const imageTimerRef = useRef<number | null>(null);
   const [selectedEntryIds, setSelectedEntryIds] = useState<string[] | null>(null);
   // 記録の個別選択。null は「まだ既定を決めていない」で、読み込み直後に一度だけ決定する。
   const [selection, setSelection] = useState<SelectionState | null>(null);
@@ -2565,13 +2664,47 @@ export default function ShioriClient({
     }
   };
 
+  /**
+   * ボタンのラベルを一時的に差し替え、数秒後に元へ戻す。
+   * 連打された場合は前のタイマーを破棄してから張り直す（先に張ったタイマーが
+   * 後から押した分の表示を消してしまわないようにするため）。
+   */
+  const flashFeedback = (
+    apply: (value: ActionFeedback) => void,
+    timerRef: { current: number | null },
+    result: Exclude<ActionFeedback, "idle">
+  ) => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    apply(result);
+    timerRef.current = window.setTimeout(() => {
+      apply("idle");
+      timerRef.current = null;
+    }, FEEDBACK_MS[result]);
+  };
+
+  useEffect(() => {
+    // 表示を戻すタイマーが、アンマウント後に setState を呼ばないようにする。
+    return () => {
+      // exhaustive-deps は「ref の値は cleanup までに変わる」と警告するが、
+      // ここは変わったあとの最新値こそが必要（消したいのは最後に張ったタイマー）。
+      // 効果の実行時点で値を控えると null を控えることになり、何も解除できない。
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      for (const timer of [copyTimerRef.current, imageTimerRef.current]) {
+        if (timer !== null) window.clearTimeout(timer);
+      }
+    };
+  }, []);
+
   const handleSocialImageDownload = async () => {
     if (selectedEntries.length === 0) return;
     const canvas = document.createElement("canvas");
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      flashFeedback(setImageState, imageTimerRef, "failed");
+      return;
+    }
     const firstImage = selectedEntries.find((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
 
     ctx.fillStyle = "#1c1917";
@@ -2597,9 +2730,12 @@ export default function ShioriClient({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
+    // 下部の帯。本文を2行から3行に増やしたぶん、190px から 214px に広げている。
+    const shadeTop = canvas.height - 214;
+
     const sampleBrightness = () => {
       try {
-        const sample = ctx.getImageData(0, 440, canvas.width, 190).data;
+        const sample = ctx.getImageData(0, shadeTop, canvas.width, canvas.height - shadeTop).data;
         let total = 0;
         const step = 24;
         for (let index = 0; index < sample.length; index += step * 4) {
@@ -2616,13 +2752,13 @@ export default function ShioriClient({
     const midAlpha = brightness > 176 ? 0.42 : brightness < 84 ? 0.3 : 0.36;
     const upperAlpha = brightness > 176 ? 0.2 : brightness < 84 ? 0.12 : 0.16;
 
-    const bottomShade = ctx.createLinearGradient(0, 440, 0, canvas.height);
+    const bottomShade = ctx.createLinearGradient(0, shadeTop, 0, canvas.height);
     bottomShade.addColorStop(0, "rgba(0, 0, 0, 0)");
     bottomShade.addColorStop(0.28, `rgba(0, 0, 0, ${upperAlpha})`);
     bottomShade.addColorStop(0.58, `rgba(0, 0, 0, ${midAlpha})`);
     bottomShade.addColorStop(1, `rgba(0, 0, 0, ${bottomAlpha})`);
     ctx.fillStyle = bottomShade;
-    ctx.fillRect(0, 440, canvas.width, 190);
+    ctx.fillRect(0, shadeTop, canvas.width, canvas.height - shadeTop);
 
     const range = formatRange(selectedEntries, outputLanguage);
     const title = shioriTitle || tripTitle(range, outputLanguage);
@@ -2632,47 +2768,131 @@ export default function ShioriClient({
       selectedEntries.find((entry) => entry.memo?.trim())?.memo ||
       "";
 
-    const fitLines = (value: string, maxWidth: number, maxLines: number) => {
-      const source = value.replace(/\s+/g, " ").trim();
-      if (!source) return [];
+    const byWord = usesSpaceSeparatedWords(outputLanguage);
+
+    /**
+     * 実際の描画幅（ctx.measureText）を測りながら折り返す。文字数の概算はしない。
+     * 英語・フランス語・ドイツ語は単語境界で折り返し、単語の途中では改行しない。
+     * （1語で1行に収まらないドイツ語の複合語などのときだけ、その語を文字単位で割る。）
+     * 日本語・中国語・韓国語は文字単位で折り返し、禁則処理だけ行う。
+     */
+    const wrapLines = (source: string, maxWidth: number, maxLines: number) => {
       const lines: string[] = [];
       let current = "";
-      for (const char of source) {
-        const next = current + char;
-        if (ctx.measureText(next).width <= maxWidth || !current) {
-          current = next;
-        } else {
-          lines.push(current);
-          current = char;
+      const flush = () => {
+        lines.push(current);
+        current = "";
+      };
+
+      if (byWord) {
+        for (const word of source.split(" ")) {
+          if (ctx.measureText(current ? `${current} ${word}` : word).width <= maxWidth) {
+            current = current ? `${current} ${word}` : word;
+            continue;
+          }
+          if (current) {
+            flush();
+            if (lines.length === maxLines) break;
+          }
+          if (ctx.measureText(word).width <= maxWidth) {
+            current = word;
+            continue;
+          }
+          for (const char of word) {
+            if (!current || ctx.measureText(current + char).width <= maxWidth) {
+              current += char;
+              continue;
+            }
+            flush();
+            if (lines.length === maxLines) break;
+            current = char;
+          }
           if (lines.length === maxLines) break;
         }
-      }
-      if (lines.length < maxLines && current) lines.push(current);
-      if (lines.length > 0 && lines.length === maxLines && source.length > lines.join("").length) {
-        let last = lines[lines.length - 1];
-        while (last.length > 1 && ctx.measureText(`${last}...`).width > maxWidth) {
-          last = last.slice(0, -1);
+      } else {
+        for (const char of source) {
+          if (!current || ctx.measureText(current + char).width <= maxWidth) {
+            current += char;
+            continue;
+          }
+          // 禁則: 行頭に来てはいけない文字は、幅を超えても現在行にぶら下げる。
+          if (NO_LINE_START.includes(char)) {
+            current += char;
+            continue;
+          }
+          flush();
+          if (lines.length === maxLines) break;
+          current = char;
         }
-        lines[lines.length - 1] = `${last}...`;
       }
-      return lines.length ? lines : [source];
+      if (lines.length < maxLines && current) flush();
+
+      // 何文字ぶん置けたか。単語単位のときは、区切りの空白1つぶんを足して復元する
+      // （source は事前に連続空白を1つへ正規化してあるので、これで元の位置と一致する）。
+      const rendered = byWord ? lines.join(" ") : lines.join("");
+      return { lines, placed: Math.min(rendered.length, source.length) };
+    };
+
+    /** 末尾に … を付ける。ASCIIの3点ではなく U+2026 を使う（等幅でない環境でも整うため）。 */
+    const appendEllipsis = (lines: string[], maxWidth: number) => {
+      if (lines.length === 0) return lines;
+      let last = lines[lines.length - 1];
+      while (last.length > 1 && ctx.measureText(`${last}…`).width > maxWidth) {
+        last = last.slice(0, -1);
+      }
+      const next = [...lines];
+      next[next.length - 1] = `${last}…`;
+      return next;
+    };
+
+    /** 収まり切ったかどうかも返す。見出しの自動縮小の判定に使う。 */
+    const fitTitle = (value: string, maxWidth: number, maxLines: number) => {
+      const source = value.replace(/\s+/g, " ").trim();
+      if (!source) return { lines: [] as string[], truncated: false };
+      const { lines, placed } = wrapLines(source, maxWidth, maxLines);
+      if (placed >= source.length) return { lines, truncated: false };
+      return { lines: appendEllipsis(lines, maxWidth), truncated: true };
+    };
+
+    /**
+     * 本文は、収まらない場合に「文の区切り」で終わらせる。
+     * 単純に文字数で切ると文の途中で終わって中途半端に見えるため、
+     * 収まった範囲の中で最後に現れる句点・ピリオドまでを採用する。
+     * 文の区切りが1つも見つからないときだけ、末尾に省略記号を付けて切る。
+     */
+    const fitBody = (value: string, maxWidth: number, maxLines: number) => {
+      const source = value.replace(/\s+/g, " ").trim();
+      if (!source) return [];
+      const { lines, placed } = wrapLines(source, maxWidth, maxLines);
+      if (placed >= source.length) return lines;
+
+      for (let index = placed - 1; index >= 0; index -= 1) {
+        if (isSentenceEnd(source, index)) {
+          return wrapLines(source.slice(0, index + 1), maxWidth, maxLines).lines;
+        }
+      }
+      return appendEllipsis(lines, maxWidth);
     };
 
     let titleFont = 38;
     let titleLines: string[] = [];
     do {
       ctx.font = `700 ${titleFont}px ${FONT_STACK}`;
-      titleLines = fitLines(title, 900, 2);
+      const fitted = fitTitle(title, 900, 2);
+      titleLines = fitted.lines;
       if (titleLines.length < 2 || titleFont <= 32) break;
-      const joinedLength = titleLines.join("").replace(/\.\.\.$/, "").length;
-      if (joinedLength >= title.length) break;
+      if (!fitted.truncated) break;
       titleFont -= 2;
     } while (titleFont >= 32);
 
-    ctx.font = `400 22px ${FONT_STACK}`;
-    const bodyLines = fitLines(summary, 760, 2);
+    // 本文は2行22pxから3行20pxへ。22pxの2行では日本語で約69文字しか入らず、
+    // AIが返す要約（120〜220文字）の半分以上が切り落とされていた。
+    // 20pxの3行なら約114文字。フォントの自動縮小は採っていない。SNSのタイムラインでは
+    // 画像が縮小表示されるため、全文を入れようとすると読めない大きさになるため。
+    ctx.font = `400 20px ${FONT_STACK}`;
+    const bodyLines = fitBody(summary, 760, 3);
     const titleLineHeight = Math.round(titleFont * 1.2);
-    const bodyLineHeight = 33;
+    const bodyLineHeight = 30;
     const bodyGap = bodyLines.length > 0 ? 14 : 0;
     const totalHeight = titleLines.length * titleLineHeight + bodyGap + bodyLines.length * bodyLineHeight;
     let y = canvas.height - 28 - totalHeight + titleFont;
@@ -2690,7 +2910,7 @@ export default function ShioriClient({
     if (bodyLines.length > 0) {
       y += titleLines.length * titleLineHeight + bodyGap;
       ctx.shadowBlur = 8;
-      ctx.font = `400 22px ${FONT_STACK}`;
+      ctx.font = `400 20px ${FONT_STACK}`;
       ctx.fillStyle = brightness > 176 ? "rgba(255, 255, 255, 0.94)" : "rgba(255, 255, 255, 0.90)";
       bodyLines.forEach((line, index) => {
         ctx.fillText(line, 36, y + index * bodyLineHeight);
@@ -2704,10 +2924,16 @@ export default function ShioriClient({
     ctx.fillText(aiBrandLabel(outputLanguage), 1164, 592);
     ctx.textAlign = "left";
 
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = `${safeDownloadName(title, outputLanguage)}${uiLabel(outputLanguage, "coverFileSuffix")}.png`;
-    link.click();
+    try {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `${safeDownloadName(title, outputLanguage)}${uiLabel(outputLanguage, "coverFileSuffix")}.png`;
+      link.click();
+      flashFeedback(setImageState, imageTimerRef, "done");
+    } catch {
+      // toDataURL は画像の取り込みに失敗した場合などに例外を投げることがある。
+      flashFeedback(setImageState, imageTimerRef, "failed");
+    }
   };
 
 
@@ -2728,9 +2954,10 @@ export default function ShioriClient({
     const postText = [title, body, tags.join(" ")].filter(Boolean).join("\n\n");
     try {
       await navigator.clipboard.writeText(postText);
-      setDraftMessage(uiMessage(outputLanguage, "copied"));
+      flashFeedback(setCopyState, copyTimerRef, "done");
     } catch {
-      setDraftMessage(uiMessage(outputLanguage, "copyFailed"));
+      // 非HTTPSや権限拒否で navigator.clipboard は失敗する。その場合も同じ場所で伝える。
+      flashFeedback(setCopyState, copyTimerRef, "failed");
     }
   };
   const applyGeneratedTexts = (
@@ -3430,24 +3657,87 @@ export default function ShioriClient({
                     （生成アクションバー）へ移設した。メモを書き終えた視線の先にボタンを置くため。
                     この設定パネルには、生成前に決める設定と生成後の出力だけを残す。
                   */}
-                  <button
-                    type="button"
-                    onClick={handleSocialPostCopy}
-                    disabled={selectedEntries.length === 0}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-900 hover:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
-                  >
-                    <FileText className="w-4 h-4" />
-                    {uiLabel(outputLanguage, "copyPost")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSocialImageDownload}
-                    disabled={selectedEntries.length === 0}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-rose-900 hover:bg-rose-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
-                  >
-                    <Download className="w-4 h-4" />
-                    {uiLabel(outputLanguage, "saveImage")}
-                  </button>
+                  {/*
+                    押した結果はボタン自身のラベルで返し、次にすることは直下に出す。
+                    1つのラベルに「コピーしました。SNSに貼り付けてください」まで入れると
+                    独語・仏語で2〜3行に折り返してボタンの高さが動くため、2つに分けている。
+                  */}
+                  <div aria-live="polite">
+                    <button
+                      type="button"
+                      onClick={handleSocialPostCopy}
+                      disabled={selectedEntries.length === 0}
+                      className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all ${
+                        copyState === "done"
+                          ? "bg-emerald-600"
+                          : copyState === "failed"
+                            ? "bg-red-700"
+                            : "bg-emerald-900 hover:bg-emerald-800"
+                      }`}
+                    >
+                      {copyState === "done" ? (
+                        <Check className="w-4 h-4" />
+                      ) : copyState === "failed" ? (
+                        <CircleAlert className="w-4 h-4" />
+                      ) : (
+                        <FileText className="w-4 h-4" />
+                      )}
+                      {copyState === "done"
+                        ? uiLabel(outputLanguage, "copyDone")
+                        : copyState === "failed"
+                          ? uiLabel(outputLanguage, "copyFailedLabel")
+                          : uiLabel(outputLanguage, "copyPost")}
+                    </button>
+                    {copyState !== "idle" && (
+                      <p
+                        className={`mt-1.5 text-xs leading-relaxed ${
+                          copyState === "failed" ? "text-red-700" : "text-emerald-800"
+                        }`}
+                      >
+                        {copyState === "done"
+                          ? uiLabel(outputLanguage, "copyDoneHint")
+                          : uiLabel(outputLanguage, "copyFailedHint")}
+                      </p>
+                    )}
+                  </div>
+                  <div aria-live="polite">
+                    <button
+                      type="button"
+                      onClick={handleSocialImageDownload}
+                      disabled={selectedEntries.length === 0}
+                      className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all ${
+                        imageState === "done"
+                          ? "bg-emerald-600"
+                          : imageState === "failed"
+                            ? "bg-red-700"
+                            : "bg-rose-900 hover:bg-rose-800"
+                      }`}
+                    >
+                      {imageState === "done" ? (
+                        <Check className="w-4 h-4" />
+                      ) : imageState === "failed" ? (
+                        <CircleAlert className="w-4 h-4" />
+                      ) : (
+                        <Download className="w-4 h-4" />
+                      )}
+                      {imageState === "done"
+                        ? uiLabel(outputLanguage, "imageDone")
+                        : imageState === "failed"
+                          ? uiLabel(outputLanguage, "imageFailedLabel")
+                          : uiLabel(outputLanguage, "saveImage")}
+                    </button>
+                    {imageState !== "idle" && (
+                      <p
+                        className={`mt-1.5 text-xs leading-relaxed ${
+                          imageState === "failed" ? "text-red-700" : "text-emerald-800"
+                        }`}
+                      >
+                        {imageState === "done"
+                          ? uiLabel(outputLanguage, "imageDoneHint")
+                          : uiLabel(outputLanguage, "imageFailedHint")}
+                      </p>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={handlePrint}
