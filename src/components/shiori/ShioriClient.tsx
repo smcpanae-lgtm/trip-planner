@@ -126,11 +126,39 @@ const OUTPUT_LANGUAGE_VALUES = OUTPUT_LANGUAGE_OPTIONS.map((option) => option.va
 const SHIORI_DRAFT_STORAGE_KEY = "shiori-draft-v1";
 const SHIORI_LANG_STORAGE_KEY = "shiori-output-language";
 const SHIORI_SESSION_STORAGE_KEY = "shiori-anonymous-session-id";
+// 書き方の2択（AIに書いてもらう / 自分で書く）。下書きとは独立して覚えさせるため専用キーにする。
+const SHIORI_WRITE_MODE_STORAGE_KEY = "shiori-write-mode";
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 // 一度にAI生成できる記録の上限。サーバー側の MAX_SPOTS と同じ値。
 // 超えるとサーバーが errorCode: "too_many_entries" を返す。
 const MAX_AI_SPOTS = 20;
+
+/** 旅行記の書き方。null は未選択（2択カードを出す）。 */
+type WriteMode = "ai" | "manual";
+
+function isWriteMode(value: unknown): value is WriteMode {
+  return value === "ai" || value === "manual";
+}
+
+/**
+ * 記録の個別選択の持ち方。
+ *
+ * - "all-except": 既定は全選択で、ids は「利用者が外した記録」。
+ * - "only":       既定は全解除で、ids は「利用者が選んだ記録」。
+ *
+ * 除外セット（"all-except"）だけでは「開いた時点で全解除」を表現できない。
+ * 全idを先回りで詰めると初期状態と「全部外した状態」が区別できず、
+ * あとから増えた記録（写真の追加取り込み）も勝手に選択済みになってしまう。
+ * モードを持たせることで、あとから増減する記録も既定側に自動で倒れる。
+ */
+type SelectionState = {
+  mode: "all-except" | "only";
+  ids: string[];
+};
+
+const ALL_SELECTED: SelectionState = { mode: "all-except", ids: [] };
+const NONE_SELECTED: SelectionState = { mode: "only", ids: [] };
 
 type ShioriDraft = {
   source: EntrySource;
@@ -142,8 +170,20 @@ type ShioriDraft = {
   outputLanguage: OutputLanguage;
   generatedSummary: string;
   generatedSpots: Record<string, GeneratedSpotText>;
+  /** 記録の個別選択。このキーが無い古い下書きは全選択として復元する（従来の挙動と同じ）。 */
+  selection?: SelectionState;
   savedAt: string;
 };
+
+function isSelectionState(value: unknown): value is SelectionState {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as { mode?: unknown; ids?: unknown };
+  return (
+    (candidate.mode === "all-except" || candidate.mode === "only") &&
+    Array.isArray(candidate.ids) &&
+    candidate.ids.every((id) => typeof id === "string")
+  );
+}
 
 const emptyFilters: Filters = {
   from: "",
@@ -776,6 +816,23 @@ type UiLabelKey =
   | "previewLabel"
   | "previewCount"
   | "previewCountOne"
+  | "selectionCount"
+  | "selectionCountOne"
+  | "entrySelectLabel"
+  | "selectAll"
+  | "selectNone"
+  | "selectionNoneTitle"
+  | "selectionNoneDesc"
+  | "generateSectionTitle"
+  | "currentSettingsNote"
+  | "writeModeTitle"
+  | "writeModeAiLabel"
+  | "writeModeAiDesc"
+  | "writeModeManualLabel"
+  | "writeModeManualDesc"
+  | "switchToManual"
+  | "switchToAi"
+  | "aiStepHint"
   | "sectionTextTitle"
   | "sectionTextDesc"
   | "bodyLabel"
@@ -921,13 +978,30 @@ function uiLabel(
       previewLabel: "プレビュー",
       previewCount: "{n}件の記録を時系列で表示中",
       previewCountOne: "{n}件の記録を時系列で表示中",
+      selectionCount: "絞り込み後{n}件のうち{m}件を使用",
+      selectionCountOne: "絞り込み後{n}件のうち{m}件を使用",
+      entrySelectLabel: "この記録を使う",
+      selectAll: "すべて選ぶ",
+      selectNone: "すべて外す",
+      selectionNoneTitle: "旅行記に使う記録を選んでください",
+      selectionNoneDesc: "下に並ぶ記録のチェックを入れると、その記録が旅行記に使われます。今回の旅行の記録だけを選んでください。",
+      generateSectionTitle: "旅行記を作る",
+      currentSettingsNote: "トーン: {tone}／出力言語: {lang}（変更は設定パネルから）",
+      writeModeTitle: "どちらで書きますか？",
+      writeModeAiLabel: "AIに書いてもらう",
+      writeModeAiDesc: "メモから旅行記を自動生成します",
+      writeModeManualLabel: "自分で書く",
+      writeModeManualDesc: "見出しや文章を直接入力します",
+      switchToManual: "自分で書く方法に切り替える",
+      switchToAi: "AIに書いてもらう方法に切り替える",
+      aiStepHint: "まず各記録にメモを書いてから、AI生成ボタンを押してください。",
       sectionTextTitle: "旅行記文章",
-      sectionTextDesc: "上で選ばれている記録の元メモから旅行記を作ります。ここから下はAIが書く欄ですが、生成を待たずに自分で書くこともできます。編集した文章はSNS投稿文やアイキャッチ画像、必要に応じてPDFにも使われます。",
+      sectionTextDesc: "下に並ぶ記録のうち、チェックを入れた記録の元メモから旅行記を作ります。この欄と各記録のスポット欄はAIが書きますが、生成を待たずに自分で書くこともできます。編集した文章はSNS投稿文やアイキャッチ画像、必要に応じてPDFにも使われます。",
       bodyLabel: "旅行記本文（AIが書きます。生成前でも自分で書けます）",
-      bodyPlaceholder: "AIが元メモから作った旅行記本文がここに入ります。必要に応じて書き直せます。",
+      bodyPlaceholder: "ここにAIが書いた旅行記本文が入ります。生成前に自分で書いてもかまいません。",
       spotTitleLabel: "スポット見出し（AIが書きます。生成前でも自分で書けます）",
       spotCaptionLabel: "スポット別文章（AIが書きます。生成前でも自分で書けます）",
-      spotCaptionPlaceholder: "AIが元メモから作ったスポット別文章が入ります。ここを編集しても、再生成するまではAIの入力にはなりません。",
+      spotCaptionPlaceholder: "ここにAIが書いたスポット別文章が入ります。生成前に自分で書いてもかまいません。編集しても、再生成するまではAIの入力にはなりません。",
       memoryPlace: "思い出の場所",
       loadErrorHeritage: "世界遺産パスポートの記録を読み込めませんでした。同じドメインの /heritage で保存した記録があるか確認してください。",
       loadErrorLifemap: "人生体験マップの記録を読み込めませんでした。ブラウザの保存機能が使える状態か確認してください。",
@@ -1057,13 +1131,30 @@ function uiLabel(
       previewLabel: "Preview",
       previewCount: "Showing {n} records in date order",
       previewCountOne: "Showing {n} record in date order",
+      selectionCount: "Using {m} of {n} filtered records",
+      selectionCountOne: "Using {m} of {n} filtered record",
+      entrySelectLabel: "Use this record",
+      selectAll: "Select all",
+      selectNone: "Deselect all",
+      selectionNoneTitle: "Choose the records for this journal",
+      selectionNoneDesc: "Tick the records below to include them in the journal. Pick only the records from this trip.",
+      generateSectionTitle: "Create the journal",
+      currentSettingsNote: "Tone: {tone} / Output language: {lang} (change these in the settings panel)",
+      writeModeTitle: "How would you like to write it?",
+      writeModeAiLabel: "Let AI write it",
+      writeModeAiDesc: "Automatically generates the journal from your notes",
+      writeModeManualLabel: "Write it yourself",
+      writeModeManualDesc: "Enter the heading and text directly",
+      switchToManual: "Switch to writing it yourself",
+      switchToAi: "Switch to letting AI write it",
+      aiStepHint: "Write a note for each record, then press the AI generate button.",
       sectionTextTitle: "Journal text",
-      sectionTextDesc: "The journal is written from the original notes of the records selected above. Everything below is where the generated text goes, and you can write there yourself without waiting for generation. What you edit here is used for the social post, the cover image and, if you want one, the PDF.",
+      sectionTextDesc: "The journal is written from the original notes of the records you tick below. This box and the spot fields on each record are where the generated text goes, and you can write there yourself without waiting for generation. What you edit here is used for the social post, the cover image and, if you want one, the PDF.",
       bodyLabel: "Main text (AI writes this; you can also write it yourself before generating)",
-      bodyPlaceholder: "The main text the AI wrote from your original notes appears here. You can rewrite it as you like.",
+      bodyPlaceholder: "The main text AI writes appears here. You can also write it yourself before generating.",
       spotTitleLabel: "Spot heading (AI writes this; you can also write it yourself before generating)",
       spotCaptionLabel: "Spot text (AI writes this; you can also write it yourself before generating)",
-      spotCaptionPlaceholder: "The per-spot text the AI wrote from your original notes appears here. Editing it does not feed back into the AI until you generate again.",
+      spotCaptionPlaceholder: "The per-spot text AI writes appears here. You can also write it yourself before generating. Editing it here does not feed back into the AI until you generate again.",
       memoryPlace: "A place to remember",
       loadErrorHeritage: "The records from the World Heritage Passport could not be loaded. Check that you have records saved at /heritage on this same domain.",
       loadErrorLifemap: "The records from the Life Experience Map could not be loaded. Check that this browser allows local storage.",
@@ -1193,13 +1284,30 @@ function uiLabel(
       previewLabel: "预览",
       previewCount: "正按时间顺序显示{n}条记录",
       previewCountOne: "正按时间顺序显示{n}条记录",
+      selectionCount: "筛选后{n}条中使用{m}条",
+      selectionCountOne: "筛选后{n}条中使用{m}条",
+      entrySelectLabel: "使用这条记录",
+      selectAll: "全选",
+      selectNone: "全部取消",
+      selectionNoneTitle: "请选择要用于旅行记的记录",
+      selectionNoneDesc: "勾选下方的记录，即可将其用于旅行记。请只选择本次旅行的记录。",
+      generateSectionTitle: "生成旅行记",
+      currentSettingsNote: "语气: {tone}／输出语言: {lang}（可在设置面板中更改）",
+      writeModeTitle: "要用哪种方式撰写？",
+      writeModeAiLabel: "由AI撰写",
+      writeModeAiDesc: "根据备忘自动生成旅行记",
+      writeModeManualLabel: "自己写",
+      writeModeManualDesc: "直接输入标题和文字",
+      switchToManual: "切换到自己写",
+      switchToAi: "切换到由AI撰写",
+      aiStepHint: "先为每条记录写好备忘，再点击AI生成按钮。",
       sectionTextTitle: "旅行记正文",
-      sectionTextDesc: "根据上方所选记录的原始备忘撰写旅行记。以下是AI撰写的栏位，不等生成也可以自己写。编辑后的文字会用于SNS投稿文、封面图片，以及需要时的PDF。",
+      sectionTextDesc: "根据下方勾选的记录的原始备忘撰写旅行记。此栏与各记录的地点栏是AI撰写的栏位，不等生成也可以自己写。编辑后的文字会用于SNS投稿文、封面图片，以及需要时的PDF。",
       bodyLabel: "旅行记正文（由AI撰写。生成前也可以自己写）",
-      bodyPlaceholder: "AI根据原始备忘撰写的旅行记正文会显示在这里。可以自由改写。",
+      bodyPlaceholder: "AI撰写的旅行记正文会显示在这里。生成前也可以自己写。",
       spotTitleLabel: "地点标题（由AI撰写。生成前也可以自己写）",
       spotCaptionLabel: "各地点文字（由AI撰写。生成前也可以自己写）",
-      spotCaptionPlaceholder: "AI根据原始备忘撰写的各地点文字会显示在这里。在重新生成之前，此处的编辑不会作为AI的输入。",
+      spotCaptionPlaceholder: "AI撰写的各地点文字会显示在这里。生成前也可以自己写。在重新生成之前，此处的编辑不会作为AI的输入。",
       memoryPlace: "难忘的地点",
       loadErrorHeritage: "无法读取世界遗产护照的记录。请确认同一域名下的 /heritage 中是否有已保存的记录。",
       loadErrorLifemap: "无法读取人生体验地图的记录。请确认本浏览器的本地存储功能是否可用。",
@@ -1329,13 +1437,30 @@ function uiLabel(
       previewLabel: "Aperçu",
       previewCount: "Affichage de {n} enregistrements par ordre chronologique",
       previewCountOne: "Affichage de {n} enregistrement par ordre chronologique",
+      selectionCount: "Sélection : {m} sur {n} enregistrements filtrés",
+      selectionCountOne: "Sélection : {m} sur {n} enregistrement filtré",
+      entrySelectLabel: "Utiliser cet enregistrement",
+      selectAll: "Tout sélectionner",
+      selectNone: "Tout désélectionner",
+      selectionNoneTitle: "Choisissez les enregistrements de ce carnet",
+      selectionNoneDesc: "Cochez les enregistrements ci-dessous pour les inclure dans le carnet. Ne gardez que ceux de ce voyage.",
+      generateSectionTitle: "Créer le carnet",
+      currentSettingsNote: "Ton : {tone} / Langue de sortie : {lang} (modifiable dans le panneau de réglages)",
+      writeModeTitle: "Comment souhaitez-vous rédiger le carnet ?",
+      writeModeAiLabel: "Laisser l'IA rédiger",
+      writeModeAiDesc: "Génère automatiquement le carnet à partir de vos notes",
+      writeModeManualLabel: "Écrire moi-même",
+      writeModeManualDesc: "Saisissez directement le titre et le texte",
+      switchToManual: "Passer à l'écriture manuelle",
+      switchToAi: "Passer à la rédaction par l'IA",
+      aiStepHint: "Ajoutez d'abord une note à chaque enregistrement, puis appuyez sur le bouton de génération IA.",
       sectionTextTitle: "Texte du carnet",
-      sectionTextDesc: "Le carnet est rédigé à partir des notes d'origine des enregistrements sélectionnés ci-dessus. Tout ce qui suit est la zone du texte généré, où vous pouvez aussi écrire vous-même sans attendre la génération. Ce que vous y modifiez sert au message pour les réseaux sociaux, à l'image de couverture et, si vous le souhaitez, au PDF.",
+      sectionTextDesc: "Le carnet est rédigé à partir des notes d'origine des enregistrements que vous cochez ci-dessous. Ce champ et les champs de lieu de chaque enregistrement reçoivent le texte généré, et vous pouvez y écrire vous-même sans attendre la génération. Ce que vous y modifiez sert au message pour les réseaux sociaux, à l'image de couverture et, si vous le souhaitez, au PDF.",
       bodyLabel: "Texte principal (rédigé par l'IA ; vous pouvez aussi l'écrire vous-même avant la génération)",
-      bodyPlaceholder: "Le texte principal rédigé par l'IA à partir de vos notes d'origine apparaît ici. Vous pouvez le réécrire à votre guise.",
+      bodyPlaceholder: "Le texte principal rédigé par l'IA apparaît ici. Vous pouvez aussi l'écrire vous-même avant la génération.",
       spotTitleLabel: "Titre du lieu (rédigé par l'IA ; vous pouvez aussi l'écrire vous-même avant la génération)",
       spotCaptionLabel: "Texte du lieu (rédigé par l'IA ; vous pouvez aussi l'écrire vous-même avant la génération)",
-      spotCaptionPlaceholder: "Le texte par lieu rédigé par l'IA à partir de vos notes d'origine apparaît ici. Vos modifications ne sont pas reprises par l'IA tant que vous ne relancez pas la génération.",
+      spotCaptionPlaceholder: "Le texte par lieu rédigé par l'IA apparaît ici. Vous pouvez aussi l'écrire vous-même avant la génération. Vos modifications ne sont pas reprises par l'IA tant que vous ne relancez pas la génération.",
       memoryPlace: "Un lieu à retenir",
       loadErrorHeritage: "Les enregistrements du Passeport du patrimoine mondial n'ont pas pu être chargés. Vérifiez que des enregistrements ont bien été sauvegardés sur /heritage du même domaine.",
       loadErrorLifemap: "Les enregistrements de la Carte de vie n'ont pas pu être chargés. Vérifiez que le stockage local de ce navigateur est disponible.",
@@ -1465,13 +1590,30 @@ function uiLabel(
       previewLabel: "미리보기",
       previewCount: "{n}건의 기록을 시간순으로 표시 중",
       previewCountOne: "{n}건의 기록을 시간순으로 표시 중",
+      selectionCount: "필터 결과 {n}건 중 {m}건 사용",
+      selectionCountOne: "필터 결과 {n}건 중 {m}건 사용",
+      entrySelectLabel: "이 기록 사용",
+      selectAll: "전체 선택",
+      selectNone: "전체 해제",
+      selectionNoneTitle: "여행기에 사용할 기록을 선택해 주세요",
+      selectionNoneDesc: "아래 기록에 체크하면 여행기에 사용됩니다. 이번 여행의 기록만 선택해 주세요.",
+      generateSectionTitle: "여행기 만들기",
+      currentSettingsNote: "톤: {tone} / 출력 언어: {lang} (설정 패널에서 변경할 수 있습니다)",
+      writeModeTitle: "어떻게 작성하시겠어요?",
+      writeModeAiLabel: "AI에게 맡기기",
+      writeModeAiDesc: "메모를 바탕으로 여행기를 자동 생성합니다",
+      writeModeManualLabel: "직접 쓰기",
+      writeModeManualDesc: "제목과 문장을 직접 입력합니다",
+      switchToManual: "직접 쓰기로 전환",
+      switchToAi: "AI에게 맡기기로 전환",
+      aiStepHint: "먼저 각 기록에 메모를 작성한 뒤, AI 생성 버튼을 눌러주세요.",
       sectionTextTitle: "여행기 문장",
-      sectionTextDesc: "위에서 선택한 기록의 원본 메모로 여행기를 만듭니다. 여기부터 아래는 AI가 쓰는 칸이지만, 생성을 기다리지 않고 직접 써도 됩니다. 편집한 문장은 SNS 게시글과 대표 이미지, 필요에 따라 PDF에도 사용됩니다.",
+      sectionTextDesc: "아래에서 체크한 기록의 원본 메모로 여행기를 만듭니다. 이 칸과 각 기록의 장소 칸은 AI가 쓰지만, 생성을 기다리지 않고 직접 써도 됩니다. 편집한 문장은 SNS 게시글과 대표 이미지, 필요에 따라 PDF에도 사용됩니다.",
       bodyLabel: "여행기 본문 (AI가 씁니다. 생성 전에 직접 써도 됩니다)",
-      bodyPlaceholder: "AI가 원본 메모로 만든 여행기 본문이 여기에 들어갑니다. 필요에 따라 다시 쓸 수 있습니다.",
+      bodyPlaceholder: "AI가 작성한 여행기 본문이 여기에 표시됩니다. 생성 전에 직접 써도 됩니다.",
       spotTitleLabel: "장소 제목 (AI가 씁니다. 생성 전에 직접 써도 됩니다)",
       spotCaptionLabel: "장소별 문장 (AI가 씁니다. 생성 전에 직접 써도 됩니다)",
-      spotCaptionPlaceholder: "AI가 원본 메모로 만든 장소별 문장이 들어갑니다. 여기를 편집해도 다시 생성하기 전까지는 AI의 입력이 되지 않습니다.",
+      spotCaptionPlaceholder: "AI가 작성한 장소별 문장이 여기에 표시됩니다. 생성 전에 직접 써도 됩니다. 여기를 편집해도 다시 생성하기 전까지는 AI의 입력이 되지 않습니다.",
       memoryPlace: "기억에 남는 장소",
       loadErrorHeritage: "세계유산 여권의 기록을 불러오지 못했습니다. 같은 도메인의 /heritage에 저장한 기록이 있는지 확인해 주세요.",
       loadErrorLifemap: "인생 체험 지도의 기록을 불러오지 못했습니다. 이 브라우저의 저장 기능을 사용할 수 있는 상태인지 확인해 주세요.",
@@ -1601,13 +1743,30 @@ function uiLabel(
       previewLabel: "預覽",
       previewCount: "正依時間順序顯示{n}筆記錄",
       previewCountOne: "正依時間順序顯示{n}筆記錄",
+      selectionCount: "篩選後{n}筆中使用{m}筆",
+      selectionCountOne: "篩選後{n}筆中使用{m}筆",
+      entrySelectLabel: "使用這筆記錄",
+      selectAll: "全選",
+      selectNone: "全部取消",
+      selectionNoneTitle: "請選擇要用於旅行記的記錄",
+      selectionNoneDesc: "勾選下方的記錄，即可將其用於旅行記。請只選擇本次旅行的記錄。",
+      generateSectionTitle: "產生旅行記",
+      currentSettingsNote: "語氣: {tone}／輸出語言: {lang}（可在設定面板中變更）",
+      writeModeTitle: "要用哪種方式撰寫？",
+      writeModeAiLabel: "由AI撰寫",
+      writeModeAiDesc: "根據備忘自動產生旅行記",
+      writeModeManualLabel: "自己寫",
+      writeModeManualDesc: "直接輸入標題和文字",
+      switchToManual: "切換到自己寫",
+      switchToAi: "切換到由AI撰寫",
+      aiStepHint: "先為每筆記錄寫好備忘，再點擊AI產生按鈕。",
       sectionTextTitle: "旅行記正文",
-      sectionTextDesc: "根據上方所選記錄的原始備忘撰寫旅行記。以下是AI撰寫的欄位，不等產生也可以自己寫。編輯後的文字會用於SNS貼文、封面圖片，以及需要時的PDF。",
+      sectionTextDesc: "根據下方勾選的記錄的原始備忘撰寫旅行記。此欄與各記錄的地點欄是AI撰寫的欄位，不等產生也可以自己寫。編輯後的文字會用於SNS貼文、封面圖片，以及需要時的PDF。",
       bodyLabel: "旅行記正文（由AI撰寫。產生前也可以自己寫）",
-      bodyPlaceholder: "AI根據原始備忘撰寫的旅行記正文會顯示在這裡。可以自由改寫。",
+      bodyPlaceholder: "AI撰寫的旅行記正文會顯示在這裡。產生前也可以自己寫。",
       spotTitleLabel: "地點標題（由AI撰寫。產生前也可以自己寫）",
       spotCaptionLabel: "各地點文字（由AI撰寫。產生前也可以自己寫）",
-      spotCaptionPlaceholder: "AI根據原始備忘撰寫的各地點文字會顯示在這裡。在重新產生之前，此處的編輯不會作為AI的輸入。",
+      spotCaptionPlaceholder: "AI撰寫的各地點文字會顯示在這裡。產生前也可以自己寫。在重新產生之前，此處的編輯不會作為AI的輸入。",
       memoryPlace: "難忘的地點",
       loadErrorHeritage: "無法讀取世界遺產護照的紀錄。請確認同一網域下的 /heritage 中是否有已儲存的紀錄。",
       loadErrorLifemap: "無法讀取人生體驗地圖的紀錄。請確認本瀏覽器的本機儲存功能是否可用。",
@@ -1737,13 +1896,30 @@ function uiLabel(
       previewLabel: "Vorschau",
       previewCount: "{n} Einträge werden chronologisch angezeigt",
       previewCountOne: "{n} Eintrag wird chronologisch angezeigt",
+      selectionCount: "Ausgewählt: {m} von {n} gefilterten Einträgen",
+      selectionCountOne: "Ausgewählt: {m} von {n} gefiltertem Eintrag",
+      entrySelectLabel: "Diesen Eintrag verwenden",
+      selectAll: "Alle auswählen",
+      selectNone: "Alle abwählen",
+      selectionNoneTitle: "Wählen Sie die Einträge für dieses Tagebuch",
+      selectionNoneDesc: "Haken Sie die Einträge unten an, um sie in das Tagebuch aufzunehmen. Wählen Sie nur die Einträge dieser Reise.",
+      generateSectionTitle: "Tagebuch erstellen",
+      currentSettingsNote: "Ton: {tone} / Ausgabesprache: {lang} (im Einstellungsbereich änderbar)",
+      writeModeTitle: "Wie möchten Sie schreiben?",
+      writeModeAiLabel: "Von der KI schreiben lassen",
+      writeModeAiDesc: "Erstellt das Reisetagebuch automatisch aus Ihren Notizen",
+      writeModeManualLabel: "Selbst schreiben",
+      writeModeManualDesc: "Geben Sie Überschrift und Text direkt ein",
+      switchToManual: "Zu selbst schreiben wechseln",
+      switchToAi: "Zur KI-Erstellung wechseln",
+      aiStepHint: "Schreiben Sie zuerst zu jedem Eintrag eine Notiz und klicken Sie dann auf die KI-Generieren-Schaltfläche.",
       sectionTextTitle: "Text des Reisetagebuchs",
-      sectionTextDesc: "Das Tagebuch entsteht aus den Originalnotizen der oben ausgewählten Einträge. Alles darunter ist der Bereich für den erzeugten Text; Sie können dort auch selbst schreiben, ohne auf die Generierung zu warten. Was Sie hier ändern, wird für den Social-Media-Beitrag, das Titelbild und bei Bedarf für das PDF verwendet.",
+      sectionTextDesc: "Das Tagebuch entsteht aus den Originalnotizen der Einträge, die Sie unten ankreuzen. Dieses Feld und die Ortsfelder der einzelnen Einträge nehmen den erzeugten Text auf; Sie können dort auch selbst schreiben, ohne auf die Generierung zu warten. Was Sie hier ändern, wird für den Social-Media-Beitrag, das Titelbild und bei Bedarf für das PDF verwendet.",
       bodyLabel: "Haupttext (schreibt die KI; Sie können ihn auch selbst schreiben, schon vor der Generierung)",
-      bodyPlaceholder: "Hier erscheint der Haupttext, den die KI aus Ihren Originalnotizen geschrieben hat. Sie können ihn frei umschreiben.",
+      bodyPlaceholder: "Hier erscheint der von der KI geschriebene Haupttext. Sie können ihn auch selbst schreiben, schon vor der Generierung.",
       spotTitleLabel: "Überschrift des Orts (schreibt die KI; Sie können sie auch selbst schreiben, schon vor der Generierung)",
       spotCaptionLabel: "Text zum Ort (schreibt die KI; Sie können ihn auch selbst schreiben, schon vor der Generierung)",
-      spotCaptionPlaceholder: "Hier erscheint der Text pro Ort, den die KI aus Ihren Originalnotizen geschrieben hat. Änderungen fließen erst bei einer erneuten Generierung in die KI ein.",
+      spotCaptionPlaceholder: "Hier erscheint der von der KI geschriebene Text pro Ort. Sie können ihn auch selbst schreiben, schon vor der Generierung. Änderungen fließen erst bei einer erneuten Generierung in die KI ein.",
       memoryPlace: "Ein Ort zum Erinnern",
       loadErrorHeritage: "Die Einträge aus dem Welterbe-Pass konnten nicht geladen werden. Prüfen Sie, ob unter /heritage derselben Domain Einträge gespeichert sind.",
       loadErrorLifemap: "Die Einträge aus der Lebenskarte konnten nicht geladen werden. Prüfen Sie, ob der lokale Speicher dieses Browsers verfügbar ist.",
@@ -1807,16 +1983,23 @@ function uiLabel(
  * 英語・ドイツ語は 1 のときだけ単数形、フランス語は 0 と 1 の両方が単数形（CLDR の
  * 複数形カテゴリに準拠）。日本語・中国語・韓国語は単複変化が無いため常に複数形キーを
  * 使う（単数形キーにも同じ文言を入れてあるので、どちらを引いても表示は変わらない）。
+ *
+ * secondCount を渡すと {m} も置き換える。単数・複数の判定は常に count（{n}）だけで行う。
+ * 2つの数値それぞれで語形が変わると 4通りの文言が必要になるため、文言側を
+ * 「名詞が {n} にだけ係る」語順にしてある（例: "Using {m} of {n} filtered records"）。
+ * {m} 側に名詞や過去分詞を係らせる文面へ変える場合は、この前提が崩れる点に注意。
  */
 function countLabel(
   language: OutputLanguage,
   key: UiLabelKey,
   oneKey: UiLabelKey,
-  count: number
+  count: number,
+  secondCount?: number
 ): string {
   const singular =
     language === "fr" ? count === 0 || count === 1 : language === "en" || language === "de" ? count === 1 : false;
-  return uiLabel(language, singular ? oneKey : key).replace("{n}", String(count));
+  const text = uiLabel(language, singular ? oneKey : key).replace("{n}", String(count));
+  return secondCount === undefined ? text : text.replace("{m}", String(secondCount));
 }
 
 function buildTemplateTexts(
@@ -1873,11 +2056,22 @@ function EntryCard({
   customLabels,
   onMemoChange,
   language,
+  selected,
+  onToggleSelect,
+  showMemoInput,
 }: {
   entry: LifeMapEntry;
   customLabels: Record<string, string>;
   onMemoChange: (id: string, memo: string) => void;
   language: OutputLanguage;
+  /** 旅行記に使うかどうか。 */
+  selected: boolean;
+  onToggleSelect: (id: string) => void;
+  /**
+   * 「AIに渡す元メモ」欄を表示するか。false でも entry.memo の値は保持されるので、
+   * ai モードに戻せば元の内容がそのまま編集できる。
+   */
+  showMemoInput: boolean;
 }) {
   const cat = getCategory(entry.category);
   const categoryLabel = getCategoryLabel(entry.category, customLabels, language);
@@ -1892,7 +2086,11 @@ function EntryCard({
   );
 
   return (
-    <article className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden flex flex-col sm:flex-row">
+    <article
+      className={`bg-white rounded-xl shadow-sm overflow-hidden flex flex-col sm:flex-row border transition-all ${
+        selected ? "border-emerald-600 ring-2 ring-emerald-100" : "border-slate-100"
+      }`}
+    >
       <div className="sm:w-36 h-44 sm:h-auto bg-slate-100 shrink-0">
         {entry.thumbnailDataUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -1908,6 +2106,17 @@ function EntryCard({
         )}
       </div>
       <div className="flex-1 min-w-0 p-4">
+        <label className="flex items-center gap-2 mb-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={() => onToggleSelect(entry.id)}
+            className="w-4 h-4 accent-emerald-700 cursor-pointer"
+          />
+          <span className={`text-xs font-bold ${selected ? "text-emerald-800" : "text-slate-400"}`}>
+            {uiLabel(language, "entrySelectLabel")}
+          </span>
+        </label>
         <div className="flex items-center gap-2 flex-wrap">
           <span
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-bold"
@@ -1924,21 +2133,23 @@ function EntryCard({
         <h3 className="mt-2 text-base font-bold text-slate-800 truncate">
           {getDisplayPlace(entry, language)}
         </h3>
-        <label className="mt-2 block rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2">
-          <span className="text-[11px] font-bold text-emerald-900">
-            {uiLabel(language, "entryMemoLabel")}
-          </span>
-          <textarea
-            value={entry.memo || ""}
-            onChange={(event) => onMemoChange(entry.id, event.target.value)}
-            placeholder={uiLabel(language, "entryMemoPlaceholder")}
-            rows={3}
-            className="mt-1 w-full resize-y rounded-lg border border-emerald-100 bg-white/85 px-3 py-2 text-sm leading-relaxed text-slate-700 focus:outline-none focus:border-emerald-600"
-          />
-          <span className="mt-1 block text-[11px] text-slate-500 leading-relaxed">
-            {uiLabel(language, "entryMemoNote")}
-          </span>
-        </label>
+        {showMemoInput && (
+          <label className="mt-2 block rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2">
+            <span className="text-[11px] font-bold text-emerald-900">
+              {uiLabel(language, "entryMemoLabel")}
+            </span>
+            <textarea
+              value={entry.memo || ""}
+              onChange={(event) => onMemoChange(entry.id, event.target.value)}
+              placeholder={uiLabel(language, "entryMemoPlaceholder")}
+              rows={3}
+              className="mt-1 w-full resize-y rounded-lg border border-emerald-100 bg-white/85 px-3 py-2 text-sm leading-relaxed text-slate-700 focus:outline-none focus:border-emerald-600"
+            />
+            <span className="mt-1 block text-[11px] text-slate-500 leading-relaxed">
+              {uiLabel(language, "entryMemoNote")}
+            </span>
+          </label>
+        )}
         <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
             <MapPin className="w-3.5 h-3.5" />
@@ -1981,6 +2192,10 @@ export default function ShioriClient({
   const [outputLanguage, setOutputLanguage] = useState<OutputLanguage>(initialOutputLanguage ?? "ja");
   const [draftMessage, setDraftMessage] = useState<string | null>(null);
   const [selectedEntryIds, setSelectedEntryIds] = useState<string[] | null>(null);
+  // 記録の個別選択。null は「まだ既定を決めていない」で、読み込み直後に一度だけ決定する。
+  const [selection, setSelection] = useState<SelectionState | null>(null);
+  // 書き方の2択。null のあいだだけ選択カードを出す。
+  const [writeMode, setWriteMode] = useState<WriteMode | null>(null);
   const [generatedSummary, setGeneratedSummary] = useState("");
   const [generatedSpots, setGeneratedSpots] = useState<Record<string, GeneratedSpotText>>({});
   const [aiLoading, setAiLoading] = useState(false);
@@ -1993,6 +2208,21 @@ export default function ShioriClient({
   const [sessionId, setSessionId] = useState("");
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | null>(null);
+  // 認証ウィジェットの置き場所は記録一覧の直下（生成アクションバー）に移したため、
+  // 記録が0件のあいだは描画されない。refだけではマウントされたことに気づけず、
+  // あとから写真を取り込んだ場合にウィジェットが出ないままになる。
+  // マウントの有無をstateで持ち、描画のトリガーにする。
+  const [turnstileHostReady, setTurnstileHostReady] = useState(false);
+  const setTurnstileContainer = useCallback((node: HTMLDivElement | null) => {
+    turnstileContainerRef.current = node;
+    if (!node) {
+      // 置き場所ごと消えるとウィジェットのDOMも失われる。
+      // 次にマウントされたときに描画し直せるよう、IDとトークンを捨てる。
+      turnstileWidgetIdRef.current = null;
+      setTurnstileToken("");
+    }
+    setTurnstileHostReady(node !== null);
+  }, []);
   // 世界遺産パスポートの読み込み時にだけ参照する出力言語。
   // 読み込み用の useEffect の依存に outputLanguage を足すと、言語を変えるたびに記録が再読み込みされ、
   // 画面で編集した元メモが失われてしまうため、依存に含めずrefで現在値だけを渡す。
@@ -2045,6 +2275,11 @@ export default function ShioriClient({
           setOutputLanguage(savedLanguage);
         }
       }
+      // 出力言語や下書きとは独立して覚える。2回目以降は2択カードを出さない。
+      const savedWriteMode = localStorage.getItem(SHIORI_WRITE_MODE_STORAGE_KEY);
+      if (isWriteMode(savedWriteMode)) {
+        setWriteMode(savedWriteMode);
+      }
       const params = new URLSearchParams(window.location.search);
       const incomingSource = params.get("source");
       if (incomingSource === "lifemap" || incomingSource === "heritage") {
@@ -2072,7 +2307,7 @@ export default function ShioriClient({
   }, [turnstileSiteKey]);
 
   useEffect(() => {
-    if (!turnstileSiteKey || turnstileWidgetIdRef.current) return;
+    if (!turnstileSiteKey || !turnstileHostReady || turnstileWidgetIdRef.current) return;
     setTurnstileStatus("loading");
 
     const renderTurnstile = () => {
@@ -2159,15 +2394,73 @@ export default function ShioriClient({
     [entries, filters, customCatLabels, outputLanguage]
   );
 
+  // 読み込み直後に既定の選択状態を一度だけ決める。
+  //
+  // 全選択にできるのは「上流で選び終えている」かつ「上限に収まっている」ときだけ。
+  // ids= 付きで来た人・写真を自分で選んだ人に選び直させるのは二度手間だが、
+  // それでも MAX_AI_SPOTS を超える件数を渡すと、開いた瞬間にAI生成ボタンが
+  // 無効になってしまう。件数まで見て判定することで、どの経路から来ても
+  // 「開いた瞬間にエラー状態」にはならない。
+  //
+  // 判定に使うのは filteredEntries ではなく entries（絞り込み前の総数）。
+  // filteredEntries は絞り込み条件が変わるたびに増減するため、
+  // これを見て初期値を決めると「一度絞り込むと選択が全部消える」ことになり、
+  // 一度きりの既定値の決定という前提が崩れる。読み込み直後は絞り込みが
+  // 未設定（emptyFilters）で両者は一致するため、初回判定の結果も変わらない。
+  useEffect(() => {
+    if (selection !== null) return;
+    if (entries.length === 0) return;
+    const cameWithSelection = source === "photo" || selectedEntryIds !== null;
+    setSelection(cameWithSelection && entries.length <= MAX_AI_SPOTS ? ALL_SELECTED : NONE_SELECTED);
+  }, [entries, source, selectedEntryIds, selection]);
+
+  const isEntrySelected = useCallback(
+    (id: string) => {
+      if (!selection) return true;
+      return selection.mode === "all-except" ? !selection.ids.includes(id) : selection.ids.includes(id);
+    },
+    [selection]
+  );
+
+  const toggleEntrySelection = useCallback((id: string) => {
+    setSelection((prev) => {
+      const current = prev ?? ALL_SELECTED;
+      const listed = current.ids.includes(id);
+      return {
+        mode: current.mode,
+        ids: listed ? current.ids.filter((value) => value !== id) : [...current.ids, id],
+      };
+    });
+  }, []);
+
+  // 絞り込みを通ったうえで、利用者がチェックを入れている記録。
+  // 旅行記の材料・地図・SNS投稿文・画像・PDFはすべてこちらを使う。
+  const selectedEntries = useMemo(
+    () => filteredEntries.filter((entry) => isEntrySelected(entry.id)),
+    [filteredEntries, isEntrySelected]
+  );
+
   const mappedCount = useMemo(
-    () => filteredEntries.filter((entry) => resolveEntryLatLng(entry)).length,
-    [filteredEntries]
+    () => selectedEntries.filter((entry) => resolveEntryLatLng(entry)).length,
+    [selectedEntries]
   );
   const aiVerificationReady = Boolean(turnstileSiteKey && turnstileToken && sessionId);
   // AI生成はサーバー側で MAX_SPOTS 件に制限されている。超えていればサーバーが
   // errorCode: "too_many_entries" を返すだけなので、リクエストを投げる前にここで止める。
   // テンプレート生成（handleTemplateGeneration）はサーバーを使わないため対象外。
-  const aiSpotLimitExceeded = filteredEntries.length > MAX_AI_SPOTS;
+  const aiSpotLimitExceeded = selectedEntries.length > MAX_AI_SPOTS;
+
+  // 生成ボタンの近くに出す読み取り専用の設定表示。
+  // 生成結果に効く設定（文体・出力言語）がサイドバーに離れたため、いま何が選ばれているかだけを添える。
+  const currentSettingsNote = uiLabel(outputLanguage, "currentSettingsNote")
+    .replace(
+      "{tone}",
+      uiLabel(outputLanguage, TONE_OPTIONS.find((option) => option.value === tone)?.labelKey ?? "toneWarm")
+    )
+    .replace(
+      "{lang}",
+      OUTPUT_LANGUAGE_OPTIONS.find((option) => option.value === outputLanguage)?.label ?? outputLanguage
+    );
 
   const updateFilter = <K extends keyof Filters>(key: K, value: Filters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -2175,6 +2468,15 @@ export default function ShioriClient({
 
   const resetFilters = () => setFilters(emptyFilters);
   const handlePrint = () => window.print();
+
+  const handleWriteModeChange = (next: WriteMode) => {
+    setWriteMode(next);
+    try {
+      localStorage.setItem(SHIORI_WRITE_MODE_STORAGE_KEY, next);
+    } catch {
+      // localStorageが使えない環境では、この画面のあいだだけ記憶します。
+    }
+  };
 
   useEffect(() => {
     try {
@@ -2196,6 +2498,9 @@ export default function ShioriClient({
         outputLanguage,
         generatedSummary,
         generatedSpots,
+        // 未決定（null）のまま保存すると復元後に既定の再判定が走ってしまうため、
+        // 現在の見た目どおりの選択状態を確定させて保存する。
+        selection: selection ?? ALL_SELECTED,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(SHIORI_DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -2224,7 +2529,11 @@ export default function ShioriClient({
       setOutputLanguage(restoredLanguage);
       setGeneratedSummary(draft.generatedSummary || "");
       setGeneratedSpots(draft.generatedSpots || {});
+      // 記録は下書きから直接入れ直すため、URL由来の読み込みフィルタは解除する（従来どおり）。
       setSelectedEntryIds(null);
+      // selection を非nullにすることで、既定を決める useEffect は何もしない。
+      // selection キーが無い古い下書きは全選択＝変更前と同じ見え方で復元する。
+      setSelection(isSelectionState(draft.selection) ? draft.selection : ALL_SELECTED);
       setDraftMessage(uiLabel(restoredLanguage, "draftRestored"));
     } catch {
       // ここへ来るのは JSON.parse が失敗したときだけで、下書きの言語はまだ判明していない。
@@ -2243,13 +2552,13 @@ export default function ShioriClient({
   };
 
   const handleSocialImageDownload = async () => {
-    if (filteredEntries.length === 0) return;
+    if (selectedEntries.length === 0) return;
     const canvas = document.createElement("canvas");
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const firstImage = filteredEntries.find((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
+    const firstImage = selectedEntries.find((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
 
     ctx.fillStyle = "#1c1917";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -2301,12 +2610,12 @@ export default function ShioriClient({
     ctx.fillStyle = bottomShade;
     ctx.fillRect(0, 440, canvas.width, 190);
 
-    const range = formatRange(filteredEntries, outputLanguage);
+    const range = formatRange(selectedEntries, outputLanguage);
     const title = shioriTitle || tripTitle(range, outputLanguage);
     const summary =
       generatedSummary ||
       Object.values(generatedSpots).find((spot) => spot.caption?.trim())?.caption ||
-      filteredEntries.find((entry) => entry.memo?.trim())?.memo ||
+      selectedEntries.find((entry) => entry.memo?.trim())?.memo ||
       "";
 
     const fitLines = (value: string, maxWidth: number, maxLines: number) => {
@@ -2389,15 +2698,15 @@ export default function ShioriClient({
 
 
   const handleSocialPostCopy = async () => {
-    if (filteredEntries.length === 0) return;
-    const range = formatRange(filteredEntries, outputLanguage);
+    if (selectedEntries.length === 0) return;
+    const range = formatRange(selectedEntries, outputLanguage);
     const title = shioriTitle || tripTitle(range, outputLanguage);
     const body =
       generatedSummary ||
       Object.values(generatedSpots).find((spot) => spot.caption?.trim())?.caption ||
-      filteredEntries.find((entry) => entry.memo?.trim())?.memo ||
+      selectedEntries.find((entry) => entry.memo?.trim())?.memo ||
       "";
-    const places = [...new Set(filteredEntries.map((entry) => getDisplayPlace(entry, outputLanguage)).filter(Boolean))].slice(0, 3);
+    const places = [...new Set(selectedEntries.map((entry) => getDisplayPlace(entry, outputLanguage)).filter(Boolean))].slice(0, 3);
     const tags = [
       ...uiLabel(outputLanguage, "hashtags").split(" "),
       ...places.map((place) => `#${place.replace(/\s+/g, "")}`),
@@ -2419,13 +2728,13 @@ export default function ShioriClient({
   };
 
   const handleTemplateGeneration = () => {
-    const generated = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
+    const generated = buildTemplateTexts(selectedEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
     applyGeneratedTexts(generated.summary, generated.spots);
     setAiError(null);
   };
 
   const handleAiGeneration = async () => {
-    if (filteredEntries.length === 0) return;
+    if (selectedEntries.length === 0) return;
     if (aiSpotLimitExceeded) {
       setAiError(apiErrorMessage(outputLanguage, "too_many_entries", undefined));
       return;
@@ -2437,7 +2746,7 @@ export default function ShioriClient({
     setAiLoading(true);
     setAiError(null);
     try {
-      const payload = buildAiPayload(filteredEntries, shioriTitle, travelerName, tone, customCatLabels, outputLanguage);
+      const payload = buildAiPayload(selectedEntries, shioriTitle, travelerName, tone, customCatLabels, outputLanguage);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
@@ -2462,7 +2771,7 @@ export default function ShioriClient({
       if (!response.ok) {
         throw new Error(apiErrorMessage(outputLanguage, data.errorCode, data.error));
       }
-      const fallback = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
+      const fallback = buildTemplateTexts(selectedEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
       // AIを使えなかったとき、サーバーは日本語のテンプレート文を fallback: true で返す。
       // 同じ内容の出力言語版がクライアントにあるので、サーバーの文面は採用しない。
       // （採用すると英語やフランス語を選んでいても日本語が表示されてしまう）
@@ -2481,7 +2790,7 @@ export default function ShioriClient({
       }
       applyGeneratedTexts(data.summary || fallback.summary, nextSpots);
     } catch (error) {
-      const generated = buildTemplateTexts(filteredEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
+      const generated = buildTemplateTexts(selectedEntries, shioriTitle, travelerName, customCatLabels, outputLanguage);
       applyGeneratedTexts(generated.summary, generated.spots);
       setAiError(error instanceof Error && error.message ? error.message : uiMessage(outputLanguage, "aiFailed"));
     } finally {
@@ -2556,6 +2865,9 @@ export default function ShioriClient({
   const updateSpotText = (id: string, patch: Partial<GeneratedSpotText>) => {
     setGeneratedSpots((prev) => ({
       ...prev,
+      // ここは selectedEntries に差し替えないこと。スポット欄は選択を外した記録にも
+      // 表示され続け、そこを編集するとチェックの無いidが渡ってくる。selectedEntries から
+      // 探すと find が undefined になり、直後の非nullアサーションで実行時エラーになる。
       [id]: {
         title: prev[id]?.title || getDisplayPlace(filteredEntries.find((entry) => entry.id === id)!, outputLanguage),
         caption: prev[id]?.caption || "",
@@ -2673,6 +2985,8 @@ export default function ShioriClient({
               onClick={() => {
                 setSource("lifemap");
                 setEntries([]);
+                // 読み込み元が変われば既定の選択状態も決め直す。
+                setSelection(null);
               }}
               className="text-left bg-white border border-slate-100 hover:border-rose-200 shadow-sm rounded-xl p-5 transition-all focus:outline-none focus:ring-2 focus:ring-rose-200"
             >
@@ -2695,6 +3009,7 @@ export default function ShioriClient({
                 setFilters(emptyFilters);
                 setGeneratedSummary("");
                 setGeneratedSpots({});
+                setSelection(null);
               }}
               className="text-left bg-white border border-slate-100 hover:border-rose-200 shadow-sm rounded-xl p-5 transition-all focus:outline-none focus:ring-2 focus:ring-rose-200"
             >
@@ -2716,6 +3031,7 @@ export default function ShioriClient({
                 setFilters(emptyFilters);
                 setGeneratedSummary("");
                 setGeneratedSpots({});
+                setSelection(null);
               }}
               className="text-left bg-white border border-slate-100 hover:border-rose-200 shadow-sm rounded-xl p-5 transition-all focus:outline-none focus:ring-2 focus:ring-rose-200"
             >
@@ -2794,9 +3110,54 @@ export default function ShioriClient({
           </section>
         )}
 
+        {(source === "lifemap" || source === "photo" || source === "heritage") &&
+          entries.length > 0 &&
+          writeMode === null && (
+            <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4 sm:p-5">
+              <h2 className="font-bold text-base">{uiLabel(outputLanguage, "writeModeTitle")}</h2>
+              <div className="mt-3 grid sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleWriteModeChange("ai")}
+                  className="text-left rounded-xl border border-slate-200 hover:border-emerald-600 bg-white p-4 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-800" />
+                    <span className="font-bold text-sm text-slate-800">
+                      {uiLabel(outputLanguage, "writeModeAiLabel")}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
+                    {uiLabel(outputLanguage, "writeModeAiDesc")}
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleWriteModeChange("manual")}
+                  className="text-left rounded-xl border border-slate-200 hover:border-rose-400 bg-white p-4 transition-all focus:outline-none focus:ring-2 focus:ring-rose-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-rose-800" />
+                    <span className="font-bold text-sm text-slate-800">
+                      {uiLabel(outputLanguage, "writeModeManualLabel")}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
+                    {uiLabel(outputLanguage, "writeModeManualDesc")}
+                  </p>
+                </button>
+              </div>
+            </section>
+          )}
+
         {(source === "lifemap" || source === "photo" || source === "heritage") && (
           <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-4 items-start">
-            <aside className="space-y-4 lg:sticky lg:top-[84px]">
+            {/*
+              モバイルでは記録の入力・選択が先に来るように、右カラムを先頭へ回す。
+              設定・出力・下書きは入力を終えてから使うため後ろで良い。
+              PCでは lg:order-* で従来どおり「左=サイドバー / 右=本文」に戻す。
+            */}
+            <aside className="order-2 lg:order-1 space-y-4 lg:sticky lg:top-[84px]">
               <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <h2 className="font-bold text-base">{uiLabel(outputLanguage, "filterTitle")}</h2>
@@ -3008,7 +3369,7 @@ export default function ShioriClient({
                       type="text"
                       value={shioriTitle}
                       onChange={(e) => setShioriTitle(e.target.value)}
-                      placeholder={tripTitle(formatRange(filteredEntries, outputLanguage), outputLanguage)}
+                      placeholder={tripTitle(formatRange(selectedEntries, outputLanguage), outputLanguage)}
                       className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:border-slate-400"
                     />
                   </label>
@@ -3050,62 +3411,15 @@ export default function ShioriClient({
                       ))}
                     </select>
                   </label>
-                  <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-3">
-                    {turnstileSiteKey ? (
-                      <>
-                        <div ref={turnstileContainerRef} className="min-h-[65px]" />
-                        {!turnstileToken && turnstileStatus === "loading" && (
-                          <p className="text-xs text-slate-500 leading-relaxed">
-                            {uiLabel(outputLanguage, "turnstileLoading")}
-                          </p>
-                        )}
-                        {turnstileStatus === "error" && (
-                          <p className="text-xs text-amber-700 leading-relaxed">
-                            {uiLabel(outputLanguage, "turnstileError")}
-                          </p>
-                        )}
-                      </>
-                    ) : (
-                      <p className="text-xs text-amber-700 leading-relaxed">
-                        {uiLabel(outputLanguage, "turnstileMissing")}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAiGeneration}
-                    disabled={filteredEntries.length === 0 || aiLoading || !aiVerificationReady || aiSpotLimitExceeded}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-900 hover:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    {aiLoading ? uiLabel(outputLanguage, "generating") : uiLabel(outputLanguage, "generateAi")}
-                  </button>
-                  {aiSpotLimitExceeded && (
-                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
-                      {apiErrorMessage(outputLanguage, "too_many_entries", undefined)}
-                    </p>
-                  )}
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    {uiLabel(outputLanguage, "aiScopeNote")}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleTemplateGeneration}
-                    disabled={filteredEntries.length === 0}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 text-slate-700 border border-slate-200 text-sm font-bold transition-all"
-                  >
-                    <FileText className="w-4 h-4" />
-                    {uiLabel(outputLanguage, "template")}
-                  </button>
-                  {aiError && (
-                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
-                      {aiError}
-                    </p>
-                  )}
+                  {/*
+                    AI生成・テンプレート生成・認証ウィジェットはここから記録一覧の直下
+                    （生成アクションバー）へ移設した。メモを書き終えた視線の先にボタンを置くため。
+                    この設定パネルには、生成前に決める設定と生成後の出力だけを残す。
+                  */}
                   <button
                     type="button"
                     onClick={handleSocialPostCopy}
-                    disabled={filteredEntries.length === 0}
+                    disabled={selectedEntries.length === 0}
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-900 hover:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
                   >
                     <FileText className="w-4 h-4" />
@@ -3114,7 +3428,7 @@ export default function ShioriClient({
                   <button
                     type="button"
                     onClick={handleSocialImageDownload}
-                    disabled={filteredEntries.length === 0}
+                    disabled={selectedEntries.length === 0}
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-rose-900 hover:bg-rose-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
                   >
                     <Download className="w-4 h-4" />
@@ -3123,7 +3437,7 @@ export default function ShioriClient({
                   <button
                     type="button"
                     onClick={handlePrint}
-                    disabled={filteredEntries.length === 0}
+                    disabled={selectedEntries.length === 0}
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 text-slate-600 border border-slate-200 text-sm font-bold transition-all"
                   >
                     <Download className="w-4 h-4" />
@@ -3174,7 +3488,7 @@ export default function ShioriClient({
                     <div className="text-[11px] text-slate-500">{uiLabel(outputLanguage, "summaryAll")}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 border border-slate-100 p-2">
-                    <div className="text-lg font-bold">{filteredEntries.length}</div>
+                    <div className="text-lg font-bold">{selectedEntries.length}</div>
                     <div className="text-[11px] text-slate-500">{uiLabel(outputLanguage, "summaryUsed")}</div>
                   </div>
                   <div className="rounded-lg bg-slate-50 border border-slate-100 p-2">
@@ -3183,12 +3497,21 @@ export default function ShioriClient({
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-                  {uiLabel(outputLanguage, "summaryRange")} {formatRange(filteredEntries, outputLanguage)}
+                  {countLabel(
+                    outputLanguage,
+                    "selectionCount",
+                    "selectionCountOne",
+                    filteredEntries.length,
+                    selectedEntries.length
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+                  {uiLabel(outputLanguage, "summaryRange")} {formatRange(selectedEntries, outputLanguage)}
                 </p>
               </section>
             </aside>
 
-            <section className="space-y-4 min-w-0">
+            <section className="order-1 lg:order-2 space-y-4 min-w-0">
               {loading && (
                 <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-6 text-center text-slate-500">
                   {uiLabel(outputLanguage, "loadingRecords")}
@@ -3258,17 +3581,28 @@ export default function ShioriClient({
                       <div>
                         <p className="text-xs font-bold text-slate-400">{uiLabel(outputLanguage, "previewLabel")}</p>
                         <h2 className="text-xl font-bold text-slate-800">
-                          {shioriTitle || tripTitle(formatRange(filteredEntries, outputLanguage), outputLanguage)}
+                          {shioriTitle || tripTitle(formatRange(selectedEntries, outputLanguage), outputLanguage)}
                         </h2>
                       </div>
-                      <p className="text-sm text-slate-500">
-                        {countLabel(outputLanguage, "previewCount", "previewCountOne", filteredEntries.length)}
-                      </p>
+                      <div className="sm:text-right">
+                        <p className="text-sm text-slate-500">
+                          {countLabel(outputLanguage, "previewCount", "previewCountOne", filteredEntries.length)}
+                        </p>
+                        <p className="text-sm font-bold text-emerald-800">
+                          {countLabel(
+                            outputLanguage,
+                            "selectionCount",
+                            "selectionCountOne",
+                            filteredEntries.length,
+                            selectedEntries.length
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   <div className="h-[360px] lg:h-[460px] rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
-                    <ShioriMap entries={filteredEntries} language={outputLanguage} />
+                    <ShioriMap entries={selectedEntries} language={outputLanguage} />
                   </div>
 
                   <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
@@ -3291,6 +3625,43 @@ export default function ShioriClient({
                     </label>
                   </div>
 
+                  {selectedEntries.length === 0 && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                      <h3 className="font-bold text-sm text-amber-900">
+                        {uiLabel(outputLanguage, "selectionNoneTitle")}
+                      </h3>
+                      <p className="mt-1 text-xs text-amber-800 leading-relaxed">
+                        {uiLabel(outputLanguage, "selectionNoneDesc")}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="bg-white border border-slate-100 shadow-sm rounded-xl px-4 py-3 flex flex-wrap items-center gap-2">
+                    <p className="text-xs text-slate-500 mr-auto">
+                      {countLabel(
+                        outputLanguage,
+                        "selectionCount",
+                        "selectionCountOne",
+                        filteredEntries.length,
+                        selectedEntries.length
+                      )}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setSelection(ALL_SELECTED)}
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+                    >
+                      {uiLabel(outputLanguage, "selectAll")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelection(NONE_SELECTED)}
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs font-bold transition-all"
+                    >
+                      {uiLabel(outputLanguage, "selectNone")}
+                    </button>
+                  </div>
+
                   <div className="space-y-3">
                     {filteredEntries.map((entry) => {
                       const generated = generatedSpots[entry.id];
@@ -3301,6 +3672,9 @@ export default function ShioriClient({
                             customLabels={customCatLabels}
                             onMemoChange={updateEntryMemo}
                             language={outputLanguage}
+                            selected={isEntrySelected(entry.id)}
+                            onToggleSelect={toggleEntrySelection}
+                            showMemoInput={writeMode !== "manual"}
                           />
                           <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                             <label className="block">
@@ -3327,6 +3701,97 @@ export default function ShioriClient({
                       );
                     })}
                   </div>
+
+                  {/* 生成アクションバー。メモを書き終えた視線の先に置くため、記録一覧の直下に配置する。 */}
+                  <section className="bg-white border border-slate-100 shadow-sm rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-slate-500" />
+                      <h2 className="font-bold text-base">{uiLabel(outputLanguage, "generateSectionTitle")}</h2>
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed">{currentSettingsNote}</p>
+
+                    {writeMode === "manual" ? (
+                      <>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {uiLabel(outputLanguage, "writeModeManualDesc")}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => handleWriteModeChange("ai")}
+                          className="text-sm font-bold text-emerald-800 hover:text-emerald-900 underline underline-offset-4"
+                        >
+                          {uiLabel(outputLanguage, "switchToAi")}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {uiLabel(outputLanguage, "aiStepHint")}
+                        </p>
+                        <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-3">
+                          {turnstileSiteKey ? (
+                            <>
+                              <div ref={setTurnstileContainer} className="min-h-[65px]" />
+                              {!turnstileToken && turnstileStatus === "loading" && (
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                  {uiLabel(outputLanguage, "turnstileLoading")}
+                                </p>
+                              )}
+                              {turnstileStatus === "error" && (
+                                <p className="text-xs text-amber-700 leading-relaxed">
+                                  {uiLabel(outputLanguage, "turnstileError")}
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-xs text-amber-700 leading-relaxed">
+                              {uiLabel(outputLanguage, "turnstileMissing")}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleAiGeneration}
+                          disabled={
+                            selectedEntries.length === 0 || aiLoading || !aiVerificationReady || aiSpotLimitExceeded
+                          }
+                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-900 hover:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          {aiLoading ? uiLabel(outputLanguage, "generating") : uiLabel(outputLanguage, "generateAi")}
+                        </button>
+                        {aiSpotLimitExceeded && (
+                          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
+                            {apiErrorMessage(outputLanguage, "too_many_entries", undefined)}
+                          </p>
+                        )}
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {uiLabel(outputLanguage, "aiScopeNote")}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleTemplateGeneration}
+                          disabled={selectedEntries.length === 0}
+                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 text-slate-700 border border-slate-200 text-sm font-bold transition-all"
+                        >
+                          <FileText className="w-4 h-4" />
+                          {uiLabel(outputLanguage, "template")}
+                        </button>
+                        {aiError && (
+                          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
+                            {aiError}
+                          </p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleWriteModeChange("manual")}
+                          className="text-sm font-bold text-slate-500 hover:text-slate-700 underline underline-offset-4"
+                        >
+                          {uiLabel(outputLanguage, "switchToManual")}
+                        </button>
+                      </>
+                    )}
+                  </section>
                 </>
               )}
             </section>
@@ -3334,9 +3799,9 @@ export default function ShioriClient({
         )}
       </main>
 
-      {(source === "lifemap" || source === "photo" || source === "heritage") && filteredEntries.length > 0 && (
+      {(source === "lifemap" || source === "photo" || source === "heritage") && selectedEntries.length > 0 && (
         <ShioriPrintDocument
-          entries={filteredEntries}
+          entries={selectedEntries}
           title={shioriTitle}
           traveler={travelerName}
           summary={generatedSummary}
