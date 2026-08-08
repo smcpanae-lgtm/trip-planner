@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Camera,
   Check,
+  ChevronUp,
   CircleAlert,
   Download,
   Upload,
@@ -136,6 +137,15 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 // 超えるとサーバーが errorCode: "too_many_entries" を返す。
 const MAX_AI_SPOTS = 20;
 
+/**
+ * 既定で選ぶ「直近の旅行1回分」の幅（最新の記録の日付を含む日数）。
+ * 4日 ＝ 最大3泊4日。国内旅行は1泊2日〜3泊4日が主流で、
+ * 「2泊3日で5〜8か所まわる」使い方は確実に収まる。
+ * 5日以上に広げると、旅行から帰った翌日に近所で撮った記録まで混ざりやすくなる。
+ * これより長い旅行は「すべて選ぶ」で足してもらう前提。
+ */
+const DEFAULT_TRIP_WINDOW_DAYS = 4;
+
 /** 旅行記の書き方。null は未選択（2択カードを出す）。 */
 type WriteMode = "ai" | "manual";
 
@@ -153,6 +163,12 @@ function isWriteMode(value: unknown): value is WriteMode {
  * 全idを先回りで詰めると初期状態と「全部外した状態」が区別できず、
  * あとから増えた記録（写真の追加取り込み）も勝手に選択済みになってしまう。
  * モードを持たせることで、あとから増減する記録も既定側に自動で倒れる。
+ *
+ * ただし "only" で既定を作った場合（＝直近の旅行1回分を選ぶとき）は、
+ * あとから増えた記録は自動では選ばれない。ids に無いものは未選択だからである。
+ * 記録があとから増えるのは写真の追加取り込みだけで、その経路の既定は
+ * "all-except"（全選択）のままなので実害は出ない。写真以外の経路で
+ * 記録を追加できるようにする場合は、ここを併せて見直すこと。
  */
 type SelectionState = {
   mode: "all-except" | "only";
@@ -239,6 +255,61 @@ function todayStr(): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/** "YYYY-MM-DD" を days 日ぶんずらす。月またぎ・年またぎの計算は Date に任せる。 */
+function shiftDate(date: string, days: number): string {
+  // 時刻を付けずに new Date("2026-08-09") とするとUTC扱いになり、
+  // 日本時間では前日にずれる。ローカル時刻として解釈させるため T00:00:00 を足す。
+  const base = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(base.getTime())) return date;
+  base.setDate(base.getDate() + days);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${base.getFullYear()}-${pad(base.getMonth() + 1)}-${pad(base.getDate())}`;
+}
+
+/** 日付の古い順（同日は登録順）に並べ替える。一覧の表示順と既定選択の順序をそろえるため。 */
+function sortByDate(entries: LifeMapEntry[]): LifeMapEntry[] {
+  return [...entries].sort((a, b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt));
+}
+
+/**
+ * 「直近の旅行1回分」を選ぶ。最新の記録の日付から DEFAULT_TRIP_WINDOW_DAYS 日ぶんを窓とする。
+ *
+ * 件数（直近N件）で切らないのは、1回の旅行で残る記録が2件から20件までばらつき、
+ * 件数では旅行の境目を表現できないため。N=5 では2泊3日8か所を取りこぼし、
+ * N=10 にすると1泊2日3か所の人には前回の旅行が混ざる。件数は上限のガードとしてのみ使う。
+ *
+ * 「前日との差が2日以上空いたら切る」というクラスタ方式は採っていない。
+ * 旅行中に記録を残さなかった日があると途中で切れてしまううえ、
+ * 固定幅のほうが挙動を説明でき、外れたときの直し方も明快なため。
+ *
+ * undatedIds は日付が未入力の記録。世界遺産の訪問記録は日付を入れずに
+ * 訪問済みにできるが、読み込み時に今日の日付が入る（loadHeritageEntries）。
+ * そのまま扱うと全件が「今日の旅行」として窓に入ってしまうので、
+ * 窓の基準からも選択対象からも外す。
+ *
+ * 戻り値の windowIds は上限で打ち切る前の窓の全id。一覧の初期表示に使う
+ * （選ばれなかったぶんも含めて窓ぶんを見せないと、何が落ちたのか分からないため）。
+ */
+function pickRecentTrip(
+  entries: LifeMapEntry[],
+  undatedIds: Set<string>
+): { ids: string[]; windowIds: string[]; truncated: boolean } {
+  const dated = entries.filter((entry) => entry.date && !undatedIds.has(entry.id));
+  if (dated.length === 0) return { ids: [], windowIds: [], truncated: false };
+
+  const latest = dated.reduce((max, entry) => (entry.date > max ? entry.date : max), dated[0].date);
+  const since = shiftDate(latest, -(DEFAULT_TRIP_WINDOW_DAYS - 1));
+  // 上限を超えたら古い順に打ち切る。旅行記は初日から始まるべきなので、
+  // 新しい順に残すと旅行の後半だけが残ってしまう。
+  const within = sortByDate(dated.filter((entry) => entry.date >= since));
+  const windowIds = within.map((entry) => entry.id);
+  return {
+    ids: windowIds.slice(0, MAX_AI_SPOTS),
+    windowIds,
+    truncated: within.length > MAX_AI_SPOTS,
+  };
+}
+
 function safeJsonParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
   try {
@@ -309,10 +380,18 @@ async function getHeritagePhoto(id: string): Promise<string> {
   }
 }
 
+/**
+ * 世界遺産パスポートの訪問記録を読み込む。
+ *
+ * undatedIds には「訪問済みだが日付が未入力」の記録を入れて返す。
+ * 日付が無い記録には今日の日付を入れて扱うため（並べ替えと絞り込みが
+ * 日付前提のため）、そのままでは全件が「今日の旅行」に見えてしまう。
+ * 既定の選択範囲を決めるときだけ、この一覧を使って除外する。
+ */
 async function loadHeritageEntries(
   selectedIds: string[] | null,
   language: OutputLanguage
-): Promise<LifeMapEntry[]> {
+): Promise<{ entries: LifeMapEntry[]; undatedIds: string[] }> {
   const records = safeJsonParse<Record<string, HeritageRecord>>(localStorage.getItem("whp.records"), {});
   const sites = safeJsonParse<HeritageSite[]>(localStorage.getItem("whp.sites"), []);
   const selected = selectedIds && selectedIds.length > 0 ? new Set(selectedIds) : null;
@@ -321,7 +400,11 @@ async function loadHeritageEntries(
     return Boolean(record?.visited) && (!selected || selected.has(site.id));
   });
 
-  return Promise.all(
+  const undatedIds = candidates
+    .filter((site) => !records[site.id]?.date)
+    .map((site) => `heritage-${site.id}`);
+
+  const entries = await Promise.all(
     candidates.map(async (site) => {
       const record = records[site.id] || {};
       const photo = await getHeritagePhoto(site.id);
@@ -348,6 +431,8 @@ async function loadHeritageEntries(
       } satisfies LifeMapEntry;
     })
   );
+
+  return { entries, undatedIds };
 }
 function getCategoryLabel(
   category: LifeMapCategory,
@@ -404,7 +489,7 @@ function filterEntries(
   customLabels: Record<string, string>,
   language: OutputLanguage
 ): LifeMapEntry[] {
-  return entries
+  const matched = entries
     .filter((entry) => {
       if (filters.from && entry.date < filters.from) return false;
       if (filters.to && entry.date > filters.to) return false;
@@ -418,8 +503,8 @@ function filterEntries(
         }
       }
       return matchesKeyword(entry, filters.keyword, customLabels, language);
-    })
-    .sort((a, b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt));
+    });
+  return sortByDate(matched);
 }
 
 function formatRange(entries: LifeMapEntry[], language: OutputLanguage): string {
@@ -847,6 +932,13 @@ type UiLabelKey =
   | "entrySelectLabel"
   | "selectAll"
   | "selectNone"
+  // 既定で「直近の旅行1回分」を選んだことの説明と、一覧の省略を解く導線。
+  // {range} は日付の範囲、{n} は件数（countLabel が単数形を選ぶ）。
+  | "recentTripNote"
+  | "recentTripNoteOne"
+  | "recentTripLimitNote"
+  | "showOlderEntries"
+  | "showOlderEntriesOne"
   | "selectionNoneTitle"
   | "selectionNoneDesc"
   | "generateSectionTitle"
@@ -1019,6 +1111,11 @@ function uiLabel(
       entrySelectLabel: "この記録を使う",
       selectAll: "すべて選ぶ",
       selectNone: "すべて外す",
+      recentTripNote: "直近の旅行分として、{range}の記録{n}件を選びました。",
+      recentTripNoteOne: "直近の旅行分として、{range}の記録{n}件を選びました。",
+      recentTripLimitNote: "一度に使えるのは{n}件までのため、同じ期間の残りの記録は選んでいません。",
+      showOlderEntries: "これより前の記録{n}件も表示する",
+      showOlderEntriesOne: "これより前の記録{n}件も表示する",
       selectionNoneTitle: "旅行記に使う記録を選んでください",
       selectionNoneDesc: "下に並ぶ記録のチェックを入れると、その記録が旅行記に使われます。今回の旅行の記録だけを選んでください。",
       generateSectionTitle: "旅行記を作る",
@@ -1180,6 +1277,11 @@ function uiLabel(
       entrySelectLabel: "Use this record",
       selectAll: "Select all",
       selectNone: "Deselect all",
+      recentTripNote: "Selected {n} records from your most recent trip ({range}).",
+      recentTripNoteOne: "Selected {n} record from your most recent trip ({range}).",
+      recentTripLimitNote: "Only {n} records can be used at once, so the rest of that period is not selected.",
+      showOlderEntries: "Show {n} older records",
+      showOlderEntriesOne: "Show {n} older record",
       selectionNoneTitle: "Choose the records for this journal",
       selectionNoneDesc: "Tick the records below to include them in the journal. Pick only the records from this trip.",
       generateSectionTitle: "Create the journal",
@@ -1341,6 +1443,11 @@ function uiLabel(
       entrySelectLabel: "使用这条记录",
       selectAll: "全选",
       selectNone: "全部取消",
+      recentTripNote: "已选择最近一次旅行（{range}）的{n}条记录。",
+      recentTripNoteOne: "已选择最近一次旅行（{range}）的{n}条记录。",
+      recentTripLimitNote: "一次最多可使用{n}条，因此该期间的其余记录未被选择。",
+      showOlderEntries: "显示更早的{n}条记录",
+      showOlderEntriesOne: "显示更早的{n}条记录",
       selectionNoneTitle: "请选择要用于旅行记的记录",
       selectionNoneDesc: "勾选下方的记录，即可将其用于旅行记。请只选择本次旅行的记录。",
       generateSectionTitle: "生成旅行记",
@@ -1502,6 +1609,11 @@ function uiLabel(
       entrySelectLabel: "Utiliser cet enregistrement",
       selectAll: "Tout sélectionner",
       selectNone: "Tout désélectionner",
+      recentTripNote: "{n} enregistrements de votre dernier voyage ({range}) ont été sélectionnés.",
+      recentTripNoteOne: "{n} enregistrement de votre dernier voyage ({range}) a été sélectionné.",
+      recentTripLimitNote: "{n} enregistrements au maximum à la fois : le reste de cette période n'est pas sélectionné.",
+      showOlderEntries: "Afficher {n} enregistrements plus anciens",
+      showOlderEntriesOne: "Afficher {n} enregistrement plus ancien",
       selectionNoneTitle: "Choisissez les enregistrements de ce carnet",
       selectionNoneDesc: "Cochez les enregistrements ci-dessous pour les inclure dans le carnet. Ne gardez que ceux de ce voyage.",
       generateSectionTitle: "Créer le carnet",
@@ -1663,6 +1775,11 @@ function uiLabel(
       entrySelectLabel: "이 기록 사용",
       selectAll: "전체 선택",
       selectNone: "전체 해제",
+      recentTripNote: "가장 최근 여행({range})의 기록 {n}건을 선택했습니다.",
+      recentTripNoteOne: "가장 최근 여행({range})의 기록 {n}건을 선택했습니다.",
+      recentTripLimitNote: "한 번에 사용할 수 있는 기록은 {n}건까지여서, 같은 기간의 나머지 기록은 선택하지 않았습니다.",
+      showOlderEntries: "이전 기록 {n}건도 표시",
+      showOlderEntriesOne: "이전 기록 {n}건도 표시",
       selectionNoneTitle: "여행기에 사용할 기록을 선택해 주세요",
       selectionNoneDesc: "아래 기록에 체크하면 여행기에 사용됩니다. 이번 여행의 기록만 선택해 주세요.",
       generateSectionTitle: "여행기 만들기",
@@ -1824,6 +1941,11 @@ function uiLabel(
       entrySelectLabel: "使用這筆記錄",
       selectAll: "全選",
       selectNone: "全部取消",
+      recentTripNote: "已選擇最近一次旅行（{range}）的{n}筆記錄。",
+      recentTripNoteOne: "已選擇最近一次旅行（{range}）的{n}筆記錄。",
+      recentTripLimitNote: "一次最多可使用{n}筆，因此該期間的其餘記錄未被選擇。",
+      showOlderEntries: "顯示更早的{n}筆記錄",
+      showOlderEntriesOne: "顯示更早的{n}筆記錄",
       selectionNoneTitle: "請選擇要用於旅行記的記錄",
       selectionNoneDesc: "勾選下方的記錄，即可將其用於旅行記。請只選擇本次旅行的記錄。",
       generateSectionTitle: "產生旅行記",
@@ -1985,6 +2107,11 @@ function uiLabel(
       entrySelectLabel: "Diesen Eintrag verwenden",
       selectAll: "Alle auswählen",
       selectNone: "Alle abwählen",
+      recentTripNote: "{n} Einträge Ihrer letzten Reise ({range}) wurden ausgewählt.",
+      recentTripNoteOne: "{n} Eintrag Ihrer letzten Reise ({range}) wurde ausgewählt.",
+      recentTripLimitNote: "Es können höchstens {n} Einträge auf einmal verwendet werden; die übrigen dieses Zeitraums sind nicht ausgewählt.",
+      showOlderEntries: "{n} ältere Einträge anzeigen",
+      showOlderEntriesOne: "{n} älteren Eintrag anzeigen",
       selectionNoneTitle: "Wählen Sie die Einträge für dieses Tagebuch",
       selectionNoneDesc: "Haken Sie die Einträge unten an, um sie in das Tagebuch aufzunehmen. Wählen Sie nur die Einträge dieser Reise.",
       generateSectionTitle: "Tagebuch erstellen",
@@ -2293,6 +2420,22 @@ export default function ShioriClient({
   const [selectedEntryIds, setSelectedEntryIds] = useState<string[] | null>(null);
   // 記録の個別選択。null は「まだ既定を決めていない」で、読み込み直後に一度だけ決定する。
   const [selection, setSelection] = useState<SelectionState | null>(null);
+  // 日付が未入力の記録のid。既定の選択範囲を決めるときだけ使う（世界遺産の訪問記録用）。
+  // stateにしないのは、これが変わるのは記録の読み込み時だけで、
+  // 同じ瞬間に setEntries も走る＝再描画のきっかけとしては entries で足りるため。
+  const undatedEntryIdsRef = useRef<Set<string>>(new Set());
+  // 既定として「直近の旅行1回分」を適用したときの記録。適用した SelectionState を
+  // そのまま持っておき、selection が同一参照のあいだ（＝利用者がまだ選び直していない
+  // あいだ）だけ説明文を出す。選び直したあとも出し続けると説明が実態と合わなくなる。
+  const [recentTripDefault, setRecentTripDefault] = useState<
+    { state: SelectionState; truncated: boolean } | null
+  >(null);
+  // 一覧に出す記録のid。null は全件表示。
+  // 既定で選んだぶんだけを見せ、それ以外は「もっと見る」で広げる。
+  // 件数ではなくidで持つのは、並び順に依存させないため。日付が未入力の世界遺産の
+  // 記録には今日の日付が入るので、「新しい順に何件」で切ると、選んだ記録よりあとに
+  // 並んだ日付なしの記録が表示枠を奪い、選択済みの記録が画面から消えることがある。
+  const [visibleEntryIds, setVisibleEntryIds] = useState<Set<string> | null>(null);
   // 書き方の2択。null のあいだだけ選択カードを出す。
   const [writeMode, setWriteMode] = useState<WriteMode | null>(null);
   const [generatedSummary, setGeneratedSummary] = useState("");
@@ -2470,13 +2613,18 @@ export default function ShioriClient({
     if (source !== "lifemap" && source !== "heritage") return;
     setLoading(true);
     setLoadError(null);
-    const loader = source === "lifemap"
-      ? getAllEntries().then((loaded) => selectedEntryIds ? loaded.filter((entry) => selectedEntryIds.includes(entry.id)) : loaded)
+    const loader: Promise<{ entries: LifeMapEntry[]; undatedIds: string[] }> = source === "lifemap"
+      ? getAllEntries().then((loaded) => ({
+          entries: selectedEntryIds ? loaded.filter((entry) => selectedEntryIds.includes(entry.id)) : loaded,
+          // 人生体験マップの記録は日付が必須なので、日付なしは発生しない。
+          undatedIds: [],
+        }))
       : loadHeritageEntries(selectedEntryIds, outputLanguageRef.current);
 
     loader
       .then((loaded) => {
-        setEntries(loaded);
+        undatedEntryIdsRef.current = new Set(loaded.undatedIds);
+        setEntries(loaded.entries);
       })
       .catch(() =>
         setLoadError(
@@ -2509,11 +2657,14 @@ export default function ShioriClient({
 
   // 読み込み直後に既定の選択状態を一度だけ決める。
   //
-  // 全選択にできるのは「上流で選び終えている」かつ「上限に収まっている」ときだけ。
-  // ids= 付きで来た人・写真を自分で選んだ人に選び直させるのは二度手間だが、
-  // それでも MAX_AI_SPOTS を超える件数を渡すと、開いた瞬間にAI生成ボタンが
-  // 無効になってしまう。件数まで見て判定することで、どの経路から来ても
-  // 「開いた瞬間にエラー状態」にはならない。
+  // 上流で選び終えている経路（ids= 付き・写真を自分で選んだ場合）は全選択のまま。
+  // ただし MAX_AI_SPOTS を超える件数を渡されたときは、全解除にはせず古い順に
+  // 打ち切る。全解除にすると「開いた瞬間に何も選ばれていない」状態になるうえ、
+  // AI生成ボタンも押せないままになるため。
+  //
+  // それ以外（人生体験マップや世界遺産パスポートを ids= なしで開いた場合）は
+  // 「直近の旅行1回分」を選ぶ。通常の使い方は「1回の旅行から帰ってきて、
+  // その記録をSNSに投稿する」であって、蓄積した記録を全部ならべることではない。
   //
   // 判定に使うのは filteredEntries ではなく entries（絞り込み前の総数）。
   // filteredEntries は絞り込み条件が変わるたびに増減するため、
@@ -2523,8 +2674,26 @@ export default function ShioriClient({
   useEffect(() => {
     if (selection !== null) return;
     if (entries.length === 0) return;
-    const cameWithSelection = source === "photo" || selectedEntryIds !== null;
-    setSelection(cameWithSelection && entries.length <= MAX_AI_SPOTS ? ALL_SELECTED : NONE_SELECTED);
+
+    if (source === "photo" || selectedEntryIds !== null) {
+      if (entries.length <= MAX_AI_SPOTS) {
+        setSelection(ALL_SELECTED);
+        return;
+      }
+      // 打ち切った場合は一覧を全件表示のままにする。選ばれなかった記録が
+      // 隠れていると、何が落ちたのか分からないため。
+      setSelection({ mode: "only", ids: sortByDate(entries).slice(0, MAX_AI_SPOTS).map((entry) => entry.id) });
+      return;
+    }
+
+    const recent = pickRecentTrip(entries, undatedEntryIdsRef.current);
+    const state: SelectionState = { mode: "only", ids: recent.ids };
+    setSelection(state);
+    setRecentTripDefault(recent.ids.length > 0 ? { state, truncated: recent.truncated } : null);
+    // 一覧の初期表示は窓に入った記録ぶん。上限で打ち切られたぶんも見せないと、
+    // 同じ旅行の記録なのに画面から消えたように見えてしまう。
+    // 窓が空（＝日付のある記録が1件も無い）のときは伏せる意味がないので全件表示。
+    setVisibleEntryIds(recent.windowIds.length > 0 ? new Set(recent.windowIds) : null);
   }, [entries, source, selectedEntryIds, selection]);
 
   const isEntrySelected = useCallback(
@@ -2552,6 +2721,23 @@ export default function ShioriClient({
     () => filteredEntries.filter((entry) => isEntrySelected(entry.id)),
     [filteredEntries, isEntrySelected]
   );
+
+  // 絞り込みが使われているか。使われているあいだは一覧を省略しない。
+  // 利用者が自分で範囲を指定した以上、その結果を隠す理由がないため。
+  const filtersActive =
+    filters.from !== "" ||
+    filters.to !== "" ||
+    filters.region !== "" ||
+    filters.category !== "all" ||
+    filters.keyword.trim() !== "";
+
+  // 一覧に実際に出す記録。並びは filteredEntries のまま（古い順）で、
+  // 既定の選択範囲に入らなかった記録だけを伏せる。
+  const visibleEntries = useMemo(() => {
+    if (filtersActive || visibleEntryIds === null) return filteredEntries;
+    return filteredEntries.filter((entry) => visibleEntryIds.has(entry.id));
+  }, [filteredEntries, filtersActive, visibleEntryIds]);
+  const hiddenEntryCount = filteredEntries.length - visibleEntries.length;
 
   const mappedCount = useMemo(
     () => selectedEntries.filter((entry) => resolveEntryLatLng(entry)).length,
@@ -2647,6 +2833,10 @@ export default function ShioriClient({
       // selection を非nullにすることで、既定を決める useEffect は何もしない。
       // selection キーが無い古い下書きは全選択＝変更前と同じ見え方で復元する。
       setSelection(isSelectionState(draft.selection) ? draft.selection : ALL_SELECTED);
+      // 復元した選択は「直近の旅行1回分」の既定ではないので、説明文と一覧の省略は解く。
+      // 省略を残すと、下書きで選んでいた古い記録が画面から消えて見える。
+      setRecentTripDefault(null);
+      setVisibleEntryIds(null);
       setDraftMessage(uiLabel(restoredLanguage, "draftRestored"));
     } catch {
       // ここへ来るのは JSON.parse が失敗したときだけで、下書きの言語はまだ判明していない。
@@ -3940,6 +4130,29 @@ export default function ShioriClient({
                     </div>
                   )}
 
+                  {/*
+                    既定で「直近の旅行1回分」を選んだことの説明。
+                    selection が既定のままのあいだだけ出す（選び直したあとは実態と合わないため）。
+                    絞り込み中も出さない。表示中の一覧と説明の範囲がずれるため。
+                  */}
+                  {recentTripDefault && selection === recentTripDefault.state && !filtersActive && (
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
+                      <p className="text-xs text-emerald-900 leading-relaxed">
+                        {countLabel(
+                          outputLanguage,
+                          "recentTripNote",
+                          "recentTripNoteOne",
+                          selectedEntries.length
+                        ).replace("{range}", formatRange(selectedEntries, outputLanguage))}
+                      </p>
+                      {recentTripDefault.truncated && (
+                        <p className="mt-1 text-xs text-emerald-800 leading-relaxed">
+                          {uiLabel(outputLanguage, "recentTripLimitNote").replace("{n}", String(MAX_AI_SPOTS))}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   <div className="bg-white border border-slate-100 shadow-sm rounded-xl px-4 py-3 flex flex-wrap items-center gap-2">
                     <p className="text-xs text-slate-500 mr-auto">
                       {countLabel(
@@ -3952,7 +4165,11 @@ export default function ShioriClient({
                     </p>
                     <button
                       type="button"
-                      onClick={() => setSelection(ALL_SELECTED)}
+                      onClick={() => {
+                        setSelection(ALL_SELECTED);
+                        // 選択と表示が食い違わないよう、全選択にしたら一覧も全件に戻す。
+                        setVisibleEntryIds(null);
+                      }}
                       className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
                     >
                       {uiLabel(outputLanguage, "selectAll")}
@@ -3966,8 +4183,23 @@ export default function ShioriClient({
                     </button>
                   </div>
 
+                  {/*
+                    一覧は古い順に並んでいるため、省略されるのは先頭側（古い記録）。
+                    広げる導線も一覧の上に置く。
+                  */}
+                  {hiddenEntryCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleEntryIds(null)}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs font-bold transition-all"
+                    >
+                      <ChevronUp className="w-4 h-4" />
+                      {countLabel(outputLanguage, "showOlderEntries", "showOlderEntriesOne", hiddenEntryCount)}
+                    </button>
+                  )}
+
                   <div className="space-y-3">
-                    {filteredEntries.map((entry) => {
+                    {visibleEntries.map((entry) => {
                       const generated = generatedSpots[entry.id];
                       return (
                         <div key={entry.id} className="space-y-2">
