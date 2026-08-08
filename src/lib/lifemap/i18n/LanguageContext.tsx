@@ -94,6 +94,11 @@ export function LanguageProvider({
       const raw = localStorage.getItem(CUSTOM_CAT_STORAGE_KEY);
       if (raw) setCustomCatLabels(JSON.parse(raw));
     } catch {}
+    // respectStoredLang は意図的に依存へ入れていない（入れ忘れではない）。
+    // これはマウント時に一度だけ localStorage を読むための効果で、
+    // respectStoredLang は props として不変。依存に入れても再実行の契機にならず、
+    // 「一度だけ読む」という前提だけが読みにくくなる。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLang = useCallback((next: LangCode) => {

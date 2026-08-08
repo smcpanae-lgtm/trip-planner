@@ -2293,6 +2293,11 @@ export default function ShioriClient({
     } catch {
       setCustomCatLabels({});
     }
+    // respectStoredLang は意図的に依存へ入れていない（入れ忘れではない）。
+    // localStorage と URL パラメータをマウント時に一度だけ読むための効果で、
+    // respectStoredLang は props として不変。依存に入れても再実行されず、
+    // 「一度だけ読む」という前提だけが読みにくくなる。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -2380,6 +2385,13 @@ export default function ShioriClient({
         )
       )
       .finally(() => setLoading(false));
+    // outputLanguage は意図的に依存へ入れていない（入れ忘れではない）。
+    // 依存に入れると、利用者が出力言語を切り替えるたびにこの効果が再実行され、
+    // 記録を丸ごと取得し直してしまう（=編集中のメモが読み込み直後の状態に戻り、
+    // 世界遺産の場合は不要なfetchが走る）。ここで outputLanguage を使っているのは
+    // 失敗時のエラー文言を組み立てる .catch だけなので、再取得に見合う理由がない。
+    // 読み込み時点の言語が必要な箇所は outputLanguageRef.current を参照している。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, selectedEntryIds]);
 
   const regionOptions = useMemo(() => {
