@@ -2358,7 +2358,9 @@ export default function ShioriClient({
     }, 200);
 
     return () => window.clearInterval(timer);
-  }, [turnstileSiteKey, source]);
+    // turnstileHostReady を必ず依存に入れること。置き場所は記録の読み込みが
+    // 終わるまでDOMに存在しないため、マウント後に再実行されないと描画されない。
+  }, [turnstileSiteKey, turnstileHostReady, source]);
 
   useEffect(() => {
     if (source !== "lifemap" && source !== "heritage") return;
