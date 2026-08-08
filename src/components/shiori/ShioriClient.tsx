@@ -377,20 +377,19 @@ function tripTitle(range: string, language: OutputLanguage): string {
   }
 }
 
+// 記録者名が未入力のときに「◯◯の視点で」の◯◯に入れる語。
+// 日本語・中国語・韓国語は一人称をそのまま入れても自然に読める。
+// 英語・フランス語・ドイツ語は所有格や前置詞句に一人称を入れると
+// "from I's point of view" のように壊れるため、fallbackSummaryText 側で
+// 視点の一句を持たない文型に切り替える。よってこの関数は呼ばない。
 function defaultNarrator(language: OutputLanguage): string {
   switch (language) {
-    case "en":
-      return "I";
     case "zh-CN":
       return "我";
-    case "fr":
-      return "moi";
     case "ko":
       return "나";
     case "zh-TW":
       return "我";
-    case "de":
-      return "ich";
     case "ja":
     default:
       return "私たち";
@@ -410,17 +409,23 @@ function fallbackSummaryText(
 
   switch (language) {
     case "en":
-      return `${displayTitle} is a travel journal from ${narrator}'s point of view, following ${placeText || "memorable places"}. I gathered the photos, dates, places, and original notes so the feelings and small moments from the trip can be remembered later.`;
+      return traveler
+        ? `${displayTitle} is a travel journal from ${traveler}'s point of view, following ${placeText || "memorable places"}. I gathered the photos, dates, places, and original notes so the feelings and small moments from the trip can be remembered later.`
+        : `${displayTitle} is a travel journal following ${placeText || "memorable places"}. I gathered the photos, dates, places, and original notes so the feelings and small moments from the trip can be remembered later.`;
     case "zh-CN":
       return `${displayTitle}是以${narrator}的视角整理的旅行记，记录了${placeText || "难忘的地点"}。我把照片、日期、地点和原始备忘整理在一起，方便日后回想这段旅程的感受与细节。`;
     case "fr":
-      return `${displayTitle} est un carnet de voyage raconté du point de vue de ${narrator}, autour de ${placeText || "lieux mémorables"}. Les photos, dates, lieux et notes d'origine sont réunis pour retrouver plus tard les impressions du voyage.`;
+      return traveler
+        ? `${displayTitle} est un carnet de voyage raconté du point de vue de ${traveler}, autour de ${placeText || "lieux mémorables"}. Les photos, dates, lieux et notes d'origine sont réunis pour retrouver plus tard les impressions du voyage.`
+        : `${displayTitle} est un carnet de voyage autour de ${placeText || "lieux mémorables"}. Les photos, dates, lieux et notes d'origine sont réunis pour retrouver plus tard les impressions du voyage.`;
     case "ko":
       return `${displayTitle}은 ${placeText || "기억에 남는 장소"}를 따라 ${narrator}의 시선으로 정리한 여행기입니다. 사진, 날짜, 장소, 원래 메모를 모아 그때의 감정과 작은 순간을 나중에도 떠올릴 수 있게 남깁니다.`;
     case "zh-TW":
       return `${displayTitle}是以${narrator}的視角整理的旅行記，記錄了${placeText || "難忘的地點"}。我把照片、日期、地點和原始備忘整理在一起，方便日後回想這段旅程的感受與細節。`;
     case "de":
-      return `${displayTitle} ist ein Reisebericht aus der Sicht von ${narrator}, rund um ${placeText || "unvergessliche Orte"}. Fotos, Daten, Orte und ursprüngliche Notizen werden gesammelt, damit die Eindrücke der Reise später wieder lebendig werden.`;
+      return traveler
+        ? `${displayTitle} ist ein Reisebericht aus der Sicht von ${traveler}, rund um ${placeText || "unvergessliche Orte"}. Fotos, Daten, Orte und ursprüngliche Notizen werden gesammelt, damit die Eindrücke der Reise später wieder lebendig werden.`
+        : `${displayTitle} ist ein Reisebericht rund um ${placeText || "unvergessliche Orte"}. Fotos, Daten, Orte und ursprüngliche Notizen werden gesammelt, damit die Eindrücke der Reise später wieder lebendig werden.`;
     case "ja":
     default:
       return `${displayTitle}は、${placeText || "思い出の場所"}をめぐった${narrator}の旅行記です。写真、日付、場所、元メモをたどりながら、そのとき感じたことや旅の流れをあとから思い出せるように残します。`;
@@ -2159,6 +2164,10 @@ export default function ShioriClient({
     [filteredEntries]
   );
   const aiVerificationReady = Boolean(turnstileSiteKey && turnstileToken && sessionId);
+  // AI生成はサーバー側で MAX_SPOTS 件に制限されている。超えていればサーバーが
+  // errorCode: "too_many_entries" を返すだけなので、リクエストを投げる前にここで止める。
+  // テンプレート生成（handleTemplateGeneration）はサーバーを使わないため対象外。
+  const aiSpotLimitExceeded = filteredEntries.length > MAX_AI_SPOTS;
 
   const updateFilter = <K extends keyof Filters>(key: K, value: Filters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -2417,6 +2426,10 @@ export default function ShioriClient({
 
   const handleAiGeneration = async () => {
     if (filteredEntries.length === 0) return;
+    if (aiSpotLimitExceeded) {
+      setAiError(apiErrorMessage(outputLanguage, "too_many_entries", undefined));
+      return;
+    }
     if (!aiVerificationReady) {
       setAiError(uiLabel(outputLanguage, "aiNotReady"));
       return;
@@ -3061,12 +3074,17 @@ export default function ShioriClient({
                   <button
                     type="button"
                     onClick={handleAiGeneration}
-                    disabled={filteredEntries.length === 0 || aiLoading || !aiVerificationReady}
+                    disabled={filteredEntries.length === 0 || aiLoading || !aiVerificationReady || aiSpotLimitExceeded}
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-emerald-900 hover:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold transition-all"
                   >
                     <Sparkles className="w-4 h-4" />
                     {aiLoading ? uiLabel(outputLanguage, "generating") : uiLabel(outputLanguage, "generateAi")}
                   </button>
+                  {aiSpotLimitExceeded && (
+                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
+                      {apiErrorMessage(outputLanguage, "too_many_entries", undefined)}
+                    </p>
+                  )}
                   <p className="text-xs text-slate-500 leading-relaxed">
                     {uiLabel(outputLanguage, "aiScopeNote")}
                   </p>
