@@ -75,6 +75,8 @@ type HeritageLocalizedText = Record<string, string | undefined>;
 
 type HeritageSite = {
   id: string;
+  /** UNESCOの登録番号。id とは別に持つ（古いデータは id が "jp-kyoto" 形式のため）。 */
+  unescoId?: string | number;
   name?: HeritageLocalizedText;
   country?: HeritageLocalizedText;
   region?: string;
@@ -415,16 +417,38 @@ async function getHeritagePhoto(id: string): Promise<string> {
  * 日付前提のため）、そのままでは全件が「今日の旅行」に見えてしまう。
  * 既定の選択範囲を決めるときだけ、この一覧を使って除外する。
  */
+/**
+ * ?ids= で指定された記録を探すときに、その遺産を指しうるidをすべて返す。
+ *
+ * 呼び出し元によって渡ってくるidの体系が違う。
+ * - パスポート本体の導線: whp.sites の id そのもの（"unesco-1699" / 古いデータは "jp-kyoto"）
+ * - 遺産の個別ページの導線: UNESCOの登録番号（"1699"）
+ * 完全一致で照合すると後者が必ず外れ、訪問記録があるのに1件も見つからない。
+ * パスポート側の siteUnescoId（public/heritage/app.js）と同じ正規化をここでも行う。
+ */
+function heritageSiteIdAliases(site: HeritageSite): string[] {
+  const id = String(site.id ?? "");
+  const aliases = [id, id.replace(/^unesco-/, "")];
+  const unescoId = String(site.unescoId ?? "").trim();
+  if (unescoId) aliases.push(unescoId);
+  return aliases;
+}
+
 async function loadHeritageEntries(
   selectedIds: string[] | null,
   language: OutputLanguage
 ): Promise<{ entries: LifeMapEntry[]; undatedIds: string[] }> {
   const records = safeJsonParse<Record<string, HeritageRecord>>(localStorage.getItem("whp.records"), {});
   const sites = safeJsonParse<HeritageSite[]>(localStorage.getItem("whp.sites"), []);
-  const selected = selectedIds && selectedIds.length > 0 ? new Set(selectedIds) : null;
+  // 受け取ったidも "unesco-" を外した形で控え、どちらの体系で渡ってきても照合できるようにする。
+  const selected =
+    selectedIds && selectedIds.length > 0
+      ? new Set(selectedIds.flatMap((id) => [id, id.replace(/^unesco-/, "")]))
+      : null;
   const candidates = sites.filter((site) => {
     const record = records[site.id];
-    return Boolean(record?.visited) && (!selected || selected.has(site.id));
+    if (!record?.visited) return false;
+    return !selected || heritageSiteIdAliases(site).some((alias) => selected.has(alias));
   });
 
   const undatedIds = candidates
