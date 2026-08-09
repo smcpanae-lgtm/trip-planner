@@ -173,6 +173,7 @@ export default function ShioriPrintDocument({
   generatedSpots,
   customLabels,
   language = "ja",
+  coverEntryId = null,
 }: {
   entries: LifeMapEntry[];
   title: string;
@@ -181,10 +182,16 @@ export default function ShioriPrintDocument({
   generatedSpots: Record<string, { title: string; caption: string }>;
   customLabels: Record<string, string>;
   language?: OutputLanguage;
+  /** 代表写真に使う記録のid。null なら従来どおり写真のある先頭の記録を使う。 */
+  coverEntryId?: string | null;
 }) {
   const range = formatRange(entries, language);
   const locale = language === "en" ? "en-US" : language === "fr" ? "fr-FR" : language === "ko" ? "ko-KR" : language === "de" ? "de-DE" : language === "zh-CN" ? "zh-CN" : language === "zh-TW" ? "zh-TW" : "ja-JP";
-  const photos = entries.filter((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
+  const allPhotos = entries.filter((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
+  // 指定された表紙を先頭へ寄せる。ここより下は「1枚目＝代表写真」を前提にしており
+  // （帯の写真・省略の注記）、並べ替えておけばその前提を崩さずに済む。
+  const cover = allPhotos.find((entry) => entry.id === coverEntryId);
+  const photos = cover ? [cover, ...allPhotos.filter((entry) => entry.id !== cover.id)] : allPhotos;
   const firstImage = photos[0];
   const compactPhotos = photos.length <= 4 ? photos.slice(0, 4) : photos.slice(0, 1);
   const compactEntries = entries.slice(0, 6);

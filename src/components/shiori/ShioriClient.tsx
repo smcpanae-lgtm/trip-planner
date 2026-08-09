@@ -22,6 +22,7 @@ import {
   Lock,
   MapPin,
   RotateCcw,
+  Star,
   Tag,
 } from "lucide-react";
 import type { LifeMapCategory, LifeMapEntry } from "@/types/lifemap";
@@ -146,6 +147,16 @@ const MAX_AI_SPOTS = 20;
  */
 const DEFAULT_TRIP_WINDOW_DAYS = 4;
 
+/**
+ * 選択中の記録の日付がこれだけ離れていたら、別々の旅行が混ざっている可能性を伝える。
+ *
+ * 既定の窓（DEFAULT_TRIP_WINDOW_DAYS）ちょうどにはしていない。差が4日を超えたら出す設定だと、
+ * 4泊5日・5泊6日といった正当な1回の旅行でも毎回注意が出て、すぐに景色になってしまう。
+ * 6泊7日（差6日）までは1回の旅行としてごく普通にあるので黙り、
+ * 差が7日以上になったときだけ出す。連続する2つの週末（差7日）はここで拾える。
+ */
+const MIXED_TRIP_WARNING_DAYS = 7;
+
 /** 旅行記の書き方。null は未選択（2択カードを出す）。 */
 type WriteMode = "ai" | "manual";
 
@@ -198,6 +209,11 @@ type ShioriDraft = {
   generatedSpots: Record<string, GeneratedSpotText>;
   /** 記録の個別選択。このキーが無い古い下書きは全選択として復元する（従来の挙動と同じ）。 */
   selection?: SelectionState;
+  /**
+   * 表紙に使う記録のid。null と「キーが無い」はどちらも未指定＝既定に任せる意味。
+   * 下書きは題名・文体まで復元するので、表紙だけ戻らないと復元後の見た目が変わってしまう。
+   */
+  coverEntryId?: string | null;
   savedAt: string;
 };
 
@@ -264,6 +280,17 @@ function shiftDate(date: string, days: number): string {
   base.setDate(base.getDate() + days);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${base.getFullYear()}-${pad(base.getMonth() + 1)}-${pad(base.getDate())}`;
+}
+
+/**
+ * "YYYY-MM-DD" 同士の日数差。
+ * 正午どうしで比べるのは、夏時間のある地域で1日ぶんずれないようにするため。
+ */
+function daysBetween(from: string, to: string): number {
+  const start = new Date(`${from}T12:00:00`);
+  const end = new Date(`${to}T12:00:00`);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
+  return Math.round((end.getTime() - start.getTime()) / 86400000);
 }
 
 /** 日付の古い順（同日は登録順）に並べ替える。一覧の表示順と既定選択の順序をそろえるため。 */
@@ -939,6 +966,11 @@ type UiLabelKey =
   | "recentTripLimitNote"
   | "showOlderEntries"
   | "showOlderEntriesOne"
+  // 選んだ記録の日付が離れすぎているときの注意。{range} は実際の日付範囲。
+  | "mixedTripWarning"
+  // 表紙（アイキャッチ画像・PDFの代表写真）に使う1枚の指定。写真の上に重ねて出す。
+  | "coverSelect"
+  | "coverBadge"
   | "selectionNoneTitle"
   | "selectionNoneDesc"
   | "generateSectionTitle"
@@ -1116,6 +1148,10 @@ function uiLabel(
       recentTripLimitNote: "一度に使えるのは{n}件までのため、同じ期間の残りの記録は選んでいません。",
       showOlderEntries: "これより前の記録{n}件も表示する",
       showOlderEntriesOne: "これより前の記録{n}件も表示する",
+      mixedTripWarning:
+        "選んでいる記録は{range}にまたがっています。別々の旅行の記録が混ざっているかもしれません。このまま作成することもできます。",
+      coverSelect: "表紙にする",
+      coverBadge: "表紙",
       selectionNoneTitle: "旅行記に使う記録を選んでください",
       selectionNoneDesc: "下に並ぶ記録のチェックを入れると、その記録が旅行記に使われます。今回の旅行の記録だけを選んでください。",
       generateSectionTitle: "旅行記を作る",
@@ -1282,6 +1318,10 @@ function uiLabel(
       recentTripLimitNote: "Only {n} records can be used at once, so the rest of that period is not selected.",
       showOlderEntries: "Show {n} older records",
       showOlderEntriesOne: "Show {n} older record",
+      mixedTripWarning:
+        "The selected records span {range}. They may come from separate trips. You can still create the journal as is.",
+      coverSelect: "Use as cover",
+      coverBadge: "Cover",
       selectionNoneTitle: "Choose the records for this journal",
       selectionNoneDesc: "Tick the records below to include them in the journal. Pick only the records from this trip.",
       generateSectionTitle: "Create the journal",
@@ -1448,6 +1488,9 @@ function uiLabel(
       recentTripLimitNote: "一次最多可使用{n}条，因此该期间的其余记录未被选择。",
       showOlderEntries: "显示更早的{n}条记录",
       showOlderEntriesOne: "显示更早的{n}条记录",
+      mixedTripWarning: "所选记录的日期横跨{range}，可能混入了不同旅行的记录。也可以就这样继续生成。",
+      coverSelect: "设为封面",
+      coverBadge: "封面",
       selectionNoneTitle: "请选择要用于旅行记的记录",
       selectionNoneDesc: "勾选下方的记录，即可将其用于旅行记。请只选择本次旅行的记录。",
       generateSectionTitle: "生成旅行记",
@@ -1614,6 +1657,10 @@ function uiLabel(
       recentTripLimitNote: "{n} enregistrements au maximum à la fois : le reste de cette période n'est pas sélectionné.",
       showOlderEntries: "Afficher {n} enregistrements plus anciens",
       showOlderEntriesOne: "Afficher {n} enregistrement plus ancien",
+      mixedTripWarning:
+        "Les enregistrements sélectionnés couvrent {range}. Ils proviennent peut-être de voyages différents. Vous pouvez néanmoins continuer.",
+      coverSelect: "Mettre en couverture",
+      coverBadge: "Couverture",
       selectionNoneTitle: "Choisissez les enregistrements de ce carnet",
       selectionNoneDesc: "Cochez les enregistrements ci-dessous pour les inclure dans le carnet. Ne gardez que ceux de ce voyage.",
       generateSectionTitle: "Créer le carnet",
@@ -1780,6 +1827,10 @@ function uiLabel(
       recentTripLimitNote: "한 번에 사용할 수 있는 기록은 {n}건까지여서, 같은 기간의 나머지 기록은 선택하지 않았습니다.",
       showOlderEntries: "이전 기록 {n}건도 표시",
       showOlderEntriesOne: "이전 기록 {n}건도 표시",
+      mixedTripWarning:
+        "선택한 기록은 {range}에 걸쳐 있습니다. 서로 다른 여행의 기록이 섞여 있을 수 있습니다. 이대로 작성할 수도 있습니다.",
+      coverSelect: "표지로 사용",
+      coverBadge: "표지",
       selectionNoneTitle: "여행기에 사용할 기록을 선택해 주세요",
       selectionNoneDesc: "아래 기록에 체크하면 여행기에 사용됩니다. 이번 여행의 기록만 선택해 주세요.",
       generateSectionTitle: "여행기 만들기",
@@ -1946,6 +1997,9 @@ function uiLabel(
       recentTripLimitNote: "一次最多可使用{n}筆，因此該期間的其餘記錄未被選擇。",
       showOlderEntries: "顯示更早的{n}筆記錄",
       showOlderEntriesOne: "顯示更早的{n}筆記錄",
+      mixedTripWarning: "所選記錄的日期橫跨{range}，可能混入了不同旅行的記錄。也可以就這樣繼續生成。",
+      coverSelect: "設為封面",
+      coverBadge: "封面",
       selectionNoneTitle: "請選擇要用於旅行記的記錄",
       selectionNoneDesc: "勾選下方的記錄，即可將其用於旅行記。請只選擇本次旅行的記錄。",
       generateSectionTitle: "產生旅行記",
@@ -2112,6 +2166,10 @@ function uiLabel(
       recentTripLimitNote: "Es können höchstens {n} Einträge auf einmal verwendet werden; die übrigen dieses Zeitraums sind nicht ausgewählt.",
       showOlderEntries: "{n} ältere Einträge anzeigen",
       showOlderEntriesOne: "{n} älteren Eintrag anzeigen",
+      mixedTripWarning:
+        "Die ausgewählten Einträge umfassen {range}. Sie könnten aus verschiedenen Reisen stammen. Sie können trotzdem fortfahren.",
+      coverSelect: "Als Titelbild",
+      coverBadge: "Titelbild",
       selectionNoneTitle: "Wählen Sie die Einträge für dieses Tagebuch",
       selectionNoneDesc: "Haken Sie die Einträge unten an, um sie in das Tagebuch aufzunehmen. Wählen Sie nur die Einträge dieser Reise.",
       generateSectionTitle: "Tagebuch erstellen",
@@ -2278,6 +2336,9 @@ function EntryCard({
   selected,
   onToggleSelect,
   showMemoInput,
+  coverPickable,
+  isCover,
+  onSelectCover,
 }: {
   entry: LifeMapEntry;
   customLabels: Record<string, string>;
@@ -2286,6 +2347,13 @@ function EntryCard({
   /** 旅行記に使うかどうか。 */
   selected: boolean;
   onToggleSelect: (id: string) => void;
+  /**
+   * 表紙の指定操作を出すか。写真の上に重ねるため、使うかどうかのチェックボックスとは
+   * 見た目も置き場所も分ける。表紙にできる記録が1件以下のときは呼び出し側で false になる。
+   */
+  coverPickable: boolean;
+  isCover: boolean;
+  onSelectCover: (id: string) => void;
   /**
    * 「AIに渡す元メモ」欄を表示するか。false でも entry.memo の値は保持されるので、
    * ai モードに戻せば元の内容がそのまま編集できる。
@@ -2310,7 +2378,7 @@ function EntryCard({
         selected ? "border-emerald-600 ring-2 ring-emerald-100" : "border-slate-100"
       }`}
     >
-      <div className="sm:w-36 h-44 sm:h-auto bg-slate-100 shrink-0">
+      <div className="relative sm:w-36 h-44 sm:h-auto bg-slate-100 shrink-0">
         {entry.thumbnailDataUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -2323,6 +2391,22 @@ function EntryCard({
             <ImageOff className="w-8 h-8" />
           </div>
         )}
+        {coverPickable &&
+          (isCover ? (
+            <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-700 text-white text-[11px] font-bold shadow-sm">
+              <Star className="w-3 h-3 fill-current" />
+              {uiLabel(language, "coverBadge")}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onSelectCover(entry.id)}
+              className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/90 hover:bg-white text-slate-700 border border-slate-200 text-[11px] font-bold shadow-sm transition-all"
+            >
+              <Star className="w-3 h-3" />
+              {uiLabel(language, "coverSelect")}
+            </button>
+          ))}
       </div>
       <div className="flex-1 min-w-0 p-4">
         <label className="flex items-center gap-2 mb-2 cursor-pointer select-none">
@@ -2436,6 +2520,10 @@ export default function ShioriClient({
   // 記録には今日の日付が入るので、「新しい順に何件」で切ると、選んだ記録よりあとに
   // 並んだ日付なしの記録が表示枠を奪い、選択済みの記録が画面から消えることがある。
   const [visibleEntryIds, setVisibleEntryIds] = useState<Set<string> | null>(null);
+  // 表紙（SNS画像とPDFの代表写真）に使う記録のid。null は未指定＝既定に任せる。
+  // 選択から外れた記録のidが残っていても解決時に弾かれるだけなので、そのまま持ち続ける。
+  // 消してしまうと、チェックを付け直したときに指定が戻らない。
+  const [coverEntryId, setCoverEntryId] = useState<string | null>(null);
   // 書き方の2択。null のあいだだけ選択カードを出す。
   const [writeMode, setWriteMode] = useState<WriteMode | null>(null);
   const [generatedSummary, setGeneratedSummary] = useState("");
@@ -2739,6 +2827,32 @@ export default function ShioriClient({
   }, [filteredEntries, filtersActive, visibleEntryIds]);
   const hiddenEntryCount = filteredEntries.length - visibleEntries.length;
 
+  // 選んでいる記録の日付が離れすぎていないか。離れていれば別々の旅行が
+  // 混ざっている可能性があるので注意を出す。生成は止めない（気づかせるだけでよい）。
+  // 2泊3日で複数か所をまわる旅行では複数選択そのものが正しい使い方なので、
+  // 「複数選んでいること」ではなく「日付が離れていること」だけを見る。
+  const mixedTripWarning = useMemo(() => {
+    const dates = selectedEntries.map((entry) => entry.date).filter(Boolean).sort();
+    if (dates.length < 2) return false;
+    return daysBetween(dates[0], dates[dates.length - 1]) >= MIXED_TRIP_WARNING_DAYS;
+  }, [selectedEntries]);
+
+  // 表紙に使える記録＝選択中で画像を持つもの。日付の新しい順に並べる。
+  // 未指定のときは先頭（＝最も新しい記録）を表紙にする。一覧順（古い順）の先頭だと、
+  // 古い記録を1件足しただけで表紙が持っていかれる。書きたいのは直近の旅行なので、
+  // 新しい側を既定にするほうが、指定し直さずに済む場面が多い。
+  const coverCandidates = useMemo(
+    () =>
+      selectedEntries.filter((entry) => entry.imageDataUrl || entry.thumbnailDataUrl).reverse(),
+    [selectedEntries]
+  );
+  // 指定した記録が選択から外れている・消えている場合は既定へ戻す。
+  // 候補が0件なら null（SNS画像はグラデーション、PDFは「写真なし」の従来どおり）。
+  const coverEntry =
+    coverCandidates.find((entry) => entry.id === coverEntryId) ?? coverCandidates[0] ?? null;
+  // 選ぶ余地が無いところに操作を出さない。候補が1件以下ならボタンもバッジも隠す。
+  const coverPickerVisible = coverCandidates.length > 1;
+
   const mappedCount = useMemo(
     () => selectedEntries.filter((entry) => resolveEntryLatLng(entry)).length,
     [selectedEntries]
@@ -2800,6 +2914,8 @@ export default function ShioriClient({
         // 未決定（null）のまま保存すると復元後に既定の再判定が走ってしまうため、
         // 現在の見た目どおりの選択状態を確定させて保存する。
         selection: selection ?? ALL_SELECTED,
+        // 未指定のまま保存した場合は、復元先でも既定（最も新しい記録）に任せる。
+        coverEntryId,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(SHIORI_DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -2837,6 +2953,9 @@ export default function ShioriClient({
       // 省略を残すと、下書きで選んでいた古い記録が画面から消えて見える。
       setRecentTripDefault(null);
       setVisibleEntryIds(null);
+      // coverEntryId キーが無い古い下書きは未指定として復元する。指定した記録が
+      // 下書きの記録に含まれていなければ、表示時に既定へ落ちるのでここでは弾かない。
+      setCoverEntryId(typeof draft.coverEntryId === "string" ? draft.coverEntryId : null);
       setDraftMessage(uiLabel(restoredLanguage, "draftRestored"));
     } catch {
       // ここへ来るのは JSON.parse が失敗したときだけで、下書きの言語はまだ判明していない。
@@ -2895,11 +3014,12 @@ export default function ShioriClient({
       flashFeedback(setImageState, imageTimerRef, "failed");
       return;
     }
-    const firstImage = selectedEntries.find((entry) => entry.imageDataUrl || entry.thumbnailDataUrl);
+    // 表紙は利用者が指定できる。未指定なら coverEntry が既定（最も新しい記録）を返す。
+    const heroEntry = coverEntry;
 
     ctx.fillStyle = "#1c1917";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (firstImage?.imageDataUrl || firstImage?.thumbnailDataUrl) {
+    if (heroEntry?.imageDataUrl || heroEntry?.thumbnailDataUrl) {
       await new Promise<void>((resolve) => {
         const image = new Image();
         image.onload = () => {
@@ -2910,7 +3030,7 @@ export default function ShioriClient({
           resolve();
         };
         image.onerror = () => resolve();
-        image.src = firstImage.imageDataUrl || firstImage.thumbnailDataUrl;
+        image.src = heroEntry.imageDataUrl || heroEntry.thumbnailDataUrl;
       });
     } else {
       const warmGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
@@ -4211,6 +4331,13 @@ export default function ShioriClient({
                             selected={isEntrySelected(entry.id)}
                             onToggleSelect={toggleEntrySelection}
                             showMemoInput={writeMode !== "manual"}
+                            // 表紙にできるのは「選択中かつ画像を持つ」記録だけ。
+                            // 選択を外した記録に操作が残ると、押しても何も起きない見た目になる。
+                            coverPickable={
+                              coverPickerVisible && coverCandidates.some((candidate) => candidate.id === entry.id)
+                            }
+                            isCover={coverEntry?.id === entry.id}
+                            onSelectCover={setCoverEntryId}
                           />
                           <div className="bg-white border border-slate-100 shadow-sm rounded-xl p-4">
                             <label className="block">
@@ -4245,6 +4372,19 @@ export default function ShioriClient({
                       <h2 className="font-bold text-base">{uiLabel(outputLanguage, "generateSectionTitle")}</h2>
                     </div>
                     <p className="text-xs text-slate-500 leading-relaxed">{currentSettingsNote}</p>
+
+                    {/*
+                      日付の離れた記録が混ざっているときの注意。AIに書いてもらう場合も
+                      自分で書く場合も材料は同じなので、書き方の分岐より前に置く。
+                    */}
+                    {mixedTripWarning && (
+                      <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 leading-relaxed">
+                        {uiLabel(outputLanguage, "mixedTripWarning").replace(
+                          "{range}",
+                          formatRange(selectedEntries, outputLanguage)
+                        )}
+                      </p>
+                    )}
 
                     {writeMode === "manual" ? (
                       <>
@@ -4344,6 +4484,7 @@ export default function ShioriClient({
           generatedSpots={generatedSpots}
           customLabels={customCatLabels}
           language={outputLanguage}
+          coverEntryId={coverEntry?.id ?? null}
         />
       )}
     </div>
