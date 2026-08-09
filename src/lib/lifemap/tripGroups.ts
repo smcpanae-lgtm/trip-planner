@@ -1,5 +1,6 @@
 import type { LifeMapEntry } from "@/types/lifemap";
 import type { LangCode } from "./i18n/dictionaries";
+import { buildJournalLink } from "./journalLink";
 import { TRIP_WINDOW_DAYS } from "@/lib/shiori/tripSelection";
 
 /**
@@ -76,14 +77,9 @@ export function groupEntriesIntoTrips(entries: LifeMapEntry[]): TripGroup[] {
 /**
  * 旅行グループをAI旅行記メーカーへ渡すリンク。
  *
- * ids はカンマ区切り。source=lifemap が無いと /shiori 側は ids ごと読み捨てるため、
- * 必ず一緒に付ける（パース処理は ShioriClient の URLSearchParams を読むこと）。
- *
- * 英語表示のときだけ専用URLの /en/shiori へ送る。それ以外の言語は専用URLを持たないため、
- * ページ内で言語を切り替える従来どおりの挙動になる（バナー等の既存導線と同じ方針）。
+ * URLの組み立て（source・言語分岐・末尾スラッシュ）は journalLink.ts に集約してある。
+ * ここは「旅行グループ → ID列」の対応づけだけを担う。
  */
 export function buildTripJournalLink(group: TripGroup, lang: LangCode): string {
-  const ids = group.entries.map((entry) => entry.id).join(",");
-  const base = lang === "en" ? "/en/shiori" : "/shiori";
-  return `${base}?source=lifemap&ids=${encodeURIComponent(ids)}`;
+  return buildJournalLink(lang, group.entries.map((entry) => entry.id));
 }

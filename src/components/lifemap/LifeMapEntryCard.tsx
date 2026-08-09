@@ -5,6 +5,7 @@ import { MapPinned, Trash2, CheckCircle2, Circle, BookOpen, Pencil } from "lucid
 import type { LifeMapEntry } from "@/types/lifemap";
 import { getCategory } from "@/lib/lifemap/categories";
 import { resolveEntryLatLng, isJapanCoord } from "@/lib/lifemap/plannerLink";
+import { buildJournalLink } from "@/lib/lifemap/journalLink";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 import DrivePlannerLinkButton from "./DrivePlannerLinkButton";
 
@@ -24,7 +25,7 @@ export default function LifeMapEntryCard({
   selected?: boolean;
   onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const cat = getCategory(entry.category);
   const pos = resolveEntryLatLng(entry);
   const hasMapLocation = pos !== null;
@@ -90,7 +91,7 @@ export default function LifeMapEntryCard({
           <DrivePlannerLinkButton entry={entry} compact />
           {hasSavedPhoto ? (
             <Link
-              href={`/shiori?source=lifemap&ids=${encodeURIComponent(entry.id)}`}
+              href={buildJournalLink(lang, [entry.id])}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#2B2721] hover:opacity-90 text-white text-xs font-medium transition-all"
             >
               <BookOpen className="w-3.5 h-3.5" />

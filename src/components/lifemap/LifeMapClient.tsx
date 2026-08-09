@@ -34,6 +34,7 @@ import {
   deleteEntry,
 } from "@/lib/lifemap/storage";
 import { resolveEntryLatLng, buildMultiPlannerLink } from "@/lib/lifemap/plannerLink";
+import { buildJournalLink } from "@/lib/lifemap/journalLink";
 import LifeMapEntryForm, {
   createEmptyDraft,
   type Draft,
@@ -486,7 +487,7 @@ function LifeMapClientInner() {
               <a href="#howto" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
                 {t("guide.howtoTitle")}
               </a>
-              <Link href="/shiori" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
+              <Link href={buildJournalLink(lang)} className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
                 {t("landing.journalName")}
               </Link>
               <a href="#faq" className="px-3.5 py-3 text-[13.5px] font-bold text-[#2B2721] no-underline border-b-2 border-transparent">
@@ -625,7 +626,7 @@ function LifeMapClientInner() {
       {/* AI旅行記バナー・免責小注記 */}
       <div className="max-w-[1080px] mx-auto px-[18px] sm:px-[28px] pt-[26px] space-y-3">
         <Link
-          href="/shiori?source=lifemap"
+          href={buildJournalLink(lang)}
           className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-5 shadow-sm transition-opacity hover:opacity-90"
           style={{
             background: "linear-gradient(100deg,#2B2721,#3A342B)",
@@ -855,7 +856,7 @@ function LifeMapClientInner() {
           <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#6B6357] font-medium">
             <Link href="/" className="hover:text-[#2B2721]">{t("landing.footerBrandName")}</Link>
             <Link href="/heritage" className="hover:text-[#2B2721]">{t("heritageLink")}</Link>
-            <Link href="/shiori" className="hover:text-[#2B2721]">{t("landing.journalName")}</Link>
+            <Link href={buildJournalLink(lang)} className="hover:text-[#2B2721]">{t("landing.journalName")}</Link>
             <Link href="/privacy" className="hover:text-[#2B2721]">{t("landing.footerPrivacyLink")}</Link>
             <Link href="/cookie" className="hover:text-[#2B2721]">{t("landing.footerCookieLink")}</Link>
           </nav>
