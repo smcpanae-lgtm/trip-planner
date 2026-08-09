@@ -9,8 +9,6 @@ import {
   Lock,
   Film,
   Globe,
-  Navigation,
-  X,
   BookOpen,
   Landmark,
   Plus,
@@ -33,7 +31,7 @@ import {
   putEntry,
   deleteEntry,
 } from "@/lib/lifemap/storage";
-import { resolveEntryLatLng, buildMultiPlannerLink } from "@/lib/lifemap/plannerLink";
+import { resolveEntryLatLng } from "@/lib/lifemap/plannerLink";
 import { buildJournalLink } from "@/lib/lifemap/journalLink";
 import LifeMapEntryForm, {
   createEmptyDraft,
@@ -100,21 +98,9 @@ function LifeMapClientInner() {
   const [editingEntry, setEditingEntry] = useState<LifeMapEntry | null>(null);
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [fileQueue, setFileQueue] = useState<File[]>([]);
   const [queueTotal, setQueueTotal] = useState(0);
   const mapRef = useRef<HTMLDivElement>(null);
-
-  const toggleSelect = useCallback((entry: LifeMapEntry) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(entry.id)) next.delete(entry.id);
-      else next.add(entry.id);
-      return next;
-    });
-  }, []);
-
-  const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
 
   // 起動時にIndexedDBから記録を読み込む
   useEffect(() => {
@@ -708,42 +694,6 @@ function LifeMapClientInner() {
               </button>
             </div>
 
-            {/* 思い出ドライブバナー（日本・2件以上選択時） */}
-            {homeCountry.isJapan && entries.length > 0 && (
-              <div className={`mb-4 rounded-xl border transition-all ${
-                selectedIds.size >= 2
-                  ? "bg-[#2B2721] border-[#2B2721] p-3"
-                  : "bg-[#F6F1E8] border-[#E4DCCC] p-3"
-              }`}>
-                {selectedIds.size >= 2 ? (
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-white text-xs font-medium flex-1">
-                      {t("drive.hint", { count: selectedIds.size })}
-                    </span>
-                    <a
-                      href={buildMultiPlannerLink(
-                        entries.filter((e) => selectedIds.has(e.id))
-                      )}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-[#2B2721] text-xs font-bold hover:bg-[#F6F1E8] transition-all"
-                    >
-                      <Navigation className="w-3.5 h-3.5" />
-                      {t("drive.planBtn")}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={clearSelection}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/30 text-white/70 hover:text-white text-xs transition-all"
-                    >
-                      <X className="w-3 h-3" />
-                      {t("drive.clearBtn")}
-                    </button>
-                  </div>
-                ) : (
-                  <p className="text-xs text-[#8A8172]">{t("drive.selectHint")}</p>
-                )}
-              </div>
-            )}
-
             <div className="mb-4">
               <BackupButtons entries={entries} onRestored={setEntries} />
             </div>
@@ -772,8 +722,6 @@ function LifeMapClientInner() {
                 setEditError(null);
                 setEditingEntry(entry);
               }}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
             />
           </div>
         </div>

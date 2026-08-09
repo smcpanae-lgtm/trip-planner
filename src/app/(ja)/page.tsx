@@ -457,6 +457,8 @@ function HomeContent() {
 
     const sp = new URLSearchParams(window.location.search);
 
+    // このパラメータの生成元だった人生体験マップの複数選択（ドライブに選ぶ）機能は削除済み。
+    // 既に共有・ブックマークされたURLとの互換のために受け取り側だけ残している（未使用ではない）。
     const destinationsStr = sp.get("destinations");
     if (destinationsStr) {
       const names = destinationsStr.split("|").filter(Boolean);

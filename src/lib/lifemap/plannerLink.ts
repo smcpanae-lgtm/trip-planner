@@ -33,26 +33,6 @@ export function buildGoogleMapsLink(lat: number, lng: number): string {
   return `https://www.google.com/maps?q=${lat},${lng}`;
 }
 
-// 複数記録からドライブプランリンクを生成（?destinations=A|B&lats=...&lngs=...）
-export function buildMultiPlannerLink(entries: LifeMapEntry[]): string {
-  const names: string[] = [];
-  const lats: string[] = [];
-  const lngs: string[] = [];
-  for (const entry of entries) {
-    const pos = resolveEntryLatLng(entry);
-    if (!pos) continue;
-    names.push(resolveDestinationName(entry));
-    lats.push(pos.lat.toFixed(6));
-    lngs.push(pos.lng.toFixed(6));
-  }
-  const params = new URLSearchParams();
-  params.set("destinations", names.join("|"));
-  params.set("lats", lats.join("|"));
-  params.set("lngs", lngs.join("|"));
-  params.set("source", "life-map-drive");
-  return `/?${params.toString()}`;
-}
-
 // AIドライブプランナー（メインページ）への再訪プラン作成リンクを生成
 export function buildPlannerLink(entry: LifeMapEntry): string {
   const params = new URLSearchParams();

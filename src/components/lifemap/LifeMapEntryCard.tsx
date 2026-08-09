@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { MapPinned, Trash2, CheckCircle2, Circle, BookOpen, Pencil } from "lucide-react";
+import { MapPinned, Trash2, BookOpen, Pencil } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { getCategory } from "@/lib/lifemap/categories";
-import { resolveEntryLatLng, isJapanCoord } from "@/lib/lifemap/plannerLink";
+import { resolveEntryLatLng } from "@/lib/lifemap/plannerLink";
 import { buildJournalLink } from "@/lib/lifemap/journalLink";
 import { hasSavedPhoto } from "@/lib/lifemap/entryPhoto";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
@@ -16,21 +16,16 @@ export default function LifeMapEntryCard({
   onShowOnMap,
   onDelete,
   onEdit,
-  selected,
-  onToggleSelect,
 }: {
   entry: LifeMapEntry;
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
   onEdit?: (entry: LifeMapEntry) => void;
-  selected?: boolean;
-  onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
   const { t, lang } = useTranslation();
   const cat = getCategory(entry.category);
   const pos = resolveEntryLatLng(entry);
   const hasMapLocation = pos !== null;
-  const canSelect = onToggleSelect && pos && isJapanCoord(pos.lat, pos.lng);
   const hasPhoto = hasSavedPhoto(entry);
 
   const precisionNote =
@@ -41,11 +36,7 @@ export default function LifeMapEntryCard({
       : null;
 
   return (
-    <div
-      className={`bg-white rounded-xl border shadow-[0_4px_22px_rgba(43,39,33,.05)] overflow-hidden flex transition-all ${
-        selected ? "border-[#1C7A66] ring-2 ring-[#CDE0DA]" : "border-[#EEE7DA]"
-      }`}
-    >
+    <div className="bg-white rounded-xl border border-[#EEE7DA] shadow-[0_4px_22px_rgba(43,39,33,.05)] overflow-hidden flex transition-all">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={entry.thumbnailDataUrl}
@@ -107,25 +98,6 @@ export default function LifeMapEntryCard({
             >
               <BookOpen className="w-3.5 h-3.5" />
               {t("card.journalBtn")}
-            </button>
-          )}
-          {canSelect && (
-            <button
-              type="button"
-              onClick={() => onToggleSelect!(entry)}
-              title={t("drive.selectHint")}
-              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                selected
-                  ? "bg-[#1C7A66] text-white border-[#1C7A66]"
-                  : "bg-white text-[#8A8172] border-[#E4DCCC] hover:border-[#C9BEA6]"
-              }`}
-            >
-              {selected ? (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              ) : (
-                <Circle className="w-3.5 h-3.5" />
-              )}
-              {selected ? t("card.selectedBtn") : t("card.selectBtn")}
             </button>
           )}
           {onEdit && (

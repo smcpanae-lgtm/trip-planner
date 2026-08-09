@@ -13,15 +13,11 @@ export default function LifeMapEntryList({
   onShowOnMap,
   onDelete,
   onEdit,
-  selectedIds,
-  onToggleSelect,
 }: {
   entries: LifeMapEntry[];
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
   onEdit?: (entry: LifeMapEntry) => void;
-  selectedIds?: Set<string>;
-  onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<"prefecture" | "timeline">("timeline");
@@ -68,8 +64,6 @@ export default function LifeMapEntryList({
           onShowOnMap={onShowOnMap}
           onDelete={onDelete}
           onEdit={onEdit}
-          selectedIds={selectedIds}
-          onToggleSelect={onToggleSelect}
         />
       ) : (
         <PrefectureSummary
@@ -77,8 +71,6 @@ export default function LifeMapEntryList({
           onShowOnMap={onShowOnMap}
           onDelete={onDelete}
           onEdit={onEdit}
-          selectedIds={selectedIds}
-          onToggleSelect={onToggleSelect}
         />
       )}
     </div>

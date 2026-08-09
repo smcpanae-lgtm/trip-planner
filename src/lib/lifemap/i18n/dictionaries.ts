@@ -70,8 +70,6 @@ export interface LifeMapDict {
     prefectureOnly: string;
     revisitLink: string;
     editBtn: string;
-    selectBtn: string;
-    selectedBtn: string;
     /** その記録1件だけでAI旅行記メーカーへ渡すボタン */
     journalBtn: string;
     /** 写真が無くて上のボタンが押せないときの補足（旅行単位でなら作れる） */
@@ -193,12 +191,6 @@ export interface LifeMapDict {
     deleteFailed: string;
     photoError: string;
   };
-  drive: {
-    planBtn: string;
-    hint: string;      // {{count}} placeholder
-    clearBtn: string;
-    selectHint: string;
-  };
   confirm: {
     delete: string;
   };
@@ -316,9 +308,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "都道府県のみ",
       revisitLink: "この場所へ再訪プラン作成",
       editBtn: "編集",
-      selectBtn: "ドライブに選ぶ",
-      selectedBtn: "選択中",
-      journalBtn: "この記録で作る",
+      journalBtn: "この記録を旅行記にする",
       journalBtnDisabledHint: "写真を保存すると、この記録だけで作れます。",
     },
     edit: {
@@ -343,7 +333,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "新しい順",
       oldest: "古い順",
       empty: "まだ記録がありません。写真を追加して最初の思い出を記録しましょう。",
-      tripJournalBtn: "この旅行で作る",
+      tripJournalBtn: "この旅行を旅行記にする",
       tripLimitNote: "古い順に先頭{{max}}件が最初に選ばれます",
     },
     prefecture: {
@@ -398,12 +388,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "記録の読み込みに失敗しました",
       deleteFailed: "削除に失敗しました。",
       photoError: "写真の読み込みに失敗しました。別の写真をお試しください。",
-    },
-    drive: {
-      planBtn: "思い出ドライブを計画する",
-      hint: "{{count}}件選択中",
-      clearBtn: "選択を解除",
-      selectHint: "日本の記録を選んで思い出のドライブルートを計画できます",
     },
     confirm: {
       delete: "この記録を削除しますか？",
@@ -611,9 +595,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "Prefecture only",
       revisitLink: "Plan a revisit here",
       editBtn: "Edit",
-      selectBtn: "Select for drive",
-      selectedBtn: "Selected",
-      journalBtn: "Use this record",
+      journalBtn: "Turn this record into a journal",
       journalBtnDisabledHint: "Save a photo to build one from this record alone.",
     },
     edit: {
@@ -638,7 +620,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Newest first",
       oldest: "Oldest first",
       empty: "No records yet. Add a photo to save your first memory.",
-      tripJournalBtn: "Use this trip",
+      tripJournalBtn: "Turn this trip into a journal",
       tripLimitNote: "The first {{max}} entries, oldest first, are selected to start.",
     },
     prefecture: {
@@ -693,12 +675,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "Failed to load records",
       deleteFailed: "Failed to delete.",
       photoError: "Failed to load photo. Please try another photo.",
-    },
-    drive: {
-      planBtn: "Plan a memory drive",
-      hint: "{{count}} selected",
-      clearBtn: "Clear selection",
-      selectHint: "Select Japan entries to plan a drive route through your memories",
     },
     confirm: {
       delete: "Delete this record?",
@@ -906,9 +882,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "광역단체만",
       revisitLink: "이 장소 재방문 계획 세우기",
       editBtn: "편집",
-      selectBtn: "드라이브에 선택",
-      selectedBtn: "선택됨",
-      journalBtn: "이 기록으로 만들기",
+      journalBtn: "이 기록을 여행기로 만들기",
       journalBtnDisabledHint: "사진을 저장하면 이 기록만으로 만들 수 있습니다.",
     },
     edit: {
@@ -933,7 +907,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "최신순",
       oldest: "오래된 순",
       empty: "아직 기록이 없습니다. 사진을 추가해 첫 번째 추억을 기록하세요.",
-      tripJournalBtn: "이 여행으로 만들기",
+      tripJournalBtn: "이 여행을 여행기로 만들기",
       tripLimitNote: "오래된 순으로 앞의 {{max}}건이 먼저 선택됩니다",
     },
     prefecture: {
@@ -988,12 +962,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "기록 불러오기에 실패했습니다",
       deleteFailed: "삭제에 실패했습니다.",
       photoError: "사진 불러오기에 실패했습니다. 다른 사진을 시도하세요.",
-    },
-    drive: {
-      planBtn: "추억 드라이브 계획하기",
-      hint: "{{count}}개 선택 중",
-      clearBtn: "선택 해제",
-      selectHint: "일본 기록을 선택해 추억의 드라이브 루트를 계획할 수 있습니다",
     },
     confirm: {
       delete: "이 기록을 삭제하시겠습니까?",
@@ -1201,9 +1169,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "仅都道府县",
       revisitLink: "制定重访计划",
       editBtn: "编辑",
-      selectBtn: "选入兜风路线",
-      selectedBtn: "已选择",
-      journalBtn: "用这条记录制作",
+      journalBtn: "把这条记录做成游记",
       journalBtnDisabledHint: "保存照片后，就能只用这条记录制作。",
     },
     edit: {
@@ -1228,7 +1194,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "从新到旧",
       oldest: "从旧到新",
       empty: "暂无记录，请添加照片记录您的第一个回忆。",
-      tripJournalBtn: "用这次旅行制作",
+      tripJournalBtn: "把这次旅行做成游记",
       tripLimitNote: "最早的{{max}}条记录会被预先选中",
     },
     prefecture: {
@@ -1283,12 +1249,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "记录加载失败",
       deleteFailed: "删除失败。",
       photoError: "照片加载失败，请尝试其他照片。",
-    },
-    drive: {
-      planBtn: "规划回忆自驾游",
-      hint: "已选择 {{count}} 件",
-      clearBtn: "取消选择",
-      selectHint: "选择日本的记录，规划一条充满回忆的自驾路线",
     },
     confirm: {
       delete: "确定要删除此记录吗？",
@@ -1496,9 +1456,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "僅都道府縣",
       revisitLink: "制定重訪計劃",
       editBtn: "編輯",
-      selectBtn: "選入兜風路線",
-      selectedBtn: "已選擇",
-      journalBtn: "用這筆紀錄製作",
+      journalBtn: "把這筆紀錄做成遊記",
       journalBtnDisabledHint: "儲存照片後，就能只用這筆紀錄製作。",
     },
     edit: {
@@ -1523,7 +1481,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "從新到舊",
       oldest: "從舊到新",
       empty: "尚無記錄，請新增照片記錄您的第一個回憶。",
-      tripJournalBtn: "用這次旅行製作",
+      tripJournalBtn: "把這次旅行做成遊記",
       tripLimitNote: "最早的{{max}}筆紀錄會被預先選取",
     },
     prefecture: {
@@ -1578,12 +1536,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "記錄載入失敗",
       deleteFailed: "刪除失敗。",
       photoError: "照片載入失敗，請嘗試其他照片。",
-    },
-    drive: {
-      planBtn: "規劃回憶自駕遊",
-      hint: "已選擇 {{count}} 件",
-      clearBtn: "取消選擇",
-      selectHint: "選擇日本的記錄，規劃一條充滿回憶的自駕路線",
     },
     confirm: {
       delete: "確定要刪除此記錄嗎？",
@@ -1791,9 +1743,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "Solo prefectura",
       revisitLink: "Planificar una revisita",
       editBtn: "Editar",
-      selectBtn: "Elegir para la ruta",
-      selectedBtn: "Seleccionado",
-      journalBtn: "Usar este registro",
+      journalBtn: "Crear un diario con este registro",
       journalBtnDisabledHint: "Guarda una foto para crearlo solo con este registro.",
     },
     edit: {
@@ -1818,7 +1768,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Más recientes",
       oldest: "Más antiguos",
       empty: "Sin registros aún. Añade una foto para guardar tu primer recuerdo.",
-      tripJournalBtn: "Usar este viaje",
+      tripJournalBtn: "Crear un diario con este viaje",
       tripLimitNote: "Los primeros {{max}} registros, del más antiguo al más reciente, se seleccionan al principio.",
     },
     prefecture: {
@@ -1873,12 +1823,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "Error al cargar registros",
       deleteFailed: "Error al eliminar.",
       photoError: "Error al cargar la foto. Prueba con otra foto.",
-    },
-    drive: {
-      planBtn: "Planificar ruta de recuerdos",
-      hint: "{{count}} seleccionados",
-      clearBtn: "Deseleccionar",
-      selectHint: "Selecciona registros de Japón para planificar una ruta de recuerdos",
     },
     confirm: {
       delete: "¿Eliminar este registro?",
@@ -2086,9 +2030,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       prefectureOnly: "Только префектура",
       revisitLink: "Запланировать повторный визит",
       editBtn: "Изменить",
-      selectBtn: "Выбрать для маршрута",
-      selectedBtn: "Выбрано",
-      journalBtn: "Из этой записи",
+      journalBtn: "Сделать дневник из этой записи",
       journalBtnDisabledHint: "Сохраните фото, чтобы создать по одной этой записи.",
     },
     edit: {
@@ -2113,7 +2055,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Новые сначала",
       oldest: "Старые сначала",
       empty: "Записей пока нет. Добавьте фото, чтобы сохранить первое воспоминание.",
-      tripJournalBtn: "Из этой поездки",
+      tripJournalBtn: "Сделать дневник из этой поездки",
       tripLimitNote: "Сначала выбираются первые {{max}} записей, от старых к новым.",
     },
     prefecture: {
@@ -2168,12 +2110,6 @@ export const translations: Record<LangCode, LifeMapDict> = {
       loadFailed: "Ошибка загрузки записей",
       deleteFailed: "Ошибка удаления.",
       photoError: "Ошибка загрузки фото. Попробуйте другое фото.",
-    },
-    drive: {
-      planBtn: "Запланировать поездку по воспоминаниям",
-      hint: "Выбрано: {{count}}",
-      clearBtn: "Снять выбор",
-      selectHint: "Выберите записи Японии для планирования маршрута по воспоминаниям",
     },
     confirm: {
       delete: "Удалить эту запись?",

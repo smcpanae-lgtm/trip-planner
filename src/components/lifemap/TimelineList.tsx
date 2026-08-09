@@ -18,9 +18,9 @@ type Section = {
 };
 
 /**
- * 旅行グループの見出しに「この旅行で作る」を出すか。
+ * 旅行グループの見出しに「この旅行を旅行記にする」を出すか。
  *
- * 記録が1件で写真もあるグループでは、そのカードの「この記録で作る」と渡すidも遷移先も同一になり、
+ * 記録が1件で写真もあるグループでは、そのカードの「この記録を旅行記にする」と渡すidも遷移先も同一になり、
  * 同じ動作のボタンが上下に並ぶだけなので出さない。
  * 写真が無い1件はカード側のボタンが押せないため、こちらが唯一の入口になる（出す）。
  * 写真の判定はカード側と必ず同じ関数を使うこと。ズレると両方消える。
@@ -35,15 +35,11 @@ export default function TimelineList({
   onShowOnMap,
   onDelete,
   onEdit,
-  selectedIds,
-  onToggleSelect,
 }: {
   entries: LifeMapEntry[];
   onShowOnMap: (entry: LifeMapEntry) => void;
   onDelete: (entry: LifeMapEntry) => void;
   onEdit?: (entry: LifeMapEntry) => void;
-  selectedIds?: Set<string>;
-  onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
   const { t, lang } = useTranslation();
   const [order, setOrder] = useState<"desc" | "asc">("desc");
@@ -140,8 +136,6 @@ export default function TimelineList({
               onShowOnMap={onShowOnMap}
               onDelete={onDelete}
               onEdit={onEdit}
-              selected={selectedIds?.has(entry.id)}
-              onToggleSelect={onToggleSelect}
             />
           ))}
         </div>
