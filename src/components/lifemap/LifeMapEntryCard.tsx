@@ -6,6 +6,7 @@ import type { LifeMapEntry } from "@/types/lifemap";
 import { getCategory } from "@/lib/lifemap/categories";
 import { resolveEntryLatLng, isJapanCoord } from "@/lib/lifemap/plannerLink";
 import { buildJournalLink } from "@/lib/lifemap/journalLink";
+import { hasSavedPhoto } from "@/lib/lifemap/entryPhoto";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 import DrivePlannerLinkButton from "./DrivePlannerLinkButton";
 
@@ -30,7 +31,7 @@ export default function LifeMapEntryCard({
   const pos = resolveEntryLatLng(entry);
   const hasMapLocation = pos !== null;
   const canSelect = onToggleSelect && pos && isJapanCoord(pos.lat, pos.lng);
-  const hasSavedPhoto = Boolean(entry.imageDataUrl || entry.thumbnailDataUrl);
+  const hasPhoto = hasSavedPhoto(entry);
 
   const precisionNote =
     entry.locationPrecision === "approximate"
@@ -89,23 +90,23 @@ export default function LifeMapEntryCard({
             </button>
           )}
           <DrivePlannerLinkButton entry={entry} compact />
-          {hasSavedPhoto ? (
+          {hasPhoto ? (
             <Link
               href={buildJournalLink(lang, [entry.id])}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#2B2721] hover:opacity-90 text-white text-xs font-medium transition-all"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              SNS投稿
+              {t("card.journalBtn")}
             </Link>
           ) : (
             <button
               type="button"
               disabled
-              title="写真を保存するとSNS投稿を作れます。"
+              title={t("card.journalBtnDisabledHint")}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F1ECE1] text-[#A79E8C] text-xs font-medium cursor-not-allowed"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              SNS投稿
+              {t("card.journalBtn")}
             </button>
           )}
           {canSelect && (

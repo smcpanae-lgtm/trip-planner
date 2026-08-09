@@ -72,6 +72,10 @@ export interface LifeMapDict {
     editBtn: string;
     selectBtn: string;
     selectedBtn: string;
+    /** その記録1件だけでAI旅行記メーカーへ渡すボタン */
+    journalBtn: string;
+    /** 写真が無くて上のボタンが押せないときの補足（旅行単位でなら作れる） */
+    journalBtnDisabledHint: string;
   };
   edit: {
     title: string;
@@ -86,6 +90,8 @@ export interface LifeMapDict {
   list: {
     timeline: string;
     prefecture: string;
+    /** 一覧の各ボタンが何を作るものかの説明。記録が1件以上あるときだけ出す */
+    journalHint: string;
   };
   country: {
     label: string;
@@ -312,6 +318,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "編集",
       selectBtn: "ドライブに選ぶ",
       selectedBtn: "選択中",
+      journalBtn: "この記録で作る",
+      journalBtnDisabledHint: "写真を保存すると、この記録だけで作れます。",
     },
     edit: {
       title: "記録を編集",
@@ -326,6 +334,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "時系列",
       prefecture: "地域別",
+      journalHint: "写真と記録から、旅行記とSNS投稿文を作れます。",
     },
     country: {
       label: "居住国",
@@ -334,7 +343,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "新しい順",
       oldest: "古い順",
       empty: "まだ記録がありません。写真を追加して最初の思い出を記録しましょう。",
-      tripJournalBtn: "この旅行を旅行記にする",
+      tripJournalBtn: "この旅行で作る",
       tripLimitNote: "古い順に先頭{{max}}件が最初に選ばれます",
     },
     prefecture: {
@@ -604,6 +613,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "Edit",
       selectBtn: "Select for drive",
       selectedBtn: "Selected",
+      journalBtn: "Use this record",
+      journalBtnDisabledHint: "Save a photo to build one from this record alone.",
     },
     edit: {
       title: "Edit record",
@@ -618,6 +629,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "Timeline",
       prefecture: "By area",
+      journalHint: "Turn your photos and records into a travel journal and a social post.",
     },
     country: {
       label: "Home country",
@@ -626,7 +638,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Newest first",
       oldest: "Oldest first",
       empty: "No records yet. Add a photo to save your first memory.",
-      tripJournalBtn: "Turn this trip into a journal",
+      tripJournalBtn: "Use this trip",
       tripLimitNote: "The first {{max}} entries, oldest first, are selected to start.",
     },
     prefecture: {
@@ -896,6 +908,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "편집",
       selectBtn: "드라이브에 선택",
       selectedBtn: "선택됨",
+      journalBtn: "이 기록으로 만들기",
+      journalBtnDisabledHint: "사진을 저장하면 이 기록만으로 만들 수 있습니다.",
     },
     edit: {
       title: "기록 편집",
@@ -910,6 +924,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "시계열",
       prefecture: "지역별",
+      journalHint: "사진과 기록으로 여행기와 SNS 게시글을 만들 수 있습니다.",
     },
     country: {
       label: "거주 국가",
@@ -918,7 +933,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "최신순",
       oldest: "오래된 순",
       empty: "아직 기록이 없습니다. 사진을 추가해 첫 번째 추억을 기록하세요.",
-      tripJournalBtn: "이 여행을 여행기로 만들기",
+      tripJournalBtn: "이 여행으로 만들기",
       tripLimitNote: "오래된 순으로 앞의 {{max}}건이 먼저 선택됩니다",
     },
     prefecture: {
@@ -1188,6 +1203,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "编辑",
       selectBtn: "选入兜风路线",
       selectedBtn: "已选择",
+      journalBtn: "用这条记录制作",
+      journalBtnDisabledHint: "保存照片后，就能只用这条记录制作。",
     },
     edit: {
       title: "编辑记录",
@@ -1202,6 +1219,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "时间轴",
       prefecture: "按地区",
+      journalHint: "可以用照片和记录生成游记和社交媒体文案。",
     },
     country: {
       label: "居住国家",
@@ -1210,7 +1228,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "从新到旧",
       oldest: "从旧到新",
       empty: "暂无记录，请添加照片记录您的第一个回忆。",
-      tripJournalBtn: "把这次旅行写成游记",
+      tripJournalBtn: "用这次旅行制作",
       tripLimitNote: "最早的{{max}}条记录会被预先选中",
     },
     prefecture: {
@@ -1480,6 +1498,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "編輯",
       selectBtn: "選入兜風路線",
       selectedBtn: "已選擇",
+      journalBtn: "用這筆紀錄製作",
+      journalBtnDisabledHint: "儲存照片後，就能只用這筆紀錄製作。",
     },
     edit: {
       title: "編輯記錄",
@@ -1494,6 +1514,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "時間軸",
       prefecture: "按地區",
+      journalHint: "可以用照片和紀錄產生遊記和社群貼文。",
     },
     country: {
       label: "居住國家",
@@ -1502,7 +1523,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "從新到舊",
       oldest: "從舊到新",
       empty: "尚無記錄，請新增照片記錄您的第一個回憶。",
-      tripJournalBtn: "把這次旅行寫成遊記",
+      tripJournalBtn: "用這次旅行製作",
       tripLimitNote: "最早的{{max}}筆紀錄會被預先選取",
     },
     prefecture: {
@@ -1772,6 +1793,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "Editar",
       selectBtn: "Elegir para la ruta",
       selectedBtn: "Seleccionado",
+      journalBtn: "Usar este registro",
+      journalBtnDisabledHint: "Guarda una foto para crearlo solo con este registro.",
     },
     edit: {
       title: "Editar registro",
@@ -1786,6 +1809,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "Cronología",
       prefecture: "Por zona",
+      journalHint: "Convierte tus fotos y registros en un diario de viaje y una publicación para redes.",
     },
     country: {
       label: "País de residencia",
@@ -1794,7 +1818,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Más recientes",
       oldest: "Más antiguos",
       empty: "Sin registros aún. Añade una foto para guardar tu primer recuerdo.",
-      tripJournalBtn: "Convertir este viaje en diario",
+      tripJournalBtn: "Usar este viaje",
       tripLimitNote: "Los primeros {{max}} registros, del más antiguo al más reciente, se seleccionan al principio.",
     },
     prefecture: {
@@ -2064,6 +2088,8 @@ export const translations: Record<LangCode, LifeMapDict> = {
       editBtn: "Изменить",
       selectBtn: "Выбрать для маршрута",
       selectedBtn: "Выбрано",
+      journalBtn: "Из этой записи",
+      journalBtnDisabledHint: "Сохраните фото, чтобы создать по одной этой записи.",
     },
     edit: {
       title: "Редактирование записи",
@@ -2078,6 +2104,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
     list: {
       timeline: "Хронология",
       prefecture: "По области",
+      journalHint: "Из фото и записей можно собрать дневник путешествия и пост для соцсетей.",
     },
     country: {
       label: "Страна проживания",
@@ -2086,7 +2113,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       newest: "Новые сначала",
       oldest: "Старые сначала",
       empty: "Записей пока нет. Добавьте фото, чтобы сохранить первое воспоминание.",
-      tripJournalBtn: "Сделать дневник об этой поездке",
+      tripJournalBtn: "Из этой поездки",
       tripLimitNote: "Сначала выбираются первые {{max}} записей, от старых к новым.",
     },
     prefecture: {

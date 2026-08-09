@@ -55,6 +55,13 @@ export default function LifeMapEntryList({
         </button>
       </div>
 
+      {/* 各記録・各旅行のボタンが何を作るものかの説明。まだ作れない0件のときは出さない。 */}
+      {entries.length > 0 && (
+        <p className="text-[11.5px] text-[#8A8172] leading-relaxed px-0.5">
+          {t("list.journalHint")}
+        </p>
+      )}
+
       {tab === "timeline" ? (
         <TimelineList
           entries={entries}

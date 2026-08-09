@@ -6,6 +6,7 @@ import { ArrowDownWideNarrow, ArrowUpWideNarrow, BookOpen } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
 import { buildTripJournalLink, groupEntriesIntoTrips, type TripGroup } from "@/lib/lifemap/tripGroups";
+import { hasSavedPhoto } from "@/lib/lifemap/entryPhoto";
 import { MAX_AI_SPOTS } from "@/lib/shiori/tripSelection";
 import LifeMapEntryCard from "./LifeMapEntryCard";
 
@@ -15,6 +16,18 @@ type Section = {
   group: TripGroup | null;
   entries: LifeMapEntry[];
 };
+
+/**
+ * 旅行グループの見出しに「この旅行で作る」を出すか。
+ *
+ * 記録が1件で写真もあるグループでは、そのカードの「この記録で作る」と渡すidも遷移先も同一になり、
+ * 同じ動作のボタンが上下に並ぶだけなので出さない。
+ * 写真が無い1件はカード側のボタンが押せないため、こちらが唯一の入口になる（出す）。
+ * 写真の判定はカード側と必ず同じ関数を使うこと。ズレると両方消える。
+ */
+function showTripLink(group: TripGroup): boolean {
+  return !(group.entries.length === 1 && hasSavedPhoto(group.entries[0]));
+}
 
 // 時系列一覧（新しい順／古い順の切替）。記録は旅行ごとに区切って並べる。
 export default function TimelineList({
@@ -101,16 +114,17 @@ export default function TimelineList({
                 {section.group.from === section.group.to
                   ? section.group.from
                   : `${section.group.from} – ${section.group.to}`}
-                {" ・ "}
-                {t("prefecture.countTemplate", { count: section.group.entries.length })}
               </span>
-              <Link
-                href={buildTripJournalLink(section.group, lang)}
-                className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-[#1C7A66] hover:underline"
-              >
-                <BookOpen className="w-3 h-3" />
-                {t("timeline.tripJournalBtn")}
-              </Link>
+              {showTripLink(section.group) && (
+                <Link
+                  href={buildTripJournalLink(section.group, lang)}
+                  className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-[#1C7A66] hover:underline"
+                >
+                  <BookOpen className="w-3 h-3" />
+                  {t("timeline.tripJournalBtn")}
+                  {` (${t("prefecture.countTemplate", { count: section.group.entries.length })})`}
+                </Link>
+              )}
               {section.group.entries.length > MAX_AI_SPOTS && (
                 <span className="w-full text-[10.5px] text-[#A79E8C]">
                   {t("timeline.tripLimitNote", { max: MAX_AI_SPOTS })}
