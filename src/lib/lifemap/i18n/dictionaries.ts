@@ -335,7 +335,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "古い順",
       empty: "まだ記録がありません。写真を追加して最初の思い出を記録しましょう。",
       tripJournalBtn: "この旅行を旅行記にする",
-      tripLimitNote: "古い順に先頭{{max}}件が旅行記の対象になります",
+      tripLimitNote: "古い順に先頭{{max}}件が最初に選ばれます",
     },
     prefecture: {
       backLink: "地域一覧に戻る",
@@ -627,7 +627,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "Oldest first",
       empty: "No records yet. Add a photo to save your first memory.",
       tripJournalBtn: "Turn this trip into a journal",
-      tripLimitNote: "Only the first {{max}} entries, oldest first, will be used.",
+      tripLimitNote: "The first {{max}} entries, oldest first, are selected to start.",
     },
     prefecture: {
       backLink: "← Back to list",
@@ -919,7 +919,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "오래된 순",
       empty: "아직 기록이 없습니다. 사진을 추가해 첫 번째 추억을 기록하세요.",
       tripJournalBtn: "이 여행을 여행기로 만들기",
-      tripLimitNote: "오래된 순으로 앞의 {{max}}건만 여행기에 사용됩니다",
+      tripLimitNote: "오래된 순으로 앞의 {{max}}건이 먼저 선택됩니다",
     },
     prefecture: {
       backLink: "← 목록으로 돌아가기",
@@ -1211,7 +1211,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "从旧到新",
       empty: "暂无记录，请添加照片记录您的第一个回忆。",
       tripJournalBtn: "把这次旅行写成游记",
-      tripLimitNote: "仅最早的{{max}}条记录会用于生成游记",
+      tripLimitNote: "最早的{{max}}条记录会被预先选中",
     },
     prefecture: {
       backLink: "← 返回地区列表",
@@ -1503,7 +1503,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "從舊到新",
       empty: "尚無記錄，請新增照片記錄您的第一個回憶。",
       tripJournalBtn: "把這次旅行寫成遊記",
-      tripLimitNote: "僅最早的{{max}}筆紀錄會用於產生遊記",
+      tripLimitNote: "最早的{{max}}筆紀錄會被預先選取",
     },
     prefecture: {
       backLink: "← 返回地區列表",
@@ -1795,7 +1795,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "Más antiguos",
       empty: "Sin registros aún. Añade una foto para guardar tu primer recuerdo.",
       tripJournalBtn: "Convertir este viaje en diario",
-      tripLimitNote: "Solo se usarán los primeros {{max}} registros, del más antiguo al más reciente.",
+      tripLimitNote: "Los primeros {{max}} registros, del más antiguo al más reciente, se seleccionan al principio.",
     },
     prefecture: {
       backLink: "← Volver a la lista",
@@ -2087,7 +2087,7 @@ export const translations: Record<LangCode, LifeMapDict> = {
       oldest: "Старые сначала",
       empty: "Записей пока нет. Добавьте фото, чтобы сохранить первое воспоминание.",
       tripJournalBtn: "Сделать дневник об этой поездке",
-      tripLimitNote: "Будут использованы только первые {{max}} записей, от старых к новым.",
+      tripLimitNote: "Сначала выбираются первые {{max}} записей, от старых к новым.",
     },
     prefecture: {
       backLink: "← Вернуться к списку",
