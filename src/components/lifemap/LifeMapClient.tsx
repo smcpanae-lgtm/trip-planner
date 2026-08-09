@@ -728,13 +728,6 @@ function LifeMapClientInner() {
                       <Navigation className="w-3.5 h-3.5" />
                       {t("drive.planBtn")}
                     </a>
-                    <Link
-                      href={`/shiori?source=lifemap&ids=${encodeURIComponent([...selectedIds].join(","))}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E4A857] text-[#3A2C18] text-xs font-bold hover:opacity-90 transition-all"
-                    >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      {t("landing.journalWithSelectionCta")}
-                    </Link>
                     <button
                       type="button"
                       onClick={clearSelection}

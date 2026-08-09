@@ -1,12 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
+import Link from "next/link";
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, BookOpen } from "lucide-react";
 import type { LifeMapEntry } from "@/types/lifemap";
 import { useTranslation } from "@/lib/lifemap/i18n/LanguageContext";
+import { buildTripJournalLink, groupEntriesIntoTrips, type TripGroup } from "@/lib/lifemap/tripGroups";
+import { MAX_AI_SPOTS } from "@/lib/shiori/tripSelection";
 import LifeMapEntryCard from "./LifeMapEntryCard";
 
-// 時系列一覧（新しい順／古い順の切替）
+/** 一覧に並べる単位。group が null のときは日付未入力の記録（旅行にまとめられない）。 */
+type Section = {
+  key: string;
+  group: TripGroup | null;
+  entries: LifeMapEntry[];
+};
+
+// 時系列一覧（新しい順／古い順の切替）。記録は旅行ごとに区切って並べる。
 export default function TimelineList({
   entries,
   onShowOnMap,
@@ -22,16 +32,25 @@ export default function TimelineList({
   selectedIds?: Set<string>;
   onToggleSelect?: (entry: LifeMapEntry) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [order, setOrder] = useState<"desc" | "asc">("desc");
 
-  const sorted = useMemo(() => {
-    const arr = [...entries];
-    arr.sort((a, b) => {
-      const cmp = a.date.localeCompare(b.date);
-      return order === "desc" ? -cmp : cmp;
-    });
-    return arr;
+  const sections = useMemo<Section[]>(() => {
+    const groups = groupEntriesIntoTrips(entries);
+    const tripSections: Section[] = groups.map((group) => ({
+      // 日付だけでは同日に始まる旅行を区別できないため、先頭の記録のidを混ぜる。
+      key: `${group.from}_${group.entries[0].id}`,
+      group,
+      entries: order === "desc" ? [...group.entries].reverse() : group.entries,
+    }));
+    if (order === "desc") tripSections.reverse();
+
+    // グループ化から外れた記録（日付未入力）も必ず一覧に出す。
+    // 日付順に並べたときの位置に合わせ、古い順なら先頭、新しい順なら末尾に置く。
+    const undated = entries.filter((entry) => !entry.date);
+    if (undated.length === 0) return tripSections;
+    const undatedSection: Section = { key: "undated", group: null, entries: undated };
+    return order === "desc" ? [...tripSections, undatedSection] : [undatedSection, ...tripSections];
   }, [entries, order]);
 
   if (entries.length === 0) {
@@ -71,16 +90,47 @@ export default function TimelineList({
         </button>
       </div>
 
-      {sorted.map((entry) => (
-        <LifeMapEntryCard
-          key={entry.id}
-          entry={entry}
-          onShowOnMap={onShowOnMap}
-          onDelete={onDelete}
-          onEdit={onEdit}
-          selected={selectedIds?.has(entry.id)}
-          onToggleSelect={onToggleSelect}
-        />
+      {sections.map((section, index) => (
+        <div
+          key={section.key}
+          className={`space-y-3 ${index === 0 ? "" : "pt-3 border-t border-[#EEE7DA]"}`}
+        >
+          {section.group && (
+            <div className="flex items-center gap-x-3 gap-y-1 flex-wrap px-0.5">
+              <span className="text-[11px] text-[#A79E8C]">
+                {section.group.from === section.group.to
+                  ? section.group.from
+                  : `${section.group.from} – ${section.group.to}`}
+                {" ・ "}
+                {t("prefecture.countTemplate", { count: section.group.entries.length })}
+              </span>
+              <Link
+                href={buildTripJournalLink(section.group, lang)}
+                className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-[#1C7A66] hover:underline"
+              >
+                <BookOpen className="w-3 h-3" />
+                {t("timeline.tripJournalBtn")}
+              </Link>
+              {section.group.entries.length > MAX_AI_SPOTS && (
+                <span className="w-full text-[10.5px] text-[#A79E8C]">
+                  {t("timeline.tripLimitNote", { max: MAX_AI_SPOTS })}
+                </span>
+              )}
+            </div>
+          )}
+
+          {section.entries.map((entry) => (
+            <LifeMapEntryCard
+              key={entry.id}
+              entry={entry}
+              onShowOnMap={onShowOnMap}
+              onDelete={onDelete}
+              onEdit={onEdit}
+              selected={selectedIds?.has(entry.id)}
+              onToggleSelect={onToggleSelect}
+            />
+          ))}
+        </div>
       ))}
     </div>
   );

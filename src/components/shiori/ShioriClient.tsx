@@ -28,6 +28,7 @@ import {
 import type { LifeMapCategory, LifeMapEntry } from "@/types/lifemap";
 import { CATEGORIES, CUSTOM_CAT_STORAGE_KEY, getCategory } from "@/lib/lifemap/categories";
 import { shioriCategoryLabel } from "@/lib/shiori/i18n/categoryLabels";
+import { MAX_AI_SPOTS, TRIP_WINDOW_DAYS } from "@/lib/shiori/tripSelection";
 import { extractExifLocation } from "@/lib/lifemap/exif";
 import { compressImage } from "@/lib/lifemap/image";
 import { getAllEntries } from "@/lib/lifemap/storage";
@@ -136,18 +137,12 @@ const SHIORI_SESSION_STORAGE_KEY = "shiori-anonymous-session-id";
 const SHIORI_WRITE_MODE_STORAGE_KEY = "shiori-write-mode";
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
-// 一度にAI生成できる記録の上限。サーバー側の MAX_SPOTS と同じ値。
-// 超えるとサーバーが errorCode: "too_many_entries" を返す。
-const MAX_AI_SPOTS = 20;
-
 /**
  * 既定で選ぶ「直近の旅行1回分」の幅（最新の記録の日付を含む日数）。
- * 4日 ＝ 最大3泊4日。国内旅行は1泊2日〜3泊4日が主流で、
- * 「2泊3日で5〜8か所まわる」使い方は確実に収まる。
- * 5日以上に広げると、旅行から帰った翌日に近所で撮った記録まで混ざりやすくなる。
  * これより長い旅行は「すべて選ぶ」で足してもらう前提。
+ * 値の根拠と、人生体験マップ側のグループ化との差異は tripSelection.ts を参照。
  */
-const DEFAULT_TRIP_WINDOW_DAYS = 4;
+const DEFAULT_TRIP_WINDOW_DAYS = TRIP_WINDOW_DAYS;
 
 /**
  * 選択中の記録の日付がこれだけ離れていたら、別々の旅行が混ざっている可能性を伝える。

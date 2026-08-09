@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI, type GenerationConfig } from "@google/generative-ai";
+import { MAX_AI_SPOTS } from "@/lib/shiori/tripSelection";
 
 export const runtime = "nodejs";
 
@@ -80,7 +81,8 @@ interface ShioriResponse {
 
 const MODEL_NAMES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
 const OUTPUT_LANGUAGES: OutputLanguage[] = ["ja", "en", "zh-CN", "fr", "ko", "zh-TW", "de"];
-const MAX_SPOTS = 20;
+// クライアント側の既定選択もこの値で打ち切る（定義元: lib/shiori/tripSelection.ts）。
+const MAX_SPOTS = MAX_AI_SPOTS;
 
 /**
  * 出力トークン上限は記録数から算出する。
