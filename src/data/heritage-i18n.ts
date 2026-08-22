@@ -141,8 +141,28 @@ export function fill(template: string, values: Record<string, string | number>):
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
+/** OpenCC による簡体字→繁体字の変換（cn2t）が汎用フォールバックで
+ * 誤った字を選んでしまう固有名詞のみの例外表（語→語の単純な対応表）。
+ * OpenCCの語彙辞書に無い/稀な複合語は文字単位の既定変換になり、
+ * 「冲之岛」→「衝之島」（正しくは沖之島）、「制丝厂」→「制絲廠」
+ * （正しくは製絲廠）のように、文脈上不自然な異体字が選ばれることがある。
+ * ここに追加する語は、他の遺産名と衝突しないことを
+ * scripts の検証（変換結果の全件diff）で確認したうえで追加すること。
+ */
+const CN2TW_EXCEPTIONS: Record<string, string> = {
+  "衝之島": "沖之島",
+  "制絲廠": "製絲廠",
+};
+
 /** OpenCC による簡体字→繁体字の文字変換（地域語彙の言い換えは行わない） */
-const toTraditionalChar = Converter({ from: "cn", to: "tw" });
+const baseToTraditionalChar = Converter({ from: "cn", to: "tw" });
+const toTraditionalChar = (value: string): string => {
+  const converted = baseToTraditionalChar(value);
+  return Object.entries(CN2TW_EXCEPTIONS).reduce(
+    (acc, [wrong, right]) => acc.split(wrong).join(right),
+    converted
+  );
+};
 
 /** Dict の全文字列フィールド（ネストした regions/categories を含む）を繁体字に変換する */
 function convertDictToTraditional(source: Dict): Dict {
