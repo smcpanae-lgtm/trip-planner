@@ -91,9 +91,9 @@
       </div>
       <div class="top-actions">
         <label class="profile-name-field">
-          <span data-i18n="profileNameLabel">Profile name</span>
-          <input id="profileNameInput" type="text" maxlength="40" autocomplete="nickname" data-i18n-placeholder="profileNamePlaceholder" placeholder="e.g. N.K. / Traveler A">
-          <small data-i18n="profileNameNote">Stored in this browser and included in backups.</small>
+          <span data-i18n="profileNameLabel">使用者名稱</span>
+          <input id="profileNameInput" type="text" maxlength="40" autocomplete="nickname" data-i18n-placeholder="profileNamePlaceholder" placeholder="例如：N.K. / 旅人A">
+          <small data-i18n="profileNameNote">會保存在瀏覽器內，並包含於備份中。</small>
         </label>
         <select id="languageSelect" aria-label="Language">
           <option value="ja">日本語 (Language)</option>
@@ -105,12 +105,12 @@
           <option value="fr">Français</option>
         </select>
         <button id="exportBtn" class="ghost" type="button" data-i18n="export">備份</button>
-        <button id="exportRecordsBtn" class="ghost" type="button" data-i18n="exportRecords">Backup without photos</button>
+        <button id="exportRecordsBtn" class="ghost" type="button" data-i18n="exportRecords">不含照片的備份</button>
         <label class="ghost file-label">
           <span data-i18n="import">還原</span>
           <input id="importInput" type="file" accept="application/json">
         </label>
-        <small class="backup-note" data-i18n="backupPhotoCaution">When you revisit with the same browser, your photos and records remain available. Use a backup to move them to a new PC or another browser. Backups without photos do not include uploaded photos.</small>
+        <small class="backup-note" data-i18n="backupPhotoCaution">使用同一瀏覽器再次造訪時，照片與紀錄仍會保留。若要更換電腦或改用其他瀏覽器，請透過備份檔還原。「不含照片的備份」不會包含已上傳的照片。</small>
       </div>
     </header>
 
@@ -151,11 +151,11 @@
 
       <a class="travel-journal-banner" href="/en/shiori?source=heritage">
         <span class="travel-journal-copy">
-          <span class="travel-journal-kicker" data-i18n="travelJournalBannerKicker">AI Travel Journal Maker</span>
-          <strong data-i18n="travelJournalBannerTitle">Turn saved World Heritage photo records into SNS posts and blog images</strong>
-          <span data-i18n="travelJournalBannerBody">Load visit dates, photos, and notes to organize memories after the trip.</span>
+          <span class="travel-journal-kicker" data-i18n="travelJournalBannerKicker">AI旅遊日記產生器</span>
+          <strong data-i18n="travelJournalBannerTitle">運用已保存的世界遺產照片紀錄，製作社群貼文與封面圖片</strong>
+          <span data-i18n="travelJournalBannerBody">載入造訪日期、照片與備註，方便旅行後整理回憶。</span>
         </span>
-        <span class="travel-journal-action" data-i18n="travelJournalBannerAction">Open journal maker</span>
+        <span class="travel-journal-action" data-i18n="travelJournalBannerAction">前往AI旅遊日記</span>
       </a>
 
       <section class="dashboard">
@@ -185,9 +185,9 @@
 
       <section class="toolbar" aria-label="Filters">
         <div class="view-toggle" role="group" aria-label="View mode">
-          <button class="view-mode active" type="button" data-view="countries" data-i18n="viewCountries">By country</button>
-          <button class="view-mode" type="button" data-view="heritage" data-i18n="viewHeritage">All sites</button>
-          <button class="view-mode" type="button" data-view="visited" data-i18n="viewVisited">Visited</button>
+          <button class="view-mode active" type="button" data-view="countries" data-i18n="viewCountries">依國家瀏覽</button>
+          <button class="view-mode" type="button" data-view="heritage" data-i18n="viewHeritage">全部遺產</button>
+          <button class="view-mode" type="button" data-view="visited" data-i18n="viewVisited">已造訪</button>
         </div>
         <div class="search-wrap">
           <input id="searchInput" type="search" data-i18n-placeholder="search" placeholder="依遺產或國家搜尋">
@@ -200,10 +200,10 @@
 
       <section id="countrySection" class="country-panel">
         <div class="section-title">
-          <h3 data-i18n="countryIndex">Country index</h3>
+          <h3 data-i18n="countryIndex">國家索引</h3>
           <div class="list-meta">
             <p id="countrySummary">地域を開いて国を選ぶと、その国の世界遺産だけを表示します。</p>
-            <button id="clearCountryBtn" class="ghost mini-button" type="button" data-i18n="clearCountry" hidden>Clear country selection</button>
+            <button id="clearCountryBtn" class="ghost mini-button" type="button" data-i18n="clearCountry" hidden>清除國家選擇</button>
           </div>
         </div>
         <div id="countryIndex" class="country-index">
@@ -253,25 +253,25 @@
           <article class="site-tile" data-open="cn-great-wall"><div class="site-tile-image placeholder-visual cultural"></div><div class="site-tile-body"><h4>万里の長城</h4><p>中国 · 1987 · 文化</p><span>未訪問</span></div></article>
         </div>
         <div id="pagination" class="pagination">
-          <button id="prevPageBtn" class="ghost" type="button" data-i18n="prevPage">Previous</button>
+          <button id="prevPageBtn" class="ghost" type="button" data-i18n="prevPage">上一頁</button>
           <span id="pageStatus">1-90 / 1273件</span>
-          <button id="nextPageBtn" class="ghost" type="button" data-i18n="nextPage">Next</button>
+          <button id="nextPageBtn" class="ghost" type="button" data-i18n="nextPage">下一頁</button>
         </div>
       </section>
 
       <footer class="site-footer">
-        <p data-i18n="unofficialNotice">This is not an official UNESCO/WHC website. Please use each official page for detailed World Heritage information.</p>
-        <p data-i18n="localNotice">Visit records and photos are stored in this browser. If you revisit on the same device and browser, the saved content remains available. Backups are JSON files saved to your own device so you can restore records on a new PC or another browser; this site operator cannot view or retrieve their contents.</p>
-        <p data-i18n="memorialNotice">When you complete all sites in a region or complete the full World Heritage list, a memorial experience is shown from records stored in this browser.</p>
-        <p data-i18n="rightsNotice">This site uses factual information such as site names, countries, and inscription years. It does not use official UNESCO/WHC descriptions, photos, logos, or emblems. Featured images are independently generated illustrative images. Country flag icons use flag-icons under the MIT License.</p>
-        <p data-i18n="accuracyNotice">Information is based on public data, but accuracy, completeness, and freshness are not guaranteed. Please check official pages for travel planning or formal confirmation.</p>
+        <p data-i18n="unofficialNotice">本站並非UNESCO/WHC官方網站。世界遺產的詳細資訊請參閱各官方頁面。</p>
+        <p data-i18n="localNotice">造訪紀錄與照片僅保存在此瀏覽器內。若在同一裝置、同一瀏覽器再次造訪，先前保存的內容仍可繼續使用。備份功能是將資料寫出為JSON檔案至您自己的裝置，方便在更換電腦或改用其他瀏覽器時還原紀錄；本站營運方無法檢視或取得備份內容。</p>
+        <p data-i18n="memorialNotice">當您造訪完某地區內的所有世界遺產，或征服全部世界遺產時，系統會根據瀏覽器內的紀錄顯示紀念畫面。</p>
+        <p data-i18n="rightsNotice">本站使用世界遺產名稱、國家、登錄年份等事實資訊，未使用UNESCO/WHC官方的說明文字、照片或標誌。站內代表圖片為獨立生成的示意圖像。國旗圖示使用flag-icons（MIT授權）。</p>
+        <p data-i18n="accuracyNotice">本站資訊係根據公開資料整理，並不保證其即時性與完整性。規劃旅行或需要正式確認時，請參閱各官方頁面。</p>
         <nav class="footer-links" aria-label="サイト案内">
-          <a href="/heritage/zh-hant/about.html" data-i18n="aboutPage">About &amp; How to Use</a>
-          <a href="/heritage/zh-hant/faq.html" data-i18n="faqPage">FAQ</a>
+          <a href="/heritage/zh-hant/about.html" data-i18n="aboutPage">關於本站與使用方法</a>
+          <a href="/heritage/zh-hant/faq.html" data-i18n="faqPage">常見問題</a>
         </nav>
         <nav class="footer-links" aria-label="Policies">
-          <a href="/heritage/privacy.html" data-i18n="privacyPolicy">Privacy Policy</a>
-          <a href="/heritage/cookie.html" data-i18n="cookiePolicy">Cookie Policy</a>
+          <a href="/heritage/privacy.html" data-i18n="privacyPolicy">隱私權政策</a>
+          <a href="/heritage/cookie.html" data-i18n="cookiePolicy">Cookie政策</a>
         </nav>
         <nav class="footer-links" aria-label="世界遺産の一覧">
           <a href="/heritage/zh-hant/sites">世界遺產完整名錄（全1,273件基本資訊頁面）</a>
