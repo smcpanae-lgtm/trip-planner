@@ -2105,7 +2105,8 @@ async function openTravelJournalMaker(item) {
   }
   saveSites();
   await saveDialogRecord(item);
-  location.href = `/shiori?source=heritage&ids=${encodeURIComponent(item.id)}`;
+  const shioriBase = state.language === "ja" ? "/shiori" : "/en/shiori";
+  location.href = `${shioriBase}?source=heritage&ids=${encodeURIComponent(item.id)}`;
 }
 function renderDialog(item) {
   openDialogItemId = item.id;

@@ -190,6 +190,11 @@ function buildLocale(html, locale, translations) {
   // 日本語版ページを共通で参照するため、ここでは差し替えない。
   body = body.split('href="/heritage/about.html"').join(`href="/heritage/${locale.segment}/about.html"`);
   body = body.split('href="/heritage/faq.html"').join(`href="/heritage/${locale.segment}/faq.html"`);
+  // AI旅行記メーカーは ja/en のみ独立URLを持つため、日本語以外の言語からは
+  // 英語版へ誘導する（個別遺産ページの shioriBasePath と同じ方針）。
+  body = body
+    .split('href="/shiori?source=heritage"')
+    .join(`href="/en/shiori?source=heritage"`);
 
   body = body.replace(/<[^>]*\sdata-i18n-placeholder="([\w.-]+)"[^>]*>/g, (match, key) => {
     const value = dict[key];

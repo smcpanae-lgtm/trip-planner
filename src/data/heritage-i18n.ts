@@ -708,20 +708,28 @@ function regionNames(locale: HeritageLocale): Intl.DisplayNames {
   return created;
 }
 
-export function localeCountry(site: HeritageSite, locale: HeritageLocale): string {
+/**
+ * 国名（言語別・単一サイト分の配列）。
+ * 個別ページの表示（localeCountry）と、一覧ページの国別グルーピング
+ * （groupByRegionAndCountryForLocale）の両方から使う共通ロジック。
+ * 以前は一覧ページ側だけ日本語以外は countriesEn 固定になっており、
+ * zh-hant の国見出しが英語のまま出るバグがあった。
+ */
+function localeCountryLabels(site: HeritageSite, locale: HeritageLocale): string[] {
   if (locale === "ja") {
-    const ja = site.countriesJa.length ? site.countriesJa : site.countriesEn;
-    return ja.join("・");
+    return site.countriesJa.length ? site.countriesJa : site.countriesEn;
   }
 
   const names = regionNames(locale);
   const labels = site.isoCodes
     .map((code, index) => names.of(code) || site.countriesEn[index] || code)
     .filter(Boolean);
-  const resolved = labels.length ? labels : site.countriesEn;
+  return labels.length ? labels : site.countriesEn;
+}
 
-  const separator = locale === "zh" || locale === "zh-hant" ? "、" : " / ";
-  return resolved.join(separator);
+export function localeCountry(site: HeritageSite, locale: HeritageLocale): string {
+  const separator = locale === "ja" ? "・" : locale === "zh" || locale === "zh-hant" ? "、" : " / ";
+  return localeCountryLabels(site, locale).join(separator);
 }
 
 export function localeYear(site: HeritageSite, locale: HeritageLocale): string | null {
@@ -761,8 +769,7 @@ export function groupByRegionAndCountryForLocale(
   const groups = new Map<string, LocaleCountryGroup>();
 
   for (const site of sites) {
-    const useJa = locale === "ja" && site.countriesJa.length > 0;
-    const labels = useJa ? site.countriesJa : site.countriesEn;
+    const labels = localeCountryLabels(site, locale);
     labels.forEach((label, index) => {
       const key = site.isoCodes[index] || label;
       const existing = groups.get(key);
