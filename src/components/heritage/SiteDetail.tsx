@@ -119,6 +119,7 @@ export default function SiteDetail({
   const ctaHref = `${appPath}?source=sites&open=${encodeURIComponent(site.id)}`;
   // AI旅行記メーカーは ja/en のみ独立URLを持つため、それ以外の言語は英語版に誘導する
   const shioriBasePath = locale === "ja" ? "/shiori" : "/en/shiori";
+  const footerLocale = locale === "ja" || locale === "zh-hant" ? locale : "en";
   const shioriHref = `${shioriBasePath}?source=heritage&ids=${encodeURIComponent(site.id)}`;
 
   /** h1 の名称と、その下に出す英語名は「各言語での名称」から除いて重複を避ける */
@@ -356,7 +357,7 @@ export default function SiteDetail({
         <p className="mt-6 text-[11px] text-slate-400 leading-relaxed">{d.disclaimer}</p>
       </div>
 
-      <SiteFooter />
+      <SiteFooter locale={footerLocale} />
     </div>
   );
 }

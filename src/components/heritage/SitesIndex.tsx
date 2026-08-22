@@ -82,6 +82,7 @@ export default function SitesIndex({ locale }: { locale: HeritageLocale }) {
   const groups = groupByRegionAndCountryForLocale(locale, HERITAGE_SITES, REGION_ORDER);
   const url = localeIndexUrl(locale);
   const appPath = localeAppPath(locale);
+  const footerLocale = locale === "ja" || locale === "zh-hant" ? locale : "en";
   const title = fill(d.indexTitle, { total });
   const description = fill(d.indexDescription, { total });
 
@@ -194,7 +195,7 @@ export default function SitesIndex({ locale }: { locale: HeritageLocale }) {
         <p className="mt-8 text-[11px] text-slate-400 leading-relaxed">{d.indexSourceNote}</p>
       </div>
 
-      <SiteFooter />
+      <SiteFooter locale={footerLocale} />
     </div>
   );
 }
