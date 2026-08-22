@@ -25,15 +25,23 @@ const heritageDir = join(root, "public", "heritage");
 const ORIGIN = "https://www.ai-drive-planner.com";
 
 /** URLセグメント → app.js の translations のキー */
-const LOCALES = [{ segment: "en", dictKey: "en", htmlLang: "en", ogLocale: "en_US" }];
+const LOCALES = [
+  { segment: "en", dictKey: "en", htmlLang: "en", ogLocale: "en_US" },
+  { segment: "zh-hant", dictKey: "zh-TW", htmlLang: "zh-Hant", ogLocale: "zh_TW" },
+];
 
 /**
  * hreflang に載せる全言語（日本語は既存URLのまま）。
  * x-default は英語版（海外からの検索流入を主目的にしているため）。
+ * zh-TW / zh-HK は繁体字版（zh-hant）と同じURLを指すエイリアス
+ * （台湾・香港からの検索流入向け。ページ自体は増えない）。
  */
 const HREFLANG = [
   ["ja", `${ORIGIN}/heritage`],
   ["en", `${ORIGIN}/heritage/en`],
+  ["zh-Hant", `${ORIGIN}/heritage/zh-hant`],
+  ["zh-TW", `${ORIGIN}/heritage/zh-hant`],
+  ["zh-HK", `${ORIGIN}/heritage/zh-hant`],
   ["x-default", `${ORIGIN}/heritage/en`],
 ];
 
@@ -67,7 +75,20 @@ const HEAD_TEXT = {
     socialImage: "assets/social-card.png",
     sitesIndexLink: "All World Heritage Sites (1,273 fact pages)",
   },
-  // 仏語・西語・中国語を復活させたい場合はここに追記する（辞書は
+  "zh-hant": {
+    title: "世界遺產護照｜世界遺產參觀記錄與集章",
+    metaDescription:
+      "可將世界遺產的參觀記錄僅保存在您的瀏覽器內，附照片印章形式的世界遺產集章護照網站。可查看達成率與參觀狀況的個人旅行記錄網站。",
+    ogDescription:
+      "可將世界遺產的參觀記錄僅保存在您的瀏覽器內，附照片印章形式的世界遺產集章護照網站。",
+    keywords:
+      "世界遺產 參觀記錄,世界遺產 集章,世界遺產 記錄APP,世界遺產 清單,世界遺產 已訪問",
+    imageAlt: "世界遺產護照的卡片圖像",
+    siteName: "世界遺產護照",
+    socialImage: "assets/social-card.png",
+    sitesIndexLink: "世界遺產完整名錄（全1,273件基本資訊頁面）",
+  },
+  // 仏語・西語を復活させたい場合はここに追記する（辞書は
   // src/data/heritage-i18n.ts に既にあるので、ここは <head> の文言だけでよい）。
 };
 

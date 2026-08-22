@@ -1,3 +1,4 @@
+import { Converter } from "opencc-js/cn2t";
 import {
   HERITAGE_SITES_PATH,
   HERITAGE_APP_PATH,
@@ -12,17 +13,20 @@ import {
  *
  * 辞書自体は遺産名データ（nameJa / nameEn / nameFr / nameEs / nameZh）が
  * そろっている 5 言語ぶん用意してあるが、独立URLとして実際に静的生成するのは
- * 今のところ ja（既存URL）と en のみ。韓国語・繁体字は遺産名データが無く
+ * 今のところ ja（既存URL）・en・zh-hant（繁体字）のみ。韓国語・仏語・西語は
  * 中身が英語のままの薄いページになるため対象外。
  *
- * 仏語・西語・中国語は HERITAGE_LOCALES / LOCALIZED_SEGMENTS に追加するだけで
- * 独立URL化を再開できる（辞書は既にできているため）。あわせて
- * scripts/heritage-build-locales.mjs の LOCALES と next.config.ts の
- * rewrites の言語コード一覧、public/heritage/app.js の localeSegments にも
- * 同じ言語コードを追加する必要がある。
+ * 仏語・西語は HERITAGE_LOCALES に追加するだけで独立URL化を再開できる
+ * （辞書は既にできているため）。あわせて scripts/heritage-build-locales.mjs の
+ * LOCALES と next.config.ts の rewrites の言語コード一覧、
+ * public/heritage/app.js の localeSegments にも同じ言語コードを追加する必要がある。
+ * さらに src/app 配下に、その言語専用のルートレイアウトグループ（(fr) など）と
+ * 個別ページ・一覧ページの literal フォルダ（heritage/fr/sites/...）を追加する
+ * （(en)・(zh-hant) と同じ構成。<html lang> を静的に出し分けるため、
+ * 共有の動的ルートではなく言語ごとに専用グループを持たせている）。
  */
 
-export type HeritageLocale = "ja" | "en" | "fr" | "es" | "zh";
+export type HeritageLocale = "ja" | "en" | "fr" | "es" | "zh" | "zh-hant";
 
 /** 日本語は既存URL（/heritage/sites/...）を維持するため、URLセグメントを持たない */
 export const DEFAULT_LOCALE: HeritageLocale = "ja";
@@ -35,10 +39,7 @@ export const DEFAULT_LOCALE: HeritageLocale = "ja";
  */
 export const X_DEFAULT_LOCALE: HeritageLocale = "en";
 
-/** URLセグメントを持つ言語（/heritage/en/sites/... の "en" 部分） */
-export const LOCALIZED_SEGMENTS = ["en"] as const;
-
-export const HERITAGE_LOCALES: HeritageLocale[] = ["ja", "en"];
+export const HERITAGE_LOCALES: HeritageLocale[] = ["ja", "en", "zh-hant"];
 
 export function isHeritageLocale(value: string): value is HeritageLocale {
   return (HERITAGE_LOCALES as string[]).includes(value);
@@ -140,7 +141,27 @@ export function fill(template: string, values: Record<string, string | number>):
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
-const DICTS: Record<HeritageLocale, Dict> = {
+/** OpenCC による簡体字→繁体字の文字変換（地域語彙の言い換えは行わない） */
+const toTraditionalChar = Converter({ from: "cn", to: "tw" });
+
+/** Dict の全文字列フィールド（ネストした regions/categories を含む）を繁体字に変換する */
+function convertDictToTraditional(source: Dict): Dict {
+  const result = { ...source };
+  for (const key of Object.keys(result) as (keyof Dict)[]) {
+    const value = result[key];
+    if (typeof value === "string") {
+      (result[key] as string) = toTraditionalChar(value);
+    } else if (value && typeof value === "object") {
+      const converted = Object.fromEntries(
+        Object.entries(value as Record<string, string>).map(([k, v]) => [k, toTraditionalChar(v)])
+      );
+      (result[key] as unknown) = converted;
+    }
+  }
+  return result;
+}
+
+const BASE_DICTS: Record<"ja" | "en" | "fr" | "es" | "zh", Dict> = {
   ja: {
     htmlLang: "ja",
     ogLocale: "ja_JP",
@@ -583,6 +604,23 @@ const DICTS: Record<HeritageLocale, Dict> = {
   },
 };
 
+/**
+ * 繁体字（zh-hant）辞書は、既存の簡体字辞書（zh）を OpenCC で文字変換して作る。
+ * 地域名・言語コードなど繁体字圏（台湾）向けに変えるべき値だけ上書きする。
+ * これにより約60項目を手作業で翻訳せずに、既存の簡体字訳を再利用できる。
+ */
+const ZH_HANT_DICT: Dict = {
+  ...convertDictToTraditional(BASE_DICTS.zh),
+  htmlLang: "zh-Hant",
+  ogLocale: "zh_TW",
+  numberLocale: "zh-TW",
+};
+
+const DICTS: Record<HeritageLocale, Dict> = {
+  ...BASE_DICTS,
+  "zh-hant": ZH_HANT_DICT,
+};
+
 export function dict(locale: HeritageLocale): Dict {
   return DICTS[locale];
 }
@@ -615,6 +653,8 @@ export function localeAppPath(locale: HeritageLocale): string {
 /**
  * hreflang 用の言語別URL一覧。
  * x-default は X_DEFAULT_LOCALE（英語）に向ける。
+ * zh-TW / zh-HK は繁体字版（zh-hant）と同じURLを指すエイリアスとして加える
+ * （台湾・香港からの検索流入を取りこぼさないため。ページ自体は増えない）。
  */
 export function languageAlternates(
   build: (locale: HeritageLocale) => string
@@ -623,6 +663,8 @@ export function languageAlternates(
   for (const locale of HERITAGE_LOCALES) {
     languages[DICTS[locale].htmlLang] = build(locale);
   }
+  languages["zh-TW"] = build("zh-hant");
+  languages["zh-HK"] = build("zh-hant");
   languages["x-default"] = build(X_DEFAULT_LOCALE);
   return languages;
 }
@@ -640,6 +682,8 @@ export function localeName(site: HeritageSite, locale: HeritageLocale): string {
       return site.nameEs || site.nameEn;
     case "zh":
       return site.nameZh || site.nameEn;
+    case "zh-hant":
+      return site.nameZh ? toTraditionalChar(site.nameZh) : site.nameEn;
     default:
       return site.nameEn;
   }
@@ -676,7 +720,7 @@ export function localeCountry(site: HeritageSite, locale: HeritageLocale): strin
     .filter(Boolean);
   const resolved = labels.length ? labels : site.countriesEn;
 
-  const separator = locale === "zh" ? "、" : " / ";
+  const separator = locale === "zh" || locale === "zh-hant" ? "、" : " / ";
   return resolved.join(separator);
 }
 

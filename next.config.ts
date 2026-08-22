@@ -28,16 +28,16 @@ const nextConfig: NextConfig = {
         source: "/heritage/",
         destination: "/heritage/index.html",
       },
-      // 言語別の記録アプリ本体（/heritage/en）。
+      // 言語別の記録アプリ本体（/heritage/en、/heritage/zh-hant）。
       // scripts/heritage-build-locales.mjs が生成した静的HTMLを返す。
       // 個別ページ（/heritage/en/sites/...）と衝突しないよう言語コードを明示列挙する。
-      // 言語を追加する場合はここにも同じコードを足すこと（例: (en|fr)）。
+      // 言語を追加する場合はここにも同じコードを足すこと（例: (en|zh-hant|fr)）。
       {
-        source: "/heritage/:lang(en)",
+        source: "/heritage/:lang(en|zh-hant)",
         destination: "/heritage/:lang/index.html",
       },
       {
-        source: "/heritage/:lang(en)/",
+        source: "/heritage/:lang(en|zh-hant)/",
         destination: "/heritage/:lang/index.html",
       },
     ];

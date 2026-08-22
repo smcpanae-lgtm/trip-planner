@@ -805,7 +805,7 @@ let htmlDecodeElement;
  * 参照するため、state より前で const 初期化を終えておく必要がある
  * （後ろに置くと「Cannot access before initialization」エラーになる）。
  */
-const localeSegments = { en: "en" };
+const localeSegments = { en: "en", "zh-TW": "zh-hant" };
 
 function localeAppPath(language) {
   const segment = localeSegments[language];
@@ -815,7 +815,7 @@ function localeAppPath(language) {
 /** 現在開いているページに対応するアプリのパス（末尾スラッシュを無視して比較する） */
 function currentAppPath() {
   const path = location.pathname.replace(/\/+$/, "") || "/heritage";
-  const match = path.match(/^\/heritage\/(en)$/);
+  const match = path.match(/^\/heritage\/(en|zh-hant)$/);
   return match ? `/heritage/${match[1]}` : "/heritage";
 }
 

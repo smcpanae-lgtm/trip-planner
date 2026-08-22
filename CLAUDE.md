@@ -44,6 +44,18 @@ git push origin master
 - 世界遺産の訪問記録は**ブラウザ内保存のみ**。この仕組みは変更しない。
 - UNESCO公式の説明文・写真・ロゴは使用しない。
 - Vercel無料枠に収まる静的生成を維持する（追加費用ゼロが絶対条件）。
-- 世界遺産の多言語対応：日本語は `/heritage`、英語は `/heritage/en`（独立URL・静的生成）。
-  他5言語はJavaScript内切替のみ。言語追加時は `src/data/heritage-i18n.ts` /
-  `scripts/heritage-build-locales.mjs` / `next.config.ts` / `public/heritage/app.js` の4箇所を更新する。
+- 世界遺産の多言語対応：日本語は `/heritage`、英語は `/heritage/en`、繁体中文は `/heritage/zh-hant`
+  （いずれも独立URL・静的生成、台湾・香港向けに zh-TW/zh-HK の hreflang エイリアスあり）。
+  他4言語（fr/es/zh簡体字/ko等）はJavaScript内切替のみ。
+  独立URLを持つ言語は、SEO用の一覧・個別ページ（`/heritage/{lang}/sites`）を
+  ルートグループ `src/app/(en)/heritage/en/sites/...`・`src/app/(zh-hant)/heritage/zh-hant/sites/...`
+  のように「専用ルートグループ＋リテラルフォルダ」で持つ（`<html lang>` を静的に確定させるため。
+  動的セグメント `[lang]` を `(ja)` 配下に共存させると `<html lang="ja">` のバグを生む）。
+  言語追加時は次の6箇所を更新する：
+  `src/data/heritage-i18n.ts`（`HeritageLocale`型・`HERITAGE_LOCALES`・`DICTS`・`languageAlternates()`）、
+  `scripts/heritage-build-locales.mjs`（`LOCALES`・`HREFLANG`・`HEAD_TEXT`）、
+  `next.config.ts`（rewritesの言語コード列挙）、
+  `public/heritage/app.js`（`localeSegments`・`currentAppPath()`の正規表現）、
+  新しい `src/app/({lang})/layout.tsx` と `src/app/({lang})/heritage/{lang}/sites/...` ページ、
+  `src/components/heritage/LanguageSwitcher.tsx`（`NATIVE_LABELS`）と
+  `src/components/SiteFooter.tsx`（ツール一覧・見出し・コピーライトの分岐）。

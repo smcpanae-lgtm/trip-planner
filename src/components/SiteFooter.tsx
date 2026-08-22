@@ -50,17 +50,39 @@ const TOOLS_EN = [
   },
 ];
 
+// /heritage/zh-hant からのリンク用。TOOLS_EN と同じ考え方で、
+// まだ翻訳していない自社ツールは掲載しない（CTAはEnglish fallbackにする方針のため）。
+const TOOLS_ZH_HANT = [
+  {
+    href: "/",
+    title: "AI 自駕行程規劃",
+    description: "只要輸入出發地與目的地，AI就能自動產生自駕旅行行程。",
+  },
+  {
+    href: "/heritage/zh-hant",
+    title: "世界遺產護照",
+    description: "可將已造訪的世界遺產記錄保存在您自己的瀏覽器內的集章護照。",
+  },
+  {
+    href: "/en/shiori",
+    title: "AI Travel Journal Maker",
+    description: "Turn your photos and notes into a travel journal, free — no app required.",
+  },
+];
+
 export default function SiteFooter({
   locale = "ja",
 }: {
-  locale?: "ja" | "en";
+  locale?: "ja" | "en" | "zh-hant";
 } = {}) {
-  const tools = locale === "en" ? TOOLS_EN : TOOLS_JA;
-  const heading = locale === "en" ? "Related tools" : "関連ツール";
+  const tools = locale === "en" ? TOOLS_EN : locale === "zh-hant" ? TOOLS_ZH_HANT : TOOLS_JA;
+  const heading = locale === "en" ? "Related tools" : locale === "zh-hant" ? "相關工具" : "関連ツール";
   const copyright =
     locale === "en"
       ? `© ${new Date().getFullYear()} AI Drive Planner`
-      : `© ${new Date().getFullYear()} AI ドライブプランナー`;
+      : locale === "zh-hant"
+        ? `© ${new Date().getFullYear()} AI Drive Planner`
+        : `© ${new Date().getFullYear()} AI ドライブプランナー`;
 
   return (
     <footer className="relative z-10 border-t border-slate-200 bg-white">

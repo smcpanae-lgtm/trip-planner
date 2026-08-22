@@ -67,7 +67,7 @@ export const SITE_METADATA: Metadata = {
  * 英語ページで日本語の名前・説明・inLanguage が出るのを避けるため lang 別に持つ。
  * url は英語トップページが存在しないため両言語ともサイトルートを指す。
  */
-const SITE_JSON_LD: Record<"ja" | "en", Record<string, unknown>> = {
+const SITE_JSON_LD: Record<"ja" | "en" | "zh-Hant", Record<string, unknown>> = {
   ja: {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -126,13 +126,42 @@ const SITE_JSON_LD: Record<"ja" | "en", Record<string, unknown>> = {
       name: "AI Drive Planner",
     },
   },
+  "zh-Hant": {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "AI 自駕行程規劃",
+    description:
+      "只要輸入出發地、目的地與時間，AI就能自動產生自駕旅行行程，包含高速公路路線、服務區用餐建議與攜帶寵物出遊資訊。",
+    url: "https://www.ai-drive-planner.com",
+    applicationCategory: "TravelApplication",
+    operatingSystem: "Web",
+    inLanguage: "zh-Hant",
+    isAccessibleForFree: true,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "JPY",
+    },
+    featureList: [
+      "AI自動產生自駕旅行行程",
+      "高速公路路線與交流道資訊",
+      "服務區用餐建議",
+      "攜帶寵物出遊資訊",
+      "Google地圖整合",
+      "支援當日往返至多日行程",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "AI Drive Planner",
+    },
+  },
 };
 
 export default function RootShell({
   lang,
   children,
 }: {
-  lang: "ja" | "en";
+  lang: "ja" | "en" | "zh-Hant";
   children: React.ReactNode;
 }) {
   return (

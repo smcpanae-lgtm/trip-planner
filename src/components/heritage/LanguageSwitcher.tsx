@@ -9,6 +9,7 @@ const NATIVE_LABELS: Record<HeritageLocale, string> = {
   fr: "Français",
   es: "Español",
   zh: "中文",
+  "zh-hant": "繁體中文",
 };
 
 /**
