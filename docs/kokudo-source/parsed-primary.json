@@ -1,0 +1,7754 @@
+[
+ {
+  "no": 1,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "神奈川県",
+   "静岡県",
+   "愛知県",
+   "三重県",
+   "滋賀県",
+   "京都府",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 2,
+  "tableIndex": 0,
+  "fromLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "兵庫県",
+   "岡山県",
+   "広島県",
+   "山口県",
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 3,
+  "tableIndex": 0,
+  "fromLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "佐賀県",
+   "福岡県",
+   "熊本県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 4,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "埼玉県",
+   "茨城県",
+   "栃木県",
+   "福島県",
+   "宮城県",
+   "岩手県",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "青森市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 5,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "札幌市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 6,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "千葉県",
+   "茨城県",
+   "福島県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "仙台市宮城野区"
+  ],
+  "noteRaw": "事実上の終点は宮城県岩沼市（事実上の終点から正式な終点までは国道４号線と重用）。"
+ },
+ {
+  "no": 7,
+  "tableIndex": 0,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "山形県",
+   "秋田県",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "青森市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 8,
+  "tableIndex": 0,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "富山県",
+   "石川県",
+   "福井県",
+   "滋賀県",
+   "京都府"
+  ],
+  "toLines": [
+   "新潟県",
+   "京都市下京区"
+  ],
+  "noteRaw": "事実上の終点は滋賀県栗東市（事実上の終点から正式な終点までは国道１号線と重用）。このため京都府内には単独区間はない。"
+ },
+ {
+  "no": 9,
+  "tableIndex": 0,
+  "fromLines": [
+   "京都府",
+   "京都市下京区"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県",
+   "鳥取県",
+   "島根県",
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "下関市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 10,
+  "tableIndex": 0,
+  "fromLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "大分県",
+   "宮崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "noteRaw": "事実上の起点は福岡県北九州市小倉北区（正式な起点から事実上の起点までは国道３号線と重用）。"
+ },
+ {
+  "no": 11,
+  "tableIndex": 0,
+  "fromLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "香川県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 12,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "札幌市中央区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 13,
+  "tableIndex": 0,
+  "fromLines": [
+   "福島県",
+   "福島市"
+  ],
+  "throughPrefs": [
+   "福島県",
+   "山形県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "秋田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 14,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "千葉県"
+  ],
+  "toLines": [
+   "東京都",
+   "千葉市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 15,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "横浜市神奈川区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 16,
+  "tableIndex": 0,
+  "fromLines": [
+   "神奈川県",
+   "横浜市西区"
+  ],
+  "throughPrefs": [
+   "神奈川県",
+   "東京都",
+   "埼玉県",
+   "千葉県",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "横浜市西区"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 17,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "埼玉県",
+   "群馬県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "noteRaw": "事実上の終点は新潟県長岡市（事実上の終点から正式な終点までは国道８号線と重用）。"
+ },
+ {
+  "no": 18,
+  "tableIndex": 0,
+  "fromLines": [
+   "群馬県",
+   "高崎市"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "長野県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 19,
+  "tableIndex": 0,
+  "fromLines": [
+   "愛知県",
+   "名古屋市熱田区"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "長野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 20,
+  "tableIndex": 0,
+  "fromLines": [
+   "東京都",
+   "中央区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "神奈川県",
+   "山梨県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "塩尻市"
+  ],
+  "noteRaw": "事実上の起点は東京都千代田区（正式な起点から事実上の起点までは国道１号線と重用）。"
+ },
+ {
+  "no": 21,
+  "tableIndex": 0,
+  "fromLines": [
+   "岐阜県",
+   "瑞浪市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "滋賀県"
+  ],
+  "toLines": [
+   "滋賀県",
+   "米原市"
+  ],
+  "noteRaw": "事実上の起点は岐阜県土岐市（正式な起点から事実上の起点までは国道19号線と重用）。"
+ },
+ {
+  "no": 22,
+  "tableIndex": 0,
+  "fromLines": [
+   "愛知県",
+   "名古屋市熱田区"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "noteRaw": "事実上の起点は愛知県名古屋市中区（正式な起点から事実上の起点までは国道19号線と重用）。"
+ },
+ {
+  "no": 23,
+  "tableIndex": 0,
+  "fromLines": [
+   "愛知県",
+   "豊橋市"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "伊勢市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 24,
+  "tableIndex": 0,
+  "fromLines": [
+   "京都府",
+   "京都市下京区"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "奈良県",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "和歌山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 25,
+  "tableIndex": 0,
+  "fromLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "奈良県",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 26,
+  "tableIndex": 0,
+  "fromLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "和歌山市"
+  ],
+  "noteRaw": "事実上の起点は大阪府大阪市浪速区（正式な起点から事実上の起点までは国道25号線と重用）。"
+ },
+ {
+  "no": 27,
+  "tableIndex": 0,
+  "fromLines": [
+   "福井県",
+   "敦賀市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "船井郡京丹波町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 28,
+  "tableIndex": 0,
+  "fromLines": [
+   "兵庫県",
+   "神戸市中央区"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "徳島県"
+  ],
+  "toLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "noteRaw": "事実上の終点は徳島県板野郡松茂町（事実上の終点から正式な終点までは国道11号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 29,
+  "tableIndex": 0,
+  "fromLines": [
+   "兵庫県",
+   "姫路市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "鳥取市"
+  ],
+  "noteRaw": "事実上の起点は兵庫県揖保郡太子町（正式な起点から事実上の起点までは国道２号線と重用）。"
+ },
+ {
+  "no": 30,
+  "tableIndex": 0,
+  "fromLines": [
+   "岡山県",
+   "岡山市北区"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "香川県"
+  ],
+  "toLines": [
+   "香川県",
+   "高松市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 31,
+  "tableIndex": 0,
+  "fromLines": [
+   "広島県",
+   "安芸郡海田町"
+  ],
+  "throughPrefs": [
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "呉市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 32,
+  "tableIndex": 0,
+  "fromLines": [
+   "香川県",
+   "高松市"
+  ],
+  "throughPrefs": [
+   "香川県",
+   "徳島県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "高知市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 33,
+  "tableIndex": 0,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 34,
+  "tableIndex": 0,
+  "fromLines": [
+   "佐賀県",
+   "鳥栖市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 35,
+  "tableIndex": 0,
+  "fromLines": [
+   "佐賀県",
+   "武雄市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 36,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "札幌市中央区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "室蘭市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 37,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "山越郡長万部町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "室蘭市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 38,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "滝川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 39,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "網走市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 40,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "稚内市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 41,
+  "tableIndex": 0,
+  "fromLines": [
+   "愛知県",
+   "名古屋市東区"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "富山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 42,
+  "tableIndex": 0,
+  "fromLines": [
+   "静岡県",
+   "浜松市中央区"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "愛知県",
+   "三重県",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "和歌山市"
+  ],
+  "noteRaw": "事実上の起点は静岡県湖西市（正式な起点から事実上の起点までは国道１号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 43,
+  "tableIndex": 0,
+  "fromLines": [
+   "大阪府",
+   "大阪市西成区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "神戸市灘区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 44,
+  "tableIndex": 0,
+  "fromLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "根室市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 45,
+  "tableIndex": 0,
+  "fromLines": [
+   "宮城県",
+   "仙台市青葉区"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "岩手県",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "青森市"
+  ],
+  "noteRaw": "事実上の終点は青森県十和田市（事実上の終点から正式な終点までは国道４号線と重用）。"
+ },
+ {
+  "no": 46,
+  "tableIndex": 0,
+  "fromLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "秋田市"
+  ],
+  "noteRaw": "事実上の終点は秋田県大仙市（事実上の終点から正式な終点までは国道13号線と重用）。"
+ },
+ {
+  "no": 47,
+  "tableIndex": 0,
+  "fromLines": [
+   "宮城県",
+   "仙台市宮城野区"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "酒田市"
+  ],
+  "noteRaw": "事実上の起点は宮城県大崎市（正式な起点から事実上の起点までは国道４号線と重用）。"
+ },
+ {
+  "no": 48,
+  "tableIndex": 0,
+  "fromLines": [
+   "宮城県",
+   "仙台市青葉区"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "山形市"
+  ],
+  "noteRaw": "事実上の終点は山形県天童市（事実上の終点から正式な終点までは国道13号線と重用）。"
+ },
+ {
+  "no": 49,
+  "tableIndex": 0,
+  "fromLines": [
+   "福島県",
+   "いわき市"
+  ],
+  "throughPrefs": [
+   "福島県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 50,
+  "tableIndex": 0,
+  "fromLines": [
+   "群馬県",
+   "前橋市"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "栃木県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 51,
+  "tableIndex": 0,
+  "fromLines": [
+   "千葉県",
+   "千葉市中央区"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 52,
+  "tableIndex": 0,
+  "fromLines": [
+   "静岡県",
+   "静岡市清水区"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "甲府市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 53,
+  "tableIndex": 0,
+  "fromLines": [
+   "岡山県",
+   "岡山市北区"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "鳥取市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 54,
+  "tableIndex": 0,
+  "fromLines": [
+   "広島県",
+   "広島市中区"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "松江市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 55,
+  "tableIndex": 0,
+  "fromLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "高知市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 56,
+  "tableIndex": 0,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 57,
+  "tableIndex": 0,
+  "fromLines": [
+   "大分県",
+   "大分市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "熊本県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "noteRaw": "事実上の起点は大分県豊後大野市（正式な起点から事実上の起点までは国道10号線と重用）。 事実上の終点は長崎県諫早市（事実上の終点から正式な終点までは国道34号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 58,
+  "tableIndex": 0,
+  "fromLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "throughPrefs": [
+   "鹿児島県",
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 101,
+  "tableIndex": 1,
+  "fromLines": [
+   "青森県",
+   "青森市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "秋田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 102,
+  "tableIndex": 1,
+  "fromLines": [
+   "青森県",
+   "弘前市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "秋田県"
+  ],
+  "toLines": [
+   "青森県",
+   "十和田市"
+  ],
+  "noteRaw": "秋田県を経由する箇所（この辺り）は道路の南半分だけであり、完全に青森・秋田県境を越えていない。そのせいか正式には秋田県を経由する路線とは見なされていない。"
+ },
+ {
+  "no": 103,
+  "tableIndex": 1,
+  "fromLines": [
+   "青森県",
+   "青森市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "大館市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 104,
+  "tableIndex": 1,
+  "fromLines": [
+   "青森県",
+   "八戸市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "大館市"
+  ],
+  "noteRaw": "事実上の終点は秋田県鹿角市（事実上の終点から正式な終点までは国道103号線と重用）。"
+ },
+ {
+  "no": 105,
+  "tableIndex": 1,
+  "fromLines": [
+   "秋田県",
+   "由利本荘市"
+  ],
+  "throughPrefs": [
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "北秋田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 106,
+  "tableIndex": 1,
+  "fromLines": [
+   "岩手県",
+   "宮古市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 107,
+  "tableIndex": 1,
+  "fromLines": [
+   "岩手県",
+   "大船渡市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "由利本荘市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 108,
+  "tableIndex": 1,
+  "fromLines": [
+   "宮城県",
+   "石巻市"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "由利本荘市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 112,
+  "tableIndex": 1,
+  "fromLines": [
+   "山形県",
+   "山形市"
+  ],
+  "throughPrefs": [
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "酒田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 113,
+  "tableIndex": 1,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "山形県",
+   "宮城県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "相馬市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 114,
+  "tableIndex": 1,
+  "fromLines": [
+   "福島県",
+   "福島市"
+  ],
+  "throughPrefs": [
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "相馬郡浪江町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 115,
+  "tableIndex": 1,
+  "fromLines": [
+   "福島県",
+   "相馬市"
+  ],
+  "throughPrefs": [
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "耶麻郡猪苗代町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 116,
+  "tableIndex": 1,
+  "fromLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 117,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "長野市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "小千谷市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 118,
+  "tableIndex": 1,
+  "fromLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "throughPrefs": [
+   "茨城県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "会津若松市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 119,
+  "tableIndex": 1,
+  "fromLines": [
+   "栃木県",
+   "日光市"
+  ],
+  "throughPrefs": [
+   "栃木県"
+  ],
+  "toLines": [
+   "栃木県",
+   "宇都宮市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 120,
+  "tableIndex": 1,
+  "fromLines": [
+   "栃木県",
+   "日光市"
+  ],
+  "throughPrefs": [
+   "栃木県",
+   "群馬県"
+  ],
+  "toLines": [
+   "群馬県",
+   "沼田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 121,
+  "tableIndex": 1,
+  "fromLines": [
+   "山形県",
+   "米沢市"
+  ],
+  "throughPrefs": [
+   "山形県",
+   "福島県",
+   "栃木県"
+  ],
+  "toLines": [
+   "栃木県",
+   "芳賀郡益子町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 122,
+  "tableIndex": 1,
+  "fromLines": [
+   "栃木県",
+   "日光市"
+  ],
+  "throughPrefs": [
+   "栃木県",
+   "群馬県",
+   "埼玉県",
+   "東京都"
+  ],
+  "toLines": [
+   "東京都",
+   "豊島区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 123,
+  "tableIndex": 1,
+  "fromLines": [
+   "栃木県",
+   "宇都宮市"
+  ],
+  "throughPrefs": [
+   "栃木県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 124,
+  "tableIndex": 1,
+  "fromLines": [
+   "千葉県",
+   "銚子市"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "noteRaw": "事実上の終点は茨城県鹿嶋市（事実上の終点から正式な終点までは国道51号線と重用）。"
+ },
+ {
+  "no": 125,
+  "tableIndex": 1,
+  "fromLines": [
+   "千葉県",
+   "香取市"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県",
+   "埼玉県"
+  ],
+  "toLines": [
+   "埼玉県",
+   "熊谷市"
+  ],
+  "noteRaw": "事実上の起点は茨城県稲敷市（正式な起点から事実上の起点までは国道51号線と重用）。このため千葉県内には単独区間は存在しない。"
+ },
+ {
+  "no": 126,
+  "tableIndex": 1,
+  "fromLines": [
+   "千葉県",
+   "銚子市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "千葉市稲毛区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 127,
+  "tableIndex": 1,
+  "fromLines": [
+   "千葉県",
+   "館山市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "木更津市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 128,
+  "tableIndex": 1,
+  "fromLines": [
+   "千葉県",
+   "館山市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "千葉市中央区"
+  ],
+  "noteRaw": "事実上の終点は千葉県東金市（事実上の終点から正式な終点までは国道126号線と重用）。"
+ },
+ {
+  "no": 129,
+  "tableIndex": 1,
+  "fromLines": [
+   "神奈川県",
+   "平塚市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "相模原市緑区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 130,
+  "tableIndex": 1,
+  "fromLines": [
+   "東京都",
+   "港区"
+  ],
+  "throughPrefs": [
+   "東京都"
+  ],
+  "toLines": [
+   "東京都",
+   "港区"
+  ],
+  "noteRaw": "東京港と国道15号線を結ぶ路線。"
+ },
+ {
+  "no": 131,
+  "tableIndex": 1,
+  "fromLines": [
+   "東京都",
+   "大田区"
+  ],
+  "throughPrefs": [
+   "東京都"
+  ],
+  "toLines": [
+   "東京都",
+   "大田区"
+  ],
+  "noteRaw": "東京国際空港と国道15号線を結ぶ路線。"
+ },
+ {
+  "no": 132,
+  "tableIndex": 1,
+  "fromLines": [
+   "神奈川県",
+   "川崎市川崎区"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "川崎市川崎区"
+  ],
+  "noteRaw": "川崎港と国道15号線を結ぶ路線。"
+ },
+ {
+  "no": 133,
+  "tableIndex": 1,
+  "fromLines": [
+   "神奈川県",
+   "横浜市中区"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "横浜市中区"
+  ],
+  "noteRaw": "横浜港と国道16号線を結ぶ路線。"
+ },
+ {
+  "no": 134,
+  "tableIndex": 1,
+  "fromLines": [
+   "神奈川県",
+   "横須賀市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "中郡大磯町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 135,
+  "tableIndex": 1,
+  "fromLines": [
+   "静岡県",
+   "下田市"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "小田原市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 136,
+  "tableIndex": 1,
+  "fromLines": [
+   "静岡県",
+   "下田市"
+  ],
+  "throughPrefs": [
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "三島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 137,
+  "tableIndex": 1,
+  "fromLines": [
+   "山梨県",
+   "富士吉田市"
+  ],
+  "throughPrefs": [
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "笛吹市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 138,
+  "tableIndex": 1,
+  "fromLines": [
+   "山梨県",
+   "富士吉田市"
+  ],
+  "throughPrefs": [
+   "山梨県",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "小田原市"
+  ],
+  "noteRaw": "事実上の終点は神奈川県足柄下郡箱根町（事実上の終点から正式な終点までは国道１号線と重用）。"
+ },
+ {
+  "no": 139,
+  "tableIndex": 1,
+  "fromLines": [
+   "静岡県",
+   "富士市"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "山梨県",
+   "東京都"
+  ],
+  "toLines": [
+   "東京都",
+   "西多摩郡奥多摩町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 140,
+  "tableIndex": 1,
+  "fromLines": [
+   "埼玉県",
+   "熊谷市"
+  ],
+  "throughPrefs": [
+   "埼玉県",
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "南巨摩郡富士川町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 141,
+  "tableIndex": 1,
+  "fromLines": [
+   "山梨県",
+   "韮崎市"
+  ],
+  "throughPrefs": [
+   "山梨県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "上田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 142,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "北佐久郡軽井沢町"
+  ],
+  "throughPrefs": [
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "諏訪郡下諏訪町"
+  ],
+  "noteRaw": "事実上の起点は長野県佐久市（正式な起点から事実上の起点までは国道18号線→国道141号線と重用）。"
+ },
+ {
+  "no": 143,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "松本市"
+  ],
+  "throughPrefs": [
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "上田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 144,
+  "tableIndex": 1,
+  "fromLines": [
+   "群馬県",
+   "吾妻郡長野原町"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "上田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 145,
+  "tableIndex": 1,
+  "fromLines": [
+   "群馬県",
+   "吾妻郡長野原町"
+  ],
+  "throughPrefs": [
+   "群馬県"
+  ],
+  "toLines": [
+   "群馬県",
+   "沼田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 146,
+  "tableIndex": 1,
+  "fromLines": [
+   "群馬県",
+   "吾妻郡長野原町"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "北佐久郡軽井沢町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 147,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "大町市"
+  ],
+  "throughPrefs": [
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "松本市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 148,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "大町市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "糸魚川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 149,
+  "tableIndex": 1,
+  "fromLines": [
+   "静岡県",
+   "静岡市清水区"
+  ],
+  "throughPrefs": [
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "静岡市清水区"
+  ],
+  "noteRaw": "清水港と国道１号線を結ぶ路線。"
+ },
+ {
+  "no": 150,
+  "tableIndex": 1,
+  "fromLines": [
+   "静岡県",
+   "静岡市清水区"
+  ],
+  "throughPrefs": [
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "浜松市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 151,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "飯田市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "豊橋市"
+  ],
+  "noteRaw": "事実上の終点は愛知県豊川市（事実上の終点から正式な終点までは国道１号線と重用）。"
+ },
+ {
+  "no": 152,
+  "tableIndex": 1,
+  "fromLines": [
+   "長野県",
+   "上田市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "浜松市中央区"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 153,
+  "tableIndex": 1,
+  "fromLines": [
+   "愛知県",
+   "名古屋市東区"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "塩尻市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 154,
+  "tableIndex": 1,
+  "fromLines": [
+   "愛知県",
+   "名古屋市港区"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "名古屋市熱田区"
+  ],
+  "noteRaw": "名古屋港と国道１号線を結ぶ路線。"
+ },
+ {
+  "no": 155,
+  "tableIndex": 1,
+  "fromLines": [
+   "愛知県",
+   "常滑市"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "弥富市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 156,
+  "tableIndex": 1,
+  "fromLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "高岡市"
+  ],
+  "noteRaw": "事実上の起点は岐阜県羽島郡岐南町（正式な起点から事実上の起点までは国道21号線と重用）。"
+ },
+ {
+  "no": 157,
+  "tableIndex": 1,
+  "fromLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "福井県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 158,
+  "tableIndex": 1,
+  "fromLines": [
+   "福井県",
+   "福井市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "岐阜県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "松本市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 159,
+  "tableIndex": 1,
+  "fromLines": [
+   "石川県",
+   "七尾市"
+  ],
+  "throughPrefs": [
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 160,
+  "tableIndex": 1,
+  "fromLines": [
+   "石川県",
+   "七尾市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "高岡市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 161,
+  "tableIndex": 1,
+  "fromLines": [
+   "福井県",
+   "敦賀市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "滋賀県"
+  ],
+  "toLines": [
+   "滋賀県",
+   "大津市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 162,
+  "tableIndex": 1,
+  "fromLines": [
+   "京都府",
+   "京都市右京区"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "敦賀市"
+  ],
+  "noteRaw": "事実上の終点は福井県三方上中郡若狭町（事実上の終点から正式な終点までは国道27号線と重用）。"
+ },
+ {
+  "no": 163,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "奈良県",
+   "京都府",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "津市"
+  ],
+  "noteRaw": "事実上の起点は大阪府大阪市旭区（正式な起点から事実上の起点までは国道１号線と重用）。"
+ },
+ {
+  "no": 164,
+  "tableIndex": 1,
+  "fromLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "throughPrefs": [
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "noteRaw": "四日市港と国道１号線を結ぶ路線。"
+ },
+ {
+  "no": 165,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "奈良県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県津市"
+  ],
+  "noteRaw": "事実上の起点は大阪府柏原市（正式な起点から事実上の起点までは国道25号線と重用）。"
+ },
+ {
+  "no": 166,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "羽曳野市"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "奈良県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "松阪市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 167,
+  "tableIndex": 1,
+  "fromLines": [
+   "三重県",
+   "志摩市"
+  ],
+  "throughPrefs": [
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "伊勢市"
+  ],
+  "noteRaw": "事実上の終点は三重県鳥羽市（事実上の終点から正式な終点までは国道42号線と重用）。"
+ },
+ {
+  "no": 168,
+  "tableIndex": 1,
+  "fromLines": [
+   "和歌山県",
+   "新宮市"
+  ],
+  "throughPrefs": [
+   "和歌山県",
+   "奈良県",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "枚方市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 169,
+  "tableIndex": 1,
+  "fromLines": [
+   "奈良県",
+   "奈良市"
+  ],
+  "throughPrefs": [
+   "奈良県",
+   "三重県",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "新宮市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 170,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "高槻市"
+  ],
+  "throughPrefs": [
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "泉佐野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 171,
+  "tableIndex": 1,
+  "fromLines": [
+   "京都府",
+   "京都市南区"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "大阪府",
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "神戸市中央区"
+  ],
+  "noteRaw": "事実上の終点は兵庫県西宮市（事実上の終点から正式な終点までは国道２号線と重用）。"
+ },
+ {
+  "no": 172,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "大阪市港区"
+  ],
+  "throughPrefs": [
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市中央区"
+  ],
+  "noteRaw": "大阪港と国道25号線（国道26号線・国道165号線重用）を結ぶ路線。"
+ },
+ {
+  "no": 173,
+  "tableIndex": 1,
+  "fromLines": [
+   "大阪府",
+   "池田市"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "兵庫県",
+   "京都府"
+  ],
+  "toLines": [
+   "兵庫県",
+   "綾部市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 174,
+  "tableIndex": 1,
+  "fromLines": [
+   "兵庫県",
+   "神戸市中央区"
+  ],
+  "throughPrefs": [
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "神戸市中央区"
+  ],
+  "noteRaw": "神戸港と国道２号線を結ぶ路線。日本最短の国道路線として知られている。"
+ },
+ {
+  "no": 175,
+  "tableIndex": 1,
+  "fromLines": [
+   "兵庫県",
+   "明石市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "舞鶴市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 176,
+  "tableIndex": 1,
+  "fromLines": [
+   "京都府",
+   "宮津市"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 177,
+  "tableIndex": 1,
+  "fromLines": [
+   "京都府",
+   "舞鶴市"
+  ],
+  "throughPrefs": [
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "舞鶴市"
+  ],
+  "noteRaw": "舞鶴港と国道27号線及び国道175号線（国道178号線重用）を結ぶ路線。"
+ },
+ {
+  "no": 178,
+  "tableIndex": 1,
+  "fromLines": [
+   "京都府",
+   "舞鶴市"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "岩美郡岩美町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 179,
+  "tableIndex": 1,
+  "fromLines": [
+   "兵庫県",
+   "姫路市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "岡山県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "東伯郡湯梨浜町"
+  ],
+  "noteRaw": "事実上の起点は兵庫県揖保郡太子町（正式な起点から事実上の起点までは国道２号線と重用）。"
+ },
+ {
+  "no": 180,
+  "tableIndex": 1,
+  "fromLines": [
+   "岡山県",
+   "岡山市北区"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "鳥取県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "松江市"
+  ],
+  "noteRaw": "事実上の終点は鳥取県米子市（事実上の終点から正式な終点までは国道９号線と重用）。このため島根県内には単独区間は存在しない。"
+ },
+ {
+  "no": 181,
+  "tableIndex": 1,
+  "fromLines": [
+   "岡山県",
+   "津山市"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "米子市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 182,
+  "tableIndex": 1,
+  "fromLines": [
+   "岡山県",
+   "新見市"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "福山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 183,
+  "tableIndex": 1,
+  "fromLines": [
+   "広島県",
+   "広島市中区"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "米子市"
+  ],
+  "noteRaw": "事実上の終点は鳥取県日野郡日野町（事実上の終点から正式な終点までは国道180号線→国道181号線と重用）。"
+ },
+ {
+  "no": 184,
+  "tableIndex": 1,
+  "fromLines": [
+   "島根県",
+   "出雲市"
+  ],
+  "throughPrefs": [
+   "島根県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "尾道市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 185,
+  "tableIndex": 1,
+  "fromLines": [
+   "広島県",
+   "呉市"
+  ],
+  "throughPrefs": [
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "三原市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 186,
+  "tableIndex": 1,
+  "fromLines": [
+   "島根県",
+   "江津市"
+  ],
+  "throughPrefs": [
+   "島根県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "大竹市"
+  ],
+  "noteRaw": "事実上の起点は島根県浜田市（正式な起点から事実上の起点までは国道９号線と重用）。"
+ },
+ {
+  "no": 187,
+  "tableIndex": 1,
+  "fromLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "throughPrefs": [
+   "山口県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "益田市"
+  ],
+  "noteRaw": "事実上の終点は島根県鹿足郡津和野町（事実上の終点から正式な終点までは国道９号線と重用）。"
+ },
+ {
+  "no": 188,
+  "tableIndex": 1,
+  "fromLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "下松市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 189,
+  "tableIndex": 1,
+  "fromLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "noteRaw": "岩国航空基地と国道２号線を結ぶ路線。"
+ },
+ {
+  "no": 190,
+  "tableIndex": 1,
+  "fromLines": [
+   "山口県",
+   "山口市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "下関市"
+  ],
+  "noteRaw": "一般国道の路線を指定する政令では終点は山口県山陽小野田市となっているため正式には山陽小野田市・下関市境（この辺り）が終点となっている（終点から国道２号線〔国道９号線重用〕現道との合流点〔場所はこちら〕までは国道２号線〔国道９号線重用〕になっている。なおこの区間は現道と区別するため以後は国道２号線〔国道９号線重用〕王喜旧道と称するものとする）。しかし下関市中心部・門司方面から国道２号線（国道９号線重用）を進んできた場合、国道２号線（国道９号線重用）現道と国道２号線（国道９号線重用）王喜旧道との分岐点（場所はこちら）の手前にある案内標識は全て国道２号線（国道９号線重用）王喜旧道を国道190号線であると案内していることなどから本サイトでは山口県下関市を終点としている。"
+ },
+ {
+  "no": 191,
+  "tableIndex": 1,
+  "fromLines": [
+   "山口県",
+   "下関市"
+  ],
+  "throughPrefs": [
+   "山口県",
+   "島根県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "広島市中区"
+  ],
+  "noteRaw": "事実上の終点は広島県広島市安佐北区（事実上の終点から正式な終点までは国道183号線→国道54号線と重用）。"
+ },
+ {
+  "no": 192,
+  "tableIndex": 1,
+  "fromLines": [
+   "愛媛県",
+   "西条市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "徳島県"
+  ],
+  "toLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "noteRaw": "事実上の起点は愛媛県四国中央市（正式な起点から事実上の起点までは国道11号線と重用）。"
+ },
+ {
+  "no": 193,
+  "tableIndex": 1,
+  "fromLines": [
+   "香川県",
+   "高松市"
+  ],
+  "throughPrefs": [
+   "香川県",
+   "徳島県"
+  ],
+  "toLines": [
+   "徳島県",
+   "海部郡海陽町"
+  ],
+  "noteRaw": "区域未決定区間あり（その部分は徳島県道253号山川・海南線になっている）。"
+ },
+ {
+  "no": 194,
+  "tableIndex": 1,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "西条市"
+  ],
+  "noteRaw": "事実上の起点は高知県吾川郡いの町（正式な起点から事実上の起点までは国道33号線と重用）。"
+ },
+ {
+  "no": 195,
+  "tableIndex": 1,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "徳島県"
+  ],
+  "toLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "noteRaw": "事実上の終点は徳島県阿南市（事実上の終点から正式な終点までは国道55号線と重用）。"
+ },
+ {
+  "no": 196,
+  "tableIndex": 1,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "西条市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 197,
+  "tableIndex": 1,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県",
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "大分市"
+  ],
+  "noteRaw": "事実上の起点は高知県須崎市（正式な起点から事実上の起点までは国道32号線→国道56号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 198,
+  "tableIndex": 1,
+  "fromLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "noteRaw": "門司港と国道３号線（国道10号線重用）を結ぶ路線。"
+ },
+ {
+  "no": 199,
+  "tableIndex": 1,
+  "fromLines": [
+   "福岡県",
+   "北九州市門司区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "北九州市八幡西区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 200,
+  "tableIndex": 1,
+  "fromLines": [
+   "福岡県",
+   "北九州市八幡西区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "筑紫野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 201,
+  "tableIndex": 2,
+  "fromLines": [
+   "福岡県",
+   "福岡市東区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "京都郡苅田町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 202,
+  "tableIndex": 2,
+  "fromLines": [
+   "福岡県",
+   "福岡市博多区"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 203,
+  "tableIndex": 2,
+  "fromLines": [
+   "佐賀県",
+   "唐津市"
+  ],
+  "throughPrefs": [
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "noteRaw": "事実上の終点は佐賀県小城市（事実上の終点から正式な終点までは国道34号線と重用）。"
+ },
+ {
+  "no": 204,
+  "tableIndex": 2,
+  "fromLines": [
+   "佐賀県",
+   "唐津市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 205,
+  "tableIndex": 2,
+  "fromLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "throughPrefs": [
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "東彼杵郡東彼杵町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 206,
+  "tableIndex": 2,
+  "fromLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "throughPrefs": [
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "noteRaw": "事実上の終点は長崎県西海市（事実上の終点から正式な終点までは国道202号線と重用）。"
+ },
+ {
+  "no": 207,
+  "tableIndex": 2,
+  "fromLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "西彼杵郡時津町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 208,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "熊本市中央区"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "福岡県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "noteRaw": "事実上の起点は熊本県熊本市北区（正式な起点から事実上の起点までは国道３号線と重用）。"
+ },
+ {
+  "no": 209,
+  "tableIndex": 2,
+  "fromLines": [
+   "福岡県",
+   "大牟田市"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "久留米市"
+  ],
+  "noteRaw": "事実上の起点は福岡県みやま市（正式な起点から事実上の起点までは国道208号線と重用）。"
+ },
+ {
+  "no": 210,
+  "tableIndex": 2,
+  "fromLines": [
+   "福岡県",
+   "久留米市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "大分市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 211,
+  "tableIndex": 2,
+  "fromLines": [
+   "大分県",
+   "日田市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "北九州市八幡西区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 212,
+  "tableIndex": 2,
+  "fromLines": [
+   "大分県",
+   "中津市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "阿蘇市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 213,
+  "tableIndex": 2,
+  "fromLines": [
+   "大分県",
+   "別府市"
+  ],
+  "throughPrefs": [
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "中津市"
+  ],
+  "noteRaw": "事実上の起点は大分県速見郡日出町（正式な起点から事実上の起点までは国道10号線と重用）。"
+ },
+ {
+  "no": 217,
+  "tableIndex": 2,
+  "fromLines": [
+   "大分県",
+   "大分市"
+  ],
+  "throughPrefs": [
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "佐伯市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 218,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "熊本市中央区"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "延岡市"
+  ],
+  "noteRaw": "事実上の起点は熊本県宇城市（正式な起点から事実上の起点までは国道３号線と重用）。"
+ },
+ {
+  "no": 219,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "熊本市中央区"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "宮崎市"
+  ],
+  "noteRaw": "事実上の起点は熊本県八代市（正式な起点から事実上の起点までは国道３号線と重用）。"
+ },
+ {
+  "no": 220,
+  "tableIndex": 2,
+  "fromLines": [
+   "宮崎県",
+   "宮崎市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "霧島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 221,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "人吉市"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "都城市"
+  ],
+  "noteRaw": "事実上の起点は熊本県球磨郡錦町（正式な起点から事実上の起点までは国道219号線と重用）。"
+ },
+ {
+  "no": 222,
+  "tableIndex": 2,
+  "fromLines": [
+   "宮崎県",
+   "日南市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "都城市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 223,
+  "tableIndex": 2,
+  "fromLines": [
+   "宮崎県",
+   "小林市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "霧島市"
+  ],
+  "noteRaw": "事実上の起点は宮崎県西諸県郡高原町（正式な起点から事実上の起点までは国道221号線と重用）。"
+ },
+ {
+  "no": 224,
+  "tableIndex": 2,
+  "fromLines": [
+   "鹿児島県",
+   "垂水市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 225,
+  "tableIndex": 2,
+  "fromLines": [
+   "鹿児島県",
+   "枕崎市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 226,
+  "tableIndex": 2,
+  "fromLines": [
+   "鹿児島県",
+   "南さつま市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 227,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "檜山郡江差町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 228,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "檜山郡江差町"
+  ],
+  "noteRaw": "事実上の起点は北海道北斗市（正式な起点から事実上の起点までは国道227号線と重用）。"
+ },
+ {
+  "no": 229,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "小樽市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "檜山郡江差町"
+  ],
+  "noteRaw": "事実上の起点は北海道余市郡余市町（正式な起点から事実上の起点までは国道５号線と重用）。"
+ },
+ {
+  "no": 230,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "札幌市中央区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "久遠郡せたな町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 231,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "札幌市北区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "留萌市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 232,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "稚内市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "留萌市"
+  ],
+  "noteRaw": "事実上の起点は北海道天塩郡天塩町（正式な起点から事実上の起点までは国道40号線と重用）。"
+ },
+ {
+  "no": 233,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "留萌市"
+  ],
+  "noteRaw": "事実上の起点は北海道深川市（正式な起点から事実上の起点までは国道12号線と重用）。"
+ },
+ {
+  "no": 234,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "岩見沢市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "苫小牧市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 235,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "室蘭市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "浦河郡浦河町"
+  ],
+  "noteRaw": "事実上の起点は北海道苫小牧市（正式な起点から事実上の起点までは国道36号線と重用）。"
+ },
+ {
+  "no": 236,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "帯広市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "浦河郡浦河町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 237,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "浦河郡浦河町"
+  ],
+  "noteRaw": "事実上の終点は北海道沙流郡日高町（事実上の終点から正式な終点までは国道235号線と重用）。"
+ },
+ {
+  "no": 238,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "網走市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "稚内市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 239,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "網走市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "留萌市"
+  ],
+  "noteRaw": "事実上の起点は北海道紋別郡興部町（正式な起点から事実上の起点までは国道238号線と重用）。 事実上の終点は北海道苫前郡苫前町（事実上の終点から正式な終点までは国道232号線と重用）。"
+ },
+ {
+  "no": 240,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "網走市"
+  ],
+  "noteRaw": "事実上の終点は北海道網走郡美幌町（事実上の終点から正式な終点までは国道39号線と重用）。"
+ },
+ {
+  "no": 241,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "川上郡弟子屈町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "帯広市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 242,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "網走市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "帯広市"
+  ],
+  "noteRaw": "事実上の起点は北海道紋別郡湧別町（正式な起点から事実上の起点までは国道39号線→国道238号線と重用）。 事実上の終点は北海道中川郡幕別町（事実上の終点から正式な終点までは国道38号線と重用）。"
+ },
+ {
+  "no": 243,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "網走市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "根室市"
+  ],
+  "noteRaw": "事実上の起点は北海道網走郡美幌町（正式な起点から事実上の起点までは国道39号線→国道240号線と重用）。"
+ },
+ {
+  "no": 244,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "網走市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "根室市"
+  ],
+  "noteRaw": "事実上の終点は北海道野付郡別海町（事実上の終点から正式な終点までは国道243号線と重用）。"
+ },
+ {
+  "no": 245,
+  "tableIndex": 2,
+  "fromLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "throughPrefs": [
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "日立市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 246,
+  "tableIndex": 2,
+  "fromLines": [
+   "東京都",
+   "千代田区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "神奈川県",
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "沼津市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 247,
+  "tableIndex": 2,
+  "fromLines": [
+   "愛知県",
+   "名古屋市熱田区"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "豊橋市"
+  ],
+  "noteRaw": "事実上の終点は愛知県豊川市（事実上の終点から正式な終点までは国道１号線と重用）。"
+ },
+ {
+  "no": 248,
+  "tableIndex": 2,
+  "fromLines": [
+   "愛知県",
+   "蒲郡市"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "noteRaw": "事実上の起点は愛知県額田郡幸田町（正式な起点から事実上の起点までは国道23号線と重用）。"
+ },
+ {
+  "no": 249,
+  "tableIndex": 2,
+  "fromLines": [
+   "石川県",
+   "七尾市"
+  ],
+  "throughPrefs": [
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "noteRaw": "事実上の終点は石川県羽咋郡宝達志水町（事実上の終点から正式な終点までは国道159号線と重用）。"
+ },
+ {
+  "no": 250,
+  "tableIndex": 2,
+  "fromLines": [
+   "兵庫県",
+   "神戸市長田区"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "岡山県"
+  ],
+  "toLines": [
+   "岡山県",
+   "岡山市北区"
+  ],
+  "noteRaw": "事実上の起点は兵庫県明石市（正式な起点から事実上の起点までは国道２号線と重用）。"
+ },
+ {
+  "no": 251,
+  "tableIndex": 2,
+  "fromLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "throughPrefs": [
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "諫早市"
+  ],
+  "noteRaw": "事実上の終点は長崎県雲仙市（事実上の終点から正式な終点までは国道57号線と重用）。"
+ },
+ {
+  "no": 252,
+  "tableIndex": 2,
+  "fromLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "会津若松市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 253,
+  "tableIndex": 2,
+  "fromLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "南魚沼市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 254,
+  "tableIndex": 2,
+  "fromLines": [
+   "東京都",
+   "文京区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "埼玉県",
+   "群馬県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "松本市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 255,
+  "tableIndex": 2,
+  "fromLines": [
+   "神奈川県",
+   "秦野市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "小田原市"
+  ],
+  "noteRaw": "事実上の起点は神奈川県足柄上郡松田町（正式な起点から事実上の起点までは国道246号線と重用）。"
+ },
+ {
+  "no": 256,
+  "tableIndex": 2,
+  "fromLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "飯田市"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 257,
+  "tableIndex": 2,
+  "fromLines": [
+   "静岡県",
+   "浜松市中央区"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "愛知県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "高山市"
+  ],
+  "noteRaw": "通行不能区間あり（解消計画あり）。"
+ },
+ {
+  "no": 258,
+  "tableIndex": 2,
+  "fromLines": [
+   "岐阜県",
+   "大垣市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "桑名市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 259,
+  "tableIndex": 2,
+  "fromLines": [
+   "三重県",
+   "鳥羽市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "豊橋市"
+  ],
+  "noteRaw": "事実上の起点は愛知県田原市（正式な起点から事実上の起点までは国道42号線と重用）。このため三重県内には単独区間は存在しない。 海上寸断区間あり。"
+ },
+ {
+  "no": 260,
+  "tableIndex": 2,
+  "fromLines": [
+   "三重県",
+   "志摩市"
+  ],
+  "throughPrefs": [
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "北牟婁郡紀北町"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 261,
+  "tableIndex": 2,
+  "fromLines": [
+   "広島県",
+   "広島市中区"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "江津市"
+  ],
+  "noteRaw": "事実上の起点は広島県広島市安佐北区（正式な起点から事実上の起点までは国道54号線→国道183号線→国道54号線→国道183号線→国道191号線と重用）。"
+ },
+ {
+  "no": 262,
+  "tableIndex": 2,
+  "fromLines": [
+   "山口県",
+   "萩市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "防府市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 263,
+  "tableIndex": 2,
+  "fromLines": [
+   "福岡県",
+   "福岡市城南区"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 264,
+  "tableIndex": 2,
+  "fromLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "久留米市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 265,
+  "tableIndex": 2,
+  "fromLines": [
+   "宮崎県",
+   "小林市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "阿蘇市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 266,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "天草市"
+  ],
+  "throughPrefs": [
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "熊本市中央区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 267,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "人吉市"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "薩摩川内市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 268,
+  "tableIndex": 2,
+  "fromLines": [
+   "熊本県",
+   "水俣市"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "鹿児島県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "宮崎市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 269,
+  "tableIndex": 2,
+  "fromLines": [
+   "鹿児島県",
+   "指宿市"
+  ],
+  "throughPrefs": [
+   "鹿児島県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "宮崎市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 270,
+  "tableIndex": 2,
+  "fromLines": [
+   "鹿児島県",
+   "枕崎市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "いちき串木野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 271,
+  "tableIndex": 2,
+  "fromLines": [
+   "神奈川県",
+   "小田原市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "厚木市"
+  ],
+  "noteRaw": "全区間がＥ85小田原・厚木道路になっている。"
+ },
+ {
+  "no": 272,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "標津郡標津町"
+  ],
+  "noteRaw": "事実上の起点は北海道釧路郡釧路町（正式な起点から事実上の起点までは国道38号線→国道44号線と重用）。"
+ },
+ {
+  "no": 273,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "帯広市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "紋別市"
+  ],
+  "noteRaw": "事実上の起点は北海道河東郡上士幌町（正式な起点から事実上の起点までは国道241号線と重用）。"
+ },
+ {
+  "no": 274,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "札幌市東区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "川上郡標茶町"
+  ],
+  "noteRaw": "未開通区間あり。"
+ },
+ {
+  "no": 275,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "札幌市中央区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "枝幸郡浜頓別町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 276,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "檜山郡江差町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "苫小牧市"
+  ],
+  "noteRaw": "事実上の起点は北海道岩内郡岩内町（正式な起点から事実上の起点までは国道229号線と重用）。"
+ },
+ {
+  "no": 277,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "檜山郡江差町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "二海郡八雲町"
+  ],
+  "noteRaw": "事実上の起点は北海道二海郡八雲町（正式な起点から事実上の起点までは国道229号線と重用）。"
+ },
+ {
+  "no": 278,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "茅部郡森町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 279,
+  "tableIndex": 2,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "上北郡野辺地町"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 280,
+  "tableIndex": 2,
+  "fromLines": [
+   "青森県",
+   "青森市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "函館市"
+  ],
+  "noteRaw": "事実上の終点は北海道松前郡福島町（事実上の終点から正式な終点までは国道228号線→国道227号線と重用）。 海上寸断区間終点が国道228号線との重用開始地点でもあるため北海道内には単独区間は存在しない。 海上寸断区間あり。"
+ },
+ {
+  "no": 281,
+  "tableIndex": 2,
+  "fromLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "久慈市"
+  ],
+  "noteRaw": "事実上の起点は岩手県岩手郡岩手町（正式な起点から事実上の起点までは国道４号線と重用）。"
+ },
+ {
+  "no": 282,
+  "tableIndex": 2,
+  "fromLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "秋田県",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "平川市"
+  ],
+  "noteRaw": "事実上の起点は岩手県滝沢市（正式な起点から事実上の起点までは国道４号線と重用）。"
+ },
+ {
+  "no": 283,
+  "tableIndex": 2,
+  "fromLines": [
+   "岩手県",
+   "釜石市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "花巻市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 284,
+  "tableIndex": 2,
+  "fromLines": [
+   "岩手県",
+   "陸前高田市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "宮城県"
+  ],
+  "toLines": [
+   "岩手県",
+   "一関市"
+  ],
+  "noteRaw": "事実上の起点は宮城県気仙沼市（正式な起点から事実上の起点までは国道45号線と重用）。"
+ },
+ {
+  "no": 285,
+  "tableIndex": 2,
+  "fromLines": [
+   "秋田県",
+   "秋田市"
+  ],
+  "throughPrefs": [
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "鹿角市"
+  ],
+  "noteRaw": "事実上の起点は秋田県潟上市（正式な起点から事実上の起点までは国道７号線と重用）。 事実上の終点は秋田県大館市（事実上の終点から正式な終点までは国道103号線と重用）。"
+ },
+ {
+  "no": 286,
+  "tableIndex": 2,
+  "fromLines": [
+   "宮城県",
+   "仙台市太白区"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "山形市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 287,
+  "tableIndex": 2,
+  "fromLines": [
+   "山形県",
+   "米沢市"
+  ],
+  "throughPrefs": [
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "東根市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 288,
+  "tableIndex": 2,
+  "fromLines": [
+   "福島県",
+   "郡山市"
+  ],
+  "throughPrefs": [
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "双葉郡双葉町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 289,
+  "tableIndex": 2,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "福島県"
+  ],
+  "toLines": [
+   "新潟県",
+   "いわき市"
+  ],
+  "noteRaw": "事実上の起点は新潟県燕市（正式な起点から事実上の起点までは国道116号線と重用）。 通行不能区間あり（2027年〔令和９年〕夏頃解消予定）。"
+ },
+ {
+  "no": 290,
+  "tableIndex": 2,
+  "fromLines": [
+   "新潟県",
+   "村上市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "魚沼市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 291,
+  "tableIndex": 2,
+  "fromLines": [
+   "群馬県",
+   "前橋市"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 292,
+  "tableIndex": 2,
+  "fromLines": [
+   "群馬県",
+   "吾妻郡長野原町"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "長野県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "noteRaw": "一般国道の路線を指定する政令では終点は新潟県妙高市となっているため正式には妙高市・上越市境（この辺り）が終点になっている（終点から国道18号線〔上越市直江津地区方面のみ新潟県道254号上小沢・上越妙高停車場線重用〕との合流点〔場所はこちら〕までは新潟県道254号上小沢・上越妙高停車場線〔新潟県道579号上越・脇野田・新井線重用〕になっている）。国道18号線上新バイパス全線開通（1991年〔平成３年〕７月30日）に伴う旧道処分で終点で接続する国道18号線（上越市中心部方面のみ新潟県道254号上小沢・上越妙高停車場線重用）との合流点が妙高市にある姫川原交差点（場所はこちら）から上越市にある寺町交差点（場所はこちら）に移動したのだが現在に至るまで改正を行っていないためである。しかし国道292号線の正式な終点（この辺り）から国道18号線との合流点（場所はこちら）までの区間に新潟県道254号上小沢・上越妙高停車場線（新潟県道579号上越・脇野田・新井線重用）の存在を示す物件がないことや長野方面及び上越市直江津地区（旧：直江津市〔1954〜1971〕）方面から国道18号線（上越市直江津地区方面のみ新潟県道254号上小沢・上越妙高停車場線重用）を進んできた場合でも上越市直江津地区方面から新潟県道579号上越・脇野田・新井線を進んできた場合でも寺町交差点（場所はこちら）の手前にある案内標識は全て新潟県道254号上小沢・上越妙高停車場線（新潟県道579号上越・脇野田・新井線重用）飯山方面を国道292号線であると案内していることなどから本サイトでは新潟県上越市を終点としている。"
+ },
+ {
+  "no": 293,
+  "tableIndex": 2,
+  "fromLines": [
+   "茨城県",
+   "日立市"
+  ],
+  "throughPrefs": [
+   "茨城県",
+   "栃木県"
+  ],
+  "toLines": [
+   "栃木県",
+   "足利市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 294,
+  "tableIndex": 2,
+  "fromLines": [
+   "千葉県",
+   "柏市"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県",
+   "栃木県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "会津若松市"
+  ],
+  "noteRaw": "事実上の起点は茨城県取手市（正式な起点から事実上の起点までは国道６号線と重用）。このため千葉県内には単独区間は存在しない。"
+ },
+ {
+  "no": 295,
+  "tableIndex": 2,
+  "fromLines": [
+   "千葉県",
+   "成田市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "成田市"
+  ],
+  "noteRaw": "成田国際空港と国道51号線及び国道408号線を結ぶ路線。"
+ },
+ {
+  "no": 296,
+  "tableIndex": 2,
+  "fromLines": [
+   "千葉県",
+   "匝瑳市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "船橋市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 297,
+  "tableIndex": 2,
+  "fromLines": [
+   "千葉県",
+   "館山市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "市原市"
+  ],
+  "noteRaw": "事実上の起点は千葉県勝浦市（正式な起点から事実上の起点までは国道128号線と重用）。"
+ },
+ {
+  "no": 298,
+  "tableIndex": 2,
+  "fromLines": [
+   "埼玉県",
+   "和光市"
+  ],
+  "throughPrefs": [
+   "埼玉県",
+   "東京都",
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "市川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 299,
+  "tableIndex": 2,
+  "fromLines": [
+   "長野県",
+   "茅野市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "群馬県",
+   "埼玉県"
+  ],
+  "toLines": [
+   "埼玉県",
+   "入間市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 300,
+  "tableIndex": 2,
+  "fromLines": [
+   "山梨県",
+   "富士吉田市"
+  ],
+  "throughPrefs": [
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "南巨摩郡身延町"
+  ],
+  "noteRaw": "事実上の起点は山梨県南都留郡富士河口湖町（正式な起点から事実上の起点までは国道139号線と重用）。"
+ },
+ {
+  "no": 301,
+  "tableIndex": 3,
+  "fromLines": [
+   "静岡県",
+   "浜松市中央区"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "豊田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 302,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛知県",
+   "名古屋市中川区"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "名古屋市中川区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 303,
+  "tableIndex": 3,
+  "fromLines": [
+   "岐阜県",
+   "岐阜市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "滋賀県",
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "三方上中郡若狭町"
+  ],
+  "noteRaw": "事実上の起点は岐阜県本巣市（正式な起点から事実上の起点までは国道157号線と重用）。"
+ },
+ {
+  "no": 304,
+  "tableIndex": 3,
+  "fromLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "南砺市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 305,
+  "tableIndex": 3,
+  "fromLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "南条郡南越前町"
+  ],
+  "noteRaw": "事実上の起点は石川県能美市（正式な起点から事実上の起点までは国道157号線→国道８号線と重用）。 終点はなぜか国道365号線との交点（福井県南条郡南越前町関ヶ鼻〔場所はこちら。なお、地名表記はこちらで記している本サイトの規定による〕）ではなくＥ８北陸自動車道今庄インターチェンジ（福井県南条郡南越前町湯尾）の入口（場所はこちら）になっている。"
+ },
+ {
+  "no": 306,
+  "tableIndex": 3,
+  "fromLines": [
+   "三重県",
+   "津市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "滋賀県"
+  ],
+  "toLines": [
+   "滋賀県",
+   "彦根市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 307,
+  "tableIndex": 3,
+  "fromLines": [
+   "滋賀県",
+   "彦根市"
+  ],
+  "throughPrefs": [
+   "滋賀県",
+   "京都府",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "枚方市"
+  ],
+  "noteRaw": "事実上の起点は滋賀県犬上郡多賀町（正式な起点から事実上の起点までは国道306号線と重用）。"
+ },
+ {
+  "no": 308,
+  "tableIndex": 3,
+  "fromLines": [
+   "大阪府",
+   "大阪市中央区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "奈良県"
+  ],
+  "toLines": [
+   "奈良県",
+   "奈良市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 309,
+  "tableIndex": 3,
+  "fromLines": [
+   "三重県",
+   "熊野市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "奈良県",
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市平野区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 310,
+  "tableIndex": 3,
+  "fromLines": [
+   "大阪府",
+   "堺市堺区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "奈良県"
+  ],
+  "toLines": [
+   "奈良県",
+   "五條市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 311,
+  "tableIndex": 3,
+  "fromLines": [
+   "三重県",
+   "尾鷲市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "和歌山県",
+   "奈良県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "西牟婁郡上富田町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 312,
+  "tableIndex": 3,
+  "fromLines": [
+   "京都府",
+   "宮津市"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "姫路市"
+  ],
+  "noteRaw": "事実上の起点は京都府与謝郡与謝野町（正式な起点から事実上の起点までは国道176号線と重用）。"
+ },
+ {
+  "no": 313,
+  "tableIndex": 3,
+  "fromLines": [
+   "広島県",
+   "福山市"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "岡山県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "東伯郡北栄町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 314,
+  "tableIndex": 3,
+  "fromLines": [
+   "広島県",
+   "福山市"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "雲南市"
+  ],
+  "noteRaw": "事実上の起点は広島県庄原市（正式な起点から事実上の起点までは国道182号線と重用）。"
+ },
+ {
+  "no": 315,
+  "tableIndex": 3,
+  "fromLines": [
+   "山口県",
+   "周南市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "萩市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 316,
+  "tableIndex": 3,
+  "fromLines": [
+   "山口県",
+   "長門市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "山陽小野田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 317,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "尾道市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 318,
+  "tableIndex": 3,
+  "fromLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "香川県"
+  ],
+  "toLines": [
+   "香川県",
+   "東かがわ市"
+  ],
+  "noteRaw": "事実上の起点は徳島県吉野川市（正式な起点から事実上の起点までは国道192号線と重用）。"
+ },
+ {
+  "no": 319,
+  "tableIndex": 3,
+  "fromLines": [
+   "香川県",
+   "坂出市"
+  ],
+  "throughPrefs": [
+   "香川県",
+   "徳島県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "四国中央市"
+  ],
+  "noteRaw": "事実上の起点は香川県丸亀市（正式な起点から事実上の起点までは国道11号線と重用）。"
+ },
+ {
+  "no": 320,
+  "tableIndex": 3,
+  "fromLines": [
+   "高知県",
+   "宿毛市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "北宇和郡鬼北町"
+  ],
+  "noteRaw": "事実上の起点は愛媛県宇和島市（正式な起点から事実上の起点までは国道56号線と重用）。このため高知県内には単独区間は存在しない。"
+ },
+ {
+  "no": 321,
+  "tableIndex": 3,
+  "fromLines": [
+   "高知県",
+   "四万十市"
+  ],
+  "throughPrefs": [
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "宿毛市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 322,
+  "tableIndex": 3,
+  "fromLines": [
+   "福岡県",
+   "北九州市小倉北区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "久留米市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 323,
+  "tableIndex": 3,
+  "fromLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "throughPrefs": [
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "唐津市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 324,
+  "tableIndex": 3,
+  "fromLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "throughPrefs": [
+   "長崎県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "宇城市"
+  ],
+  "noteRaw": "事実上の終点は熊本県上天草市（事実上の終点から正式な終点までは国道266号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 325,
+  "tableIndex": 3,
+  "fromLines": [
+   "福岡県",
+   "久留米市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "熊本県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "西臼杵郡高千穂町"
+  ],
+  "noteRaw": "事実上の起点は熊本県山鹿市（正式な起点から事実上の起点までは国道３号線と重用）。このため福岡県内には単独区間は存在しない。"
+ },
+ {
+  "no": 326,
+  "tableIndex": 3,
+  "fromLines": [
+   "宮崎県",
+   "延岡市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "豊後大野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 327,
+  "tableIndex": 3,
+  "fromLines": [
+   "宮崎県",
+   "日向市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "上益城郡山都町"
+  ],
+  "noteRaw": "事実上の終点は宮崎県東臼杵郡椎葉村（事実上の終点から正式な終点までは国道265号線と重用）。このため熊本県内には単独区間は存在しない。"
+ },
+ {
+  "no": 328,
+  "tableIndex": 3,
+  "fromLines": [
+   "鹿児島県",
+   "鹿児島市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "出水市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 329,
+  "tableIndex": 3,
+  "fromLines": [
+   "沖縄県",
+   "名護市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 330,
+  "tableIndex": 3,
+  "fromLines": [
+   "沖縄県",
+   "沖縄市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 331,
+  "tableIndex": 3,
+  "fromLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "国頭郡大宜味村"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 332,
+  "tableIndex": 3,
+  "fromLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": "那覇空港と那覇市中心部を結ぶ路線。"
+ },
+ {
+  "no": 333,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "北見市"
+  ],
+  "noteRaw": "事実上の起点は北海道上川郡上川町（正式な起点から事実上の起点までは国道39号線→国道273号線と重用）。"
+ },
+ {
+  "no": 334,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "目梨郡羅臼町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "網走郡美幌町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 335,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "目梨郡羅臼町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "標津郡標津町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 336,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "浦河郡浦河町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "noteRaw": "事実上の終点は北海道十勝郡浦幌町（事実上の終点から正式な終点までは国道38号線と重用）。"
+ },
+ {
+  "no": 337,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "千歳市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "小樽市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 338,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "函館市"
+  ],
+  "throughPrefs": [
+   "北海道",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "上北郡おいらせ町"
+  ],
+  "noteRaw": "事実上の起点は青森県下北郡大間町（正式な起点から事実上の起点までは国道279号線と重用）。このため北海道内には単独区間は存在しない。 海上寸断区間あり。"
+ },
+ {
+  "no": 339,
+  "tableIndex": 3,
+  "fromLines": [
+   "青森県",
+   "弘前市"
+  ],
+  "throughPrefs": [
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "東津軽郡外ヶ浜町"
+  ],
+  "noteRaw": "通行不能区間あり（階段国道として知られている）。"
+ },
+ {
+  "no": 340,
+  "tableIndex": 3,
+  "fromLines": [
+   "岩手県",
+   "陸前高田市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "八戸市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 341,
+  "tableIndex": 3,
+  "fromLines": [
+   "秋田県",
+   "鹿角市"
+  ],
+  "throughPrefs": [
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "由利本荘市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 342,
+  "tableIndex": 3,
+  "fromLines": [
+   "秋田県",
+   "横手市"
+  ],
+  "throughPrefs": [
+   "秋田県",
+   "岩手県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "登米市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 343,
+  "tableIndex": 3,
+  "fromLines": [
+   "岩手県",
+   "陸前高田市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "奥州市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 344,
+  "tableIndex": 3,
+  "fromLines": [
+   "秋田県",
+   "湯沢市"
+  ],
+  "throughPrefs": [
+   "秋田県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "酒田市"
+  ],
+  "noteRaw": "事実上の起点は山形県最上郡金山町（正式な起点から事実上の起点までは国道13号線と重用）。このため秋田県内には単独区間は存在しない。"
+ },
+ {
+  "no": 345,
+  "tableIndex": 3,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "飽海郡遊佐町"
+  ],
+  "noteRaw": "事実上の起点は新潟県胎内市（正式な起点から事実上の起点までは国道113号線と重用）。"
+ },
+ {
+  "no": 346,
+  "tableIndex": 3,
+  "fromLines": [
+   "宮城県",
+   "仙台市青葉区"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "岩手県"
+  ],
+  "toLines": [
+   "宮城県",
+   "気仙沼市"
+  ],
+  "noteRaw": "事実上の起点は宮城県宮城郡松島町（正式な起点から事実上の起点までは国道45号線と重用）。"
+ },
+ {
+  "no": 347,
+  "tableIndex": 3,
+  "fromLines": [
+   "山形県",
+   "寒河江市"
+  ],
+  "throughPrefs": [
+   "山形県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "大崎市"
+  ],
+  "noteRaw": "事実上の起点は山形県西村山郡河北町（正式な起点から事実上の起点までは国道287号線と重用）。"
+ },
+ {
+  "no": 348,
+  "tableIndex": 3,
+  "fromLines": [
+   "山形県",
+   "長井市"
+  ],
+  "throughPrefs": [
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "山形市"
+  ],
+  "noteRaw": "事実上の起点は山形県西置賜郡白鷹町（正式な起点から事実上の起点までは国道113号線→国道287号線と重用）。"
+ },
+ {
+  "no": 349,
+  "tableIndex": 3,
+  "fromLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "throughPrefs": [
+   "茨城県",
+   "福島県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "柴田郡柴田町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 350,
+  "tableIndex": 3,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 351,
+  "tableIndex": 3,
+  "fromLines": [
+   "新潟県",
+   "長岡市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "小千谷市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 352,
+  "tableIndex": 3,
+  "fromLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "福島県",
+   "栃木県"
+  ],
+  "toLines": [
+   "栃木県",
+   "河内郡上三川町"
+  ],
+  "noteRaw": "通行不能区間あり（解消計画あり）。"
+ },
+ {
+  "no": 353,
+  "tableIndex": 3,
+  "fromLines": [
+   "群馬県",
+   "桐生市"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "noteRaw": "事実上の起点は群馬県みどり市（正式な起点から事実上の起点までは国道122号線と重用）。 通行不能区間あり。"
+ },
+ {
+  "no": 354,
+  "tableIndex": 3,
+  "fromLines": [
+   "群馬県",
+   "高崎市"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "埼玉県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "鉾田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 355,
+  "tableIndex": 3,
+  "fromLines": [
+   "千葉県",
+   "香取市"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "笠間市"
+  ],
+  "noteRaw": "事実上の起点は茨城県潮来市（正式な起点から事実上の起点までは国道51号線と重用）。このため千葉県内には単独区間は存在しない。"
+ },
+ {
+  "no": 356,
+  "tableIndex": 3,
+  "fromLines": [
+   "千葉県",
+   "銚子市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "我孫子市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 357,
+  "tableIndex": 3,
+  "fromLines": [
+   "千葉県",
+   "千葉市中央区"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "東京都",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "横須賀市"
+  ],
+  "noteRaw": "未開通区間あり。"
+ },
+ {
+  "no": 358,
+  "tableIndex": 3,
+  "fromLines": [
+   "山梨県",
+   "南都留郡富士河口湖町"
+  ],
+  "throughPrefs": [
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "甲府市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 359,
+  "tableIndex": 3,
+  "fromLines": [
+   "富山県",
+   "富山市"
+  ],
+  "throughPrefs": [
+   "富山県",
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "金沢市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 360,
+  "tableIndex": 3,
+  "fromLines": [
+   "富山県",
+   "富山市"
+  ],
+  "throughPrefs": [
+   "富山県",
+   "岐阜県",
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "小松市"
+  ],
+  "noteRaw": "未開通区間あり。"
+ },
+ {
+  "no": 361,
+  "tableIndex": 3,
+  "fromLines": [
+   "岐阜県",
+   "高山市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "伊那市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 362,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛知県",
+   "豊川市"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "静岡市葵区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 363,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛知県",
+   "名古屋市名東区"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "中津川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 364,
+  "tableIndex": 3,
+  "fromLines": [
+   "福井県",
+   "大野市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "加賀市"
+  ],
+  "noteRaw": "事実上の起点は福井県福井市（正式な起点から事実上の起点までは国道158号線と重用）。"
+ },
+ {
+  "no": 365,
+  "tableIndex": 3,
+  "fromLines": [
+   "石川県",
+   "加賀市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "福井県",
+   "滋賀県",
+   "岐阜県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "noteRaw": "事実上の起点は福井県丹生郡越前町（正式な起点から事実上の起点までは国道305号線と重用）。このため石川県内には単独区間は存在しない。"
+ },
+ {
+  "no": 366,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛知県",
+   "半田市"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "名古屋市緑区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 367,
+  "tableIndex": 3,
+  "fromLines": [
+   "京都府",
+   "京都市下京区"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "滋賀県",
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "三方上中郡若狭町"
+  ],
+  "noteRaw": "事実上の終点は滋賀県高島市（事実上の終点から正式な終点までは国道303号線と重用）。このため福井県内には単独区間は存在しない。"
+ },
+ {
+  "no": 368,
+  "tableIndex": 3,
+  "fromLines": [
+   "三重県",
+   "伊賀市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "奈良県"
+  ],
+  "toLines": [
+   "三重県",
+   "多気郡多気町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 369,
+  "tableIndex": 3,
+  "fromLines": [
+   "奈良県",
+   "奈良市"
+  ],
+  "throughPrefs": [
+   "奈良県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "松阪市"
+  ],
+  "noteRaw": "事実上の起点は奈良県宇陀郡御杖村（正式な起点から事実上の起点までは国道368号線→国道166号線と重用）。このため三重県内には単独区間は存在しない。"
+ },
+ {
+  "no": 370,
+  "tableIndex": 3,
+  "fromLines": [
+   "和歌山県",
+   "海南市"
+  ],
+  "throughPrefs": [
+   "和歌山県",
+   "奈良県"
+  ],
+  "toLines": [
+   "奈良県",
+   "奈良市"
+  ],
+  "noteRaw": "事実上の終点は奈良県宇陀市（事実上の終点から正式な終点までは国道165号線→国道369号線と重用）。"
+ },
+ {
+  "no": 371,
+  "tableIndex": 3,
+  "fromLines": [
+   "大阪府",
+   "河内長野市"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "和歌山県",
+   "奈良県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "東牟婁郡串本町"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 372,
+  "tableIndex": 3,
+  "fromLines": [
+   "京都府",
+   "亀岡市"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "姫路市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 373,
+  "tableIndex": 3,
+  "fromLines": [
+   "兵庫県",
+   "赤穂市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "岡山県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "鳥取市"
+  ],
+  "noteRaw": "事実上の終点は鳥取県八頭郡智頭町（事実上の終点から正式な終点までは国道53号線と重用）。"
+ },
+ {
+  "no": 374,
+  "tableIndex": 3,
+  "fromLines": [
+   "岡山県",
+   "備前市"
+  ],
+  "throughPrefs": [
+   "岡山県"
+  ],
+  "toLines": [
+   "岡山県",
+   "津山市"
+  ],
+  "noteRaw": "事実上の終点は岡山県美作市（事実上の終点から正式な終点までは国道179号線と重用）。"
+ },
+ {
+  "no": 375,
+  "tableIndex": 3,
+  "fromLines": [
+   "広島県",
+   "呉市"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "大田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 376,
+  "tableIndex": 3,
+  "fromLines": [
+   "山口県",
+   "山口市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 377,
+  "tableIndex": 3,
+  "fromLines": [
+   "徳島県",
+   "鳴門市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "香川県"
+  ],
+  "toLines": [
+   "香川県",
+   "観音寺市"
+  ],
+  "noteRaw": "事実上の起点は香川県東かがわ市（正式な起点から事実上の起点までは国道11号線と重用）。"
+ },
+ {
+  "no": 378,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛媛県",
+   "伊予市"
+  ],
+  "throughPrefs": [
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "宇和島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 379,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "喜多郡内子町"
+  ],
+  "noteRaw": "事実上の起点は愛媛県伊予郡砥部町（正式な起点から事実上の起点までは国道11号線→国道33号線と重用）。"
+ },
+ {
+  "no": 380,
+  "tableIndex": 3,
+  "fromLines": [
+   "愛媛県",
+   "八幡浜市"
+  ],
+  "throughPrefs": [
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "上浮穴郡久万高原町"
+  ],
+  "noteRaw": "事実上の起点は愛媛県喜多郡内子町（正式な起点から事実上の起点までは国道197号線→国道56号線→国道379号線と重用）。"
+ },
+ {
+  "no": 381,
+  "tableIndex": 3,
+  "fromLines": [
+   "高知県",
+   "須崎市"
+  ],
+  "throughPrefs": [
+   "高知県",
+   "愛媛県"
+  ],
+  "toLines": [
+   "愛媛県",
+   "宇和島市"
+  ],
+  "noteRaw": "事実上の起点は高知県高岡郡四万十町（正式な起点から事実上の起点までは国道56号線と重用）。 事実上の終点は愛媛県北宇和郡鬼北町（事実上の終点から正式な終点までは国道320号線と重用）。"
+ },
+ {
+  "no": 382,
+  "tableIndex": 3,
+  "fromLines": [
+   "長崎県",
+   "対馬市"
+  ],
+  "throughPrefs": [
+   "長崎県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "唐津市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 383,
+  "tableIndex": 3,
+  "fromLines": [
+   "長崎県",
+   "平戸市"
+  ],
+  "throughPrefs": [
+   "長崎県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "伊万里市"
+  ],
+  "noteRaw": "事実上の終点は長崎県平戸市（事実上の終点から正式な終点までは国道204号線と重用）。このため長崎県平戸市内にしか単独区間が存在しない路線になっている。"
+ },
+ {
+  "no": 384,
+  "tableIndex": 3,
+  "fromLines": [
+   "長崎県",
+   "五島市"
+  ],
+  "throughPrefs": [
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 385,
+  "tableIndex": 3,
+  "fromLines": [
+   "福岡県",
+   "柳川市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "福岡県",
+   "福岡市博多区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 386,
+  "tableIndex": 3,
+  "fromLines": [
+   "大分県",
+   "日田市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "筑紫野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 387,
+  "tableIndex": 3,
+  "fromLines": [
+   "大分県",
+   "宇佐市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "熊本市北区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 388,
+  "tableIndex": 3,
+  "fromLines": [
+   "大分県",
+   "佐伯市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "宮崎県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "球磨郡湯前町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 389,
+  "tableIndex": 3,
+  "fromLines": [
+   "福岡県",
+   "大牟田市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "熊本県",
+   "長崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "阿久根市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 390,
+  "tableIndex": 3,
+  "fromLines": [
+   "沖縄県",
+   "石垣市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 391,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "網走市"
+  ],
+  "noteRaw": "事実上の起点は北海道釧路郡釧路町（正式な起点から事実上の起点までは国道38号線→国道44号線と重用）。 事実上の終点は北海道斜里郡小清水町（事実上の終点から正式な終点までは国道244号線と重用）。"
+ },
+ {
+  "no": 392,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "釧路市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "中川郡本別町"
+  ],
+  "noteRaw": "事実上の起点は北海道白糠郡白糠町（正式な起点から事実上の起点までは国道38号線と重用）。 事実上の終点は北海道白糠郡白糠町（事実上の終点から正式な終点までは国道274号線と重用）。 このため北海道白糠郡白糠町内にしか単独区間が存在しない路線になっている。"
+ },
+ {
+  "no": 393,
+  "tableIndex": 3,
+  "fromLines": [
+   "北海道",
+   "小樽市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "虻田郡倶知安町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 394,
+  "tableIndex": 3,
+  "fromLines": [
+   "青森県",
+   "むつ市"
+  ],
+  "throughPrefs": [
+   "青森県"
+  ],
+  "toLines": [
+   "青森県",
+   "弘前市"
+  ],
+  "noteRaw": "事実上の起点は青森県上北郡六ヶ所村（正式な起点から事実上の起点までは国道338号線と重用）。 事実上の終点は青森県黒石市（事実上の終点から正式な終点までは国道102号線と重用）。"
+ },
+ {
+  "no": 395,
+  "tableIndex": 3,
+  "fromLines": [
+   "岩手県",
+   "久慈市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "二戸市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 396,
+  "tableIndex": 3,
+  "fromLines": [
+   "岩手県",
+   "遠野市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 397,
+  "tableIndex": 3,
+  "fromLines": [
+   "岩手県",
+   "大船渡市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "横手市"
+  ],
+  "noteRaw": "事実上の起点は岩手県気仙郡住田町（正式な起点から事実上の起点までは国道107号線と重用）。 事実上の終点は秋田県雄勝郡東成瀬村（事実上の終点から正式な終点までは国道342号線と重用）。"
+ },
+ {
+  "no": 398,
+  "tableIndex": 3,
+  "fromLines": [
+   "宮城県",
+   "石巻市"
+  ],
+  "throughPrefs": [
+   "宮城県",
+   "秋田県"
+  ],
+  "toLines": [
+   "秋田県",
+   "由利本荘市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 399,
+  "tableIndex": 3,
+  "fromLines": [
+   "福島県",
+   "いわき市"
+  ],
+  "throughPrefs": [
+   "福島県",
+   "宮城県",
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "南陽市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 400,
+  "tableIndex": 3,
+  "fromLines": [
+   "茨城県",
+   "水戸市"
+  ],
+  "throughPrefs": [
+   "茨城県",
+   "栃木県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "耶麻郡西会津町"
+  ],
+  "noteRaw": "事実上の起点は栃木県大田原市（事実上の終点から正式な起点までは国道118号線→国道293号線→国道294号線と重用）。このため茨城県内には単独区間は存在しない。"
+ },
+ {
+  "no": 401,
+  "tableIndex": 4,
+  "fromLines": [
+   "福島県",
+   "会津若松市"
+  ],
+  "throughPrefs": [
+   "福島県",
+   "群馬県"
+  ],
+  "toLines": [
+   "群馬県",
+   "沼田市"
+  ],
+  "noteRaw": "事実上の終点は群馬県利根郡片品村（事実上の終点から正式な終点までは国道120号線と重用）。 通行不能区間あり。 区域未決定区間あり（その部分は群馬県道／福島県道１号沼田・檜枝岐線になっている）。"
+ },
+ {
+  "no": 402,
+  "tableIndex": 4,
+  "fromLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "noteRaw": "事実上の起点は新潟県三島郡出雲崎町（正式な起点から事実上の起点までは国道352号線と重用）。"
+ },
+ {
+  "no": 403,
+  "tableIndex": 4,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "松本市"
+  ],
+  "noteRaw": "事実上の起点は新潟県新潟市江南区（正式な起点から事実上の起点までは国道７号線→国道49号線と重用）。 事実上の終点は長野県安曇野市（事実上の終点から正式な終点までは国道19号線と重用）。"
+ },
+ {
+  "no": 404,
+  "tableIndex": 4,
+  "fromLines": [
+   "新潟県",
+   "長岡市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "noteRaw": "事実上の終点は新潟県長岡市（事実上の終点から正式な終点までは国道403号線→国道252号線→国道403号線→国道253号線と重用）。 このため新潟県長岡市内にしか単独区間が存在しない路線になっている。"
+ },
+ {
+  "no": 405,
+  "tableIndex": 4,
+  "fromLines": [
+   "群馬県",
+   "吾妻郡中之条町"
+  ],
+  "throughPrefs": [
+   "群馬県",
+   "長野県",
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "上越市"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 406,
+  "tableIndex": 4,
+  "fromLines": [
+   "長野県",
+   "大町市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "群馬県"
+  ],
+  "toLines": [
+   "群馬県",
+   "高崎市"
+  ],
+  "noteRaw": "事実上の起点は長野県北安曇郡白馬村（正式な起点から事実上の起点までは国道147号線→国道148号線と重用）。"
+ },
+ {
+  "no": 407,
+  "tableIndex": 4,
+  "fromLines": [
+   "栃木県",
+   "足利市"
+  ],
+  "throughPrefs": [
+   "栃木県",
+   "群馬県",
+   "埼玉県"
+  ],
+  "toLines": [
+   "埼玉県",
+   "入間市"
+  ],
+  "noteRaw": "事実上の終点は埼玉県狭山市（事実上の終点から正式な終点までは国道299号線と重用）。"
+ },
+ {
+  "no": 408,
+  "tableIndex": 4,
+  "fromLines": [
+   "千葉県",
+   "成田市"
+  ],
+  "throughPrefs": [
+   "千葉県",
+   "茨城県",
+   "栃木県"
+  ],
+  "toLines": [
+   "栃木県",
+   "塩谷郡高根沢町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 409,
+  "tableIndex": 4,
+  "fromLines": [
+   "神奈川県",
+   "川崎市高津区"
+  ],
+  "throughPrefs": [
+   "神奈川県",
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "成田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 410,
+  "tableIndex": 4,
+  "fromLines": [
+   "千葉県",
+   "館山市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "木更津市"
+  ],
+  "noteRaw": "事実上の終点は千葉県袖ヶ浦市（事実上の終点から正式な終点までは国道409号線と重用）。"
+ },
+ {
+  "no": 411,
+  "tableIndex": 4,
+  "fromLines": [
+   "東京都",
+   "八王子市"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "甲府市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 412,
+  "tableIndex": 4,
+  "fromLines": [
+   "神奈川県",
+   "平塚市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "相模原市緑区"
+  ],
+  "noteRaw": "事実上の起点は神奈川県厚木市（正式な起点から事実上の起点までは国道129号線と重用）。"
+ },
+ {
+  "no": 413,
+  "tableIndex": 4,
+  "fromLines": [
+   "山梨県",
+   "富士吉田市"
+  ],
+  "throughPrefs": [
+   "山梨県",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "相模原市緑区"
+  ],
+  "noteRaw": "事実上の起点は山梨県南都留郡山中湖村（正式な起点から事実上の起点までは国道138号線と重用）。"
+ },
+ {
+  "no": 414,
+  "tableIndex": 4,
+  "fromLines": [
+   "静岡県",
+   "下田市"
+  ],
+  "throughPrefs": [
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "沼津市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 415,
+  "tableIndex": 4,
+  "fromLines": [
+   "石川県",
+   "羽咋市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "富山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 416,
+  "tableIndex": 4,
+  "fromLines": [
+   "福井県",
+   "福井市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "石川県"
+  ],
+  "toLines": [
+   "石川県",
+   "小松市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 417,
+  "tableIndex": 4,
+  "fromLines": [
+   "岐阜県",
+   "大垣市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "南条郡南越前町"
+  ],
+  "noteRaw": "事実上の終点は福井県丹生郡越前町（事実上の終点から正式な終点までは国道365号線→国道305号線と重用）。"
+ },
+ {
+  "no": 418,
+  "tableIndex": 4,
+  "fromLines": [
+   "福井県",
+   "大野市"
+  ],
+  "throughPrefs": [
+   "福井県",
+   "岐阜県",
+   "長野県"
+  ],
+  "toLines": [
+   "長野県",
+   "飯田市"
+  ],
+  "noteRaw": "事実上の起点は岐阜県本巣市（正式な起点から事実上の起点までは国道157号線と重用）。このため福井県内には単独区間は存在しない。 通行不能区間あり（解消計画あり）。"
+ },
+ {
+  "no": 419,
+  "tableIndex": 4,
+  "fromLines": [
+   "岐阜県",
+   "瑞浪市"
+  ],
+  "throughPrefs": [
+   "岐阜県",
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "高浜市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 420,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛知県",
+   "豊田市"
+  ],
+  "throughPrefs": [
+   "愛知県"
+  ],
+  "toLines": [
+   "愛知県",
+   "新城市"
+  ],
+  "noteRaw": "事実上の終点は愛知県北設楽郡設楽町（事実上の終点から正式な終点までは国道257号線と重用）。"
+ },
+ {
+  "no": 421,
+  "tableIndex": 4,
+  "fromLines": [
+   "三重県",
+   "桑名市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "滋賀県"
+  ],
+  "toLines": [
+   "滋賀県",
+   "近江八幡市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 422,
+  "tableIndex": 4,
+  "fromLines": [
+   "滋賀県",
+   "大津市"
+  ],
+  "throughPrefs": [
+   "滋賀県",
+   "三重県",
+   "奈良県"
+  ],
+  "toLines": [
+   "三重県",
+   "北牟婁郡紀北町"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 423,
+  "tableIndex": 4,
+  "fromLines": [
+   "大阪府",
+   "大阪市北区"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "亀岡市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 424,
+  "tableIndex": 4,
+  "fromLines": [
+   "和歌山県",
+   "田辺市"
+  ],
+  "throughPrefs": [
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "紀の川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 425,
+  "tableIndex": 4,
+  "fromLines": [
+   "三重県",
+   "尾鷲市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "奈良県",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "御坊市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 426,
+  "tableIndex": 4,
+  "fromLines": [
+   "兵庫県",
+   "豊岡市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "福知山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 427,
+  "tableIndex": 4,
+  "fromLines": [
+   "兵庫県",
+   "明石市"
+  ],
+  "throughPrefs": [
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "朝来市"
+  ],
+  "noteRaw": "事実上の起点は兵庫県西脇市（正式な起点から事実上の起点までは国道175号線と重用）。"
+ },
+ {
+  "no": 428,
+  "tableIndex": 4,
+  "fromLines": [
+   "兵庫県",
+   "神戸市中央区"
+  ],
+  "throughPrefs": [
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "三木市"
+  ],
+  "noteRaw": "神戸市中心部とＥ２Ａ中国自動車道吉川インターチェンジ（兵庫県三木市吉川町大沢）を結ぶ路線。"
+ },
+ {
+  "no": 429,
+  "tableIndex": 4,
+  "fromLines": [
+   "岡山県",
+   "倉敷市"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "兵庫県",
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "福知山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 430,
+  "tableIndex": 4,
+  "fromLines": [
+   "岡山県",
+   "倉敷市"
+  ],
+  "throughPrefs": [
+   "岡山県"
+  ],
+  "toLines": [
+   "岡山県",
+   "玉野市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 431,
+  "tableIndex": 4,
+  "fromLines": [
+   "島根県",
+   "出雲市"
+  ],
+  "throughPrefs": [
+   "島根県",
+   "鳥取県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "米子市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 432,
+  "tableIndex": 4,
+  "fromLines": [
+   "広島県",
+   "竹原市"
+  ],
+  "throughPrefs": [
+   "広島県",
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "松江市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 433,
+  "tableIndex": 4,
+  "fromLines": [
+   "広島県",
+   "大竹市"
+  ],
+  "throughPrefs": [
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "三次市"
+  ],
+  "noteRaw": "事実上の起点は広島県廿日市市（正式な起点から事実上の起点までは国道２号線と重用）。"
+ },
+ {
+  "no": 434,
+  "tableIndex": 4,
+  "fromLines": [
+   "山口県",
+   "周南市"
+  ],
+  "throughPrefs": [
+   "山口県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "三次市"
+  ],
+  "noteRaw": "事実上の終点は広島県山県郡安芸太田町（事実上の終点から正式な終点までは国道433号線→国道375号線と重用）。"
+ },
+ {
+  "no": 435,
+  "tableIndex": 4,
+  "fromLines": [
+   "山口県",
+   "山口市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "下関市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 436,
+  "tableIndex": 4,
+  "fromLines": [
+   "兵庫県",
+   "姫路市"
+  ],
+  "throughPrefs": [
+   "兵庫県",
+   "香川県"
+  ],
+  "toLines": [
+   "香川県",
+   "高松市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 437,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "岩国市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 438,
+  "tableIndex": 4,
+  "fromLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "香川県"
+  ],
+  "toLines": [
+   "香川県",
+   "坂出市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 439,
+  "tableIndex": 4,
+  "fromLines": [
+   "徳島県",
+   "徳島市"
+  ],
+  "throughPrefs": [
+   "徳島県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "四万十市"
+  ],
+  "noteRaw": "事実上の起点は徳島県三好市（正式な起点から事実上の起点までは国道438号線と重用）。"
+ },
+ {
+  "no": 440,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "高岡郡檮原町"
+  ],
+  "noteRaw": "事実上の起点は愛媛県伊予郡砥部町（正式な起点から事実上の起点までは国道33号線と重用）。"
+ },
+ {
+  "no": 441,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛媛県",
+   "大洲市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "四万十市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 442,
+  "tableIndex": 4,
+  "fromLines": [
+   "大分県",
+   "大分市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "熊本県",
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "大川市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 443,
+  "tableIndex": 4,
+  "fromLines": [
+   "福岡県",
+   "大川市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "八代郡氷川町"
+  ],
+  "noteRaw": "事実上の起点は福岡県柳川市（正式な起点から事実上の起点までは国道208号線と重用）。"
+ },
+ {
+  "no": 444,
+  "tableIndex": 4,
+  "fromLines": [
+   "長崎県",
+   "大村市"
+  ],
+  "throughPrefs": [
+   "長崎県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "佐賀市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 445,
+  "tableIndex": 4,
+  "fromLines": [
+   "熊本県",
+   "熊本市中央区"
+  ],
+  "throughPrefs": [
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "人吉市"
+  ],
+  "noteRaw": "事実上の起点は熊本県上益城郡嘉島町（正式な起点から事実上の起点までは国道266号線と重用）。"
+ },
+ {
+  "no": 446,
+  "tableIndex": 4,
+  "fromLines": [
+   "宮崎県",
+   "日向市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "球磨郡湯前町"
+  ],
+  "noteRaw": "事実上の終点は宮崎県東臼杵郡美郷町（事実上の終点から正式な終点までは国道388号線→国道265号線→国道388号線と重用）。このため熊本県内には単独区間は存在しない。"
+ },
+ {
+  "no": 447,
+  "tableIndex": 4,
+  "fromLines": [
+   "宮崎県",
+   "えびの市"
+  ],
+  "throughPrefs": [
+   "宮崎県",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "出水市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 448,
+  "tableIndex": 4,
+  "fromLines": [
+   "鹿児島県",
+   "指宿市"
+  ],
+  "throughPrefs": [
+   "鹿児島県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "宮崎市"
+  ],
+  "noteRaw": "事実上の起点は鹿児島県肝属郡錦江町（正式な起点から事実上の起点までは国道269号線と重用）。 事実上の終点は宮崎県日南市（事実上の終点から正式な終点までは国道220号線と重用）。 海上寸断区間あり。"
+ },
+ {
+  "no": 449,
+  "tableIndex": 4,
+  "fromLines": [
+   "沖縄県",
+   "国頭郡本部町"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "名護市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 450,
+  "tableIndex": 4,
+  "fromLines": [
+   "北海道",
+   "上川郡比布町"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "紋別市"
+  ],
+  "noteRaw": "全区間がＥ39旭川・紋別自動車道になっている。 一般国道の路線を指定する政令では起点は北海道旭川市となっているが、Ｅ５道央自動車道とＥ39旭川・紋別自動車道の接続点は比布ジャンクション（北海道上川郡比布町北八線）になっていることやＥ５道央自動車道とＥ39旭川・紋別自動車道との重用関係が設定されていないことから本サイトではＥ39旭川・紋別自動車道の起点となる比布ジャンクションがある北海道上川郡比布町を起点と見なしている。 未開通区間あり。"
+ },
+ {
+  "no": 451,
+  "tableIndex": 4,
+  "fromLines": [
+   "北海道",
+   "留萌市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "滝川市"
+  ],
+  "noteRaw": "事実上の起点は北海道石狩市（正式な起点から事実上の起点までは国道231号線と重用）。"
+ },
+ {
+  "no": 452,
+  "tableIndex": 4,
+  "fromLines": [
+   "北海道",
+   "夕張市"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "旭川市"
+  ],
+  "noteRaw": "未開通区間あり（解消計画あり）。"
+ },
+ {
+  "no": 453,
+  "tableIndex": 4,
+  "fromLines": [
+   "北海道",
+   "札幌市豊平区"
+  ],
+  "throughPrefs": [
+   "北海道"
+  ],
+  "toLines": [
+   "北海道",
+   "伊達市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 454,
+  "tableIndex": 4,
+  "fromLines": [
+   "青森県",
+   "八戸市"
+  ],
+  "throughPrefs": [
+   "青森県",
+   "秋田県"
+  ],
+  "toLines": [
+   "青森県",
+   "南津軽郡大鰐町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 455,
+  "tableIndex": 4,
+  "fromLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "throughPrefs": [
+   "岩手県"
+  ],
+  "toLines": [
+   "岩手県",
+   "下閉伊郡岩泉町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 456,
+  "tableIndex": 4,
+  "fromLines": [
+   "岩手県",
+   "盛岡市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "気仙沼市"
+  ],
+  "noteRaw": "事実上の起点は岩手県紫波郡紫波町（正式な起点から事実上の起点までは国道396号線と重用）。 事実上の終点は宮城県登米市（事実上の終点から正式な終点までは国道346号線と重用）。"
+ },
+ {
+  "no": 457,
+  "tableIndex": 4,
+  "fromLines": [
+   "岩手県",
+   "一関市"
+  ],
+  "throughPrefs": [
+   "岩手県",
+   "宮城県"
+  ],
+  "toLines": [
+   "宮城県",
+   "白石市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 458,
+  "tableIndex": 4,
+  "fromLines": [
+   "山形県",
+   "新庄市"
+  ],
+  "throughPrefs": [
+   "山形県"
+  ],
+  "toLines": [
+   "山形県",
+   "上山市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 459,
+  "tableIndex": 4,
+  "fromLines": [
+   "新潟県",
+   "新潟市中央区"
+  ],
+  "throughPrefs": [
+   "新潟県",
+   "福島県"
+  ],
+  "toLines": [
+   "福島県",
+   "双葉郡浪江町"
+  ],
+  "noteRaw": "事実上の起点は新潟県東蒲原郡阿賀町（正式な起点から事実上の起点までは国道７号線→国道49号線と重用）。"
+ },
+ {
+  "no": 460,
+  "tableIndex": 4,
+  "fromLines": [
+   "新潟県",
+   "新発田市"
+  ],
+  "throughPrefs": [
+   "新潟県"
+  ],
+  "toLines": [
+   "新潟県",
+   "柏崎市"
+  ],
+  "noteRaw": "事実上の終点は新潟市西蒲区（事実上の終点から正式な終点までは国道402号線→国道352号線と重用）。"
+ },
+ {
+  "no": 461,
+  "tableIndex": 4,
+  "fromLines": [
+   "栃木県",
+   "日光市"
+  ],
+  "throughPrefs": [
+   "栃木県",
+   "茨城県"
+  ],
+  "toLines": [
+   "茨城県",
+   "日立市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 462,
+  "tableIndex": 4,
+  "fromLines": [
+   "長野県",
+   "佐久市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "群馬県",
+   "埼玉県"
+  ],
+  "toLines": [
+   "群馬県",
+   "伊勢崎市"
+  ],
+  "noteRaw": "事実上の起点は群馬県多野郡神流町（正式な起点から事実上の起点までは国道299号線と重用）。このため長野県内には単独区間は存在しない。"
+ },
+ {
+  "no": 463,
+  "tableIndex": 4,
+  "fromLines": [
+   "埼玉県",
+   "越谷市"
+  ],
+  "throughPrefs": [
+   "埼玉県"
+  ],
+  "toLines": [
+   "埼玉県",
+   "入間市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 464,
+  "tableIndex": 4,
+  "fromLines": [
+   "千葉県",
+   "松戸市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "成田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 465,
+  "tableIndex": 4,
+  "fromLines": [
+   "千葉県",
+   "茂原市"
+  ],
+  "throughPrefs": [
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "富津市"
+  ],
+  "noteRaw": "事実上の起点は千葉県いすみ市（正式な起点から事実上の起点までは国道128号線と重用）。"
+ },
+ {
+  "no": 466,
+  "tableIndex": 4,
+  "fromLines": [
+   "東京都",
+   "世田谷区"
+  ],
+  "throughPrefs": [
+   "東京都",
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "横浜市神奈川区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 467,
+  "tableIndex": 4,
+  "fromLines": [
+   "神奈川県",
+   "大和市"
+  ],
+  "throughPrefs": [
+   "神奈川県"
+  ],
+  "toLines": [
+   "神奈川県",
+   "藤沢市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 468,
+  "tableIndex": 4,
+  "fromLines": [
+   "神奈川県",
+   "横浜市金沢区"
+  ],
+  "throughPrefs": [
+   "神奈川県",
+   "東京都",
+   "埼玉県",
+   "茨城県",
+   "千葉県"
+  ],
+  "toLines": [
+   "千葉県",
+   "木更津市"
+  ],
+  "noteRaw": "全区間がＣ４首都圏中央連絡自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 469,
+  "tableIndex": 4,
+  "fromLines": [
+   "静岡県",
+   "御殿場市"
+  ],
+  "throughPrefs": [
+   "静岡県",
+   "山梨県"
+  ],
+  "toLines": [
+   "山梨県",
+   "南巨摩郡南部町"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 470,
+  "tableIndex": 4,
+  "fromLines": [
+   "石川県",
+   "輪島市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "富山県"
+  ],
+  "toLines": [
+   "富山県",
+   "小矢部市"
+  ],
+  "noteRaw": "全区間がＥ41能越自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 471,
+  "tableIndex": 4,
+  "fromLines": [
+   "石川県",
+   "羽咋市"
+  ],
+  "throughPrefs": [
+   "石川県",
+   "富山県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "高山市"
+  ],
+  "noteRaw": "事実上の起点は石川県羽咋郡宝達志水町（正式な起点から事実上の起点までは国道249号線と重用）。"
+ },
+ {
+  "no": 472,
+  "tableIndex": 4,
+  "fromLines": [
+   "富山県",
+   "射水市"
+  ],
+  "throughPrefs": [
+   "富山県",
+   "岐阜県"
+  ],
+  "toLines": [
+   "岐阜県",
+   "郡上市"
+  ],
+  "noteRaw": "通行不能区間あり（解消計画あり）。"
+ },
+ {
+  "no": 473,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛知県",
+   "蒲郡市"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "静岡県"
+  ],
+  "toLines": [
+   "静岡県",
+   "牧之原市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 474,
+  "tableIndex": 4,
+  "fromLines": [
+   "長野県",
+   "飯田市"
+  ],
+  "throughPrefs": [
+   "長野県",
+   "静岡県",
+   "愛知県"
+  ],
+  "toLines": [
+   "静岡県",
+   "浜松市浜名区"
+  ],
+  "noteRaw": "全区間がＥ69三遠南信自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 475,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛知県",
+   "豊田市"
+  ],
+  "throughPrefs": [
+   "愛知県",
+   "岐阜県",
+   "三重県"
+  ],
+  "toLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "noteRaw": "全区間がＣ３東海環状自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 476,
+  "tableIndex": 4,
+  "fromLines": [
+   "福井県",
+   "大野市"
+  ],
+  "throughPrefs": [
+   "福井県"
+  ],
+  "toLines": [
+   "福井県",
+   "敦賀市"
+  ],
+  "noteRaw": "通行不能区間あり。"
+ },
+ {
+  "no": 477,
+  "tableIndex": 4,
+  "fromLines": [
+   "三重県",
+   "四日市市"
+  ],
+  "throughPrefs": [
+   "三重県",
+   "滋賀県",
+   "京都府",
+   "大阪府",
+   "兵庫県"
+  ],
+  "toLines": [
+   "大阪府",
+   "池田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 478,
+  "tableIndex": 4,
+  "fromLines": [
+   "京都府",
+   "宮津市"
+  ],
+  "throughPrefs": [
+   "京都府"
+  ],
+  "toLines": [
+   "京都府",
+   "久世郡久御山町"
+  ],
+  "noteRaw": "全区間がＥ９京都縦貫自動車道になっている。"
+ },
+ {
+  "no": 479,
+  "tableIndex": 4,
+  "fromLines": [
+   "大阪府",
+   "豊中市"
+  ],
+  "throughPrefs": [
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "大阪市住之江区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 480,
+  "tableIndex": 4,
+  "fromLines": [
+   "大阪府",
+   "泉大津市"
+  ],
+  "throughPrefs": [
+   "大阪府",
+   "和歌山県"
+  ],
+  "toLines": [
+   "和歌山県",
+   "有田市"
+  ],
+  "noteRaw": "一般国道の路線を指定する政令では起点は大阪府和泉市となっている。起点となる穴田交差点（場所はこちら）の区域に和泉市の行政区域がかかっている（その場所はこちら）ので間違いではないのだがこちらで記している本サイトの規定により起点を大阪府泉大津市としている。"
+ },
+ {
+  "no": 481,
+  "tableIndex": 4,
+  "fromLines": [
+   "大阪府",
+   "泉佐野市"
+  ],
+  "throughPrefs": [
+   "大阪府"
+  ],
+  "toLines": [
+   "大阪府",
+   "泉佐野市"
+  ],
+  "noteRaw": "関西国際空港とＥ71関西空港自動車道上之郷インターチェンジ（大阪府泉佐野市上之郷）を結ぶ路線。 起点〜Ｅ71関西国際空港連絡橋／Ｅ71関西空港自動車道りんくうジャンクション・インターチェンジ（大阪市泉佐野市りんくう往来北）間はＥ71関西国際空港連絡橋になっている。"
+ },
+ {
+  "no": 482,
+  "tableIndex": 4,
+  "fromLines": [
+   "京都府",
+   "宮津市"
+  ],
+  "throughPrefs": [
+   "京都府",
+   "兵庫県",
+   "鳥取県",
+   "岡山県"
+  ],
+  "toLines": [
+   "鳥取県",
+   "米子市"
+  ],
+  "noteRaw": "事実上の起点は京都府京丹後市（正式な起点から事実上の起点までは国道178号線と重用）。 事実上の終点は鳥取県日野郡江府町（事実上の終点から正式な終点までは国道181号線と重用）。"
+ },
+ {
+  "no": 483,
+  "tableIndex": 4,
+  "fromLines": [
+   "兵庫県",
+   "豊岡市"
+  ],
+  "throughPrefs": [
+   "兵庫県"
+  ],
+  "toLines": [
+   "兵庫県",
+   "丹波市"
+  ],
+  "noteRaw": "全区間がＥ72北近畿・豊岡自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 484,
+  "tableIndex": 4,
+  "fromLines": [
+   "岡山県",
+   "備前市"
+  ],
+  "throughPrefs": [
+   "岡山県"
+  ],
+  "toLines": [
+   "岡山県",
+   "高梁市"
+  ],
+  "noteRaw": "事実上の起点は岡山県赤磐市（正式な起点から事実上の起点までは国道374号線と重用）。"
+ },
+ {
+  "no": 485,
+  "tableIndex": 4,
+  "fromLines": [
+   "島根県",
+   "隠岐郡隠岐の島町"
+  ],
+  "throughPrefs": [
+   "島根県"
+  ],
+  "toLines": [
+   "島根県",
+   "松江市"
+  ],
+  "noteRaw": "海上寸断区間あり。"
+ },
+ {
+  "no": 486,
+  "tableIndex": 4,
+  "fromLines": [
+   "岡山県",
+   "総社市"
+  ],
+  "throughPrefs": [
+   "岡山県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "東広島市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 487,
+  "tableIndex": 4,
+  "fromLines": [
+   "広島県",
+   "呉市"
+  ],
+  "throughPrefs": [
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "広島市南区"
+  ],
+  "noteRaw": "海上寸断区間あり。 通行不能区間あり（区域が広島電鉄宇品線の線路敷に転用されたため生じたものである）。"
+ },
+ {
+  "no": 488,
+  "tableIndex": 4,
+  "fromLines": [
+   "島根県",
+   "益田市"
+  ],
+  "throughPrefs": [
+   "島根県",
+   "広島県"
+  ],
+  "toLines": [
+   "広島県",
+   "廿日市市"
+  ],
+  "noteRaw": "事実上の終点は広島県広島市佐伯区（事実上の終点から正式な終点までは国道433号線と重用）。"
+ },
+ {
+  "no": 489,
+  "tableIndex": 4,
+  "fromLines": [
+   "山口県",
+   "周南市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "山口市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 490,
+  "tableIndex": 4,
+  "fromLines": [
+   "山口県",
+   "宇部市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "萩市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 491,
+  "tableIndex": 4,
+  "fromLines": [
+   "山口県",
+   "下関市"
+  ],
+  "throughPrefs": [
+   "山口県"
+  ],
+  "toLines": [
+   "山口県",
+   "長門市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 492,
+  "tableIndex": 4,
+  "fromLines": [
+   "香川県",
+   "高松市"
+  ],
+  "throughPrefs": [
+   "香川県",
+   "徳島県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "長岡郡大豊町"
+  ],
+  "noteRaw": "事実上の起点は徳島県美馬市（正式な起点から事実上の起点までは国道193号線と重用）。このため香川県内には単独区間は存在しない。 事実上の終点は徳島県美馬市（事実上の終点から正式な終点までは国道439号線と重用）。このため高知県内には単独区間は存在しない。 このため徳島県美馬市内にしか単独区間が存在しない路線になっている。"
+ },
+ {
+  "no": 493,
+  "tableIndex": 4,
+  "fromLines": [
+   "高知県",
+   "高知市"
+  ],
+  "throughPrefs": [
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "安芸郡東洋町"
+  ],
+  "noteRaw": "事実上の起点は高知県安芸郡奈半利町（正式な起点から事実上の起点までは国道55号線と重用）。"
+ },
+ {
+  "no": 494,
+  "tableIndex": 4,
+  "fromLines": [
+   "愛媛県",
+   "松山市"
+  ],
+  "throughPrefs": [
+   "愛媛県",
+   "高知県"
+  ],
+  "toLines": [
+   "高知県",
+   "須崎市"
+  ],
+  "noteRaw": "事実上の起点は愛媛県東温市（正式な起点から事実上の起点までは国道11号線と重用）。"
+ },
+ {
+  "no": 495,
+  "tableIndex": 4,
+  "fromLines": [
+   "福岡県",
+   "北九州市若松区"
+  ],
+  "throughPrefs": [
+   "福岡県"
+  ],
+  "toLines": [
+   "福岡県",
+   "福岡市東区"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 496,
+  "tableIndex": 4,
+  "fromLines": [
+   "福岡県",
+   "行橋市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "日田市"
+  ],
+  "noteRaw": "事実上の終点は大分県中津市（事実上の終点から正式な終点までは国道212号線と重用）。"
+ },
+ {
+  "no": 497,
+  "tableIndex": 4,
+  "fromLines": [
+   "福岡県",
+   "福岡市西区"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "武雄市"
+  ],
+  "noteRaw": "全区間がＥ35西九州自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 498,
+  "tableIndex": 4,
+  "fromLines": [
+   "佐賀県",
+   "鹿島市"
+  ],
+  "throughPrefs": [
+   "佐賀県",
+   "長崎県"
+  ],
+  "toLines": [
+   "長崎県",
+   "佐世保市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 499,
+  "tableIndex": 4,
+  "fromLines": [
+   "長崎県",
+   "長崎市"
+  ],
+  "throughPrefs": [
+   "長崎県",
+   "（熊本県）",
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "阿久根市"
+  ],
+  "noteRaw": "海上寸断区間あり。 熊本県内には陸上部分がないが、西方の海上を通過していることから経由都道府県と見なしている。"
+ },
+ {
+  "no": 500,
+  "tableIndex": 4,
+  "fromLines": [
+   "大分県",
+   "別府市"
+  ],
+  "throughPrefs": [
+   "大分県",
+   "福岡県",
+   "佐賀県"
+  ],
+  "toLines": [
+   "佐賀県",
+   "鳥栖市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 501,
+  "tableIndex": 5,
+  "fromLines": [
+   "福岡県",
+   "大牟田市"
+  ],
+  "throughPrefs": [
+   "福岡県",
+   "熊本県"
+  ],
+  "toLines": [
+   "熊本県",
+   "宇土市"
+  ],
+  "noteRaw": "事実上の起点は熊本県玉名郡長洲町（正式な起点から事実上の起点までは国道389号線と重用）。このため福岡県内には単独区間は存在しない。"
+ },
+ {
+  "no": 502,
+  "tableIndex": 5,
+  "fromLines": [
+   "大分県",
+   "臼杵市"
+  ],
+  "throughPrefs": [
+   "大分県"
+  ],
+  "toLines": [
+   "大分県",
+   "竹田市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 503,
+  "tableIndex": 5,
+  "fromLines": [
+   "熊本県",
+   "阿蘇郡高森町"
+  ],
+  "throughPrefs": [
+   "熊本県",
+   "宮崎県"
+  ],
+  "toLines": [
+   "宮崎県",
+   "日向市"
+  ],
+  "noteRaw": "事実上の起点は宮崎県西臼杵郡五ヶ瀬町（正式な起点から事実上の起点までは国道265号線→国道218号線と重用）。このため熊本県内には単独区間は存在しない。 事実上の終点は宮崎県東臼杵郡諸塚村（事実上の終点から正式な終点までは国道327号線と重用）。"
+ },
+ {
+  "no": 504,
+  "tableIndex": 5,
+  "fromLines": [
+   "鹿児島県",
+   "鹿屋市"
+  ],
+  "throughPrefs": [
+   "鹿児島県"
+  ],
+  "toLines": [
+   "鹿児島県",
+   "出水市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 505,
+  "tableIndex": 5,
+  "fromLines": [
+   "沖縄県",
+   "国頭郡本部町"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "名護市"
+  ],
+  "noteRaw": ""
+ },
+ {
+  "no": 506,
+  "tableIndex": 5,
+  "fromLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "中頭郡西原町"
+  ],
+  "noteRaw": "全区間がＥ58那覇空港自動車道になっている。 未開通区間あり。"
+ },
+ {
+  "no": 507,
+  "tableIndex": 5,
+  "fromLines": [
+   "沖縄県",
+   "糸満市"
+  ],
+  "throughPrefs": [
+   "沖縄県"
+  ],
+  "toLines": [
+   "沖縄県",
+   "那覇市"
+  ],
+  "noteRaw": "事実上の起点は沖縄県島尻郡八重瀬町（正式な起点から事実上の起点までは国道331号線と重用）。"
+ }
+]

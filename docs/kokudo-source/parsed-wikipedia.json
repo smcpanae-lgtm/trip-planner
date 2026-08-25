@@ -1,0 +1,3215 @@
+[
+ {
+  "no": 1,
+  "fromText": "東京都中央区",
+  "toText": "大阪府大阪市北区",
+  "totalKm": "764.6",
+  "realKm": "764.6"
+ },
+ {
+  "no": 2,
+  "fromText": "大阪府大阪市北区",
+  "toText": "福岡県北九州市門司区",
+  "totalKm": "690.4",
+  "realKm": "690.4"
+ },
+ {
+  "no": 3,
+  "fromText": "福岡県北九州市門司区",
+  "toText": "鹿児島県鹿児島市",
+  "totalKm": "532.7",
+  "realKm": "521.8"
+ },
+ {
+  "no": 4,
+  "fromText": "東京都中央区",
+  "toText": "青森県青森市",
+  "totalKm": "838.7",
+  "realKm": "838.7"
+ },
+ {
+  "no": 5,
+  "fromText": "北海道函館市",
+  "toText": "北海道札幌市中央区",
+  "totalKm": "301.0",
+  "realKm": "301.0"
+ },
+ {
+  "no": 6,
+  "fromText": "東京都中央区",
+  "toText": "宮城県仙台市宮城野区",
+  "totalKm": "412.2",
+  "realKm": "390.2"
+ },
+ {
+  "no": 7,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "青森県青森市",
+  "totalKm": "585.9",
+  "realKm": "585.9"
+ },
+ {
+  "no": 8,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "京都府京都市下京区",
+  "totalKm": "601.6",
+  "realKm": "569.9"
+ },
+ {
+  "no": 9,
+  "fromText": "京都府京都市下京区",
+  "toText": "山口県下関市",
+  "totalKm": "833.1",
+  "realKm": "785.9"
+ },
+ {
+  "no": 10,
+  "fromText": "福岡県北九州市門司区",
+  "toText": "鹿児島県鹿児島市",
+  "totalKm": "555.5",
+  "realKm": "546.3"
+ },
+ {
+  "no": 11,
+  "fromText": "徳島県徳島市",
+  "toText": "愛媛県松山市",
+  "totalKm": "263.4",
+  "realKm": "263.4"
+ },
+ {
+  "no": 12,
+  "fromText": "北海道札幌市中央区",
+  "toText": "北海道旭川市",
+  "totalKm": "156.8",
+  "realKm": "156.8"
+ },
+ {
+  "no": 13,
+  "fromText": "福島県福島市",
+  "toText": "秋田県秋田市",
+  "totalKm": "395.3",
+  "realKm": "395.3"
+ },
+ {
+  "no": 14,
+  "fromText": "東京都中央区",
+  "toText": "千葉県千葉市中央区",
+  "totalKm": "65.0",
+  "realKm": "63.2"
+ },
+ {
+  "no": 15,
+  "fromText": "東京都中央区",
+  "toText": "神奈川県横浜市神奈川区",
+  "totalKm": "29.6",
+  "realKm": "29.4"
+ },
+ {
+  "no": 16,
+  "fromText": "神奈川県横浜市西区",
+  "toText": "神奈川県横浜市西区",
+  "totalKm": "348.4",
+  "realKm": "326.2"
+ },
+ {
+  "no": 17,
+  "fromText": "東京都中央区",
+  "toText": "新潟県新潟市中央区",
+  "totalKm": "466.1",
+  "realKm": "400.6"
+ },
+ {
+  "no": 18,
+  "fromText": "群馬県高崎市",
+  "toText": "新潟県上越市",
+  "totalKm": "233.2",
+  "realKm": "233.2"
+ },
+ {
+  "no": 19,
+  "fromText": "愛知県名古屋市熱田区",
+  "toText": "長野県長野市",
+  "totalKm": "272.7",
+  "realKm": "272.7"
+ },
+ {
+  "no": 20,
+  "fromText": "東京都中央区",
+  "toText": "長野県塩尻市",
+  "totalKm": "231.9",
+  "realKm": "228.5"
+ },
+ {
+  "no": 21,
+  "fromText": "岐阜県瑞浪市",
+  "toText": "滋賀県米原市",
+  "totalKm": "114.7",
+  "realKm": "110.3"
+ },
+ {
+  "no": 22,
+  "fromText": "愛知県名古屋市熱田区",
+  "toText": "岐阜県岐阜市",
+  "totalKm": "37.0",
+  "realKm": "28.4"
+ },
+ {
+  "no": 23,
+  "fromText": "愛知県豊橋市",
+  "toText": "三重県伊勢市",
+  "totalKm": "247.5",
+  "realKm": "247.5"
+ },
+ {
+  "no": 24,
+  "fromText": "京都府京都市下京区",
+  "toText": "和歌山県和歌山市",
+  "totalKm": "235.6",
+  "realKm": "235.6"
+ },
+ {
+  "no": 25,
+  "fromText": "三重県四日市市",
+  "toText": "大阪府大阪市北区",
+  "totalKm": "230.8",
+  "realKm": "196.9"
+ },
+ {
+  "no": 26,
+  "fromText": "大阪府大阪市北区",
+  "toText": "和歌山県和歌山市",
+  "totalKm": "71.5",
+  "realKm": "68.1"
+ },
+ {
+  "no": 27,
+  "fromText": "福井県敦賀市",
+  "toText": "京都府船井郡京丹波町",
+  "totalKm": "136.2",
+  "realKm": "135.0"
+ },
+ {
+  "no": 28,
+  "fromText": "兵庫県神戸市中央区",
+  "toText": "徳島県徳島市",
+  "totalKm": "200.9",
+  "realKm": "157.7"
+ },
+ {
+  "no": 29,
+  "fromText": "兵庫県姫路市",
+  "toText": "鳥取県鳥取市",
+  "totalKm": "118.9",
+  "realKm": "117.6"
+ },
+ {
+  "no": 30,
+  "fromText": "岡山県岡山市北区",
+  "toText": "香川県高松市",
+  "totalKm": "97.4",
+  "realKm": "63.2"
+ },
+ {
+  "no": 31,
+  "fromText": "広島県安芸郡海田町",
+  "toText": "広島県呉市",
+  "totalKm": "35.5",
+  "realKm": "35.5"
+ },
+ {
+  "no": 32,
+  "fromText": "香川県高松市",
+  "toText": "高知県高知市",
+  "totalKm": "136.7",
+  "realKm": "132.9"
+ },
+ {
+  "no": 33,
+  "fromText": "高知県高知市",
+  "toText": "愛媛県松山市",
+  "totalKm": "130.5",
+  "realKm": "127.5"
+ },
+ {
+  "no": 34,
+  "fromText": "佐賀県鳥栖市",
+  "toText": "長崎県長崎市",
+  "totalKm": "150.7",
+  "realKm": "150.7"
+ },
+ {
+  "no": 35,
+  "fromText": "佐賀県武雄市",
+  "toText": "長崎県佐世保市",
+  "totalKm": "35.3",
+  "realKm": "35.3"
+ },
+ {
+  "no": 36,
+  "fromText": "北海道札幌市中央区",
+  "toText": "北海道室蘭市",
+  "totalKm": "133.8",
+  "realKm": "133.7"
+ },
+ {
+  "no": 37,
+  "fromText": "北海道山越郡長万部町",
+  "toText": "北海道室蘭市",
+  "totalKm": "84.3",
+  "realKm": "84.3"
+ },
+ {
+  "no": 38,
+  "fromText": "北海道滝川市",
+  "toText": "北海道釧路市",
+  "totalKm": "323.3",
+  "realKm": "322.7"
+ },
+ {
+  "no": 39,
+  "fromText": "北海道旭川市",
+  "toText": "北海道網走市",
+  "totalKm": "235.0",
+  "realKm": "235.0"
+ },
+ {
+  "no": 40,
+  "fromText": "北海道旭川市",
+  "toText": "北海道稚内市",
+  "totalKm": "300.3",
+  "realKm": "300.2"
+ },
+ {
+  "no": 41,
+  "fromText": "愛知県名古屋市東区",
+  "toText": "富山県富山市",
+  "totalKm": "246.4",
+  "realKm": "246.4"
+ },
+ {
+  "no": 42,
+  "fromText": "静岡県浜松市中央区",
+  "toText": "和歌山県和歌山市",
+  "totalKm": "531.4",
+  "realKm": "484.0"
+ },
+ {
+  "no": 43,
+  "fromText": "大阪府大阪市西成区",
+  "toText": "兵庫県神戸市灘区",
+  "totalKm": "30.0",
+  "realKm": "30.0"
+ },
+ {
+  "no": 44,
+  "fromText": "北海道釧路市",
+  "toText": "北海道根室市",
+  "totalKm": "137.7",
+  "realKm": "137.1"
+ },
+ {
+  "no": 45,
+  "fromText": "宮城県仙台市青葉区",
+  "toText": "青森県青森市",
+  "totalKm": "870.8",
+  "realKm": "794.8"
+ },
+ {
+  "no": 46,
+  "fromText": "岩手県盛岡市",
+  "toText": "秋田県秋田市",
+  "totalKm": "101.3",
+  "realKm": "93.3"
+ },
+ {
+  "no": 47,
+  "fromText": "宮城県仙台市宮城野区",
+  "toText": "山形県酒田市",
+  "totalKm": "194.1",
+  "realKm": "152.2"
+ },
+ {
+  "no": 48,
+  "fromText": "宮城県仙台市青葉区",
+  "toText": "山形県山形市",
+  "totalKm": "75.9",
+  "realKm": "54.0"
+ },
+ {
+  "no": 49,
+  "fromText": "福島県いわき市",
+  "toText": "新潟県新潟市中央区",
+  "totalKm": "253.4",
+  "realKm": "251.3"
+ },
+ {
+  "no": 50,
+  "fromText": "群馬県前橋市",
+  "toText": "茨城県水戸市",
+  "totalKm": "155.2",
+  "realKm": "155.2"
+ },
+ {
+  "no": 51,
+  "fromText": "千葉県千葉市中央区",
+  "toText": "茨城県水戸市",
+  "totalKm": "127.6",
+  "realKm": "127.6"
+ },
+ {
+  "no": 52,
+  "fromText": "静岡県静岡市清水区",
+  "toText": "山梨県甲府市",
+  "totalKm": "96.2",
+  "realKm": "92.2"
+ },
+ {
+  "no": 53,
+  "fromText": "岡山県岡山市北区",
+  "toText": "鳥取県鳥取市",
+  "totalKm": "146.6",
+  "realKm": "139.9"
+ },
+ {
+  "no": 54,
+  "fromText": "広島県広島市中区",
+  "toText": "島根県松江市",
+  "totalKm": "171.5",
+  "realKm": "154.4"
+ },
+ {
+  "no": 55,
+  "fromText": "徳島県徳島市",
+  "toText": "高知県高知市",
+  "totalKm": "246.2",
+  "realKm": "237.5"
+ },
+ {
+  "no": 56,
+  "fromText": "高知県高知市",
+  "toText": "愛媛県松山市",
+  "totalKm": "353.5",
+  "realKm": "351.3"
+ },
+ {
+  "no": 57,
+  "fromText": "大分県大分市",
+  "toText": "長崎県長崎市",
+  "totalKm": "296.7",
+  "realKm": "216.7"
+ },
+ {
+  "no": 58,
+  "fromText": "鹿児島県鹿児島市",
+  "toText": "沖縄県那覇市",
+  "totalKm": "881.9",
+  "realKm": "272.4"
+ },
+ {
+  "no": 101,
+  "fromText": "青森県青森市",
+  "toText": "秋田県秋田市",
+  "totalKm": "271.3",
+  "realKm": "225.7"
+ },
+ {
+  "no": 102,
+  "fromText": "青森県弘前市",
+  "toText": "青森県十和田市",
+  "totalKm": "113.8",
+  "realKm": "112.8"
+ },
+ {
+  "no": 103,
+  "fromText": "青森県青森市",
+  "toText": "秋田県大館市",
+  "totalKm": "141.6",
+  "realKm": "126.9"
+ },
+ {
+  "no": 104,
+  "fromText": "青森県八戸市",
+  "toText": "秋田県大館市",
+  "totalKm": "124.1",
+  "realKm": "62.4"
+ },
+ {
+  "no": 105,
+  "fromText": "秋田県由利本荘市",
+  "toText": "秋田県北秋田市",
+  "totalKm": "179.2",
+  "realKm": "179.2"
+ },
+ {
+  "no": 106,
+  "fromText": "岩手県宮古市",
+  "toText": "岩手県盛岡市",
+  "totalKm": "137.1",
+  "realKm": "137.1"
+ },
+ {
+  "no": 107,
+  "fromText": "岩手県大船渡市",
+  "toText": "秋田県由利本荘市",
+  "totalKm": "192.9",
+  "realKm": "189.5"
+ },
+ {
+  "no": 108,
+  "fromText": "宮城県石巻市",
+  "toText": "秋田県由利本荘市",
+  "totalKm": "196.2",
+  "realKm": "157.6"
+ },
+ {
+  "no": 112,
+  "fromText": "山形県山形市",
+  "toText": "山形県酒田市",
+  "totalKm": "166.0",
+  "realKm": "162.4"
+ },
+ {
+  "no": 113,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "福島県相馬市",
+  "totalKm": "230.6",
+  "realKm": "229.1"
+ },
+ {
+  "no": 114,
+  "fromText": "福島県福島市",
+  "toText": "福島県双葉郡浪江町",
+  "totalKm": "70.5",
+  "realKm": "70.5"
+ },
+ {
+  "no": 115,
+  "fromText": "福島県相馬市",
+  "toText": "福島県耶麻郡猪苗代町",
+  "totalKm": "159.5",
+  "realKm": "155.8"
+ },
+ {
+  "no": 116,
+  "fromText": "新潟県柏崎市",
+  "toText": "新潟県新潟市中央区",
+  "totalKm": "78.9",
+  "realKm": "78.9"
+ },
+ {
+  "no": 117,
+  "fromText": "長野県長野市",
+  "toText": "新潟県小千谷市",
+  "totalKm": "123.3",
+  "realKm": "106.2"
+ },
+ {
+  "no": 118,
+  "fromText": "茨城県水戸市",
+  "toText": "福島県会津若松市",
+  "totalKm": "214.6",
+  "realKm": "213.5"
+ },
+ {
+  "no": 119,
+  "fromText": "栃木県日光市",
+  "toText": "栃木県宇都宮市",
+  "totalKm": "69.7",
+  "realKm": "69.7"
+ },
+ {
+  "no": 120,
+  "fromText": "栃木県日光市",
+  "toText": "群馬県沼田市",
+  "totalKm": "90.3",
+  "realKm": "90.3"
+ },
+ {
+  "no": 121,
+  "fromText": "山形県米沢市",
+  "toText": "栃木県芳賀郡益子町",
+  "totalKm": "278.2",
+  "realKm": "251.9"
+ },
+ {
+  "no": 122,
+  "fromText": "栃木県日光市",
+  "toText": "東京都豊島区",
+  "totalKm": "163.4",
+  "realKm": "150.5"
+ },
+ {
+  "no": 123,
+  "fromText": "栃木県宇都宮市",
+  "toText": "茨城県水戸市",
+  "totalKm": "71.1",
+  "realKm": "71.1"
+ },
+ {
+  "no": 124,
+  "fromText": "千葉県銚子市",
+  "toText": "茨城県水戸市",
+  "totalKm": "99.6",
+  "realKm": "45.8"
+ },
+ {
+  "no": 125,
+  "fromText": "千葉県香取市",
+  "toText": "埼玉県熊谷市",
+  "totalKm": "147.5",
+  "realKm": "137.8"
+ },
+ {
+  "no": 126,
+  "fromText": "千葉県銚子市",
+  "toText": "千葉県千葉市中央区",
+  "totalKm": "112.0",
+  "realKm": "111.9"
+ },
+ {
+  "no": 127,
+  "fromText": "千葉県館山市",
+  "toText": "千葉県木更津市",
+  "totalKm": "74.3",
+  "realKm": "74.3"
+ },
+ {
+  "no": 128,
+  "fromText": "千葉県館山市",
+  "toText": "千葉県千葉市中央区",
+  "totalKm": "128.6",
+  "realKm": "128.6"
+ },
+ {
+  "no": 129,
+  "fromText": "神奈川県平塚市",
+  "toText": "神奈川県相模原市",
+  "totalKm": "32.5",
+  "realKm": "27.9"
+ },
+ {
+  "no": 130,
+  "fromText": "東京都港区東京港",
+  "toText": "東京都港区芝一丁目",
+  "totalKm": "0.5",
+  "realKm": "0.5"
+ },
+ {
+  "no": 131,
+  "fromText": "東京都大田区羽田空港",
+  "toText": "東京都大田区大森東二丁目",
+  "totalKm": "3.6",
+  "realKm": "3.6"
+ },
+ {
+  "no": 132,
+  "fromText": "神奈川県川崎市川崎区川崎港",
+  "toText": "神奈川県川崎市川崎区宮前町",
+  "totalKm": "4.6",
+  "realKm": "4.6"
+ },
+ {
+  "no": 133,
+  "fromText": "神奈川県横浜市中区横浜港",
+  "toText": "神奈川県横浜市中区桜木町",
+  "totalKm": "1.4",
+  "realKm": "1.4"
+ },
+ {
+  "no": 134,
+  "fromText": "神奈川県横須賀市",
+  "toText": "神奈川県中郡大磯町",
+  "totalKm": "60.5",
+  "realKm": "60.5"
+ },
+ {
+  "no": 135,
+  "fromText": "静岡県下田市",
+  "toText": "神奈川県小田原市",
+  "totalKm": "104.5",
+  "realKm": "104.5"
+ },
+ {
+  "no": 136,
+  "fromText": "静岡県下田市",
+  "toText": "静岡県三島市",
+  "totalKm": "129.6",
+  "realKm": "129.6"
+ },
+ {
+  "no": 137,
+  "fromText": "山梨県富士吉田市",
+  "toText": "山梨県笛吹市",
+  "totalKm": "35.6",
+  "realKm": "34.2"
+ },
+ {
+  "no": 138,
+  "fromText": "山梨県富士吉田市",
+  "toText": "神奈川県小田原市",
+  "totalKm": "73.1",
+  "realKm": "65.9"
+ },
+ {
+  "no": 139,
+  "fromText": "静岡県富士市",
+  "toText": "東京都西多摩郡奥多摩町",
+  "totalKm": "133.2",
+  "realKm": "131.0"
+ },
+ {
+  "no": 140,
+  "fromText": "埼玉県熊谷市",
+  "toText": "山梨県南巨摩郡富士川町",
+  "totalKm": "217.8",
+  "realKm": "217.7"
+ },
+ {
+  "no": 141,
+  "fromText": "山梨県韮崎市",
+  "toText": "長野県上田市",
+  "totalKm": "122.8",
+  "realKm": "91.6"
+ },
+ {
+  "no": 142,
+  "fromText": "長野県北佐久郡軽井沢町",
+  "toText": "長野県諏訪郡下諏訪町",
+  "totalKm": "91.1",
+  "realKm": "67.4"
+ },
+ {
+  "no": 143,
+  "fromText": "長野県松本市",
+  "toText": "長野県上田市",
+  "totalKm": "56.0",
+  "realKm": "56.0"
+ },
+ {
+  "no": 144,
+  "fromText": "群馬県吾妻郡長野原町",
+  "toText": "長野県上田市",
+  "totalKm": "44.2",
+  "realKm": "44.2"
+ },
+ {
+  "no": 145,
+  "fromText": "群馬県吾妻郡長野原町",
+  "toText": "群馬県沼田市",
+  "totalKm": "51.4",
+  "realKm": "51.4"
+ },
+ {
+  "no": 146,
+  "fromText": "群馬県吾妻郡長野原町",
+  "toText": "長野県北佐久郡軽井沢町",
+  "totalKm": "30.3",
+  "realKm": "30.3"
+ },
+ {
+  "no": 147,
+  "fromText": "長野県大町市",
+  "toText": "長野県松本市",
+  "totalKm": "31.4",
+  "realKm": "31.4"
+ },
+ {
+  "no": 148,
+  "fromText": "長野県大町市",
+  "toText": "新潟県糸魚川市",
+  "totalKm": "70.4",
+  "realKm": "70.0"
+ },
+ {
+  "no": 149,
+  "fromText": "静岡県静岡市清水区清水港",
+  "toText": "静岡県静岡市清水区大和町",
+  "totalKm": "2.6",
+  "realKm": "2.6"
+ },
+ {
+  "no": 150,
+  "fromText": "静岡県静岡市清水区",
+  "toText": "静岡県浜松市中央区",
+  "totalKm": "127.6",
+  "realKm": "127.6"
+ },
+ {
+  "no": 151,
+  "fromText": "長野県飯田市",
+  "toText": "愛知県豊橋市",
+  "totalKm": "131.6",
+  "realKm": "127.8"
+ },
+ {
+  "no": 152,
+  "fromText": "長野県上田市",
+  "toText": "静岡県浜松市中央区",
+  "totalKm": "266.2",
+  "realKm": "257.7"
+ },
+ {
+  "no": 153,
+  "fromText": "愛知県名古屋市東区",
+  "toText": "長野県塩尻市",
+  "totalKm": "231.8",
+  "realKm": "231.8"
+ },
+ {
+  "no": 154,
+  "fromText": "愛知県名古屋市港区名古屋港",
+  "toText": "愛知県名古屋市熱田区",
+  "totalKm": "4.0",
+  "realKm": "4.0"
+ },
+ {
+  "no": 155,
+  "fromText": "愛知県常滑市",
+  "toText": "愛知県弥富市",
+  "totalKm": "151.0",
+  "realKm": "147.7"
+ },
+ {
+  "no": 156,
+  "fromText": "岐阜県岐阜市",
+  "toText": "富山県高岡市",
+  "totalKm": "215.1",
+  "realKm": "212.3"
+ },
+ {
+  "no": 157,
+  "fromText": "石川県金沢市",
+  "toText": "岐阜県岐阜市",
+  "totalKm": "198.9",
+  "realKm": "197.5"
+ },
+ {
+  "no": 158,
+  "fromText": "福井県福井市",
+  "toText": "長野県松本市",
+  "totalKm": "350.3",
+  "realKm": "320.0"
+ },
+ {
+  "no": 159,
+  "fromText": "石川県七尾市",
+  "toText": "石川県金沢市",
+  "totalKm": "68.5",
+  "realKm": "62.4"
+ },
+ {
+  "no": 160,
+  "fromText": "石川県七尾市",
+  "toText": "富山県高岡市",
+  "totalKm": "45.3",
+  "realKm": "45.3"
+ },
+ {
+  "no": 161,
+  "fromText": "福井県敦賀市",
+  "toText": "滋賀県大津市",
+  "totalKm": "90.3",
+  "realKm": "81.9"
+ },
+ {
+  "no": 162,
+  "fromText": "京都府京都市下京区",
+  "toText": "福井県敦賀市",
+  "totalKm": "146.8",
+  "realKm": "123.8"
+ },
+ {
+  "no": 163,
+  "fromText": "大阪府大阪市北区",
+  "toText": "三重県津市",
+  "totalKm": "130.6",
+  "realKm": "125.3"
+ },
+ {
+  "no": 164,
+  "fromText": "三重県四日市市四日市港",
+  "toText": "三重県四日市市諏訪町",
+  "totalKm": "3.2",
+  "realKm": "3.0"
+ },
+ {
+  "no": 165,
+  "fromText": "大阪府大阪市北区",
+  "toText": "三重県津市",
+  "totalKm": "131.9",
+  "realKm": "123.5"
+ },
+ {
+  "no": 166,
+  "fromText": "大阪府羽曳野市",
+  "toText": "三重県松阪市",
+  "totalKm": "130.3",
+  "realKm": "123.8"
+ },
+ {
+  "no": 167,
+  "fromText": "三重県志摩市",
+  "toText": "三重県伊勢市",
+  "totalKm": "50.7",
+  "realKm": "37.6"
+ },
+ {
+  "no": 168,
+  "fromText": "和歌山県新宮市",
+  "toText": "大阪府枚方市",
+  "totalKm": "190.4",
+  "realKm": "186.1"
+ },
+ {
+  "no": 169,
+  "fromText": "奈良県奈良市",
+  "toText": "和歌山県新宮市",
+  "totalKm": "190.3",
+  "realKm": "167.8"
+ },
+ {
+  "no": 170,
+  "fromText": "大阪府高槻市",
+  "toText": "大阪府泉佐野市",
+  "totalKm": "142.5",
+  "realKm": "140.9"
+ },
+ {
+  "no": 171,
+  "fromText": "京都府京都市南区",
+  "toText": "兵庫県神戸市中央区",
+  "totalKm": "67.2",
+  "realKm": "52.9"
+ },
+ {
+  "no": 172,
+  "fromText": "大阪府大阪市港区大阪港",
+  "toText": "大阪府大阪市中央区",
+  "totalKm": "8.0",
+  "realKm": "7.9"
+ },
+ {
+  "no": 173,
+  "fromText": "大阪府池田市",
+  "toText": "京都府綾部市",
+  "totalKm": "70.4",
+  "realKm": "70.4"
+ },
+ {
+  "no": 174,
+  "fromText": "兵庫県神戸市中央区神戸港",
+  "toText": "兵庫県神戸市中央区",
+  "totalKm": "0.2",
+  "realKm": "0.2"
+ },
+ {
+  "no": 175,
+  "fromText": "兵庫県明石市",
+  "toText": "京都府舞鶴市",
+  "totalKm": "133.7",
+  "realKm": "120.3"
+ },
+ {
+  "no": 176,
+  "fromText": "京都府宮津市",
+  "toText": "大阪府大阪市北区",
+  "totalKm": "176.1",
+  "realKm": "138.9"
+ },
+ {
+  "no": 177,
+  "fromText": "京都府舞鶴市舞鶴港",
+  "toText": "京都府舞鶴市字魚屋",
+  "totalKm": "0.7",
+  "realKm": "0.7"
+ },
+ {
+  "no": 178,
+  "fromText": "京都府舞鶴市",
+  "toText": "鳥取県岩美郡岩美町",
+  "totalKm": "188.3",
+  "realKm": "177.0"
+ },
+ {
+  "no": 179,
+  "fromText": "兵庫県姫路市",
+  "toText": "鳥取県東伯郡湯梨浜町",
+  "totalKm": "154.0",
+  "realKm": "147.5"
+ },
+ {
+  "no": 180,
+  "fromText": "岡山県岡山市北区",
+  "toText": "島根県松江市",
+  "totalKm": "179.5",
+  "realKm": "176.3"
+ },
+ {
+  "no": 181,
+  "fromText": "岡山県津山市",
+  "toText": "鳥取県米子市",
+  "totalKm": "98.7",
+  "realKm": "97.6"
+ },
+ {
+  "no": 182,
+  "fromText": "岡山県新見市",
+  "toText": "広島県福山市",
+  "totalKm": "80.3",
+  "realKm": "80.3"
+ },
+ {
+  "no": 183,
+  "fromText": "広島県広島市中区",
+  "toText": "鳥取県米子市",
+  "totalKm": "141.2",
+  "realKm": "95.2"
+ },
+ {
+  "no": 184,
+  "fromText": "島根県出雲市",
+  "toText": "広島県尾道市",
+  "totalKm": "136.8",
+  "realKm": "132.6"
+ },
+ {
+  "no": 185,
+  "fromText": "広島県呉市",
+  "toText": "広島県三原市",
+  "totalKm": "76.8",
+  "realKm": "76.8"
+ },
+ {
+  "no": 186,
+  "fromText": "島根県江津市",
+  "toText": "広島県大竹市",
+  "totalKm": "134.1",
+  "realKm": "134.0"
+ },
+ {
+  "no": 187,
+  "fromText": "山口県岩国市",
+  "toText": "島根県益田市",
+  "totalKm": "72.3",
+  "realKm": "72.3"
+ },
+ {
+  "no": 188,
+  "fromText": "山口県岩国市",
+  "toText": "山口県下松市",
+  "totalKm": "72.4",
+  "realKm": "72.4"
+ },
+ {
+  "no": 189,
+  "fromText": "山口県岩国市岩国空港",
+  "toText": "山口県岩国市麻里布町一丁目",
+  "totalKm": "0.4",
+  "realKm": "0.4"
+ },
+ {
+  "no": 190,
+  "fromText": "山口県山口市",
+  "toText": "山口県山陽小野田市",
+  "totalKm": "43.7",
+  "realKm": "43.7"
+ },
+ {
+  "no": 191,
+  "fromText": "山口県下関市",
+  "toText": "広島県広島市中区",
+  "totalKm": "292.5",
+  "realKm": "285.7"
+ },
+ {
+  "no": 192,
+  "fromText": "愛媛県西条市",
+  "toText": "徳島県徳島市",
+  "totalKm": "142.3",
+  "realKm": "98.9"
+ },
+ {
+  "no": 193,
+  "fromText": "香川県高松市",
+  "toText": "徳島県海部郡海陽町",
+  "totalKm": "159.8",
+  "realKm": "149.0"
+ },
+ {
+  "no": 194,
+  "fromText": "高知県高知市",
+  "toText": "愛媛県西条市",
+  "totalKm": "88.8",
+  "realKm": "76.9"
+ },
+ {
+  "no": 195,
+  "fromText": "高知県高知市",
+  "toText": "徳島県徳島市",
+  "totalKm": "179.2",
+  "realKm": "153.1"
+ },
+ {
+  "no": 196,
+  "fromText": "愛媛県松山市",
+  "toText": "愛媛県西条市",
+  "totalKm": "78.8",
+  "realKm": "78.8"
+ },
+ {
+  "no": 197,
+  "fromText": "高知県高知市",
+  "toText": "大分県大分市",
+  "totalKm": "279.6",
+  "realKm": "208.5"
+ },
+ {
+  "no": 198,
+  "fromText": "福岡県北九州市門司区門司港",
+  "toText": "福岡県北九州市門司区西本町",
+  "totalKm": "0.6",
+  "realKm": "0.6"
+ },
+ {
+  "no": 199,
+  "fromText": "福岡県北九州市門司区",
+  "toText": "福岡県北九州市八幡西区",
+  "totalKm": "49.0",
+  "realKm": "49.0"
+ },
+ {
+  "no": 200,
+  "fromText": "福岡県北九州市八幡西区",
+  "toText": "福岡県筑紫野市",
+  "totalKm": "91.3",
+  "realKm": "91.1"
+ },
+ {
+  "no": 201,
+  "fromText": "福岡県福岡市東区",
+  "toText": "福岡県京都郡苅田町",
+  "totalKm": "91.2",
+  "realKm": "91.2"
+ },
+ {
+  "no": 202,
+  "fromText": "福岡県福岡市博多区",
+  "toText": "長崎県長崎市",
+  "totalKm": "246.1",
+  "realKm": "245.2"
+ },
+ {
+  "no": 203,
+  "fromText": "佐賀県唐津市",
+  "toText": "佐賀県佐賀市",
+  "totalKm": "56.3",
+  "realKm": "44.2"
+ },
+ {
+  "no": 204,
+  "fromText": "佐賀県唐津市",
+  "toText": "長崎県佐世保市",
+  "totalKm": "161.6",
+  "realKm": "160.3"
+ },
+ {
+  "no": 205,
+  "fromText": "長崎県佐世保市",
+  "toText": "長崎県東彼杵郡東彼杵町",
+  "totalKm": "23.3",
+  "realKm": "23.3"
+ },
+ {
+  "no": 206,
+  "fromText": "長崎県長崎市",
+  "toText": "長崎県佐世保市",
+  "totalKm": "59.5",
+  "realKm": "55.2"
+ },
+ {
+  "no": 207,
+  "fromText": "佐賀県佐賀市",
+  "toText": "長崎県西彼杵郡時津町",
+  "totalKm": "118.8",
+  "realKm": "113.4"
+ },
+ {
+  "no": 208,
+  "fromText": "熊本県熊本市中央区",
+  "toText": "佐賀県佐賀市",
+  "totalKm": "125.9",
+  "realKm": "114.2"
+ },
+ {
+  "no": 209,
+  "fromText": "福岡県大牟田市",
+  "toText": "福岡県久留米市",
+  "totalKm": "35.7",
+  "realKm": "27.0"
+ },
+ {
+  "no": 210,
+  "fromText": "福岡県久留米市",
+  "toText": "大分県大分市",
+  "totalKm": "147.7",
+  "realKm": "146.4"
+ },
+ {
+  "no": 211,
+  "fromText": "大分県日田市",
+  "toText": "福岡県北九州市八幡西区",
+  "totalKm": "55.4",
+  "realKm": "55.4"
+ },
+ {
+  "no": 212,
+  "fromText": "大分県中津市",
+  "toText": "熊本県阿蘇市",
+  "totalKm": "142.4",
+  "realKm": "136.5"
+ },
+ {
+  "no": 213,
+  "fromText": "大分県別府市",
+  "toText": "大分県中津市",
+  "totalKm": "148.4",
+  "realKm": "112.1"
+ },
+ {
+  "no": 217,
+  "fromText": "大分県大分市",
+  "toText": "大分県佐伯市",
+  "totalKm": "78.2",
+  "realKm": "69.4"
+ },
+ {
+  "no": 218,
+  "fromText": "熊本県熊本市中央区",
+  "toText": "宮崎県延岡市",
+  "totalKm": "162.4",
+  "realKm": "143.2"
+ },
+ {
+  "no": 219,
+  "fromText": "熊本県熊本市中央区",
+  "toText": "宮崎県宮崎市",
+  "totalKm": "207.5",
+  "realKm": "168.6"
+ },
+ {
+  "no": 220,
+  "fromText": "宮崎県宮崎市",
+  "toText": "鹿児島県霧島市",
+  "totalKm": "187.3",
+  "realKm": "187.3"
+ },
+ {
+  "no": 221,
+  "fromText": "熊本県人吉市",
+  "toText": "宮崎県都城市",
+  "totalKm": "73.9",
+  "realKm": "71.4"
+ },
+ {
+  "no": 222,
+  "fromText": "宮崎県日南市",
+  "toText": "宮崎県都城市",
+  "totalKm": "61.3",
+  "realKm": "61.3"
+ },
+ {
+  "no": 223,
+  "fromText": "宮崎県小林市",
+  "toText": "鹿児島県霧島市",
+  "totalKm": "70.2",
+  "realKm": "62.7"
+ },
+ {
+  "no": 224,
+  "fromText": "鹿児島県垂水市",
+  "toText": "鹿児島県鹿児島市",
+  "totalKm": "22.9",
+  "realKm": "13.5"
+ },
+ {
+  "no": 225,
+  "fromText": "鹿児島県枕崎市",
+  "toText": "鹿児島県鹿児島市",
+  "totalKm": "52.9",
+  "realKm": "52.9"
+ },
+ {
+  "no": 226,
+  "fromText": "鹿児島県南さつま市",
+  "toText": "鹿児島県鹿児島市",
+  "totalKm": "156.4",
+  "realKm": "141.9"
+ },
+ {
+  "no": 227,
+  "fromText": "北海道函館市",
+  "toText": "北海道檜山郡江差町",
+  "totalKm": "69.8",
+  "realKm": "69.8"
+ },
+ {
+  "no": 228,
+  "fromText": "北海道函館市",
+  "toText": "北海道檜山郡江差町",
+  "totalKm": "189.1",
+  "realKm": "185.1"
+ },
+ {
+  "no": 229,
+  "fromText": "北海道小樽市",
+  "toText": "北海道檜山郡江差町",
+  "totalKm": "321.6",
+  "realKm": "301.9"
+ },
+ {
+  "no": 230,
+  "fromText": "北海道札幌市中央区",
+  "toText": "北海道久遠郡せたな町",
+  "totalKm": "197.4",
+  "realKm": "148.7"
+ },
+ {
+  "no": 231,
+  "fromText": "北海道札幌市北区",
+  "toText": "北海道留萌市",
+  "totalKm": "129.8",
+  "realKm": "129.8"
+ },
+ {
+  "no": 232,
+  "fromText": "北海道稚内市",
+  "toText": "北海道留萌市",
+  "totalKm": "178.7",
+  "realKm": "134.2"
+ },
+ {
+  "no": 233,
+  "fromText": "北海道旭川市",
+  "toText": "北海道留萌市",
+  "totalKm": "126.4",
+  "realKm": "98.9"
+ },
+ {
+  "no": 234,
+  "fromText": "北海道岩見沢市",
+  "toText": "北海道苫小牧市",
+  "totalKm": "69.6",
+  "realKm": "69.5"
+ },
+ {
+  "no": 235,
+  "fromText": "北海道室蘭市",
+  "toText": "北海道浦河郡浦河町",
+  "totalKm": "256.0",
+  "realKm": "178.7"
+ },
+ {
+  "no": 236,
+  "fromText": "北海道帯広市",
+  "toText": "北海道浦河郡浦河町",
+  "totalKm": "197.8",
+  "realKm": "197.8"
+ },
+ {
+  "no": 237,
+  "fromText": "北海道旭川市",
+  "toText": "北海道浦河郡浦河町",
+  "totalKm": "259.7",
+  "realKm": "161.0"
+ },
+ {
+  "no": 238,
+  "fromText": "北海道網走市",
+  "toText": "北海道稚内市",
+  "totalKm": "319.6",
+  "realKm": "319.6"
+ },
+ {
+  "no": 239,
+  "fromText": "北海道網走市",
+  "toText": "北海道留萌市",
+  "totalKm": "343.5",
+  "realKm": "150.0"
+ },
+ {
+  "no": 240,
+  "fromText": "北海道釧路市",
+  "toText": "北海道網走市",
+  "totalKm": "149.3",
+  "realKm": "118.2"
+ },
+ {
+  "no": 241,
+  "fromText": "北海道川上郡弟子屈町",
+  "toText": "北海道帯広市",
+  "totalKm": "172.1",
+  "realKm": "160.8"
+ },
+ {
+  "no": 242,
+  "fromText": "北海道網走市",
+  "toText": "北海道帯広市",
+  "totalKm": "283.5",
+  "realKm": "184.6"
+ },
+ {
+  "no": 243,
+  "fromText": "北海道網走市",
+  "toText": "北海道根室市",
+  "totalKm": "173.0",
+  "realKm": "140.7"
+ },
+ {
+  "no": 244,
+  "fromText": "北海道網走市",
+  "toText": "北海道根室市",
+  "totalKm": "153.9",
+  "realKm": "143.4"
+ },
+ {
+  "no": 245,
+  "fromText": "茨城県水戸市",
+  "toText": "茨城県日立市",
+  "totalKm": "42.3",
+  "realKm": "33.2"
+ },
+ {
+  "no": 246,
+  "fromText": "東京都千代田区",
+  "toText": "静岡県沼津市",
+  "totalKm": "125.3",
+  "realKm": "125.3"
+ },
+ {
+  "no": 247,
+  "fromText": "愛知県名古屋市熱田区",
+  "toText": "愛知県豊橋市",
+  "totalKm": "171.8",
+  "realKm": "131.6"
+ },
+ {
+  "no": 248,
+  "fromText": "愛知県蒲郡市",
+  "toText": "岐阜県岐阜市",
+  "totalKm": "103.3",
+  "realKm": "77.3"
+ },
+ {
+  "no": 249,
+  "fromText": "石川県七尾市",
+  "toText": "石川県金沢市",
+  "totalKm": "251.6",
+  "realKm": "221.9"
+ },
+ {
+  "no": 250,
+  "fromText": "兵庫県神戸市長田区",
+  "toText": "岡山県岡山市北区",
+  "totalKm": "126.8",
+  "realKm": "115.2"
+ },
+ {
+  "no": 251,
+  "fromText": "長崎県長崎市",
+  "toText": "長崎県諫早市",
+  "totalKm": "126.1",
+  "realKm": "126.1"
+ },
+ {
+  "no": 252,
+  "fromText": "新潟県柏崎市",
+  "toText": "福島県会津若松市",
+  "totalKm": "198.7",
+  "realKm": "179.9"
+ },
+ {
+  "no": 253,
+  "fromText": "新潟県上越市",
+  "toText": "新潟県南魚沼市",
+  "totalKm": "75.7",
+  "realKm": "75.7"
+ },
+ {
+  "no": 254,
+  "fromText": "東京都文京区",
+  "toText": "長野県松本市",
+  "totalKm": "278.9",
+  "realKm": "252.1"
+ },
+ {
+  "no": 255,
+  "fromText": "神奈川県秦野市",
+  "toText": "神奈川県小田原市",
+  "totalKm": "19.0",
+  "realKm": "11.8"
+ },
+ {
+  "no": 256,
+  "fromText": "岐阜県岐阜市",
+  "toText": "長野県飯田市",
+  "totalKm": "232.3",
+  "realKm": "212.3"
+ },
+ {
+  "no": 257,
+  "fromText": "静岡県浜松市中央区",
+  "toText": "岐阜県高山市",
+  "totalKm": "225.9",
+  "realKm": "207.8"
+ },
+ {
+  "no": 258,
+  "fromText": "岐阜県大垣市",
+  "toText": "三重県桑名市",
+  "totalKm": "41.7",
+  "realKm": "41.7"
+ },
+ {
+  "no": 259,
+  "fromText": "三重県鳥羽市",
+  "toText": "愛知県豊橋市",
+  "totalKm": "65.9",
+  "realKm": "45.5"
+ },
+ {
+  "no": 260,
+  "fromText": "三重県志摩市",
+  "toText": "三重県北牟婁郡紀北町",
+  "totalKm": "98.6",
+  "realKm": "91.3"
+ },
+ {
+  "no": 261,
+  "fromText": "広島県広島市中区",
+  "toText": "島根県江津市",
+  "totalKm": "98.9",
+  "realKm": "91.3"
+ },
+ {
+  "no": 262,
+  "fromText": "山口県萩市",
+  "toText": "山口県防府市",
+  "totalKm": "49.0",
+  "realKm": "49.0"
+ },
+ {
+  "no": 263,
+  "fromText": "福岡県福岡市早良区",
+  "toText": "佐賀県佐賀市",
+  "totalKm": "57.7",
+  "realKm": "57.6"
+ },
+ {
+  "no": 264,
+  "fromText": "佐賀県佐賀市",
+  "toText": "福岡県久留米市",
+  "totalKm": "26.5",
+  "realKm": "26.5"
+ },
+ {
+  "no": 265,
+  "fromText": "宮崎県小林市",
+  "toText": "熊本県阿蘇市",
+  "totalKm": "195.1",
+  "realKm": "189.6"
+ },
+ {
+  "no": 266,
+  "fromText": "熊本県天草市",
+  "toText": "熊本県熊本市中央区",
+  "totalKm": "159.7",
+  "realKm": "159.6"
+ },
+ {
+  "no": 267,
+  "fromText": "熊本県人吉市",
+  "toText": "鹿児島県薩摩川内市",
+  "totalKm": "78.6",
+  "realKm": "78.6"
+ },
+ {
+  "no": 268,
+  "fromText": "熊本県水俣市",
+  "toText": "宮崎県宮崎市",
+  "totalKm": "114.4",
+  "realKm": "94.1"
+ },
+ {
+  "no": 269,
+  "fromText": "鹿児島県指宿市",
+  "toText": "宮崎県宮崎市",
+  "totalKm": "168.4",
+  "realKm": "146.1"
+ },
+ {
+  "no": 270,
+  "fromText": "鹿児島県枕崎市",
+  "toText": "鹿児島県いちき串木野市",
+  "totalKm": "59.4",
+  "realKm": "59.4"
+ },
+ {
+  "no": 271,
+  "fromText": "神奈川県小田原市",
+  "toText": "神奈川県厚木市",
+  "totalKm": "31.7",
+  "realKm": "31.7"
+ },
+ {
+  "no": 272,
+  "fromText": "北海道釧路市",
+  "toText": "北海道標津郡標津町",
+  "totalKm": "98.3",
+  "realKm": "98.3"
+ },
+ {
+  "no": 273,
+  "fromText": "北海道帯広市",
+  "toText": "北海道紋別市",
+  "totalKm": "236.0",
+  "realKm": "167.9"
+ },
+ {
+  "no": 274,
+  "fromText": "北海道札幌市北区",
+  "toText": "北海道川上郡標茶町",
+  "totalKm": "388.6",
+  "realKm": "316.5"
+ },
+ {
+  "no": 275,
+  "fromText": "北海道札幌市中央区",
+  "toText": "北海道枝幸郡浜頓別町",
+  "totalKm": "313.8",
+  "realKm": "281.0"
+ },
+ {
+  "no": 276,
+  "fromText": "北海道檜山郡江差町",
+  "toText": "北海道苫小牧市",
+  "totalKm": "324.8",
+  "realKm": "118.2"
+ },
+ {
+  "no": 277,
+  "fromText": "北海道檜山郡江差町",
+  "toText": "北海道二海郡八雲町",
+  "totalKm": "60.9",
+  "realKm": "32.5"
+ },
+ {
+  "no": 278,
+  "fromText": "北海道函館市",
+  "toText": "北海道茅部郡森町",
+  "totalKm": "136.9",
+  "realKm": "136.8"
+ },
+ {
+  "no": 279,
+  "fromText": "北海道函館市",
+  "toText": "青森県上北郡野辺地町",
+  "totalKm": "170.5",
+  "realKm": "151.5"
+ },
+ {
+  "no": 280,
+  "fromText": "青森県青森市",
+  "toText": "北海道函館市",
+  "totalKm": "189.5",
+  "realKm": "100.8"
+ },
+ {
+  "no": 281,
+  "fromText": "岩手県盛岡市",
+  "toText": "岩手県久慈市",
+  "totalKm": "76.0",
+  "realKm": "76.0"
+ },
+ {
+  "no": 282,
+  "fromText": "岩手県盛岡市",
+  "toText": "青森県平川市",
+  "totalKm": "117.8",
+  "realKm": "117.7"
+ },
+ {
+  "no": 283,
+  "fromText": "岩手県釜石市",
+  "toText": "岩手県花巻市",
+  "totalKm": "123.7",
+  "realKm": "119.8"
+ },
+ {
+  "no": 284,
+  "fromText": "岩手県陸前高田市",
+  "toText": "岩手県一関市",
+  "totalKm": "60.3",
+  "realKm": "46.1"
+ },
+ {
+  "no": 285,
+  "fromText": "秋田県秋田市",
+  "toText": "秋田県鹿角市",
+  "totalKm": "113.8",
+  "realKm": "62.5"
+ },
+ {
+  "no": 286,
+  "fromText": "宮城県仙台市太白区",
+  "toText": "山形県山形市",
+  "totalKm": "68.8",
+  "realKm": "68.3"
+ },
+ {
+  "no": 287,
+  "fromText": "山形県米沢市",
+  "toText": "山形県東根市",
+  "totalKm": "82.3",
+  "realKm": "82.3"
+ },
+ {
+  "no": 288,
+  "fromText": "福島県郡山市",
+  "toText": "福島県双葉郡双葉町",
+  "totalKm": "85.4",
+  "realKm": "85.4"
+ },
+ {
+  "no": 289,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "福島県いわき市",
+  "totalKm": "274.7",
+  "realKm": "253.8"
+ },
+ {
+  "no": 290,
+  "fromText": "新潟県村上市",
+  "toText": "新潟県魚沼市",
+  "totalKm": "155.0",
+  "realKm": "138.5"
+ },
+ {
+  "no": 291,
+  "fromText": "群馬県前橋市",
+  "toText": "新潟県柏崎市",
+  "totalKm": "186.6",
+  "realKm": "149.6"
+ },
+ {
+  "no": 292,
+  "fromText": "群馬県吾妻郡長野原町",
+  "toText": "新潟県妙高市",
+  "totalKm": "123.9",
+  "realKm": "119.0"
+ },
+ {
+  "no": 293,
+  "fromText": "茨城県日立市",
+  "toText": "栃木県足利市",
+  "totalKm": "177.6",
+  "realKm": "176.8"
+ },
+ {
+  "no": 294,
+  "fromText": "千葉県柏市",
+  "toText": "福島県会津若松市",
+  "totalKm": "238.9",
+  "realKm": "211.3"
+ },
+ {
+  "no": 295,
+  "fromText": "千葉県成田市成田国際空港",
+  "toText": "千葉県成田市",
+  "totalKm": "5.7",
+  "realKm": "5.7"
+ },
+ {
+  "no": 296,
+  "fromText": "千葉県匝瑳市",
+  "toText": "千葉県船橋市",
+  "totalKm": "66.2",
+  "realKm": "66.1"
+ },
+ {
+  "no": 297,
+  "fromText": "千葉県館山市",
+  "toText": "千葉県市原市",
+  "totalKm": "117.7",
+  "realKm": "67.6"
+ },
+ {
+  "no": 298,
+  "fromText": "埼玉県和光市",
+  "toText": "千葉県市川市",
+  "totalKm": "43.8",
+  "realKm": "43.8"
+ },
+ {
+  "no": 299,
+  "fromText": "長野県茅野市",
+  "toText": "埼玉県入間市",
+  "totalKm": "204.5",
+  "realKm": "191.4"
+ },
+ {
+  "no": 300,
+  "fromText": "山梨県富士吉田市",
+  "toText": "山梨県南巨摩郡身延町",
+  "totalKm": "26.7",
+  "realKm": "26.7"
+ },
+ {
+  "no": 301,
+  "fromText": "静岡県浜松市中央区",
+  "toText": "愛知県豊田市",
+  "totalKm": "103.4",
+  "realKm": "101.9"
+ },
+ {
+  "no": 302,
+  "fromText": "愛知県名古屋市中川区",
+  "toText": "愛知県名古屋市中川区",
+  "totalKm": "65.1",
+  "realKm": "65.1"
+ },
+ {
+  "no": 303,
+  "fromText": "岐阜県岐阜市",
+  "toText": "福井県三方上中郡若狭町",
+  "totalKm": "130.0",
+  "realKm": "105.9"
+ },
+ {
+  "no": 304,
+  "fromText": "石川県金沢市",
+  "toText": "富山県南砺市",
+  "totalKm": "52.9",
+  "realKm": "43.8"
+ },
+ {
+  "no": 305,
+  "fromText": "石川県金沢市",
+  "toText": "福井県南条郡南越前町",
+  "totalKm": "174.5",
+  "realKm": "130.3"
+ },
+ {
+  "no": 306,
+  "fromText": "三重県津市",
+  "toText": "滋賀県彦根市",
+  "totalKm": "87.1",
+  "realKm": "84.6"
+ },
+ {
+  "no": 307,
+  "fromText": "滋賀県彦根市",
+  "toText": "大阪府枚方市",
+  "totalKm": "110.2",
+  "realKm": "103.9"
+ },
+ {
+  "no": 308,
+  "fromText": "大阪府大阪市中央区",
+  "toText": "奈良県奈良市",
+  "totalKm": "35.1",
+  "realKm": "34.3"
+ },
+ {
+  "no": 309,
+  "fromText": "三重県熊野市",
+  "toText": "大阪府大阪市平野区",
+  "totalKm": "120.2",
+  "realKm": "114.0"
+ },
+ {
+  "no": 310,
+  "fromText": "大阪府堺市堺区",
+  "toText": "奈良県五條市",
+  "totalKm": "39.1",
+  "realKm": "39.1"
+ },
+ {
+  "no": 311,
+  "fromText": "三重県尾鷲市",
+  "toText": "和歌山県西牟婁郡上富田町",
+  "totalKm": "155.4",
+  "realKm": "129.2"
+ },
+ {
+  "no": 312,
+  "fromText": "京都府宮津市",
+  "toText": "兵庫県姫路市",
+  "totalKm": "244.1",
+  "realKm": "204.4"
+ },
+ {
+  "no": 313,
+  "fromText": "広島県福山市",
+  "toText": "鳥取県東伯郡北栄町",
+  "totalKm": "189.3",
+  "realKm": "178.4"
+ },
+ {
+  "no": 314,
+  "fromText": "広島県福山市",
+  "toText": "島根県雲南市",
+  "totalKm": "140.0",
+  "realKm": "83.4"
+ },
+ {
+  "no": 315,
+  "fromText": "山口県周南市",
+  "toText": "山口県萩市",
+  "totalKm": "88.7",
+  "realKm": "88.7"
+ },
+ {
+  "no": 316,
+  "fromText": "山口県長門市",
+  "toText": "山口県山陽小野田市",
+  "totalKm": "41.6",
+  "realKm": "41.6"
+ },
+ {
+  "no": 317,
+  "fromText": "愛媛県松山市",
+  "toText": "広島県尾道市",
+  "totalKm": "189.6",
+  "realKm": "172.6"
+ },
+ {
+  "no": 318,
+  "fromText": "徳島県徳島市",
+  "toText": "香川県東かがわ市",
+  "totalKm": "43.7",
+  "realKm": "23.7"
+ },
+ {
+  "no": 319,
+  "fromText": "香川県坂出市",
+  "toText": "愛媛県四国中央市",
+  "totalKm": "131.2",
+  "realKm": "61.6"
+ },
+ {
+  "no": 320,
+  "fromText": "高知県宿毛市",
+  "toText": "愛媛県北宇和郡鬼北町",
+  "totalKm": "90.3",
+  "realKm": "35.7"
+ },
+ {
+  "no": 321,
+  "fromText": "高知県四万十市",
+  "toText": "高知県宿毛市",
+  "totalKm": "83.9",
+  "realKm": "83.9"
+ },
+ {
+  "no": 322,
+  "fromText": "福岡県北九州市小倉北区",
+  "toText": "福岡県久留米市",
+  "totalKm": "123.1",
+  "realKm": "123.0"
+ },
+ {
+  "no": 323,
+  "fromText": "佐賀県佐賀市",
+  "toText": "佐賀県唐津市",
+  "totalKm": "44.7",
+  "realKm": "38.3"
+ },
+ {
+  "no": 324,
+  "fromText": "長崎県長崎市",
+  "toText": "熊本県宇城市",
+  "totalKm": "139.2",
+  "realKm": "87.9"
+ },
+ {
+  "no": 325,
+  "fromText": "福岡県久留米市",
+  "toText": "宮崎県西臼杵郡高千穂町",
+  "totalKm": "132.8",
+  "realKm": "69.6"
+ },
+ {
+  "no": 326,
+  "fromText": "宮崎県延岡市",
+  "toText": "大分県豊後大野市",
+  "totalKm": "67.4",
+  "realKm": "54.2"
+ },
+ {
+  "no": 327,
+  "fromText": "宮崎県日向市",
+  "toText": "熊本県山都町",
+  "totalKm": "95.5",
+  "realKm": "67.7"
+ },
+ {
+  "no": 328,
+  "fromText": "鹿児島県鹿児島市",
+  "toText": "鹿児島県出水市",
+  "totalKm": "63.3",
+  "realKm": "58.8"
+ },
+ {
+  "no": 329,
+  "fromText": "沖縄県名護市",
+  "toText": "沖縄県那覇市",
+  "totalKm": "91.8",
+  "realKm": "91.8"
+ },
+ {
+  "no": 330,
+  "fromText": "沖縄県沖縄市",
+  "toText": "沖縄県那覇市",
+  "totalKm": "26.3",
+  "realKm": "26.3"
+ },
+ {
+  "no": 331,
+  "fromText": "沖縄県那覇市",
+  "toText": "沖縄県国頭郡大宜味村",
+  "totalKm": "153.6",
+  "realKm": "91.0"
+ },
+ {
+  "no": 332,
+  "fromText": "沖縄県那覇市那覇空港",
+  "toText": "沖縄県那覇市垣花町",
+  "totalKm": "3.9",
+  "realKm": "3.0"
+ },
+ {
+  "no": 333,
+  "fromText": "北海道旭川市",
+  "toText": "北海道北見市",
+  "totalKm": "169.9",
+  "realKm": "102.9"
+ },
+ {
+  "no": 334,
+  "fromText": "北海道目梨郡羅臼町",
+  "toText": "北海道網走郡美幌町",
+  "totalKm": "122.4",
+  "realKm": "120.7"
+ },
+ {
+  "no": 335,
+  "fromText": "北海道目梨郡羅臼町",
+  "toText": "北海道標津郡標津町",
+  "totalKm": "42.5",
+  "realKm": "42.4"
+ },
+ {
+  "no": 336,
+  "fromText": "北海道浦河郡浦河町",
+  "toText": "北海道釧路市",
+  "totalKm": "245.2",
+  "realKm": "161.0"
+ },
+ {
+  "no": 337,
+  "fromText": "北海道千歳市",
+  "toText": "北海道小樽市",
+  "totalKm": "108.2",
+  "realKm": "102.4"
+ },
+ {
+  "no": 338,
+  "fromText": "北海道函館市",
+  "toText": "青森県上北郡おいらせ町",
+  "totalKm": "261.3",
+  "realKm": "239.3"
+ },
+ {
+  "no": 339,
+  "fromText": "青森県弘前市",
+  "toText": "青森県東津軽郡外ヶ浜町",
+  "totalKm": "129.3",
+  "realKm": "129.3"
+ },
+ {
+  "no": 340,
+  "fromText": "岩手県陸前高田市",
+  "toText": "青森県八戸市",
+  "totalKm": "244.8",
+  "realKm": "213.9"
+ },
+ {
+  "no": 341,
+  "fromText": "秋田県鹿角市",
+  "toText": "秋田県由利本荘市",
+  "totalKm": "173.4",
+  "realKm": "122.1"
+ },
+ {
+  "no": 342,
+  "fromText": "秋田県横手市",
+  "toText": "宮城県登米市",
+  "totalKm": "148.2",
+  "realKm": "136.4"
+ },
+ {
+  "no": 343,
+  "fromText": "岩手県陸前高田市",
+  "toText": "岩手県奥州市",
+  "totalKm": "59.6",
+  "realKm": "54.7"
+ },
+ {
+  "no": 344,
+  "fromText": "秋田県湯沢市",
+  "toText": "山形県酒田市",
+  "totalKm": "97.4",
+  "realKm": "56.9"
+ },
+ {
+  "no": 345,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "山形県飽海郡遊佐町",
+  "totalKm": "201.3",
+  "realKm": "150.2"
+ },
+ {
+  "no": 346,
+  "fromText": "宮城県仙台市青葉区",
+  "toText": "宮城県気仙沼市",
+  "totalKm": "121.8",
+  "realKm": "76.6"
+ },
+ {
+  "no": 347,
+  "fromText": "山形県寒河江市",
+  "toText": "宮城県大崎市",
+  "totalKm": "89.0",
+  "realKm": "83.0"
+ },
+ {
+  "no": 348,
+  "fromText": "山形県長井市",
+  "toText": "山形県山形市",
+  "totalKm": "46.8",
+  "realKm": "28.2"
+ },
+ {
+  "no": 349,
+  "fromText": "茨城県水戸市",
+  "toText": "宮城県柴田郡柴田町",
+  "totalKm": "264.9",
+  "realKm": "257.2"
+ },
+ {
+  "no": 350,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "新潟県上越市",
+  "totalKm": "195.5",
+  "realKm": "50.3"
+ },
+ {
+  "no": 351,
+  "fromText": "新潟県長岡市",
+  "toText": "新潟県小千谷市",
+  "totalKm": "43.9",
+  "realKm": "36.8"
+ },
+ {
+  "no": 352,
+  "fromText": "新潟県柏崎市",
+  "toText": "栃木県河内郡上三川町",
+  "totalKm": "328.2",
+  "realKm": "237.1"
+ },
+ {
+  "no": 353,
+  "fromText": "群馬県桐生市",
+  "toText": "新潟県柏崎市",
+  "totalKm": "182.0",
+  "realKm": "157.5"
+ },
+ {
+  "no": 354,
+  "fromText": "群馬県高崎市",
+  "toText": "茨城県鉾田市",
+  "totalKm": "195.1",
+  "realKm": "190.6"
+ },
+ {
+  "no": 355,
+  "fromText": "千葉県香取市",
+  "toText": "茨城県笠間市",
+  "totalKm": "96.5",
+  "realKm": "86.4"
+ },
+ {
+  "no": 356,
+  "fromText": "千葉県銚子市",
+  "toText": "千葉県我孫子市",
+  "totalKm": "126.6",
+  "realKm": "126.5"
+ },
+ {
+  "no": 357,
+  "fromText": "千葉県千葉市中央区",
+  "toText": "神奈川県横須賀市",
+  "totalKm": "88.4",
+  "realKm": "75.8"
+ },
+ {
+  "no": 358,
+  "fromText": "山梨県南都留郡富士河口湖町",
+  "toText": "山梨県甲府市",
+  "totalKm": "28.0",
+  "realKm": "28.0"
+ },
+ {
+  "no": 359,
+  "fromText": "富山県富山市",
+  "toText": "石川県金沢市",
+  "totalKm": "64.3",
+  "realKm": "60.2"
+ },
+ {
+  "no": 360,
+  "fromText": "富山県富山市",
+  "toText": "石川県小松市",
+  "totalKm": "116.0",
+  "realKm": "89.3"
+ },
+ {
+  "no": 361,
+  "fromText": "岐阜県高山市",
+  "toText": "長野県伊那市",
+  "totalKm": "116.8",
+  "realKm": "108.0"
+ },
+ {
+  "no": 362,
+  "fromText": "愛知県豊川市",
+  "toText": "静岡県静岡市葵区",
+  "totalKm": "157.7",
+  "realKm": "152.1"
+ },
+ {
+  "no": 363,
+  "fromText": "愛知県名古屋市名東区",
+  "toText": "岐阜県中津川市",
+  "totalKm": "80.7",
+  "realKm": "74.9"
+ },
+ {
+  "no": 364,
+  "fromText": "福井県大野市",
+  "toText": "石川県加賀市",
+  "totalKm": "70.7",
+  "realKm": "47.7"
+ },
+ {
+  "no": 365,
+  "fromText": "石川県加賀市",
+  "toText": "三重県四日市市",
+  "totalKm": "269.5",
+  "realKm": "148.6"
+ },
+ {
+  "no": 366,
+  "fromText": "愛知県半田市",
+  "toText": "愛知県名古屋市緑区",
+  "totalKm": "23.8",
+  "realKm": "22.7"
+ },
+ {
+  "no": 367,
+  "fromText": "京都府京都市下京区",
+  "toText": "福井県三方上中郡若狭町",
+  "totalKm": "70.5",
+  "realKm": "59.6"
+ },
+ {
+  "no": 368,
+  "fromText": "三重県伊賀市",
+  "toText": "三重県多気郡多気町",
+  "totalKm": "73.1",
+  "realKm": "71.3"
+ },
+ {
+  "no": 369,
+  "fromText": "奈良県奈良市",
+  "toText": "三重県松阪市",
+  "totalKm": "128.3",
+  "realKm": "86.1"
+ },
+ {
+  "no": 370,
+  "fromText": "和歌山県海南市",
+  "toText": "奈良県奈良市",
+  "totalKm": "131.0",
+  "realKm": "109.2"
+ },
+ {
+  "no": 371,
+  "fromText": "大阪府河内長野市",
+  "toText": "和歌山県東牟婁郡串本町",
+  "totalKm": "254.6",
+  "realKm": "240.0"
+ },
+ {
+  "no": 372,
+  "fromText": "京都府亀岡市",
+  "toText": "兵庫県姫路市",
+  "totalKm": "97.5",
+  "realKm": "96.9"
+ },
+ {
+  "no": 373,
+  "fromText": "兵庫県赤穂市",
+  "toText": "鳥取県鳥取市",
+  "totalKm": "110.7",
+  "realKm": "79.8"
+ },
+ {
+  "no": 374,
+  "fromText": "岡山県備前市",
+  "toText": "岡山県津山市",
+  "totalKm": "64.7",
+  "realKm": "51.5"
+ },
+ {
+  "no": 375,
+  "fromText": "広島県呉市",
+  "toText": "島根県大田市",
+  "totalKm": "197.1",
+  "realKm": "196.4"
+ },
+ {
+  "no": 376,
+  "fromText": "山口県山口市",
+  "toText": "山口県岩国市",
+  "totalKm": "70.0",
+  "realKm": "64.5"
+ },
+ {
+  "no": 377,
+  "fromText": "徳島県鳴門市",
+  "toText": "香川県観音寺市",
+  "totalKm": "123.3",
+  "realKm": "62.4"
+ },
+ {
+  "no": 378,
+  "fromText": "愛媛県伊予市",
+  "toText": "愛媛県宇和島市",
+  "totalKm": "125.4",
+  "realKm": "119.7"
+ },
+ {
+  "no": 379,
+  "fromText": "愛媛県松山市",
+  "toText": "愛媛県喜多郡内子町",
+  "totalKm": "52.3",
+  "realKm": "39.2"
+ },
+ {
+  "no": 380,
+  "fromText": "愛媛県八幡浜市",
+  "toText": "愛媛県上浮穴郡久万高原町",
+  "totalKm": "65.2",
+  "realKm": "20.9"
+ },
+ {
+  "no": 381,
+  "fromText": "高知県須崎市",
+  "toText": "愛媛県宇和島市",
+  "totalKm": "111.9",
+  "realKm": "69.4"
+ },
+ {
+  "no": 382,
+  "fromText": "長崎県対馬市",
+  "toText": "佐賀県唐津市",
+  "totalKm": "201.2",
+  "realKm": "106.9"
+ },
+ {
+  "no": 383,
+  "fromText": "長崎県平戸市",
+  "toText": "佐賀県伊万里市",
+  "totalKm": "55.4",
+  "realKm": "35.8"
+ },
+ {
+  "no": 384,
+  "fromText": "長崎県五島市",
+  "toText": "長崎県佐世保市",
+  "totalKm": "201.5",
+  "realKm": "96.2"
+ },
+ {
+  "no": 385,
+  "fromText": "福岡県柳川市",
+  "toText": "福岡県福岡市博多区",
+  "totalKm": "74.6",
+  "realKm": "73.4"
+ },
+ {
+  "no": 386,
+  "fromText": "大分県日田市",
+  "toText": "福岡県筑紫野市",
+  "totalKm": "54.8",
+  "realKm": "52.6"
+ },
+ {
+  "no": 387,
+  "fromText": "大分県宇佐市",
+  "toText": "熊本県熊本市北区",
+  "totalKm": "133.1",
+  "realKm": "129.6"
+ },
+ {
+  "no": 388,
+  "fromText": "大分県佐伯市",
+  "toText": "熊本県球磨郡湯前町",
+  "totalKm": "225.9",
+  "realKm": "203.5"
+ },
+ {
+  "no": 389,
+  "fromText": "福岡県大牟田市",
+  "toText": "鹿児島県阿久根市",
+  "totalKm": "187.6",
+  "realKm": "118.7"
+ },
+ {
+  "no": 390,
+  "fromText": "沖縄県石垣市",
+  "toText": "沖縄県那覇市",
+  "totalKm": "552.2",
+  "realKm": "63.2"
+ },
+ {
+  "no": 391,
+  "fromText": "北海道釧路市",
+  "toText": "北海道網走市",
+  "totalKm": "152.6",
+  "realKm": "116.1"
+ },
+ {
+  "no": 392,
+  "fromText": "北海道釧路市",
+  "toText": "北海道中川郡本別町",
+  "totalKm": "53.0",
+  "realKm": "34.7"
+ },
+ {
+  "no": 393,
+  "fromText": "北海道小樽市",
+  "toText": "北海道虻田郡倶知安町",
+  "totalKm": "58.3",
+  "realKm": "58.3"
+ },
+ {
+  "no": 394,
+  "fromText": "青森県むつ市",
+  "toText": "青森県弘前市",
+  "totalKm": "179.2",
+  "realKm": "83.9"
+ },
+ {
+  "no": 395,
+  "fromText": "岩手県久慈市",
+  "toText": "岩手県二戸市",
+  "totalKm": "58.0",
+  "realKm": "48.9"
+ },
+ {
+  "no": 396,
+  "fromText": "岩手県遠野市",
+  "toText": "岩手県盛岡市",
+  "totalKm": "58.1",
+  "realKm": "58.1"
+ },
+ {
+  "no": 397,
+  "fromText": "岩手県大船渡市",
+  "toText": "秋田県横手市",
+  "totalKm": "134.9",
+  "realKm": "90.2"
+ },
+ {
+  "no": 398,
+  "fromText": "宮城県石巻市",
+  "toText": "秋田県由利本荘市",
+  "totalKm": "282.4",
+  "realKm": "243.9"
+ },
+ {
+  "no": 399,
+  "fromText": "福島県いわき市",
+  "toText": "山形県南陽市",
+  "totalKm": "196.3",
+  "realKm": "171.5"
+ },
+ {
+  "no": 400,
+  "fromText": "茨城県水戸市",
+  "toText": "福島県耶麻郡西会津町",
+  "totalKm": "226.7",
+  "realKm": "116.3"
+ },
+ {
+  "no": 401,
+  "fromText": "福島県会津若松市",
+  "toText": "群馬県沼田市",
+  "totalKm": "186.0",
+  "realKm": "82.2"
+ },
+ {
+  "no": 402,
+  "fromText": "新潟県柏崎市",
+  "toText": "新潟県新潟市中央区",
+  "totalKm": "108.4",
+  "realKm": "56.8"
+ },
+ {
+  "no": 403,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "長野県松本市",
+  "totalKm": "334.6",
+  "realKm": "254.0"
+ },
+ {
+  "no": 404,
+  "fromText": "新潟県長岡市",
+  "toText": "新潟県上越市",
+  "totalKm": "100.7",
+  "realKm": "30.3"
+ },
+ {
+  "no": 405,
+  "fromText": "群馬県吾妻郡中之条町",
+  "toText": "新潟県上越市",
+  "totalKm": "123.9",
+  "realKm": "107.0"
+ },
+ {
+  "no": 406,
+  "fromText": "長野県大町市",
+  "toText": "群馬県高崎市",
+  "totalKm": "193.2",
+  "realKm": "133.8"
+ },
+ {
+  "no": 407,
+  "fromText": "栃木県足利市",
+  "toText": "埼玉県入間市",
+  "totalKm": "61.1",
+  "realKm": "57.5"
+ },
+ {
+  "no": 408,
+  "fromText": "千葉県成田市",
+  "toText": "栃木県塩谷郡高根沢町",
+  "totalKm": "124.7",
+  "realKm": "102.1"
+ },
+ {
+  "no": 409,
+  "fromText": "神奈川県川崎市高津区",
+  "toText": "千葉県成田市",
+  "totalKm": "122.5",
+  "realKm": "106.8"
+ },
+ {
+  "no": 410,
+  "fromText": "千葉県館山市",
+  "toText": "千葉県木更津市",
+  "totalKm": "133.6",
+  "realKm": "118.8"
+ },
+ {
+  "no": 411,
+  "fromText": "東京都八王子市",
+  "toText": "山梨県甲府市",
+  "totalKm": "122.0",
+  "realKm": "122.0"
+ },
+ {
+  "no": 412,
+  "fromText": "神奈川県平塚市",
+  "toText": "神奈川県相模原市",
+  "totalKm": "46.5",
+  "realKm": "30.3"
+ },
+ {
+  "no": 413,
+  "fromText": "山梨県富士吉田市",
+  "toText": "神奈川県相模原市",
+  "totalKm": "63.3",
+  "realKm": "62.4"
+ },
+ {
+  "no": 414,
+  "fromText": "静岡県下田市",
+  "toText": "静岡県沼津市",
+  "totalKm": "93.7",
+  "realKm": "77.6"
+ },
+ {
+  "no": 415,
+  "fromText": "石川県羽咋市",
+  "toText": "富山県富山市",
+  "totalKm": "67.2",
+  "realKm": "67.1"
+ },
+ {
+  "no": 416,
+  "fromText": "福井県福井市",
+  "toText": "石川県小松市",
+  "totalKm": "90.1",
+  "realKm": "88.2"
+ },
+ {
+  "no": 417,
+  "fromText": "岐阜県大垣市",
+  "toText": "福井県南条郡南越前町",
+  "totalKm": "146.9",
+  "realKm": "95.0"
+ },
+ {
+  "no": 418,
+  "fromText": "福井県大野市",
+  "toText": "長野県飯田市",
+  "totalKm": "267.2",
+  "realKm": "176.2"
+ },
+ {
+  "no": 419,
+  "fromText": "岐阜県瑞浪市",
+  "toText": "愛知県高浜市",
+  "totalKm": "79.0",
+  "realKm": "63.4"
+ },
+ {
+  "no": 420,
+  "fromText": "愛知県豊田市",
+  "toText": "愛知県新城市",
+  "totalKm": "66.1",
+  "realKm": "29.9"
+ },
+ {
+  "no": 421,
+  "fromText": "三重県桑名市",
+  "toText": "滋賀県近江八幡市",
+  "totalKm": "66.1",
+  "realKm": "65.2"
+ },
+ {
+  "no": 422,
+  "fromText": "滋賀県大津市",
+  "toText": "三重県北牟婁郡紀北町",
+  "totalKm": "174.7",
+  "realKm": "120.5"
+ },
+ {
+  "no": 423,
+  "fromText": "大阪府大阪市北区",
+  "toText": "京都府亀岡市",
+  "totalKm": "51.7",
+  "realKm": "50.6"
+ },
+ {
+  "no": 424,
+  "fromText": "和歌山県田辺市",
+  "toText": "和歌山県紀の川市",
+  "totalKm": "124.1",
+  "realKm": "119.0"
+ },
+ {
+  "no": 425,
+  "fromText": "三重県尾鷲市",
+  "toText": "和歌山県御坊市",
+  "totalKm": "186.7",
+  "realKm": "170.1"
+ },
+ {
+  "no": 426,
+  "fromText": "兵庫県豊岡市",
+  "toText": "京都府福知山市",
+  "totalKm": "41.1",
+  "realKm": "41.1"
+ },
+ {
+  "no": 427,
+  "fromText": "兵庫県明石市",
+  "toText": "兵庫県朝来市",
+  "totalKm": "59.1",
+  "realKm": "59.1"
+ },
+ {
+  "no": 428,
+  "fromText": "兵庫県神戸市中央区",
+  "toText": "兵庫県三木市",
+  "totalKm": "34.8",
+  "realKm": "34.8"
+ },
+ {
+  "no": 429,
+  "fromText": "岡山県倉敷市",
+  "toText": "京都府福知山市",
+  "totalKm": "248.8",
+  "realKm": "220.1"
+ },
+ {
+  "no": 430,
+  "fromText": "岡山県倉敷市",
+  "toText": "岡山県玉野市",
+  "totalKm": "39.8",
+  "realKm": "39.8"
+ },
+ {
+  "no": 431,
+  "fromText": "島根県出雲市",
+  "toText": "鳥取県米子市",
+  "totalKm": "101.9",
+  "realKm": "101.9"
+ },
+ {
+  "no": 432,
+  "fromText": "広島県竹原市",
+  "toText": "島根県松江市",
+  "totalKm": "212.0",
+  "realKm": "207.9"
+ },
+ {
+  "no": 433,
+  "fromText": "広島県大竹市",
+  "toText": "広島県三次市",
+  "totalKm": "124.3",
+  "realKm": "105.8"
+ },
+ {
+  "no": 434,
+  "fromText": "山口県周南市",
+  "toText": "広島県三次市",
+  "totalKm": "170.0",
+  "realKm": "57.4"
+ },
+ {
+  "no": 435,
+  "fromText": "山口県山口市",
+  "toText": "山口県下関市",
+  "totalKm": "71.5",
+  "realKm": "71.5"
+ },
+ {
+  "no": 436,
+  "fromText": "兵庫県姫路市",
+  "toText": "香川県高松市",
+  "totalKm": "96.6",
+  "realKm": "30.3"
+ },
+ {
+  "no": 437,
+  "fromText": "愛媛県松山市",
+  "toText": "山口県岩国市",
+  "totalKm": "87.5",
+  "realKm": "62.0"
+ },
+ {
+  "no": 438,
+  "fromText": "徳島県徳島市",
+  "toText": "香川県坂出市",
+  "totalKm": "172.3",
+  "realKm": "169.3"
+ },
+ {
+  "no": 439,
+  "fromText": "徳島県徳島市",
+  "toText": "高知県四万十市",
+  "totalKm": "347.2",
+  "realKm": "241.4"
+ },
+ {
+  "no": 440,
+  "fromText": "愛媛県松山市",
+  "toText": "高知県高岡郡檮原町",
+  "totalKm": "81.1",
+  "realKm": "36.2"
+ },
+ {
+  "no": 441,
+  "fromText": "愛媛県大洲市",
+  "toText": "高知県四万十市",
+  "totalKm": "111.2",
+  "realKm": "94.0"
+ },
+ {
+  "no": 442,
+  "fromText": "大分県大分市",
+  "toText": "福岡県大川市",
+  "totalKm": "172.1",
+  "realKm": "157.9"
+ },
+ {
+  "no": 443,
+  "fromText": "福岡県大川市",
+  "toText": "熊本県八代郡氷川町",
+  "totalKm": "135.0",
+  "realKm": "101.5"
+ },
+ {
+  "no": 444,
+  "fromText": "長崎県大村市",
+  "toText": "佐賀県佐賀市",
+  "totalKm": "80.2",
+  "realKm": "73.9"
+ },
+ {
+  "no": 445,
+  "fromText": "熊本県熊本市中央区",
+  "toText": "熊本県人吉市",
+  "totalKm": "142.6",
+  "realKm": "119.8"
+ },
+ {
+  "no": 446,
+  "fromText": "宮崎県日向市",
+  "toText": "熊本県球磨郡湯前町",
+  "totalKm": "102.2",
+  "realKm": "20.8"
+ },
+ {
+  "no": 447,
+  "fromText": "宮崎県えびの市",
+  "toText": "鹿児島県出水市",
+  "totalKm": "60.3",
+  "realKm": "56.8"
+ },
+ {
+  "no": 448,
+  "fromText": "鹿児島県指宿市",
+  "toText": "宮崎県宮崎市",
+  "totalKm": "248.3",
+  "realKm": "118.0"
+ },
+ {
+  "no": 449,
+  "fromText": "沖縄県国頭郡本部町",
+  "toText": "沖縄県名護市",
+  "totalKm": "25.4",
+  "realKm": "25.4"
+ },
+ {
+  "no": 450,
+  "fromText": "北海道旭川市",
+  "toText": "北海道紋別市",
+  "totalKm": "142.1",
+  "realKm": "98.5"
+ },
+ {
+  "no": 451,
+  "fromText": "北海道留萌市",
+  "toText": "北海道滝川市",
+  "totalKm": "119.2",
+  "realKm": "57.6"
+ },
+ {
+  "no": 452,
+  "fromText": "北海道夕張市",
+  "toText": "北海道旭川市",
+  "totalKm": "121.6",
+  "realKm": "110.3"
+ },
+ {
+  "no": 453,
+  "fromText": "北海道札幌市豊平区",
+  "toText": "北海道伊達市",
+  "totalKm": "123.1",
+  "realKm": "88.5"
+ },
+ {
+  "no": 454,
+  "fromText": "青森県八戸市",
+  "toText": "青森県南津軽郡大鰐町",
+  "totalKm": "102.1",
+  "realKm": "85.2"
+ },
+ {
+  "no": 455,
+  "fromText": "岩手県盛岡市",
+  "toText": "岩手県下閉伊郡岩泉町",
+  "totalKm": "97.5",
+  "realKm": "86.6"
+ },
+ {
+  "no": 456,
+  "fromText": "岩手県盛岡市",
+  "toText": "宮城県気仙沼市",
+  "totalKm": "149.8",
+  "realKm": "112.7"
+ },
+ {
+  "no": 457,
+  "fromText": "岩手県一関市",
+  "toText": "宮城県白石市",
+  "totalKm": "184.7",
+  "realKm": "164.4"
+ },
+ {
+  "no": 458,
+  "fromText": "山形県新庄市",
+  "toText": "山形県上山市",
+  "totalKm": "113.2",
+  "realKm": "110.5"
+ },
+ {
+  "no": 459,
+  "fromText": "新潟県新潟市中央区",
+  "toText": "福島県双葉郡浪江町",
+  "totalKm": "213.6",
+  "realKm": "158.3"
+ },
+ {
+  "no": 460,
+  "fromText": "新潟県新発田市",
+  "toText": "新潟県柏崎市",
+  "totalKm": "148.0",
+  "realKm": "65.0"
+ },
+ {
+  "no": 461,
+  "fromText": "栃木県日光市",
+  "toText": "茨城県高萩市",
+  "totalKm": "139.3",
+  "realKm": "127.2"
+ },
+ {
+  "no": 462,
+  "fromText": "長野県佐久市",
+  "toText": "群馬県伊勢崎市",
+  "totalKm": "113.6",
+  "realKm": "62.8"
+ },
+ {
+  "no": 463,
+  "fromText": "埼玉県越谷市",
+  "toText": "埼玉県入間市",
+  "totalKm": "61.9",
+  "realKm": "56.3"
+ },
+ {
+  "no": 464,
+  "fromText": "千葉県松戸市",
+  "toText": "千葉県成田市",
+  "totalKm": "50.2",
+  "realKm": "50.2"
+ },
+ {
+  "no": 465,
+  "fromText": "千葉県茂原市",
+  "toText": "千葉県富津市",
+  "totalKm": "123.3",
+  "realKm": "81.5"
+ },
+ {
+  "no": 466,
+  "fromText": "東京都世田谷区",
+  "toText": "神奈川県横浜市保土ケ谷区",
+  "totalKm": "18.6",
+  "realKm": "18.6"
+ },
+ {
+  "no": 467,
+  "fromText": "神奈川県大和市",
+  "toText": "神奈川県藤沢市",
+  "totalKm": "21.8",
+  "realKm": "21.3"
+ },
+ {
+  "no": 468,
+  "fromText": "神奈川県横浜市金沢区",
+  "toText": "千葉県木更津市",
+  "totalKm": "340.6",
+  "realKm": "262.7"
+ },
+ {
+  "no": 469,
+  "fromText": "静岡県御殿場市",
+  "toText": "山梨県南巨摩郡南部町",
+  "totalKm": "58.7",
+  "realKm": "58.7"
+ },
+ {
+  "no": 470,
+  "fromText": "石川県輪島市",
+  "toText": "富山県砺波市",
+  "totalKm": "75.4",
+  "realKm": "75.4"
+ },
+ {
+  "no": 471,
+  "fromText": "石川県羽咋市",
+  "toText": "岐阜県高山市",
+  "totalKm": "183.6",
+  "realKm": "147.6"
+ },
+ {
+  "no": 472,
+  "fromText": "富山県射水市",
+  "toText": "岐阜県郡上市",
+  "totalKm": "187.8",
+  "realKm": "67.3"
+ },
+ {
+  "no": 473,
+  "fromText": "愛知県蒲郡市",
+  "toText": "静岡県牧之原市",
+  "totalKm": "268.0",
+  "realKm": "158.8"
+ },
+ {
+  "no": 474,
+  "fromText": "長野県飯田市",
+  "toText": "静岡県浜松市浜名区",
+  "totalKm": "42.1",
+  "realKm": "42.1"
+ },
+ {
+  "no": 475,
+  "fromText": "愛知県豊田市",
+  "toText": "三重県四日市市",
+  "totalKm": "174.9",
+  "realKm": "108.9"
+ },
+ {
+  "no": 476,
+  "fromText": "福井県大野市",
+  "toText": "福井県敦賀市",
+  "totalKm": "76.4",
+  "realKm": "65.1"
+ },
+ {
+  "no": 477,
+  "fromText": "三重県四日市市",
+  "toText": "大阪府池田市",
+  "totalKm": "233.8",
+  "realKm": "212.4"
+ },
+ {
+  "no": 478,
+  "fromText": "京都府宮津市",
+  "toText": "京都府久世郡久御山町",
+  "totalKm": "100.6",
+  "realKm": "100.3"
+ },
+ {
+  "no": 479,
+  "fromText": "大阪府豊中市",
+  "toText": "大阪府大阪市住之江区",
+  "totalKm": "28.8",
+  "realKm": "27.2"
+ },
+ {
+  "no": 480,
+  "fromText": "大阪府泉大津市",
+  "toText": "和歌山県有田市",
+  "totalKm": "147.2",
+  "realKm": "126.4"
+ },
+ {
+  "no": 481,
+  "fromText": "大阪府泉佐野市関西国際空港",
+  "toText": "大阪府泉佐野市上之郷",
+  "totalKm": "10.4",
+  "realKm": "10.4"
+ },
+ {
+  "no": 482,
+  "fromText": "京都府宮津市",
+  "toText": "鳥取県米子市",
+  "totalKm": "334.2",
+  "realKm": "193.1"
+ },
+ {
+  "no": 483,
+  "fromText": "兵庫県豊岡市",
+  "toText": "兵庫県丹波市",
+  "totalKm": "73.5",
+  "realKm": "66.6"
+ },
+ {
+  "no": 484,
+  "fromText": "岡山県備前市",
+  "toText": "岡山県高梁市",
+  "totalKm": "91.6",
+  "realKm": "62.9"
+ },
+ {
+  "no": 485,
+  "fromText": "島根県隠岐郡隠岐の島町",
+  "toText": "島根県松江市",
+  "totalKm": "160.8",
+  "realKm": "45.8"
+ },
+ {
+  "no": 486,
+  "fromText": "岡山県総社市",
+  "toText": "広島県東広島市",
+  "totalKm": "135.9",
+  "realKm": "108.2"
+ },
+ {
+  "no": 487,
+  "fromText": "広島県呉市",
+  "toText": "広島県広島市南区",
+  "totalKm": "63.5",
+  "realKm": "59.4"
+ },
+ {
+  "no": 488,
+  "fromText": "島根県益田市",
+  "toText": "広島県廿日市市",
+  "totalKm": "111.6",
+  "realKm": "83.6"
+ },
+ {
+  "no": 489,
+  "fromText": "山口県周南市大神三丁目",
+  "toText": "山口県山口市",
+  "totalKm": "44.6",
+  "realKm": "33.6"
+ },
+ {
+  "no": 490,
+  "fromText": "山口県宇部市",
+  "toText": "山口県萩市",
+  "totalKm": "60.8",
+  "realKm": "58.4"
+ },
+ {
+  "no": 491,
+  "fromText": "山口県下関市",
+  "toText": "山口県長門市",
+  "totalKm": "58.8",
+  "realKm": "56.4"
+ },
+ {
+  "no": 492,
+  "fromText": "香川県高松市",
+  "toText": "高知県長岡郡大豊町",
+  "totalKm": "121.5",
+  "realKm": "31.5"
+ },
+ {
+  "no": 493,
+  "fromText": "高知県高知市",
+  "toText": "高知県安芸郡東洋町",
+  "totalKm": "112.4",
+  "realKm": "49.3"
+ },
+ {
+  "no": 494,
+  "fromText": "愛媛県松山市",
+  "toText": "高知県須崎市",
+  "totalKm": "113.8",
+  "realKm": "80.1"
+ },
+ {
+  "no": 495,
+  "fromText": "福岡県北九州市若松区",
+  "toText": "福岡県福岡市東区",
+  "totalKm": "71.3",
+  "realKm": "71.3"
+ },
+ {
+  "no": 496,
+  "fromText": "福岡県行橋市",
+  "toText": "大分県日田市",
+  "totalKm": "55.5",
+  "realKm": "55.5"
+ },
+ {
+  "no": 497,
+  "fromText": "福岡県福岡市西区",
+  "toText": "佐賀県武雄市",
+  "totalKm": "111.1",
+  "realKm": "93.3"
+ },
+ {
+  "no": 498,
+  "fromText": "佐賀県鹿島市",
+  "toText": "長崎県佐世保市",
+  "totalKm": "60.6",
+  "realKm": "55.4"
+ },
+ {
+  "no": 499,
+  "fromText": "長崎県長崎市",
+  "toText": "鹿児島県阿久根市",
+  "totalKm": "111.2",
+  "realKm": "29.2"
+ },
+ {
+  "no": 500,
+  "fromText": "大分県別府市",
+  "toText": "佐賀県鳥栖市",
+  "totalKm": "172.3",
+  "realKm": "123.4"
+ },
+ {
+  "no": 501,
+  "fromText": "福岡県大牟田市",
+  "toText": "熊本県宇土市",
+  "totalKm": "53.6",
+  "realKm": "40.5"
+ },
+ {
+  "no": 502,
+  "fromText": "大分県臼杵市",
+  "toText": "大分県竹田市",
+  "totalKm": "52.2",
+  "realKm": "45.7"
+ },
+ {
+  "no": 503,
+  "fromText": "熊本県阿蘇郡高森町",
+  "toText": "宮崎県日向市",
+  "totalKm": "114.4",
+  "realKm": "36.3"
+ },
+ {
+  "no": 504,
+  "fromText": "鹿児島県鹿屋市",
+  "toText": "鹿児島県出水市",
+  "totalKm": "164.0",
+  "realKm": "125.4"
+ },
+ {
+  "no": 505,
+  "fromText": "沖縄県国頭郡本部町",
+  "toText": "沖縄県名護市",
+  "totalKm": "23.1",
+  "realKm": "23.1"
+ },
+ {
+  "no": 506,
+  "fromText": "沖縄県那覇市那覇空港",
+  "toText": "沖縄県中頭郡西原町",
+  "totalKm": "11.7",
+  "realKm": "11.7"
+ },
+ {
+  "no": 507,
+  "fromText": "沖縄県糸満市",
+  "toText": "沖縄県那覇市",
+  "totalKm": "30.3",
+  "realKm": "17.3"
+ }
+]
