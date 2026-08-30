@@ -28,9 +28,36 @@ function buildGoogleMapsUrl(name: string, address?: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
-function buildMealSearchUrl(areaName: string, genre: string, petFriendly?: boolean): string {
-  const query = petFriendly ? `${areaName} ${genre} 犬同伴可 テラス席あり` : `${areaName} ${genre}`;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+/**
+ * 食事場所を探すための Google マップ検索URL。
+ *
+ * `?api=1&query=` 形式は検索の中心を指定できず、利用者の現在地周辺が優先されるため、
+ * 「軽井沢駅周辺で昼食」なのに自宅近くの店が出る、という問題が起きる。
+ * そこで座標が分かっている場合は `/@lat,lng,14z` を付けて検索範囲をその場所に固定する。
+ * 座標が無い場合は住所（無ければ表示名）をクエリに含めてエリアを絞る。
+ */
+function buildMealSearchUrl(
+  areaName: string,
+  genre: string,
+  options?: { petFriendly?: boolean; address?: string; lat?: number; lng?: number }
+): string {
+  const { petFriendly, address, lat, lng } = options ?? {};
+  // 座標はAIの出力そのままなので、欠損や 0,0 を掴まないよう妥当性を確認する
+  const hasCoords =
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    Math.abs(lat) > 0.01 &&
+    Math.abs(lng) > 0.01;
+  // 食事スポット名は「軽井沢駅周辺で昼食（蕎麦）」のような説明文になることがあり、
+  // そのまま検索語にすると精度が落ちる。座標で範囲を固定できるときは場所名を入れない。
+  const areaHint = hasCoords ? "" : `${(address || areaName).trim()} `;
+  const petHint = petFriendly ? " 犬同伴可 テラス席あり" : "";
+  const query = `${areaHint}${genre}${petHint}`.trim();
+  return hasCoords
+    ? `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},14z`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 // Gathers spot names, descriptions, meal info and commentary text from the
@@ -307,7 +334,17 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         </a>
                         {item.isMealSpot && withDog && (
                           <a
-                            href={buildMealSearchUrl(item.spot.name, item.isMealSpot === "lunch" ? "ランチ" : "ディナー", true)}
+                            href={buildMealSearchUrl(
+                              item.spot.name,
+                              (item.isMealSpot === "lunch" ? dayItin.lunchGenre : dayItin.dinnerGenre) ||
+                                (item.isMealSpot === "lunch" ? "ランチ" : "ディナー"),
+                              {
+                                petFriendly: true,
+                                address: item.address,
+                                lat: item.spot.lat,
+                                lng: item.spot.lng,
+                              }
+                            )}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-[11px] text-red-600 hover:text-red-800 hover:underline transition-colors font-medium"
