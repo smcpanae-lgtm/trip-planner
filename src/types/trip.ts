@@ -124,8 +124,11 @@ export interface DayItinerary {
 export interface SearchCandidate {
   name: string;
   address: string;
-  lat: number;
-  lng: number;
+  // Autocomplete(New) の候補はplaceIdのみで座標を持たず、選択時に別途Place Detailsで解決する。
+  // プリセット/Nominatim結果は最初からlat/lngを持つ。
+  lat?: number;
+  lng?: number;
+  placeId?: string;
 }
 
 export interface PlanVariantData {

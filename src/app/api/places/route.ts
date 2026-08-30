@@ -2,37 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY || "";
 
-// Places APIの1日あたりの割り当てが逼迫しやすいため、同じクエリを短時間に何度も
-// Google へ投げないようウォームインスタンス内でメモリキャッシュする（インスタンス間では共有されない簡易的なもの）。
+// Places API (New) は用途ごとに別メソッド（別クォータ）になっている。
+// 用途を分けることで、片方の日次割り当てが枯渇してももう片方は影響を受けない。
+//   - autocomplete/details: 目的地入力欄の候補表示（TripForm）
+//   - textsearch: AIが生成した地名を座標に変換する一括ジオコーディング（page.tsx の geocode()）
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 500;
-const placesCache = new Map<string, { results: unknown[]; expiresAt: number }>();
+const cache = new Map<string, { data: unknown; expiresAt: number }>();
 
-function getCached(key: string): unknown[] | null {
-  const entry = placesCache.get(key);
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key);
   if (!entry) return null;
   if (entry.expiresAt < Date.now()) {
-    placesCache.delete(key);
+    cache.delete(key);
     return null;
   }
-  return entry.results;
+  return entry.data as T;
 }
 
-function setCached(key: string, results: unknown[]) {
-  if (placesCache.size >= CACHE_MAX_ENTRIES) {
-    const oldestKey = placesCache.keys().next().value;
-    if (oldestKey !== undefined) placesCache.delete(oldestKey);
+function setCached(key: string, data: unknown) {
+  if (cache.size >= CACHE_MAX_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
   }
-  placesCache.set(key, { results, expiresAt: Date.now() + CACHE_TTL_MS });
+  cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
 }
 
 export async function GET(request: NextRequest) {
-  const query = request.nextUrl.searchParams.get("q");
-
-  if (!query) {
-    return NextResponse.json({ error: "Query required" }, { status: 400 });
-  }
-
   if (!API_KEY) {
     return NextResponse.json(
       { error: "GOOGLE_MAPS_API_KEY not configured" },
@@ -40,53 +36,180 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const cacheKey = query.trim().toLowerCase();
-  const cached = getCached(cacheKey);
-  if (cached) {
-    return NextResponse.json({ results: cached });
+  const mode = request.nextUrl.searchParams.get("mode") || "textsearch";
+  if (mode === "autocomplete") return handleAutocomplete(request);
+  if (mode === "details") return handleDetails(request);
+  return handleTextSearch(request);
+}
+
+interface PlacePrediction {
+  placeId: string;
+  structuredFormat?: {
+    mainText?: { text: string };
+    secondaryText?: { text: string };
+  };
+  text?: { text: string };
+}
+
+async function handleAutocomplete(request: NextRequest) {
+  const query = request.nextUrl.searchParams.get("q");
+  const sessionToken = request.nextUrl.searchParams.get("sessiontoken") || undefined;
+  if (!query) {
+    return NextResponse.json({ error: "Query required" }, { status: 400 });
   }
 
-  try {
-    // Use Google Places Text Search API
-    // Don't append "日本" for queries that already contain Japanese characters
-    const hasJapanese = /[　-〿぀-ゟ゠-ヿ一-龯]/.test(query);
-    const searchQuery = hasJapanese ? query : query + " Japan";
-    const encoded = encodeURIComponent(searchQuery);
-    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encoded}&language=ja&region=jp&key=${API_KEY}`;
+  const cacheKey = `ac:${query.trim().toLowerCase()}`;
+  const cached = getCached<unknown[]>(cacheKey);
+  if (cached) return NextResponse.json({ results: cached });
 
-    const res = await fetch(url);
+  try {
+    const res = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": API_KEY,
+      },
+      body: JSON.stringify({
+        input: query,
+        languageCode: "ja",
+        regionCode: "JP",
+        ...(sessionToken ? { sessionToken } : {}),
+      }),
+    });
     const data = await res.json();
 
-    if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-      console.error("Places API error:", data.status, data.error_message);
+    if (!res.ok) {
+      console.error("Autocomplete API error:", data);
       return NextResponse.json(
-        { error: data.error_message || data.status },
+        { error: data.error?.message || "autocomplete failed" },
         { status: 500 }
       );
     }
 
-    const results = (data.results || []).slice(0, 5).map(
-      (place: {
-        name: string;
-        formatted_address: string;
-        geometry: { location: { lat: number; lng: number } };
-        types?: string[];
-      }) => ({
-        name: place.name,
-        address: place.formatted_address,
-        lat: place.geometry.location.lat,
-        lng: place.geometry.location.lng,
-        types: place.types || [],
-      })
-    );
+    const suggestions: { placePrediction?: PlacePrediction }[] = data.suggestions || [];
+    const results = suggestions
+      .map((s) => s.placePrediction)
+      .filter((p): p is PlacePrediction => Boolean(p))
+      .slice(0, 5)
+      .map((p) => ({
+        placeId: p.placeId,
+        name: p.structuredFormat?.mainText?.text || p.text?.text || "",
+        address: p.structuredFormat?.secondaryText?.text || "",
+      }));
 
     setCached(cacheKey, results);
     return NextResponse.json({ results });
   } catch (error) {
-    console.error("Places API fetch error:", error);
-    return NextResponse.json(
-      { error: "Failed to search places" },
-      { status: 500 }
+    console.error("Autocomplete fetch error:", error);
+    return NextResponse.json({ error: "Failed to search places" }, { status: 500 });
+  }
+}
+
+async function handleDetails(request: NextRequest) {
+  const placeId = request.nextUrl.searchParams.get("placeId");
+  const sessionToken = request.nextUrl.searchParams.get("sessiontoken") || undefined;
+  if (!placeId) {
+    return NextResponse.json({ error: "placeId required" }, { status: 400 });
+  }
+
+  const cacheKey = `pd:${placeId}`;
+  const cached = getCached<{ name: string; address: string; lat: number; lng: number }>(cacheKey);
+  if (cached) return NextResponse.json({ result: cached });
+
+  try {
+    const params = new URLSearchParams();
+    if (sessionToken) params.set("sessionToken", sessionToken);
+    const qs = params.toString();
+    const res = await fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}${qs ? `?${qs}` : ""}`,
+      {
+        headers: {
+          "X-Goog-Api-Key": API_KEY,
+          "X-Goog-FieldMask": "displayName,formattedAddress,location",
+        },
+      }
     );
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Place Details API error:", data);
+      return NextResponse.json(
+        { error: data.error?.message || "details failed" },
+        { status: 500 }
+      );
+    }
+
+    if (typeof data.location?.latitude !== "number" || typeof data.location?.longitude !== "number") {
+      return NextResponse.json({ error: "no location in details response" }, { status: 500 });
+    }
+
+    const result = {
+      name: data.displayName?.text || "",
+      address: data.formattedAddress || "",
+      lat: data.location.latitude,
+      lng: data.location.longitude,
+    };
+    setCached(cacheKey, result);
+    return NextResponse.json({ result });
+  } catch (error) {
+    console.error("Place Details fetch error:", error);
+    return NextResponse.json({ error: "Failed to get place details" }, { status: 500 });
+  }
+}
+
+async function handleTextSearch(request: NextRequest) {
+  const query = request.nextUrl.searchParams.get("q");
+  if (!query) {
+    return NextResponse.json({ error: "Query required" }, { status: 400 });
+  }
+
+  const cacheKey = `ts:${query.trim().toLowerCase()}`;
+  const cached = getCached<unknown[]>(cacheKey);
+  if (cached) return NextResponse.json({ results: cached });
+
+  try {
+    const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": API_KEY,
+        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location,places.types",
+      },
+      body: JSON.stringify({
+        textQuery: query,
+        languageCode: "ja",
+        regionCode: "JP",
+      }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Text Search API error:", data);
+      return NextResponse.json(
+        { error: data.error?.message || "text search failed" },
+        { status: 500 }
+      );
+    }
+
+    interface PlaceResult {
+      displayName?: { text: string };
+      formattedAddress?: string;
+      location?: { latitude: number; longitude: number };
+      types?: string[];
+    }
+    const places: PlaceResult[] = data.places || [];
+    const results = places.slice(0, 5).map((place) => ({
+      name: place.displayName?.text || "",
+      address: place.formattedAddress || "",
+      lat: place.location?.latitude,
+      lng: place.location?.longitude,
+      types: place.types || [],
+    }));
+
+    setCached(cacheKey, results);
+    return NextResponse.json({ results });
+  } catch (error) {
+    console.error("Text Search fetch error:", error);
+    return NextResponse.json({ error: "Failed to search places" }, { status: 500 });
   }
 }

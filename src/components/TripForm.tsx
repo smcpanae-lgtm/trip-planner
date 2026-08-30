@@ -21,7 +21,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { searchPlaces } from "@/lib/geocoding";
+import { searchPlaces, getPlaceDetails } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
 import type { TripConfig, DayPlan, Spot, SpotMeal, SearchCandidate, TravelerProfile } from "@/types/trip";
 import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
@@ -122,12 +122,18 @@ function SearchInput({
   const [query, setQuery] = useState(value);
   const [candidates, setCandidates] = useState<SearchCandidate[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   // 日本語入力の変換中（IME確定前）はキー入力のたびonChangeが発火するため、
   // 確定前に検索すると1文字ごとにAPIを叩いてしまう。確定(compositionend)まで待つ。
   const isComposingRef = useRef(false);
+  // Autocomplete(New)のセッション課金をまとめるためのトークン。
+  // 1回の「入力開始→候補選択」を1セッションとし、選択後（＝Place Details呼び出し後）に発行し直す。
+  const sessionTokenRef = useRef<string>(
+    typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`
+  );
 
   // Sync external value
   useEffect(() => {
@@ -160,7 +166,7 @@ function SearchInput({
     setNoResults(false);
     setSearchError(false);
     try {
-      const { results, apiError } = await searchPlaces(q);
+      const { results, apiError } = await searchPlaces(q, sessionTokenRef.current);
       setCandidates(results);
       if (results.length > 0) {
         setShowDropdown(true);
@@ -192,11 +198,34 @@ function SearchInput({
     timerRef.current = setTimeout(() => handleSearch(val), 800);
   };
 
-  const handleSelect = (c: SearchCandidate) => {
-    setQuery(c.name);
-    setShowDropdown(false);
-    setCandidates([]);
-    onSelect(c);
+  const handleSelect = async (c: SearchCandidate) => {
+    // プリセット/Nominatim結果は最初から座標を持つが、Autocomplete候補はplaceIdのみなので
+    // 選択時にPlace Detailsを1回呼んで座標を解決する。
+    if (typeof c.lat === "number" && typeof c.lng === "number") {
+      setQuery(c.name);
+      setShowDropdown(false);
+      setCandidates([]);
+      onSelect({ name: c.name, address: c.address, lat: c.lat, lng: c.lng });
+      return;
+    }
+    if (!c.placeId) return;
+    setIsResolving(true);
+    try {
+      const details = await getPlaceDetails(c.placeId, sessionTokenRef.current);
+      if (details) {
+        setQuery(details.name);
+        setShowDropdown(false);
+        setCandidates([]);
+        onSelect(details);
+      } else {
+        setSearchError(true);
+      }
+    } finally {
+      setIsResolving(false);
+      // セッション終了（詳細取得完了）につき、次の検索用に新しいトークンを発行する
+      sessionTokenRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    }
   };
 
   return (
@@ -212,12 +241,12 @@ function SearchInput({
           onFocus={() => candidates.length > 0 && setShowDropdown(true)}
           className={className}
         />
-        {isSearching && (
+        {(isSearching || isResolving) && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2">
             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
-        {!isSearching && query.length >= 2 && (
+        {!isSearching && !isResolving && query.length >= 2 && (
           <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
         )}
       </div>
@@ -228,7 +257,8 @@ function SearchInput({
               <button
                 key={i}
                 onClick={() => handleSelect(c)}
-                className="w-full text-left px-3 py-2.5 hover:bg-blue-50 border-b border-slate-50 last:border-0 transition-colors"
+                disabled={isResolving}
+                className="w-full text-left px-3 py-2.5 hover:bg-blue-50 border-b border-slate-50 last:border-0 transition-colors disabled:opacity-50 disabled:cursor-wait"
               >
                 <div className="text-sm font-medium text-slate-800">{c.name}</div>
                 <div className="text-xs text-slate-400 truncate mt-0.5">

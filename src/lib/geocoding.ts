@@ -30,8 +30,13 @@ export interface SearchPlacesResult {
   apiError: boolean;
 }
 
-// Search for place candidates using Google Places API (with Nominatim fallback)
-export async function searchPlaces(query: string): Promise<SearchPlacesResult> {
+// Search for place candidates using Google Places Autocomplete API (with Nominatim fallback)
+// Autocomplete(New)はText Searchとは別クォータのため、目的地入力のたびの割り当て消費を分離できる。
+// 候補はplaceIdのみを持ち、座標は選択時に getPlaceDetails() で別途解決する。
+export async function searchPlaces(
+  query: string,
+  sessionToken?: string
+): Promise<SearchPlacesResult> {
   if (!query || query.length < 2) return { results: [], apiError: false };
 
   const cacheKey = query.trim();
@@ -57,19 +62,20 @@ export async function searchPlaces(query: string): Promise<SearchPlacesResult> {
     return { results: presetMatches, apiError: false };
   }
 
-  // Try Google Places API first
+  // Try Google Places Autocomplete API first
   let apiError = false;
   try {
-    const res = await fetch(`/api/places?q=${encodeURIComponent(query)}`);
+    const params = new URLSearchParams({ mode: "autocomplete", q: query });
+    if (sessionToken) params.set("sessiontoken", sessionToken);
+    const res = await fetch(`/api/places?${params.toString()}`);
     if (res.ok) {
       const data = await res.json();
       if (data.results && data.results.length > 0) {
         const googleResults: SearchCandidate[] = data.results.map(
-          (r: { name: string; address: string; lat: number; lng: number }) => ({
+          (r: { name: string; address: string; placeId: string }) => ({
             name: r.name,
             address: r.address,
-            lat: r.lat,
-            lng: r.lng,
+            placeId: r.placeId,
           })
         );
         const merged = [...presetMatches, ...googleResults].slice(0, 5);
@@ -113,6 +119,31 @@ export async function searchPlaces(query: string): Promise<SearchPlacesResult> {
   } catch (e) {
     console.error("Search error:", e);
     return { results: presetMatches, apiError };
+  }
+}
+
+// Autocomplete候補（placeIdのみ）から緯度経度を解決する。選択時に1回だけ呼ぶ。
+export async function getPlaceDetails(
+  placeId: string,
+  sessionToken?: string
+): Promise<{ name: string; address: string; lat: number; lng: number } | null> {
+  try {
+    const params = new URLSearchParams({ mode: "details", placeId });
+    if (sessionToken) params.set("sessiontoken", sessionToken);
+    const res = await fetch(`/api/places?${params.toString()}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (
+      data.result &&
+      typeof data.result.lat === "number" &&
+      typeof data.result.lng === "number"
+    ) {
+      return data.result;
+    }
+    return null;
+  } catch (e) {
+    console.error("Place details error:", e);
+    return null;
   }
 }
 
