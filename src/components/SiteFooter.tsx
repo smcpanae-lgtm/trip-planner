@@ -73,7 +73,7 @@ const TOOLS_ZH_HANT = [
 /**
  * variant:
  * - "default": カード型。記事ページなど、フッターまで読み進めてもらう前提のページ用。
- * - "compact": テキストリンクのみの控えめ表示。トップページのように本体が画面高いっぱいを
+ * - "compact": 中黒区切りのテキストリンク1行。トップページのように本体が画面高いっぱいを
  *   使うページでは、カード型フッター（約350px）が少しスクロールしただけで画面を占有し、
  *   プラン作成画面が見えなくなってしまうため。内部リンク自体は残す。
  */
@@ -96,24 +96,27 @@ export default function SiteFooter({
   if (variant === "compact") {
     return (
       <footer className="relative z-10 border-t border-slate-200 bg-white">
-        <div className="max-w-[1600px] mx-auto px-4 py-5">
-          <nav aria-label={heading}>
-            <h2 className="text-[11px] font-medium text-slate-400 mb-2">{heading}</h2>
-            <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
-              {tools.map((tool) => (
-                <li key={tool.href}>
+        <div className="max-w-[1600px] mx-auto px-4 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6">
+          {/* 見出しは省き、中黒区切りの1行にすることで高さを抑えつつリンク自体を大きく見せる */}
+          <nav aria-label={heading} className="min-w-0">
+            <ul className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              {tools.map((tool, idx) => (
+                <li key={tool.href} className="flex items-center gap-2">
                   <a
                     href={tool.href}
                     title={tool.description}
-                    className="text-xs text-slate-500 hover:text-blue-600 hover:underline transition-colors"
+                    className="text-sm sm:text-base font-bold text-slate-700 hover:text-blue-600 hover:underline transition-colors"
                   >
                     {tool.title}
                   </a>
+                  {idx < tools.length - 1 && (
+                    <span className="text-slate-300" aria-hidden="true">・</span>
+                  )}
                 </li>
               ))}
             </ul>
           </nav>
-          <p className="text-[11px] text-slate-300 mt-4">{copyright}</p>
+          <p className="text-xs text-slate-400 shrink-0">{copyright}</p>
         </div>
       </footer>
     );

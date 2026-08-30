@@ -4,6 +4,7 @@ export interface TripPlannerDict {
     subtitle: string;
     heritageLink: string;
     lifeMapLink: string;
+    columnsLink: string;
     editPlan: string;
   };
   loading: {
@@ -156,6 +157,7 @@ const ja: TripPlannerDict = {
     subtitle: "車旅行プランを自動作成・地図（Google マップ）表示",
     heritageLink: "🌍 世界遺産パスポート",
     lifeMapLink: "🗺 人生体験マップ",
+    columnsLink: "📝 ドライブ旅行コラム",
     editPlan: "プランを再編集",
   },
   loading: {
@@ -357,6 +359,7 @@ const en: TripPlannerDict = {
     subtitle: "Auto-generate Japan road trip plans with Google Maps",
     heritageLink: "🌍 World Heritage Passport",
     lifeMapLink: "🗺 Life Experience Map",
+    columnsLink: "📝 Drive Travel Columns",
     editPlan: "Re-edit Plan",
   },
   loading: {
@@ -558,6 +561,7 @@ const ko: TripPlannerDict = {
     subtitle: "일본 자동차 여행 플랜 자동 생성 · Google 지도 연동",
     heritageLink: "🌍 세계유산 패스포트",
     lifeMapLink: "🗺 인생 체험 지도",
+    columnsLink: "📝 드라이브 여행 칼럼",
     editPlan: "플랜 재편집",
   },
   loading: {
@@ -759,6 +763,7 @@ const zhCN: TripPlannerDict = {
     subtitle: "自动生成日本自驾旅行计划 · Google 地图联动显示",
     heritageLink: "🌍 世界遗产护照",
     lifeMapLink: "🗺 人生体验地图",
+    columnsLink: "📝 自驾旅行专栏",
     editPlan: "重新编辑计划",
   },
   loading: {
@@ -957,6 +962,7 @@ const zhTW: TripPlannerDict = {
     subtitle: "自動生成日本自駕旅行計畫 · Google 地圖聯動顯示",
     heritageLink: "🌍 世界遺產護照",
     lifeMapLink: "🗺 人生體驗地圖",
+    columnsLink: "📝 自駕旅行專欄",
     editPlan: "重新編輯計畫",
   },
   loading: {
@@ -1155,6 +1161,7 @@ const es: TripPlannerDict = {
     subtitle: "Genera automáticamente itinerarios de viaje en Japón con Google Maps",
     heritageLink: "🌍 Pasaporte Patrimonio Mundial",
     lifeMapLink: "🗺 Mapa de Experiencias",
+    columnsLink: "📝 Columnas de viaje",
     editPlan: "Reeditar plan",
   },
   loading: {
@@ -1353,6 +1360,7 @@ const ru: TripPlannerDict = {
     subtitle: "Автогенерация маршрутов по Японии с отображением на Google Картах",
     heritageLink: "🌍 Паспорт объектов ЮНЕСКО",
     lifeMapLink: "🗺 Карта жизни",
+    columnsLink: "📝 Статьи о поездках",
     editPlan: "Редактировать план",
   },
   loading: {

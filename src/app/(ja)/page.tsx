@@ -1061,9 +1061,6 @@ function HomeContent() {
               <h1 className="font-bold text-lg leading-tight">
                 {t.header.title}
               </h1>
-              <p className="text-xs text-slate-400">
-                {t.header.subtitle}
-              </p>
             </div>
           </div>
 
@@ -1083,17 +1080,16 @@ function HomeContent() {
               </select>
             </div>
 
+            {/*
+              世界遺産パスポート・人生体験マップはフッターの関連ツールと重複するため、
+              ヘッダーからは外し、フッターに無い導線（日本語＝コラム）だけを置く。
+              日本語以外はコラムが未翻訳なので、多言語版のある世界遺産パスポートを出す。
+            */}
             <a
-              href="/heritage/"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all whitespace-nowrap"
+              href={lang === "ja" ? "/columns" : "/heritage/"}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all whitespace-nowrap"
             >
-              {t.header.heritageLink}
-            </a>
-            <a
-              href="/life-map"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium transition-all whitespace-nowrap"
-            >
-              {t.header.lifeMapLink}
+              {lang === "ja" ? t.header.columnsLink : t.header.heritageLink}
             </a>
             {viewMode === "result" && (
               <button
@@ -1177,7 +1173,7 @@ function HomeContent() {
       )}
 
       {/* Main Layout */}
-      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-60px)] lg:overflow-hidden">
+      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:h-[calc(100vh-61px)] lg:overflow-hidden">
         <div
           ref={leftPanelRef}
           className={`w-full lg:w-[440px] xl:w-[480px] shrink-0 lg:overflow-y-auto itinerary-scroll p-4 ${
@@ -1380,7 +1376,7 @@ function HomeContent() {
         </div>
 
         <div
-          className={`lg:flex-1 h-[calc(100vh-60px)] lg:h-auto p-4 pt-0 lg:pt-4 ${
+          className={`lg:flex-1 h-[calc(100vh-61px)] lg:h-auto p-4 pt-0 lg:pt-4 ${
             !mobileShowMap ? "hidden lg:block" : ""
           }`}
         >
@@ -1394,7 +1390,7 @@ function HomeContent() {
         </div>
       </div>
 
-      <SiteFooter variant="compact" />
+      <SiteFooter variant={viewMode === "result" ? "default" : "compact"} />
     </div>
   );
 }
