@@ -86,7 +86,36 @@ export async function searchPlaces(
       apiError = true;
     }
   } catch (e) {
-    console.warn("Google Places API failed, falling back to Nominatim:", e);
+    console.warn("Google Places API failed, trying Text Search:", e);
+    apiError = true;
+  }
+
+  // Autocompleteはカタカナ表記ゆれ（例: 「グロワーズキッチン」→実際は"Grower's Kitchen"表記）に弱く
+  // 0件になることがあるため、その場合だけ表記ゆれに強いText Search(New)で拾い直す。
+  // 通常のクエリはAutocompleteだけで完結するので、このフォールバックの呼び出し頻度は低い。
+  try {
+    const res = await fetch(`/api/places?q=${encodeURIComponent(query)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const googleResults: SearchCandidate[] = data.results.map(
+          (r: { name: string; address: string; lat: number; lng: number }) => ({
+            name: r.name,
+            address: r.address,
+            lat: r.lat,
+            lng: r.lng,
+          })
+        );
+        const merged = [...presetMatches, ...googleResults].slice(0, 5);
+        searchCache.set(cacheKey, merged);
+        return { results: merged, apiError: false };
+      }
+      apiError = false;
+    } else {
+      apiError = true;
+    }
+  } catch (e) {
+    console.warn("Google Text Search fallback failed, falling back to Nominatim:", e);
     apiError = true;
   }
 
