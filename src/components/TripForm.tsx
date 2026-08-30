@@ -125,6 +125,9 @@ function SearchInput({
   const [showDropdown, setShowDropdown] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  // 日本語入力の変換中（IME確定前）はキー入力のたびonChangeが発火するため、
+  // 確定前に検索すると1文字ごとにAPIを叩いてしまう。確定(compositionend)まで待つ。
+  const isComposingRef = useRef(false);
 
   // Sync external value
   useEffect(() => {
@@ -144,19 +147,25 @@ function SearchInput({
 
   const { t } = useTripLang();
   const [noResults, setNoResults] = useState(false);
+  const [searchError, setSearchError] = useState(false);
 
   const handleSearch = useCallback(async (q: string) => {
     if (q.length < 2) {
       setCandidates([]);
       setNoResults(false);
+      setSearchError(false);
       return;
     }
     setIsSearching(true);
     setNoResults(false);
+    setSearchError(false);
     try {
-      const results = await searchPlaces(q);
+      const { results, apiError } = await searchPlaces(q);
       setCandidates(results);
       if (results.length > 0) {
+        setShowDropdown(true);
+      } else if (apiError) {
+        setSearchError(true);
         setShowDropdown(true);
       } else {
         setNoResults(true);
@@ -170,7 +179,15 @@ function SearchInput({
   const handleChange = (val: string) => {
     setQuery(val);
     onChange(val);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    // IME変換中は確定まで検索を保留する（確定時はonCompositionEndから発火）
+    if (isComposingRef.current) return;
     // Debounce search
+    timerRef.current = setTimeout(() => handleSearch(val), 800);
+  };
+
+  const handleCompositionEnd = (val: string) => {
+    isComposingRef.current = false;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => handleSearch(val), 800);
   };
@@ -190,6 +207,8 @@ function SearchInput({
           placeholder={placeholder}
           value={query}
           onChange={(e) => handleChange(e.target.value)}
+          onCompositionStart={() => { isComposingRef.current = true; }}
+          onCompositionEnd={(e) => handleCompositionEnd(e.currentTarget.value)}
           onFocus={() => candidates.length > 0 && setShowDropdown(true)}
           className={className}
         />
@@ -217,6 +236,15 @@ function SearchInput({
                 </div>
               </button>
             ))
+          ) : searchError ? (
+            <div className="px-3 py-3 text-center">
+              <p className="text-xs text-amber-600 font-medium">
+                {t.form.search.searchError}
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
+                {t.form.search.noResultsHint}
+              </p>
+            </div>
           ) : noResults ? (
             <div className="px-3 py-3 text-center">
               <p className="text-xs text-amber-600 font-medium">

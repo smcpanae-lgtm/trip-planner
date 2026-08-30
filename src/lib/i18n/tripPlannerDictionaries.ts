@@ -135,7 +135,7 @@ export interface TripPlannerDict {
     disclaimer: { title: string; items: string[] };
     terms: { title: string; items: string[] };
     copyright: string;
-    search: { noResults: string; noResultsHint: string };
+    search: { noResults: string; noResultsHint: string; searchError: string };
   };
 }
 
@@ -349,6 +349,7 @@ const ja: TripPlannerDict = {
     search: {
       noResults: "地図検索で候補が見つかりませんでした",
       noResultsHint: "このまま入力すればAIが場所を特定してプランを作成します",
+      searchError: "地図検索が一時的にご利用いただけません",
     },
   },
 };
@@ -551,6 +552,7 @@ const en: TripPlannerDict = {
     search: {
       noResults: "No results found in map search",
       noResultsHint: "You can still type the name — AI will identify the location when creating your plan",
+      searchError: "Map search is temporarily unavailable",
     },
   },
 };
@@ -753,6 +755,7 @@ const ko: TripPlannerDict = {
     search: {
       noResults: "지도 검색에서 후보를 찾을 수 없었습니다",
       noResultsHint: "그대로 입력하면 AI가 장소를 특정하여 플랜을 작성합니다",
+      searchError: "지도 검색을 일시적으로 이용할 수 없습니다",
     },
   },
 };
@@ -952,6 +955,7 @@ const zhCN: TripPlannerDict = {
     search: {
       noResults: "地图搜索未找到候选地点",
       noResultsHint: "您可以直接输入，AI 将在生成计划时识别地点",
+      searchError: "地图搜索暂时无法使用",
     },
   },
 };
@@ -1151,6 +1155,7 @@ const zhTW: TripPlannerDict = {
     search: {
       noResults: "地圖搜尋未找到候選地點",
       noResultsHint: "您可以直接輸入，AI 將在生成計畫時識別地點",
+      searchError: "地圖搜尋暫時無法使用",
     },
   },
 };
@@ -1350,6 +1355,7 @@ const es: TripPlannerDict = {
     search: {
       noResults: "No se encontraron resultados en la búsqueda de mapas",
       noResultsHint: "Puedes seguir escribiendo — la IA identificará el lugar al crear tu plan",
+      searchError: "La búsqueda en el mapa no está disponible temporalmente",
     },
   },
 };
@@ -1549,6 +1555,7 @@ const ru: TripPlannerDict = {
     search: {
       noResults: "В поиске на карте не найдено результатов",
       noResultsHint: "Можно продолжить вводить — ИИ определит место при создании плана",
+      searchError: "Поиск на карте временно недоступен",
     },
   },
 };

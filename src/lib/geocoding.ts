@@ -18,11 +18,25 @@ interface NominatimReverseResult {
   };
 }
 
+// クエリ単位の検索結果キャッシュ。
+// Places APIの1日あたりの割り当てが逼迫しやすいため、同じ語で何度も打ち直したり
+// 似た目的地を連続で検索したりしたときに再度APIを叩かないようにする（ページ内のみ有効）。
+const searchCache = new Map<string, SearchCandidate[]>();
+
+export interface SearchPlacesResult {
+  results: SearchCandidate[];
+  // Places APIの呼び出し自体が失敗した（＝割り当て超過等）場合にtrue。
+  // 「該当なし」と区別してUIに出し分けるためのフラグ。
+  apiError: boolean;
+}
+
 // Search for place candidates using Google Places API (with Nominatim fallback)
-export async function searchPlaces(
-  query: string
-): Promise<SearchCandidate[]> {
-  if (!query || query.length < 2) return [];
+export async function searchPlaces(query: string): Promise<SearchPlacesResult> {
+  if (!query || query.length < 2) return { results: [], apiError: false };
+
+  const cacheKey = query.trim();
+  const cached = searchCache.get(cacheKey);
+  if (cached) return { results: cached, apiError: false };
 
   // Check presets first
   const presetMatches = presetSpots
@@ -38,9 +52,13 @@ export async function searchPlaces(
       lng: s.lng,
     }));
 
-  if (presetMatches.length >= 3) return presetMatches;
+  if (presetMatches.length >= 3) {
+    searchCache.set(cacheKey, presetMatches);
+    return { results: presetMatches, apiError: false };
+  }
 
   // Try Google Places API first
+  let apiError = false;
   try {
     const res = await fetch(`/api/places?q=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -54,11 +72,16 @@ export async function searchPlaces(
             lng: r.lng,
           })
         );
-        return [...presetMatches, ...googleResults].slice(0, 5);
+        const merged = [...presetMatches, ...googleResults].slice(0, 5);
+        searchCache.set(cacheKey, merged);
+        return { results: merged, apiError: false };
       }
+    } else {
+      apiError = true;
     }
   } catch (e) {
     console.warn("Google Places API failed, falling back to Nominatim:", e);
+    apiError = true;
   }
 
   // Fallback to Nominatim
@@ -79,10 +102,17 @@ export async function searchPlaces(
       lat: parseFloat(r.lat),
       lng: parseFloat(r.lon),
     }));
-    return [...presetMatches, ...nominatimResults].slice(0, 5);
+    const merged = [...presetMatches, ...nominatimResults].slice(0, 5);
+    // Nominatimでも見つからず、かつGoogle側がエラーだった場合のみ「一時的に使えません」を出す。
+    // Nominatimが単に0件だった（＝本当に該当なし）場合はapiErrorを立てない。
+    if (merged.length === 0 && apiError) {
+      return { results: [], apiError: true };
+    }
+    searchCache.set(cacheKey, merged);
+    return { results: merged, apiError: false };
   } catch (e) {
     console.error("Search error:", e);
-    return presetMatches;
+    return { results: presetMatches, apiError };
   }
 }
 
