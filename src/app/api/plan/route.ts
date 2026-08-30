@@ -35,7 +35,7 @@ type PlanAuditError =
 const MAX_DAYS = 5;
 const MAX_DESTINATIONS_PER_DAY = 8;
 const MAX_TOTAL_TEXT_LENGTH = 8000;
-const MAX_OUTPUT_TOKENS = 4096;
+const MAX_OUTPUT_TOKENS = 8192;
 const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -55,9 +55,11 @@ interface PlanRequest {
     departureTime: string;
     destinations: {
       name: string;
+      address?: string;
       lat?: number;
       lng?: number;
       isOmakase: boolean;
+      meal?: "" | "lunch" | "dinner";
     }[];
     arrival: string;
     arrivalTime: string;
@@ -187,9 +189,11 @@ function contentHash(body: PlanRequest): string {
         departureTime: day.departureTime,
         destinations: day.destinations?.map((destination) => ({
           name: destination.name,
+          address: destination.address,
           lat: destination.lat,
           lng: destination.lng,
           isOmakase: destination.isOmakase,
+          meal: destination.meal,
         })),
         arrival: day.arrival,
         arrivalTime: day.arrivalTime,
@@ -412,6 +416,148 @@ const MODEL_NAMES = [
   "gemini-2.5-flash",
 ];
 
+// --- 生成結果の検証（ユーザー指定の目的地が抜けていないか） ---------------------
+// プロンプトで「絶対に削除しないこと」と指示しても実際には欠落することがあるため、
+// 出力を機械的に検証し、抜けていれば1回だけ作り直す。
+
+type PlanItemLite = { name: string; address?: string; lat?: number; lng?: number };
+
+function parsePlanJson(responseText: string): unknown {
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) return JSON.parse(jsonMatch[1].trim());
+    throw new Error("Failed to parse Gemini response as JSON");
+  }
+}
+
+/** 全角英数字・ハイフンのゆれ・空白・「〒」「日本、」を吸収して比較用に正規化する */
+function normalizeForMatch(value: string): string {
+  return value
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/[‐‑‒–—―ー−ｰ－]/g, "-")
+    .replace(/[〒\s、,。．・]/g, "")
+    .replace(/^日本/, "")
+    .toLowerCase();
+}
+
+/** 郵便番号（数字7桁）を取り出す。住所だけで指定された目的地の照合に使う */
+function extractPostalCode(value: string): string {
+  const matched = normalizeForMatch(value).match(/\d{3}-?\d{4}/);
+  return matched ? matched[0].replace("-", "") : "";
+}
+
+function distanceKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const toRad = (v: number) => (v * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat);
+  const dLng = toRad(bLng - aLng);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+function collectPlanItems(plan: unknown): PlanItemLite[] {
+  const items: PlanItemLite[] = [];
+  const days = (plan as { days?: unknown })?.days;
+  if (!Array.isArray(days)) return items;
+
+  const pushSpot = (spot: unknown) => {
+    const s = spot as { name?: unknown; address?: unknown; lat?: unknown; lng?: unknown };
+    if (!s || typeof s.name !== "string") return;
+    items.push({
+      name: s.name,
+      address: typeof s.address === "string" ? s.address : undefined,
+      lat: typeof s.lat === "number" ? s.lat : undefined,
+      lng: typeof s.lng === "number" ? s.lng : undefined,
+    });
+  };
+
+  for (const day of days) {
+    const d = day as { items?: unknown; lunchSpot?: unknown; dinnerSpot?: unknown };
+    if (Array.isArray(d?.items)) d.items.forEach(pushSpot);
+    pushSpot(d?.lunchSpot);
+    pushSpot(d?.dinnerSpot);
+  }
+  return items;
+}
+
+/**
+ * 指定された目的地がプランに含まれているかを判定する。
+ * 名前が住所文字列の場合（Places APIが住所をnameとして返すケース）は名前一致しないため、
+ * 郵便番号一致・座標の近さ（1.5km以内）でも「含まれている」とみなす。
+ */
+function planIncludesDestination(
+  dest: { name: string; address?: string; lat?: number; lng?: number },
+  items: PlanItemLite[]
+): boolean {
+  const destName = normalizeForMatch(dest.name);
+  if (!destName) return true;
+  const destPostal = extractPostalCode(`${dest.name} ${dest.address ?? ""}`);
+
+  for (const item of items) {
+    const itemName = normalizeForMatch(item.name);
+    const itemText = normalizeForMatch(`${item.name}${item.address ?? ""}`);
+    if (itemText.includes(destName)) return true;
+    if (itemName.length >= 3 && destName.includes(itemName)) return true;
+    if (destPostal && extractPostalCode(`${item.name} ${item.address ?? ""}`) === destPostal) return true;
+    if (
+      typeof dest.lat === "number" &&
+      typeof dest.lng === "number" &&
+      typeof item.lat === "number" &&
+      typeof item.lng === "number" &&
+      distanceKm(dest.lat, dest.lng, item.lat, item.lng) <= 1.5
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** 各プランについて、抜けているユーザー指定目的地の警告文を返す */
+function findMissingDestinationWarnings(body: PlanRequest, parsed: unknown): string[] {
+  const plansValue = (parsed as { plans?: unknown })?.plans;
+  const plans: unknown[] = Array.isArray(plansValue) ? plansValue : [parsed];
+  const warnings: string[] = [];
+
+  plans.forEach((plan, planIdx) => {
+    const items = collectPlanItems(plan);
+    // 想定外の形（items無し）の場合は判定できないので警告しない
+    if (items.length === 0) return;
+    const planName =
+      typeof (plan as { planName?: unknown })?.planName === "string"
+        ? ((plan as { planName: string }).planName)
+        : planIdx === 0
+          ? "プランA"
+          : "プランB";
+
+    for (const day of body.days) {
+      for (const dest of day.destinations) {
+        if (dest.isOmakase || !dest.name?.trim()) continue;
+        if (!planIncludesDestination(dest, items)) {
+          warnings.push(`${planName}に「${dest.name.trim()}」が含まれていません`);
+        }
+      }
+    }
+  });
+
+  return warnings;
+}
+
+function buildCorrectionPrompt(basePrompt: string, warnings: string[]): string {
+  return `${basePrompt}
+
+# 【再生成の指示・最優先】
+直前の出力では、ユーザーが指定した目的地が次のとおり抜けていました。
+
+${warnings.map((w) => `- ${w}`).join("\n")}
+
+今回は上記の目的地を必ず該当プランのitemsに含めてください。
+時間が足りない場合は、AIが追加した観光スポットや休憩スポットのほうを削って調整すること。
+出力は前回と同じ { "plans": [...] } のJSONのみを返すこと。`;
+}
+
 export async function POST(request: NextRequest) {
   const requestId = randomUUID();
   const ip = getIp(request);
@@ -497,15 +643,31 @@ export async function POST(request: NextRequest) {
             });
 
             const responseText = result.response.text();
-            let plan;
-            try {
-              plan = JSON.parse(responseText);
-            } catch {
-              const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
-              if (jsonMatch) {
-                plan = JSON.parse(jsonMatch[1].trim());
-              } else {
-                throw new Error("Failed to parse Gemini response as JSON");
+            let plan = parsePlanJson(responseText);
+
+            // ユーザー指定の目的地が抜けていたら、指摘を添えて1回だけ作り直す
+            let warnings = findMissingDestinationWarnings(body, plan);
+            if (warnings.length > 0) {
+              console.warn(`[${keyLabel}/${modelName}] 指定目的地の欠落を検出: ${warnings.join(" / ")} — 1回だけ再生成します`);
+              try {
+                const retryResult = await model.generateContent({
+                  contents: [{ role: "user", parts: [{ text: buildCorrectionPrompt(prompt, warnings) }] }],
+                  generationConfig: {
+                    temperature: 0.4,
+                    maxOutputTokens: MAX_OUTPUT_TOKENS,
+                    responseMimeType: "application/json",
+                  },
+                });
+                const retryPlan = parsePlanJson(retryResult.response.text());
+                const retryWarnings = findMissingDestinationWarnings(body, retryPlan);
+                // 改善した場合のみ採用する（悪化した再生成結果は使わない）
+                if (retryWarnings.length < warnings.length) {
+                  plan = retryPlan;
+                  warnings = retryWarnings;
+                }
+              } catch (retryError) {
+                const retryMessage = retryError instanceof Error ? retryError.message : String(retryError);
+                console.warn(`[${keyLabel}/${modelName}] 再生成に失敗: ${retryMessage.substring(0, 200)}`);
               }
             }
 
@@ -523,7 +685,11 @@ export async function POST(request: NextRequest) {
               outputTokens: usage?.candidatesTokenCount,
               totalTokens: usage?.totalTokenCount,
             });
-            return NextResponse.json(plan);
+            return NextResponse.json(
+              warnings.length > 0
+                ? { ...(plan as Record<string, unknown>), warnings }
+                : plan
+            );
           } catch (err) {
             const errMsg = err instanceof Error ? err.message : String(err);
             const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
@@ -624,20 +790,39 @@ function buildPrompt(body: PlanRequest): string {
   const daysDescription = body.days
     .map((day) => {
       // Build destination list; mark the first destination with 【最初に行く】 if firstDestId is set
-      const destNamesWithFirst = day.destinations
+      const destLines = day.destinations
         .map((d, idx) => {
-          if (d.isOmakase) return "【おまかせ（AIが提案）】";
-          return idx === 0 && day.firstDestId ? `【最初に行く】${d.name}` : d.name;
+          if (d.isOmakase) return "  - 【おまかせ（AIが提案）】";
+          if (!d.name?.trim()) return "";
+          const marks: string[] = [];
+          if (idx === 0 && day.firstDestId) marks.push("【最初に行く】");
+          if (d.meal === "lunch") marks.push("【この場所で昼食】");
+          if (d.meal === "dinner") marks.push("【この場所で夕食】");
+          const detail: string[] = [];
+          if (d.address && d.address.trim() && d.address.trim() !== d.name.trim()) {
+            detail.push(`住所: ${d.address.trim()}`);
+          }
+          if (typeof d.lat === "number" && typeof d.lng === "number") {
+            detail.push(`座標: ${d.lat.toFixed(5)}, ${d.lng.toFixed(5)}`);
+          }
+          return `  - ${marks.join("")}${d.name.trim()}${detail.length > 0 ? `（${detail.join(" / ")}）` : ""}`;
         })
         .filter(Boolean)
-        .join("、");
+        .join("\n");
 
-      const lunchDesc = day.includeLunch
-        ? `あり${day.lunchLocation ? `（希望場所: ${day.lunchLocation}）` : ""}${day.lunchGenre ? `（ジャンル: ${day.lunchGenre}）` : ""}`
-        : "不要";
-      const dinnerDesc = day.includeDinner
-        ? `あり${day.dinnerLocation ? `（希望場所: ${day.dinnerLocation}）` : ""}${day.dinnerGenre ? `（ジャンル: ${day.dinnerGenre}）` : ""}`
-        : "不要";
+      const lunchDest = day.destinations.find((d) => !d.isOmakase && d.meal === "lunch" && d.name?.trim());
+      const dinnerDest = day.destinations.find((d) => !d.isOmakase && d.meal === "dinner" && d.name?.trim());
+
+      const lunchDesc = lunchDest
+        ? `あり（目的地「${lunchDest.name.trim()}」で食べる。この目的地自体を昼食スポットとして扱い、別の昼食スポットは追加しないこと）`
+        : day.includeLunch
+          ? `あり${day.lunchLocation ? `（希望場所: ${day.lunchLocation}）` : ""}${day.lunchGenre ? `（ジャンル: ${day.lunchGenre}）` : ""}`
+          : "不要";
+      const dinnerDesc = dinnerDest
+        ? `あり（目的地「${dinnerDest.name.trim()}」で食べる。この目的地自体を夕食スポットとして扱い、別の夕食スポットは追加しないこと）`
+        : day.includeDinner
+          ? `あり${day.dinnerLocation ? `（希望場所: ${day.dinnerLocation}）` : ""}${day.dinnerGenre ? `（ジャンル: ${day.dinnerGenre}）` : ""}`
+          : "不要";
 
       const aiOmakaseNote = body.aiOmakase !== false
         ? "\n- 【おまかせ】目的地はルート上で最適な観光地をAIが追加提案してください"
@@ -646,12 +831,28 @@ function buildPrompt(body: PlanRequest): string {
       return `
 ## ${day.dayIndex + 1}日目
 - 出発地: ${day.departure}（${day.departureTime}出発）
-- 希望目的地: ${destNamesWithFirst || "なし（AIが提案）"}${aiOmakaseNote}
+- 希望目的地:
+${destLines || "  - なし（AIが提案）"}${aiOmakaseNote}
 - 終着地: ${day.arrival}（${day.arrivalTime}までに到着希望）
 - 昼食: ${lunchDesc}
 - 夕食: ${dinnerDesc}`;
     })
     .join("\n");
+
+  // 各プランに必ず含めなければならないユーザー指定目的地の一覧。
+  // 「絶対に削除しないこと」と書くだけでは実際に欠落することがあるため、
+  // プロンプト末尾にもチェックリストとして再掲する。
+  const mustIncludeNames = body.days.flatMap((day) =>
+    day.destinations
+      .filter((d) => !d.isOmakase && d.name?.trim())
+      .map((d) => `${body.days.length > 1 ? `${day.dayIndex + 1}日目: ` : ""}${d.name.trim()}`)
+  );
+  const mustIncludeBlock =
+    mustIncludeNames.length > 0
+      ? `
+- **【最重要】以下のユーザー指定目的地は、プランA・プランBの両方のitemsに必ず1回ずつ含めること。省略・統合・別スポットへの置き換えはすべて禁止。時間が足りない場合は他の（AIが追加した）スポットのほうを削ること:**
+${mustIncludeNames.map((n) => `  - ${n}`).join("\n")}`
+      : "";
 
   const dogContext = body.withDog
     ? `
@@ -883,6 +1084,16 @@ ${planVariationInstruction}
    c. **重複禁止**: レストラン目的地がある場合、そのスポットが担当する食事（lunch/dinner）について別途の食事スポットを追加しないこと。例えば夕食目的地にレストランがある場合、別途type="dinner"のアイテムを追加しないこと
    d. ユーザーが昼食または夕食の設定をした場合も、そのレストラン目的地が該当する食事に充てること（設定した食事とレストランの時間帯が一致する場合は必ずそのレストランを食事スポットとして使用すること）
    e. descriptionにはレストランの料理ジャンルや雰囲気など見どころを記載し、「このレストランでの食事をお楽しみください」と記載すること
+15. 目的地に【この場所で昼食】【この場所で夕食】が付いている場合（**14より優先する最重要ルール**）:
+   - その目的地自体を食事スポットとして扱い、typeを"lunch"（昼食）または"dinner"（夕食）にすること
+   - 滞在時間は60〜90分とし、昼食なら11:30〜13:30、夕食なら17:30〜19:30に到着するようスケジュールを組むこと
+   - **その食事について別の食事スポットを追加してはならない**（別のtype="lunch"/"dinner"アイテムも、lunchSpot/dinnerSpotの追加提案も禁止）
+   - 名前が住所のみで飲食店と判別できない場合でも、この指定がある以上その場所を食事スポットとして扱うこと
+16. 住所だけで指定された目的地（「〒」や番地を含む文字列）について:
+   - **住所であることを理由に省略・除外してはならない**。必ずプランに含めること
+   - その住所にある施設名が分かる場合は name に施設名、address に指定された住所を入れること
+   - 分からない場合は name に指定された文字列をそのまま使い、address にも同じ住所を入れること
+   - 座標が併記されている場合は、その座標をそのまま lat / lng に使うこと
 
 # 出力JSON形式
 **必ず以下の形式で出力すること。最外層は必ず { "plans": [...] } とすること。plans配列には必ず2つのプランを含めること。**
@@ -1021,5 +1232,5 @@ ${planVariationInstruction}
 - 食事アイテムにはlat, lng, addressを必ず含めること
 - 緯度経度は正確な値を使用してください。日本国内の実在する場所のみを提案してください
 - 2つのプランは必ず異なる内容にしてください（同じプランの重複は不可）
-- 各プランのplanNameとplanDescriptionは必須です`;
+- 各プランのplanNameとplanDescriptionは必須です${mustIncludeBlock}`;
 }

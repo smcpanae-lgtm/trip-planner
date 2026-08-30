@@ -46,6 +46,7 @@ declare global {
         }
       ) => string;
       reset: (widgetId?: string) => void;
+      remove?: (widgetId: string) => void;
     };
   }
 }
@@ -430,6 +431,7 @@ function HomeContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [planError, setPlanError] = useState<string | null>(null);
+  const [planWarnings, setPlanWarnings] = useState<string[]>([]);
   const [highlightedSpot, setHighlightedSpot] = useState<{
     dayIndex: number;
     orderIndex: number;
@@ -583,7 +585,27 @@ function HomeContent() {
   }, [turnstileSiteKey]);
 
   useEffect(() => {
-    if (!turnstileSiteKey || turnstileWidgetIdRef.current) return;
+    if (!turnstileSiteKey) return;
+
+    // 結果画面ではウィジェットのコンテナ（turnstileContainerRef）がアンマウントされる。
+    // ここでウィジェットを破棄してIDを捨てておかないと、プランを再編集して
+    // フォームに戻ったときに「IDが残っている＝描画済み」と誤判定して再描画されず、
+    // トークンを取得できないまま「認証確認が完了していません」になる。
+    if (viewMode !== "form") {
+      if (turnstileWidgetIdRef.current && window.turnstile?.remove) {
+        try {
+          window.turnstile.remove(turnstileWidgetIdRef.current);
+        } catch {
+          // すでに破棄済みの場合は無視してよい
+        }
+      }
+      turnstileWidgetIdRef.current = null;
+      setTurnstileToken("");
+      setTurnstileStatus("loading");
+      return;
+    }
+
+    if (turnstileWidgetIdRef.current) return;
     setTurnstileStatus("loading");
 
     const renderTurnstile = () => {
@@ -661,6 +683,7 @@ function HomeContent() {
 
   const handleSubmit = useCallback(async (config: TripConfig) => {
     setPlanError(null);
+    setPlanWarnings([]);
     setLastConfig(config);
     if (!planVerificationReady) {
       setPlanError("AIプラン作成の認証確認が完了していません。しばらく待ってから再度お試しください。");
@@ -678,9 +701,11 @@ function HomeContent() {
           departureTime: day.departureTime || "09:00",
           destinations: day.destinations.map((d) => ({
             name: d.name,
+            address: d.address,
             lat: d.lat,
             lng: d.lng,
             isOmakase: d.isOmakase,
+            meal: d.meal,
           })),
           arrival: day.arrival,
           arrivalTime: day.arrivalTime || "20:00",
@@ -715,6 +740,7 @@ function HomeContent() {
       if (res.ok && !data.error) {
         const variants = parseGeminiResponse(data);
         if (variants.length > 0) {
+          setPlanWarnings(Array.isArray(data.warnings) ? data.warnings : []);
           setPlanVariants(variants);
           setActivePlanIndex(0);
           setViewMode("result");
@@ -1071,7 +1097,7 @@ function HomeContent() {
             </a>
             {viewMode === "result" && (
               <button
-                onClick={() => { setViewMode("form"); setPlanError(null); setIsDemoPlan(false); }}
+                onClick={() => { setViewMode("form"); setPlanError(null); setPlanWarnings([]); setIsDemoPlan(false); }}
                 className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-all"
               >
                 {t.header.editPlan}
@@ -1231,6 +1257,23 @@ function HomeContent() {
                 </div>
               )}
 
+              {planWarnings.length > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                  <div className="text-amber-500 shrink-0 mt-0.5">⚠️</div>
+                  <div>
+                    <p className="text-sm font-medium text-amber-800">指定した目的地が一部反映されていません</p>
+                    <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
+                      {planWarnings.map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                    <p className="text-xs text-amber-600 mt-1.5">
+                      条件を変更してもう一度作成すると改善する場合があります（目的地名は住所より施設名のほうが認識されやすいです）。
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Plan selector tabs */}
               {planVariants.length > 1 && (
                 <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 shadow-md border-2 border-red-200">
@@ -1351,7 +1394,7 @@ function HomeContent() {
         </div>
       </div>
 
-      <SiteFooter />
+      <SiteFooter variant="compact" />
     </div>
   );
 }

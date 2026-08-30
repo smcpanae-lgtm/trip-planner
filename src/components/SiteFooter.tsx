@@ -70,10 +70,19 @@ const TOOLS_ZH_HANT = [
   },
 ];
 
+/**
+ * variant:
+ * - "default": カード型。記事ページなど、フッターまで読み進めてもらう前提のページ用。
+ * - "compact": テキストリンクのみの控えめ表示。トップページのように本体が画面高いっぱいを
+ *   使うページでは、カード型フッター（約350px）が少しスクロールしただけで画面を占有し、
+ *   プラン作成画面が見えなくなってしまうため。内部リンク自体は残す。
+ */
 export default function SiteFooter({
   locale = "ja",
+  variant = "default",
 }: {
   locale?: "ja" | "en" | "zh-hant";
+  variant?: "default" | "compact";
 } = {}) {
   const tools = locale === "en" ? TOOLS_EN : locale === "zh-hant" ? TOOLS_ZH_HANT : TOOLS_JA;
   const heading = locale === "en" ? "Related tools" : locale === "zh-hant" ? "相關工具" : "関連ツール";
@@ -83,6 +92,32 @@ export default function SiteFooter({
       : locale === "zh-hant"
         ? `© ${new Date().getFullYear()} AI Drive Planner`
         : `© ${new Date().getFullYear()} AI ドライブプランナー`;
+
+  if (variant === "compact") {
+    return (
+      <footer className="relative z-10 border-t border-slate-200 bg-white">
+        <div className="max-w-[1600px] mx-auto px-4 py-5">
+          <nav aria-label={heading}>
+            <h2 className="text-[11px] font-medium text-slate-400 mb-2">{heading}</h2>
+            <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+              {tools.map((tool) => (
+                <li key={tool.href}>
+                  <a
+                    href={tool.href}
+                    title={tool.description}
+                    className="text-xs text-slate-500 hover:text-blue-600 hover:underline transition-colors"
+                  >
+                    {tool.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <p className="text-[11px] text-slate-300 mt-4">{copyright}</p>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer className="relative z-10 border-t border-slate-200 bg-white">

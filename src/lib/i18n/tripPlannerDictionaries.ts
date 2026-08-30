@@ -93,6 +93,10 @@ export interface TripPlannerDict {
       required: string;
       searchPlaceholder: string;
       firstToggle: string;
+      mealLabel: string;
+      mealNone: string;
+      mealLunch: string;
+      mealDinner: string;
       add: string;
     };
     arrival: {
@@ -107,6 +111,7 @@ export interface TripPlannerDict {
       locationPlaceholder: string;
       genreLabel: string;
       genrePlaceholder: string;
+      atDestination: string;
     };
     dinner: {
       toggle: string;
@@ -114,6 +119,7 @@ export interface TripPlannerDict {
       locationPlaceholder: string;
       genreLabel: string;
       genrePlaceholder: string;
+      atDestination: string;
     };
     errors: {
       departure: string;
@@ -280,6 +286,10 @@ const ja: TripPlannerDict = {
       required: "*1つ以上必須",
       searchPlaceholder: "場所名を入力して検索",
       firstToggle: "この場所に最初に行く",
+      mealLabel: "食事",
+      mealNone: "指定なし",
+      mealLunch: "昼食",
+      mealDinner: "夕食",
       add: "目的地を追加",
     },
     arrival: {
@@ -294,6 +304,7 @@ const ja: TripPlannerDict = {
       locationPlaceholder: "例: 鎌倉駅周辺（1か所のみ）",
       genreLabel: "ジャンル（任意、１つ）",
       genrePlaceholder: "例: 海鮮（1つのみ）",
+      atDestination: "目的地「{name}」で昼食をとります（別の昼食スポットは追加しません）",
     },
     dinner: {
       toggle: "夕食を含める",
@@ -301,6 +312,7 @@ const ja: TripPlannerDict = {
       locationPlaceholder: "例: 箱根湯本周辺（1か所のみ）",
       genreLabel: "ジャンル（任意、１つ）",
       genrePlaceholder: "例: 焼肉（1つのみ）",
+      atDestination: "目的地「{name}」で夕食をとります（別の夕食スポットは追加しません）",
     },
     errors: {
       departure: "出発地を入力してください",
@@ -475,6 +487,10 @@ const en: TripPlannerDict = {
       required: "* At least 1 required",
       searchPlaceholder: "Search place name",
       firstToggle: "Go here first",
+      mealLabel: "Meal",
+      mealNone: "None",
+      mealLunch: "Lunch",
+      mealDinner: "Dinner",
       add: "Add destination",
     },
     arrival: {
@@ -489,6 +505,7 @@ const en: TripPlannerDict = {
       locationPlaceholder: "e.g. near Kamakura Station (1 location only)",
       genreLabel: "Cuisine type (optional, 1 type)",
       genrePlaceholder: "e.g. seafood (1 type only)",
+      atDestination: "Lunch will be at “{name}” (no separate lunch stop will be added)",
     },
     dinner: {
       toggle: "Include dinner",
@@ -496,6 +513,7 @@ const en: TripPlannerDict = {
       locationPlaceholder: "e.g. near Hakone-Yumoto (1 location only)",
       genreLabel: "Cuisine type (optional, 1 type)",
       genrePlaceholder: "e.g. yakiniku (1 type only)",
+      atDestination: "Dinner will be at “{name}” (no separate dinner stop will be added)",
     },
     errors: {
       departure: "Please enter a departure location",
@@ -670,6 +688,10 @@ const ko: TripPlannerDict = {
       required: "*1개 이상 필수",
       searchPlaceholder: "장소명 입력 후 검색",
       firstToggle: "이 장소에 먼저 가기",
+      mealLabel: "식사",
+      mealNone: "지정 안 함",
+      mealLunch: "점심",
+      mealDinner: "저녁",
       add: "목적지 추가",
     },
     arrival: {
@@ -684,6 +706,7 @@ const ko: TripPlannerDict = {
       locationPlaceholder: "예: 가마쿠라역 주변（1곳만）",
       genreLabel: "장르（선택, 1개）",
       genrePlaceholder: "예: 해산물（1개만）",
+      atDestination: "목적지 「{name}」에서 점심을 먹습니다(별도의 점심 장소는 추가하지 않습니다)",
     },
     dinner: {
       toggle: "저녁 포함",
@@ -691,6 +714,7 @@ const ko: TripPlannerDict = {
       locationPlaceholder: "예: 하코네유모토 주변（1곳만）",
       genreLabel: "장르（선택, 1개）",
       genrePlaceholder: "예: 야키니쿠（1개만）",
+      atDestination: "목적지 「{name}」에서 저녁을 먹습니다(별도의 저녁 장소는 추가하지 않습니다)",
     },
     errors: {
       departure: "출발지를 입력해 주세요",
@@ -862,6 +886,10 @@ const zhCN: TripPlannerDict = {
       required: "*至少填写1个",
       searchPlaceholder: "输入地点名称搜索",
       firstToggle: "先去这个地方",
+      mealLabel: "用餐",
+      mealNone: "不指定",
+      mealLunch: "午餐",
+      mealDinner: "晚餐",
       add: "添加目的地",
     },
     arrival: {
@@ -876,6 +904,7 @@ const zhCN: TripPlannerDict = {
       locationPlaceholder: "例: 镰仓站附近（仅限1处）",
       genreLabel: "餐饮类型（可选，仅限1种）",
       genrePlaceholder: "例: 海鲜（仅限1种）",
+      atDestination: "将在目的地「{name}」用午餐（不再另外添加午餐地点）",
     },
     dinner: {
       toggle: "包含晚餐",
@@ -883,6 +912,7 @@ const zhCN: TripPlannerDict = {
       locationPlaceholder: "例: 箱根汤本附近（仅限1处）",
       genreLabel: "餐饮类型（可选，仅限1种）",
       genrePlaceholder: "例: 烤肉（仅限1种）",
+      atDestination: "将在目的地「{name}」用晚餐（不再另外添加晚餐地点）",
     },
     errors: {
       departure: "请输入出发地",
@@ -1054,6 +1084,10 @@ const zhTW: TripPlannerDict = {
       required: "*至少填寫1個",
       searchPlaceholder: "輸入地點名稱搜尋",
       firstToggle: "先去這個地方",
+      mealLabel: "用餐",
+      mealNone: "不指定",
+      mealLunch: "午餐",
+      mealDinner: "晚餐",
       add: "新增目的地",
     },
     arrival: {
@@ -1068,6 +1102,7 @@ const zhTW: TripPlannerDict = {
       locationPlaceholder: "例: 鎌倉站附近（僅限1處）",
       genreLabel: "餐飲類型（選填，僅限1種）",
       genrePlaceholder: "例: 海鮮（僅限1種）",
+      atDestination: "將在目的地「{name}」用午餐（不會另外新增午餐地點）",
     },
     dinner: {
       toggle: "包含晚餐",
@@ -1075,6 +1110,7 @@ const zhTW: TripPlannerDict = {
       locationPlaceholder: "例: 箱根湯本附近（僅限1處）",
       genreLabel: "餐飲類型（選填，僅限1種）",
       genrePlaceholder: "例: 燒肉（僅限1種）",
+      atDestination: "將在目的地「{name}」用晚餐（不會另外新增晚餐地點）",
     },
     errors: {
       departure: "請輸入出發地",
@@ -1246,6 +1282,10 @@ const es: TripPlannerDict = {
       required: "* Al menos 1 obligatorio",
       searchPlaceholder: "Buscar nombre de lugar",
       firstToggle: "Ir aquí primero",
+      mealLabel: "Comida",
+      mealNone: "Sin asignar",
+      mealLunch: "Almuerzo",
+      mealDinner: "Cena",
       add: "Añadir destino",
     },
     arrival: {
@@ -1260,6 +1300,7 @@ const es: TripPlannerDict = {
       locationPlaceholder: "Ej.: cerca de la estación de Kamakura (1 lugar)",
       genreLabel: "Tipo de cocina (opcional, solo 1 tipo)",
       genrePlaceholder: "Ej.: mariscos (1 tipo)",
+      atDestination: "El almuerzo será en «{name}» (no se añadirá otra parada para almorzar)",
     },
     dinner: {
       toggle: "Incluir cena",
@@ -1267,6 +1308,7 @@ const es: TripPlannerDict = {
       locationPlaceholder: "Ej.: cerca de Hakone-Yumoto (1 lugar)",
       genreLabel: "Tipo de cocina (opcional, solo 1 tipo)",
       genrePlaceholder: "Ej.: yakiniku (1 tipo)",
+      atDestination: "La cena será en «{name}» (no se añadirá otra parada para cenar)",
     },
     errors: {
       departure: "Por favor, introduce un punto de salida",
@@ -1438,6 +1480,10 @@ const ru: TripPlannerDict = {
       required: "* Минимум 1 обязательно",
       searchPlaceholder: "Введите название места для поиска",
       firstToggle: "Ехать сюда первым",
+      mealLabel: "Приём пищи",
+      mealNone: "Не указано",
+      mealLunch: "Обед",
+      mealDinner: "Ужин",
       add: "Добавить место",
     },
     arrival: {
@@ -1452,6 +1498,7 @@ const ru: TripPlannerDict = {
       locationPlaceholder: "Напр.: рядом со ст. Камакура (1 место)",
       genreLabel: "Тип кухни (необязательно, 1 тип)",
       genrePlaceholder: "Напр.: морепродукты (1 тип)",
+      atDestination: "Обед будет в «{name}» (отдельная остановка на обед не добавляется)",
     },
     dinner: {
       toggle: "Включить ужин",
@@ -1459,6 +1506,7 @@ const ru: TripPlannerDict = {
       locationPlaceholder: "Напр.: рядом с Хаконэ-Юмото (1 место)",
       genreLabel: "Тип кухни (необязательно, 1 тип)",
       genrePlaceholder: "Напр.: якинику (1 тип)",
+      atDestination: "Ужин будет в «{name}» (отдельная остановка на ужин не добавляется)",
     },
     errors: {
       departure: "Пожалуйста, введите место отправления",

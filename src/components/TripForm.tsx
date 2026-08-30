@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { searchPlaces } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
-import type { TripConfig, DayPlan, Spot, SearchCandidate, TravelerProfile } from "@/types/trip";
+import type { TripConfig, DayPlan, Spot, SpotMeal, SearchCandidate, TravelerProfile } from "@/types/trip";
 import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
 
 interface TripFormProps {
@@ -42,6 +42,7 @@ function createEmptySpot(isOmakase: boolean = false): Spot {
     name: isOmakase ? "お任せ" : "",
     address: "",
     isOmakase,
+    meal: "",
   };
 }
 
@@ -374,6 +375,44 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           : d
       )
     );
+  };
+
+  /**
+   * 目的地そのものを昼食／夕食の場所に指定する。
+   * 「夕食を含める」側と二重指定にならないよう、指定と同時に
+   * その食事のトグルをONにし、場所・ジャンルの自由入力はクリアする。
+   */
+  const setSpotMeal = (dayIdx: number, spotId: string, meal: SpotMeal) => {
+    setDays((prev) =>
+      prev.map((d, i) => {
+        if (i !== dayIdx) return d;
+        const destinations = d.destinations.map((s) => {
+          if (s.id === spotId) return { ...s, meal };
+          // 同じ食事を複数の目的地に割り当てさせない
+          return meal && s.meal === meal ? { ...s, meal: "" as SpotMeal } : s;
+        });
+        const next: DayPlan = { ...d, destinations };
+        if (meal === "lunch") {
+          next.includeLunch = true;
+          next.lunchLocation = "";
+          next.lunchGenre = "";
+        }
+        if (meal === "dinner") {
+          next.includeDinner = true;
+          next.dinnerLocation = "";
+          next.dinnerGenre = "";
+        }
+        return next;
+      })
+    );
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[`day${dayIdx}_lunchLocation`];
+      delete next[`day${dayIdx}_lunchGenre`];
+      delete next[`day${dayIdx}_dinnerLocation`];
+      delete next[`day${dayIdx}_dinnerGenre`];
+      return next;
+    });
   };
 
   const updateSpot = (dayIdx: number, spotId: string, updates: Partial<Spot>) => {
@@ -944,7 +983,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       </div>
 
       {/* Day Plans */}
-      {days.map((day, dayIdx) => (
+      {days.map((day, dayIdx) => {
+        const lunchDest = day.destinations.find((s) => !s.isOmakase && s.meal === "lunch");
+        const dinnerDest = day.destinations.find((s) => !s.isOmakase && s.meal === "dinner");
+        return (
         <div
           key={dayIdx}
           id={dayIdx === 0 ? "trip-day-form" : undefined}
@@ -1056,6 +1098,33 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                     {spot.address}
                   </p>
                 )}
+                {/* この目的地自体を昼食／夕食の場所にする指定 */}
+                {!spot.isOmakase && (
+                  <div className="ml-10 mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs text-slate-400">{t.form.destination.mealLabel}</span>
+                    {([
+                      ["", t.form.destination.mealNone],
+                      ["lunch", t.form.destination.mealLunch],
+                      ["dinner", t.form.destination.mealDinner],
+                    ] as [SpotMeal, string][]).map(([value, label]) => {
+                      const selected = (spot.meal || "") === value;
+                      return (
+                        <button
+                          key={value || "none"}
+                          type="button"
+                          onClick={() => setSpotMeal(dayIdx, spot.id, value)}
+                          className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${
+                            selected
+                              ? "bg-blue-600 border-blue-600 text-white"
+                              : "bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {/* "最初に行く" toggle - only for first destination */}
                 {spotIdx === 0 && (
                   <div className="ml-10 mt-1.5">
@@ -1143,6 +1212,20 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
           {/* Meals */}
           <div className="space-y-3">
             {/* Lunch */}
+            {lunchDest ? (
+              <div className="rounded-lg border-2 border-orange-300 bg-orange-50/50">
+                <div className="w-full flex items-center gap-2.5 px-3 py-2.5">
+                  <div className="w-5 h-5 rounded border-2 flex items-center justify-center bg-orange-500 border-orange-500">
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <Utensils className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium text-orange-800">{t.form.lunch.toggle}</span>
+                </div>
+                <p className="px-3 pb-3 text-xs text-orange-700 leading-relaxed">
+                  {t.form.lunch.atDestination.replace("{name}", lunchDest.name.trim() || t.form.destination.label)}
+                </p>
+              </div>
+            ) : (
             <div className={`rounded-lg border-2 transition-all ${day.includeLunch ? "border-orange-300 bg-orange-50/50" : "border-slate-200 bg-slate-50"}`}>
               <button
                 type="button"
@@ -1198,8 +1281,23 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 </div>
               )}
             </div>
+            )}
 
             {/* Dinner */}
+            {dinnerDest ? (
+              <div className="rounded-lg border-2 border-purple-300 bg-purple-50/50">
+                <div className="w-full flex items-center gap-2.5 px-3 py-2.5">
+                  <div className="w-5 h-5 rounded border-2 flex items-center justify-center bg-purple-500 border-purple-500">
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <Utensils className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-800">{t.form.dinner.toggle}</span>
+                </div>
+                <p className="px-3 pb-3 text-xs text-purple-700 leading-relaxed">
+                  {t.form.dinner.atDestination.replace("{name}", dinnerDest.name.trim() || t.form.destination.label)}
+                </p>
+              </div>
+            ) : (
             <div className={`rounded-lg border-2 transition-all ${day.includeDinner ? "border-purple-300 bg-purple-50/50" : "border-slate-200 bg-slate-50"}`}>
               <button
                 type="button"
@@ -1255,9 +1353,11 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
-      ))}
+        );
+      })}
 
       {/* Error summary */}
       {hasErrors && (

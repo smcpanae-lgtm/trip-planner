@@ -1,3 +1,5 @@
+export type SpotMeal = "" | "lunch" | "dinner";
+
 export interface Spot {
   id: string;
   name: string;
@@ -5,6 +7,12 @@ export interface Spot {
   lat?: number;
   lng?: number;
   isOmakase: boolean;
+  /**
+   * この目的地自体を昼食／夕食の場所として使う指定。
+   * 「夕食を含める」設定と目的地（レストラン等）が二重にならないようにするためのもので、
+   * 指定した場合は同じ食事について別の食事スポットをAIに追加させない。
+   */
+  meal?: SpotMeal;
 }
 
 export interface DayPlan {
