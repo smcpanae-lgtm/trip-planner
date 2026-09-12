@@ -12,7 +12,28 @@ export interface TripPlannerDict {
     message: string;
     messageRoute: string;
   };
-  error: { title: string };
+  /**
+   * aiBusy 〜 aiInvalidJson は /api/plan が返す errorCode に対応する文面（対応表は page.tsx の PLAN_ERROR_KEYS）。
+   * 日本語はサーバーがレスポンスの error に入れる文面と同じ文字列にしている。
+   */
+  error: {
+    title: string;
+    aiBusy: string;
+    aiFailed: string;
+    aiUnavailable: string;
+    badRequest: string;
+    /** 安全性などの理由で応答が止められた */
+    aiBlocked: string;
+    /** 応答が空だった */
+    aiEmptyResponse: string;
+    /** 出力上限で応答が途切れた */
+    aiTruncated: string;
+    /** STOP / MAX_TOKENS / ブロック以外の理由で応答が止まった */
+    aiBadFinish: string;
+    /** 応答がJSONとして読めなかった */
+    aiInvalidJson: string;
+    network: string;
+  };
   printModal: {
     title: string;
     planA: string;
@@ -165,7 +186,21 @@ const ja: TripPlannerDict = {
     message: "AIが2つの旅行プランを作成中...",
     messageRoute: "ルートを取得中...",
   },
-  error: { title: "エラーが発生しました" },
+  error: {
+    title: "エラーが発生しました",
+    aiBusy: "現在AIへのアクセスが集中しています。しばらく時間をおいてから再度お試しください。",
+    aiFailed:
+      "AIがプランを正しく作成できませんでした。お手数ですが、もう一度お試しください。目的地の数や日数を減らすと成功しやすくなります。",
+    aiUnavailable: "AIプラン作成を一時的に利用できません。しばらくしてから再度お試しください。",
+    badRequest: "AIプラン作成リクエストを処理できませんでした。入力内容を確認してから再度お試しください。",
+    aiBlocked: "AIが安全上の理由でプランを作成できませんでした。目的地やプロフィールの内容を見直してから再度お試しください。",
+    aiEmptyResponse: "AIから応答が返ってきませんでした。お手数ですが、もう一度お試しください。",
+    aiTruncated: "AIの応答が途中で途切れました。目的地の数や日数を減らしてから再度お試しください。",
+    aiBadFinish: "AIがプランの作成を途中で中断しました。お手数ですが、もう一度お試しください。",
+    aiInvalidJson:
+      "AIの応答をプランとして読み取れませんでした。お手数ですが、もう一度お試しください。目的地の数や日数を減らすと成功しやすくなります。",
+    network: "サーバーとの通信に失敗しました。接続状況を確認して、もう一度お試しください。",
+  },
   printModal: {
     title: "出力するプランを選択",
     planA: "プランA",
@@ -368,7 +403,21 @@ const en: TripPlannerDict = {
     message: "AI is creating 2 travel plans...",
     messageRoute: "Fetching route data...",
   },
-  error: { title: "An error occurred" },
+  error: {
+    title: "An error occurred",
+    aiBusy: "The AI is currently receiving a lot of requests. Please wait a while and try again.",
+    aiFailed:
+      "The AI could not create the plan correctly. Please try again. Reducing the number of destinations or days makes it more likely to succeed.",
+    aiUnavailable: "AI plan creation is temporarily unavailable. Please try again later.",
+    badRequest: "We could not process the AI plan request. Please check your input and try again.",
+    aiBlocked: "The AI could not create the plan for safety reasons. Please review your destinations and profile, then try again.",
+    aiEmptyResponse: "The AI did not return a response. Please try again.",
+    aiTruncated: "The AI's response was cut off. Please reduce the number of destinations or days and try again.",
+    aiBadFinish: "The AI stopped creating the plan partway through. Please try again.",
+    aiInvalidJson:
+      "The AI's response could not be read as a plan. Please try again. Reducing the number of destinations or days makes it more likely to succeed.",
+    network: "Could not connect to the server. Please check your connection and try again.",
+  },
   printModal: {
     title: "Select plan to export",
     planA: "Plan A",
@@ -571,7 +620,21 @@ const ko: TripPlannerDict = {
     message: "AI가 2개의 여행 플랜을 작성 중...",
     messageRoute: "경로 데이터 취득 중...",
   },
-  error: { title: "오류가 발생했습니다" },
+  error: {
+    title: "오류가 발생했습니다",
+    aiBusy: "현재 AI에 접속이 몰리고 있습니다. 잠시 후 다시 시도해 주세요.",
+    aiFailed:
+      "AI가 플랜을 제대로 만들지 못했습니다. 번거로우시겠지만 다시 시도해 주세요. 목적지 수나 일수를 줄이면 성공하기 쉬워집니다.",
+    aiUnavailable: "AI 플랜 작성을 일시적으로 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    badRequest: "AI 플랜 작성 요청을 처리하지 못했습니다. 입력 내용을 확인한 후 다시 시도해 주세요.",
+    aiBlocked: "AI가 안전상의 이유로 플랜을 만들지 못했습니다. 목적지나 프로필 내용을 확인한 후 다시 시도해 주세요.",
+    aiEmptyResponse: "AI로부터 응답을 받지 못했습니다. 번거로우시겠지만 다시 시도해 주세요.",
+    aiTruncated: "AI의 응답이 도중에 끊겼습니다. 목적지 수나 일수를 줄인 후 다시 시도해 주세요.",
+    aiBadFinish: "AI가 플랜 작성을 도중에 중단했습니다. 번거로우시겠지만 다시 시도해 주세요.",
+    aiInvalidJson:
+      "AI의 응답을 플랜으로 읽어들이지 못했습니다. 번거로우시겠지만 다시 시도해 주세요. 목적지 수나 일수를 줄이면 성공하기 쉬워집니다.",
+    network: "서버와 통신하지 못했습니다. 연결 상태를 확인한 후 다시 시도해 주세요.",
+  },
   printModal: {
     title: "출력할 플랜 선택",
     planA: "플랜A",
@@ -774,7 +837,19 @@ const zhCN: TripPlannerDict = {
     message: "AI 正在生成 2 个旅行计划...",
     messageRoute: "正在获取路线数据...",
   },
-  error: { title: "发生错误" },
+  error: {
+    title: "发生错误",
+    aiBusy: "当前AI访问量较大，请稍后再试。",
+    aiFailed: "AI未能正确生成旅行计划。请重试。减少目的地数量或天数更容易成功。",
+    aiUnavailable: "AI计划生成暂时无法使用，请稍后再试。",
+    badRequest: "无法处理AI计划生成请求。请检查输入内容后重试。",
+    aiBlocked: "出于安全原因，AI未能生成旅行计划。请检查目的地和个人资料内容后重试。",
+    aiEmptyResponse: "AI没有返回任何响应。请重试。",
+    aiTruncated: "AI的响应中途被截断。请减少目的地数量或天数后重试。",
+    aiBadFinish: "AI在生成计划的过程中中断了。请重试。",
+    aiInvalidJson: "无法将AI的响应读取为旅行计划。请重试。减少目的地数量或天数更容易成功。",
+    network: "与服务器通信失败。请检查网络连接后重试。",
+  },
   printModal: {
     title: "选择要导出的计划",
     planA: "计划A",
@@ -974,7 +1049,19 @@ const zhTW: TripPlannerDict = {
     message: "AI 正在生成 2 個旅行計畫...",
     messageRoute: "正在取得路線資料...",
   },
-  error: { title: "發生錯誤" },
+  error: {
+    title: "發生錯誤",
+    aiBusy: "目前AI存取量較大，請稍後再試。",
+    aiFailed: "AI未能正確產生旅行計畫。請重試。減少目的地數量或天數較容易成功。",
+    aiUnavailable: "AI計畫產生暫時無法使用，請稍後再試。",
+    badRequest: "無法處理AI計畫產生請求。請確認輸入內容後重試。",
+    aiBlocked: "基於安全考量，AI未能產生旅行計畫。請確認目的地與個人資料內容後重試。",
+    aiEmptyResponse: "AI沒有傳回任何回應。請重試。",
+    aiTruncated: "AI的回應在中途被截斷。請減少目的地數量或天數後重試。",
+    aiBadFinish: "AI在產生計畫的過程中中斷了。請重試。",
+    aiInvalidJson: "無法將AI的回應讀取為旅行計畫。請重試。減少目的地數量或天數較容易成功。",
+    network: "與伺服器通訊失敗。請確認網路連線後重試。",
+  },
   printModal: {
     title: "選擇要匯出的計畫",
     planA: "計畫A",
@@ -1174,7 +1261,21 @@ const es: TripPlannerDict = {
     message: "La IA está creando 2 planes de viaje...",
     messageRoute: "Obteniendo datos de ruta...",
   },
-  error: { title: "Se ha producido un error" },
+  error: {
+    title: "Se ha producido un error",
+    aiBusy: "La IA está recibiendo muchas solicitudes en este momento. Espera un poco y vuelve a intentarlo.",
+    aiFailed:
+      "La IA no pudo crear el plan correctamente. Vuelve a intentarlo. Reducir el número de destinos o de días aumenta las probabilidades de éxito.",
+    aiUnavailable: "La creación de planes con IA no está disponible temporalmente. Vuelve a intentarlo más tarde.",
+    badRequest: "No se pudo procesar la solicitud del plan con IA. Revisa los datos introducidos y vuelve a intentarlo.",
+    aiBlocked: "La IA no pudo crear el plan por motivos de seguridad. Revisa los destinos y el perfil y vuelve a intentarlo.",
+    aiEmptyResponse: "La IA no devolvió ninguna respuesta. Vuelve a intentarlo.",
+    aiTruncated: "La respuesta de la IA se cortó a mitad. Reduce el número de destinos o de días y vuelve a intentarlo.",
+    aiBadFinish: "La IA interrumpió la creación del plan a mitad. Vuelve a intentarlo.",
+    aiInvalidJson:
+      "No se pudo leer la respuesta de la IA como un plan. Vuelve a intentarlo. Reducir el número de destinos o de días aumenta las probabilidades de éxito.",
+    network: "No se pudo conectar con el servidor. Comprueba tu conexión y vuelve a intentarlo.",
+  },
   printModal: {
     title: "Seleccionar plan a exportar",
     planA: "Plan A",
@@ -1374,7 +1475,21 @@ const ru: TripPlannerDict = {
     message: "ИИ создаёт 2 варианта маршрута...",
     messageRoute: "Получение данных маршрута...",
   },
-  error: { title: "Произошла ошибка" },
+  error: {
+    title: "Произошла ошибка",
+    aiBusy: "Сейчас к ИИ поступает слишком много запросов. Подождите немного и попробуйте снова.",
+    aiFailed:
+      "ИИ не удалось правильно составить план. Попробуйте ещё раз. Если уменьшить количество мест или дней, вероятность успеха выше.",
+    aiUnavailable: "Создание плана с помощью ИИ временно недоступно. Попробуйте позже.",
+    badRequest: "Не удалось обработать запрос на создание плана. Проверьте введённые данные и попробуйте снова.",
+    aiBlocked: "ИИ не смог составить план по соображениям безопасности. Проверьте места назначения и данные профиля и попробуйте снова.",
+    aiEmptyResponse: "ИИ не вернул ответ. Попробуйте ещё раз.",
+    aiTruncated: "Ответ ИИ оборвался на середине. Уменьшите количество мест или дней и попробуйте снова.",
+    aiBadFinish: "ИИ прервал составление плана на середине. Попробуйте ещё раз.",
+    aiInvalidJson:
+      "Не удалось прочитать ответ ИИ как план. Попробуйте ещё раз. Если уменьшить количество мест или дней, вероятность успеха выше.",
+    network: "Не удалось связаться с сервером. Проверьте подключение и попробуйте снова.",
+  },
   printModal: {
     title: "Выберите план для экспорта",
     planA: "План А",

@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  SchemaType,
+  type GenerateContentResult,
+  type GenerationConfig,
+  type ObjectSchema,
+  type UsageMetadata,
+} from "@google/generative-ai";
 import { createHash, randomUUID } from "crypto";
 
 export const runtime = "nodejs";
@@ -30,12 +37,69 @@ type PlanAuditError =
   | "duplicate"
   | "missing_api_key"
   | "gemini_error"
+  | "gemini_attempt_failed"
   | "ok";
+
+/**
+ * AI生成が失敗したときにクライアントへ返すエラーコード。
+ * クライアントは errorCode で多言語辞書（tripPlannerDictionaries の error.*）を引く。
+ * ここの日本語はその辞書の日本語と同じ文面にしている。
+ * ai_busy / ai_unavailable / ai_failed は API 呼び出し自体の失敗、ai_blocked 以降は応答はあったがプランとして使えなかった場合。
+ */
+type PlanErrorCode =
+  | "ai_busy"
+  | "ai_failed"
+  | "ai_unavailable"
+  | "bad_request"
+  | "ai_blocked"
+  | "ai_empty_response"
+  | "ai_truncated"
+  | "ai_bad_finish"
+  | "ai_invalid_json";
+
+/** 応答の中身から判定する失敗の種類 */
+type PlanResponseErrorCode = Extract<
+  PlanErrorCode,
+  "ai_blocked" | "ai_empty_response" | "ai_truncated" | "ai_bad_finish" | "ai_invalid_json"
+>;
+
+const PLAN_ERROR_MESSAGES: Record<PlanErrorCode, string> = {
+  ai_busy: "現在AIへのアクセスが集中しています。しばらく時間をおいてから再度お試しください。",
+  ai_failed:
+    "AIがプランを正しく作成できませんでした。お手数ですが、もう一度お試しください。目的地の数や日数を減らすと成功しやすくなります。",
+  ai_unavailable: "AIプラン作成を一時的に利用できません。しばらくしてから再度お試しください。",
+  bad_request: "AIプラン作成リクエストを処理できませんでした。入力内容を確認してから再度お試しください。",
+  ai_blocked: "AIが安全上の理由でプランを作成できませんでした。目的地やプロフィールの内容を見直してから再度お試しください。",
+  ai_empty_response: "AIから応答が返ってきませんでした。お手数ですが、もう一度お試しください。",
+  ai_truncated: "AIの応答が途中で途切れました。目的地の数や日数を減らしてから再度お試しください。",
+  ai_bad_finish: "AIがプランの作成を途中で中断しました。お手数ですが、もう一度お試しください。",
+  ai_invalid_json:
+    "AIの応答をプランとして読み取れませんでした。お手数ですが、もう一度お試しください。目的地の数や日数を減らすと成功しやすくなります。",
+};
 
 const MAX_DAYS = 5;
 const MAX_DESTINATIONS_PER_DAY = 8;
 const MAX_TOTAL_TEXT_LENGTH = 8000;
-const MAX_OUTPUT_TOKENS = 8192;
+
+/*
+ * 出力トークン上限の見積もり。
+ * 2026-09 に Gemini トークナイザで、プロンプトの出力形式どおりのJSON（2プラン分・改行インデントあり）を実測した値に余裕を足している。
+ * 実測: 1アイテム約230〜320トークン（説明文0〜150字）、1日あたり食事情報など約150、1プランあたり総評など約650。
+ * 1日×3目的地で約5,300、1日×8目的地で約9,300、5日×8目的地で約47,000トークン必要だった（旧固定値8,192では1日×8目的地で途切れる）。
+ */
+const OUTPUT_TOKENS_PER_ITEM = 320;
+const OUTPUT_TOKENS_PER_DAY = 200;
+const OUTPUT_TOKENS_PER_PLAN = 700;
+/** 指定した目的地以外に1日あたり増えうるアイテム数（休憩・散歩スポットなど） */
+const EXTRA_ITEMS_PER_DAY = 3;
+/** AIおまかせ提案がオンのときに1日あたり追加で増えうるアイテム数 */
+const EXTRA_ITEMS_PER_DAY_OMAKASE = 2;
+const PLAN_COUNT = 2;
+const OUTPUT_TOKENS_MIN = 8192;
+/** gemini-3.5-flash-lite / gemini-2.5-flash-lite の出力上限 */
+const OUTPUT_TOKENS_MAX = 65536;
+/** thinking を止められなかったときに上乗せする分（thinking のトークンも出力上限に含まれるため） */
+const THINKING_TOKENS_ALLOWANCE = 8192;
 const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -84,8 +148,8 @@ interface PlanRequest {
   };
 }
 
-function planJsonError(message: string, status: number, errorType: PlanAuditError) {
-  return NextResponse.json({ error: message, errorType }, { status });
+function planJsonError(message: string, status: number, errorType: PlanAuditError, errorCode?: PlanErrorCode) {
+  return NextResponse.json(errorCode ? { error: message, errorType, errorCode } : { error: message, errorType }, { status });
 }
 
 function getIp(request: NextRequest): string {
@@ -257,6 +321,25 @@ function auditPlanLog(data: {
   inputTokens?: number;
   outputTokens?: number;
   totalTokens?: number;
+  thoughtsTokens?: number;
+  model?: string;
+  maxOutputTokens?: number;
+  thinking?: PlanThinkingSetting;
+  structuredOutput?: boolean;
+  finishReason?: string;
+  blockReason?: string;
+  httpStatus?: number;
+  errorCode?: PlanErrorCode;
+  usageMetadata?: UsageMetadata;
+  /** initial: 通常の生成 / parse_retry: JSON読み取り失敗後の再試行 / correction: 目的地欠落時の作り直し */
+  stage?: PlanAttemptStage;
+  reason?: string;
+  /** 429 などで API が返した割り当ての詳細（どの枠に当たったか・上限値・再試行までの待ち時間） */
+  quota?: QuotaDetails;
+  /** 失敗した全試行の履歴 */
+  attempts?: PlanAttemptRecord[];
+  /** 返したプランを整形したときの記録（何をなぜ取り除いたか） */
+  sanitized?: PlanSanitizeRecord[];
 }) {
   console.log(JSON.stringify({ type: "plan_generate_audit", at: new Date().toISOString(), ...data }));
 }
@@ -411,10 +494,424 @@ ${seasonInfo || "特記事項なし"}
 - 休日の場合、駐車場の混雑についても注意を促すこと`;
 }
 
+/*
+ * 新しい flash-lite を先に使い、実績のある 2.5 flash-lite をフォールバックにする。
+ * gemini-2.5-flash は既定で thinking が動くため生成が遅く、出力トークンも thinking に取られるので外した。
+ */
 const MODEL_NAMES = [
+  "gemini-3.5-flash-lite",
   "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
 ];
+
+/** 必要な出力トークン数を、日数・目的地数・食事の有無から見積もる（2プラン分） */
+function maxOutputTokensFor(body: PlanRequest): number {
+  const extraItemsPerDay = EXTRA_ITEMS_PER_DAY + (body.aiOmakase !== false ? EXTRA_ITEMS_PER_DAY_OMAKASE : 0);
+  const tokensPerPlan = body.days.reduce((sum, day) => {
+    // 出発・到着の2件 + 目的地 + 食事 + 休憩・おまかせ提案の見込み
+    const items = 2 + day.destinations.length + (day.includeLunch ? 1 : 0) + (day.includeDinner ? 1 : 0) + extraItemsPerDay;
+    return sum + OUTPUT_TOKENS_PER_DAY + items * OUTPUT_TOKENS_PER_ITEM;
+  }, OUTPUT_TOKENS_PER_PLAN);
+  return Math.min(OUTPUT_TOKENS_MAX, Math.max(OUTPUT_TOKENS_MIN, tokensPerPlan * PLAN_COUNT));
+}
+
+// --- 出力JSONのスキーマ（プロンプトの「出力JSON形式」から起こしたもの） -----------------
+// responseSchema で構造を固定し、形式のゆれで JSON として読めない応答を防ぐ。
+// スキーマに無い項目は出力されなくなるため、プロンプトの出力形式を変えたときはここも合わせること。
+
+const MEAL_SPOT_SCHEMA: ObjectSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    name: { type: SchemaType.STRING },
+    description: { type: SchemaType.STRING },
+    nearSpot: { type: SchemaType.STRING },
+    alternatives: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+  },
+  required: ["name", "description", "nearSpot", "alternatives"],
+};
+
+const PLAN_ITEM_SCHEMA: ObjectSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    name: { type: SchemaType.STRING },
+    lat: { type: SchemaType.NUMBER },
+    lng: { type: SchemaType.NUMBER },
+    address: { type: SchemaType.STRING },
+    // reststop は SA・PA・道の駅などの休憩地点。enum に無いと destination に丸められ、休憩地点の区別が失われる
+    type: {
+      type: SchemaType.STRING,
+      format: "enum",
+      enum: ["departure", "destination", "lunch", "dinner", "reststop", "arrival"],
+    },
+    arrivalTime: { type: SchemaType.STRING },
+    departureTime: { type: SchemaType.STRING },
+    stayMinutes: { type: SchemaType.INTEGER },
+    distanceKm: { type: SchemaType.NUMBER },
+    travelMinutes: { type: SchemaType.INTEGER },
+    useHighway: { type: SchemaType.BOOLEAN },
+    highwayEntry: { type: SchemaType.STRING },
+    highwayExit: { type: SchemaType.STRING },
+    highwayName: { type: SchemaType.STRING },
+    parkingInfo: { type: SchemaType.STRING },
+    description: { type: SchemaType.STRING },
+    dogWalkStop: { type: SchemaType.BOOLEAN },
+  },
+  // 高速道路の項目は高速を使う区間だけに付くため必須にしない
+  required: [
+    "name",
+    "lat",
+    "lng",
+    "address",
+    "type",
+    "arrivalTime",
+    "departureTime",
+    "stayMinutes",
+    "distanceKm",
+    "travelMinutes",
+    "useHighway",
+    "parkingInfo",
+    "description",
+    "dogWalkStop",
+  ],
+};
+
+const PLAN_COMMENTARY_SCHEMA: ObjectSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    removedSpots: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          name: { type: SchemaType.STRING },
+          reason: { type: SchemaType.STRING },
+        },
+        required: ["name", "reason"],
+      },
+    },
+    highlights: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    tips: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    // 犬連れのときだけ出す項目
+    dogTips: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    overallDescription: { type: SchemaType.STRING },
+  },
+  required: ["removedSpots", "highlights", "tips", "overallDescription"],
+};
+
+/**
+ * プラン数（2つ）はスキーマで固定する。日数は固定しない：days に minItems/maxItems（日数）を付けると、
+ * 複数日で gemini-3.5-flash-lite が 400（Request contains an invalid argument）を返し、スキーマなしの再試行に落ちる
+ * （2026-09 の検証で、1日は受け付けられ、5日は thinking の指定の有無にかかわらず 400）。日の欠落は目的地の欠落検証で拾う。
+ */
+function buildPlanResponseSchema(): ObjectSchema {
+  const daySchema: ObjectSchema = {
+    type: SchemaType.OBJECT,
+    properties: {
+      dayIndex: { type: SchemaType.INTEGER },
+      items: { type: SchemaType.ARRAY, items: PLAN_ITEM_SCHEMA },
+      // 食事スポットは必須＋null可にする。食事が不要な日・目的地で食べる日は null。
+      // 任意項目にすると、gemini-3.5-flash-lite が dinnerSpot を省いたり、dinnerSpot だけを持つ予定0件の日を
+      // 余分に作ったりした（2026-09 の検証。必須＋null可では両モデルとも正しく出た）。
+      lunchSpot: { ...MEAL_SPOT_SCHEMA, nullable: true },
+      dinnerSpot: { ...MEAL_SPOT_SCHEMA, nullable: true },
+    },
+    required: ["dayIndex", "items", "lunchSpot", "dinnerSpot"],
+  };
+  const planSchema: ObjectSchema = {
+    type: SchemaType.OBJECT,
+    properties: {
+      planName: { type: SchemaType.STRING },
+      planDescription: { type: SchemaType.STRING },
+      days: { type: SchemaType.ARRAY, items: daySchema },
+      commentary: PLAN_COMMENTARY_SCHEMA,
+    },
+    required: ["planName", "planDescription", "days", "commentary"],
+  };
+  return {
+    type: SchemaType.OBJECT,
+    properties: {
+      plans: { type: SchemaType.ARRAY, items: planSchema, minItems: PLAN_COUNT, maxItems: PLAN_COUNT },
+    },
+    required: ["plans"],
+  };
+}
+
+/**
+ * thinking の指定。thinking のトークンも maxOutputTokens に含まれるため、既定のまま動くと本文が途中で切れる
+ * （2026-09 の本番障害は、gemini-2.5-flash の既定の thinking が約6,400トークンを使い、JSONが MAX_TOKENS で途切れたもの）。
+ * 世代で指定方法が違う：2.5 系は thinkingBudget（0 で停止）、3 系は thinkingLevel（最小は MINIMAL。3 系に thinkingBudget: 0 を送ると 400）。
+ * none は指定なし（モデルの既定の thinking が動く）。
+ */
+type PlanThinkingSetting = "budget_0" | "level_minimal" | "none";
+
+function preferredThinkingFor(modelName: string): PlanThinkingSetting {
+  if (modelName.startsWith("gemini-2.5")) return "budget_0";
+  if (modelName.startsWith("gemini-3")) return "level_minimal";
+  return "none";
+}
+
+function buildPlanGenerationConfig(options: {
+  modelName: string;
+  maxOutputTokens: number;
+  thinking: PlanThinkingSetting;
+  structuredOutput: boolean;
+  temperature: number;
+}): GenerationConfig {
+  const base: GenerationConfig = {
+    maxOutputTokens: options.maxOutputTokens,
+    responseMimeType: "application/json",
+    ...(options.structuredOutput ? { responseSchema: buildPlanResponseSchema() } : {}),
+    // Gemini 3 系では temperature が非推奨になり、送っても無視されるため指定しない（2026-07-21 の変更。top_p・top_k も同じ）
+    ...(options.modelName.startsWith("gemini-3") ? {} : { temperature: options.temperature }),
+  };
+  if (options.thinking === "none") return base;
+  // SDK 0.24 の型に thinkingConfig が無いためキャストして渡す（フィールド名と値は後継SDK @google/genai の ThinkingConfig / ThinkingLevel と同じ）
+  const thinkingConfig = options.thinking === "budget_0" ? { thinkingBudget: 0 } : { thinkingLevel: "MINIMAL" };
+  return { ...base, thinkingConfig } as GenerationConfig;
+}
+
+// --- Gemini 呼び出し（1回分の試行） ------------------------------------------------
+
+type PlanAttemptStage = "initial" | "parse_retry" | "correction";
+/**
+ * request: API呼び出し自体の失敗 / response: 応答はあったがプランとして使えなかった /
+ * config_rejected: 生成設定（thinking・responseSchema）を 400 で拒否され、その設定を外して同じモデルで続けた
+ */
+type PlanFailureKind = "request" | "response" | "config_rejected";
+
+interface PlanAttemptInfo {
+  model: string;
+  maxOutputTokens: number;
+  thinking: PlanThinkingSetting;
+  structuredOutput: boolean;
+  finishReason?: string;
+  blockReason?: string;
+  usageMetadata?: UsageMetadata;
+}
+
+type PlanAttempt =
+  | { ok: true; plan: unknown; info: PlanAttemptInfo }
+  | {
+      ok: false;
+      kind: PlanFailureKind;
+      errorCode: PlanErrorCode;
+      /** API のHTTPステータス。応答はあったがプランとして使えなかった場合は 200 */
+      httpStatus?: number;
+      error: unknown;
+      info: PlanAttemptInfo;
+    };
+type FailedPlanAttempt = Extract<PlanAttempt, { ok: false }>;
+
+/** 失敗した試行1回分の記録。最終的にエラーを返すときは全件をログに残す */
+interface PlanAttemptRecord {
+  model: string;
+  stage: PlanAttemptStage;
+  kind: PlanFailureKind;
+  httpStatus?: number;
+  finishReason?: string;
+  blockReason?: string;
+  errorCode: PlanErrorCode;
+  thinking: PlanThinkingSetting;
+  structuredOutput: boolean;
+  maxOutputTokens: number;
+  outputTokens?: number;
+  thoughtsTokens?: number;
+  message: string;
+  /** 429 などで API が返した割り当ての詳細（message は切り詰めるため、どの枠に当たったかはこちらで残す） */
+  quota?: QuotaDetails;
+}
+
+/** 当たった割り当て1件分（例: quotaId "GenerateRequestsPerDayPerProjectPerModel-FreeTier"、quotaValue "20"） */
+interface QuotaViolation {
+  quotaId?: string;
+  quotaMetric?: string;
+  quotaValue?: string;
+  model?: string;
+}
+
+interface QuotaDetails {
+  violations: QuotaViolation[];
+  /** API が示す再試行までの待ち時間（例: "9s"）。1日あたりの枠では実際のリセット時刻と一致しない */
+  retryDelay?: string;
+}
+
+function errorMessageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/** SDK の GoogleGenerativeAIFetchError は status を持つ。無ければメッセージ中の「[429 Too Many Requests]」から読む */
+function httpStatusOf(error: unknown): number | undefined {
+  const status = (error as { status?: unknown } | null)?.status;
+  if (typeof status === "number") return status;
+  const match = errorMessageOf(error).match(/\[(\d{3}) /);
+  return match ? Number(match[1]) : undefined;
+}
+
+const stringOrUndefined = (value: unknown): string | undefined =>
+  typeof value === "string" ? value.substring(0, 200) : undefined;
+
+/**
+ * SDK の GoogleGenerativeAIFetchError が持つ errorDetails（google.rpc の QuotaFailure・RetryInfo）から、
+ * 当たった割り当ての種類・上限値・対象モデルと再試行までの待ち時間を取り出す。該当が無ければ undefined。
+ * キーやプロジェクトを特定できる項目は取り出さない。
+ */
+function quotaDetailsOf(error: unknown): QuotaDetails | undefined {
+  const details = (error as { errorDetails?: unknown } | null)?.errorDetails;
+  if (!Array.isArray(details)) return undefined;
+  const violations: QuotaViolation[] = [];
+  let retryDelay: string | undefined;
+  for (const detail of details) {
+    if (!detail || typeof detail !== "object") continue;
+    const record = detail as Record<string, unknown>;
+    const type = stringOrUndefined(record["@type"]) ?? "";
+    if (type.endsWith("QuotaFailure") && Array.isArray(record.violations)) {
+      for (const violation of record.violations.slice(0, 5)) {
+        if (!violation || typeof violation !== "object") continue;
+        const v = violation as Record<string, unknown>;
+        const dimensions = v.quotaDimensions && typeof v.quotaDimensions === "object" ? (v.quotaDimensions as Record<string, unknown>) : {};
+        violations.push({
+          quotaId: stringOrUndefined(v.quotaId),
+          quotaMetric: stringOrUndefined(v.quotaMetric),
+          quotaValue: stringOrUndefined(v.quotaValue),
+          model: stringOrUndefined(dimensions.model),
+        });
+      }
+    } else if (type.endsWith("RetryInfo")) {
+      retryDelay = stringOrUndefined(record.retryDelay);
+    }
+  }
+  return violations.length > 0 || retryDelay ? { violations, ...(retryDelay ? { retryDelay } : {}) } : undefined;
+}
+
+/** SDK 0.24 の型には無いが、API は thinking を使ったときに thoughtsTokenCount を返す */
+function thoughtsTokensOf(usage: UsageMetadata | undefined): number | undefined {
+  return (usage as (UsageMetadata & { thoughtsTokenCount?: number }) | undefined)?.thoughtsTokenCount;
+}
+
+/** 生成設定（thinkingConfig や responseSchema）をモデルが受け付けなかったときの 400 */
+function isInvalidArgumentError(error: unknown): boolean {
+  const message = errorMessageOf(error);
+  return message.includes("[400 ") || message.includes("INVALID_ARGUMENT");
+}
+
+function classifyGeminiError(message: string) {
+  return {
+    is503: message.includes("503") || message.includes("Service Unavailable"),
+    is404: message.includes("404") || message.includes("NOT_FOUND") || message.includes("not found"),
+    is403: message.includes("403") || message.includes("PERMISSION_DENIED") || message.includes("API_KEY_INVALID"),
+    is429: message.includes("429") || message.includes("RESOURCE_EXHAUSTED") || message.includes("quota"),
+  };
+}
+
+/** API呼び出しの失敗から、利用者に見せる文面の種類を決める */
+function requestErrorCodeFor(error: unknown, httpStatus: number | undefined): PlanErrorCode {
+  const { is503, is404, is403, is429 } = classifyGeminiError(errorMessageOf(error));
+  if (httpStatus === 429 || httpStatus === 503 || is429 || is503) return "ai_busy";
+  if (httpStatus === 400 || httpStatus === 403 || httpStatus === 404 || is403 || is404 || isInvalidArgumentError(error)) {
+    return "ai_unavailable";
+  }
+  return "ai_failed";
+}
+
+/** 安全性などの理由で止められたことを示す finishReason（作り直しても同じ結果になりやすいので再試行しない） */
+const BLOCKED_FINISH_REASONS = new Set(["SAFETY", "RECITATION", "LANGUAGE", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "IMAGE_SAFETY"]);
+
+/**
+ * JSON.parse に渡す前に、候補が無い・止まり方が STOP でない・本文が空の場合を判定する。問題が無ければ本文を返す。
+ * （SDK の text() は候補が無いと "" を返すため、そのまま parse すると原因が「JSONとして読めない」に紛れる）
+ */
+function inspectPlanResponse(
+  response: GenerateContentResult["response"]
+): { ok: true; text: string } | { ok: false; errorCode: PlanResponseErrorCode; message: string } {
+  const candidate = response.candidates?.[0];
+  if (!candidate) {
+    const blockReason: string | undefined = response.promptFeedback?.blockReason;
+    return blockReason
+      ? { ok: false, errorCode: "ai_blocked", message: `no candidates (blockReason: ${blockReason})` }
+      : { ok: false, errorCode: "ai_empty_response", message: "no candidates" };
+  }
+  const finishReason: string | undefined = candidate.finishReason;
+  if (finishReason && finishReason !== "STOP") {
+    const errorCode: PlanResponseErrorCode =
+      finishReason === "MAX_TOKENS" ? "ai_truncated" : BLOCKED_FINISH_REASONS.has(finishReason) ? "ai_blocked" : "ai_bad_finish";
+    const detail = candidate.finishMessage ? ` (${candidate.finishMessage})` : "";
+    return { ok: false, errorCode, message: `finishReason: ${finishReason}${detail}` };
+  }
+  const text = (candidate.content?.parts ?? []).map((part) => part.text ?? "").join("");
+  if (!text.trim()) return { ok: false, errorCode: "ai_empty_response", message: "empty text" };
+  return { ok: true, text };
+}
+
+/**
+ * プランを1回生成して JSON として読み取る。例外は投げず、結果と finishReason / usageMetadata を返す。
+ * 世代に合った thinking の指定を 400 で拒否されたら thinking の指定なしで再試行し、
+ * それでも 400 なら responseSchema を外して（JSON モードのみで）再試行する。
+ * 失敗した試行は、設定を外して続けた分も含めてすべて onFailure に渡す。
+ */
+async function requestPlan(
+  genAI: GoogleGenerativeAI,
+  modelName: string,
+  promptText: string,
+  maxOutputTokens: number,
+  temperature: number,
+  onFailure: (attempt: FailedPlanAttempt) => void
+): Promise<PlanAttempt> {
+  const model = genAI.getGenerativeModel({ model: modelName });
+
+  const attempt = async (thinking: PlanThinkingSetting, structuredOutput: boolean): Promise<PlanAttempt> => {
+    // thinking を完全には止められない指定では、thinking のトークンも出力上限に含まれるため上乗せする
+    const tokens =
+      thinking === "budget_0" ? maxOutputTokens : Math.min(OUTPUT_TOKENS_MAX, maxOutputTokens + THINKING_TOKENS_ALLOWANCE);
+    const info: PlanAttemptInfo = { model: modelName, maxOutputTokens: tokens, thinking, structuredOutput };
+    const generationConfig = buildPlanGenerationConfig({
+      modelName,
+      maxOutputTokens: tokens,
+      thinking,
+      structuredOutput,
+      temperature,
+    });
+    let result: GenerateContentResult;
+    try {
+      result = await model.generateContent({
+        contents: [{ role: "user", parts: [{ text: promptText }] }],
+        generationConfig,
+      });
+    } catch (error) {
+      const httpStatus = httpStatusOf(error);
+      return { ok: false, kind: "request", errorCode: requestErrorCodeFor(error, httpStatus), httpStatus, error, info };
+    }
+    const response = result.response;
+    info.finishReason = response.candidates?.[0]?.finishReason;
+    info.blockReason = response.promptFeedback?.blockReason;
+    info.usageMetadata = response.usageMetadata;
+    const inspected = inspectPlanResponse(response);
+    if (!inspected.ok) {
+      return { ok: false, kind: "response", errorCode: inspected.errorCode, httpStatus: 200, error: new Error(inspected.message), info };
+    }
+    try {
+      return { ok: true, plan: normalizePlanItemTypes(parsePlanJson(inspected.text)), info };
+    } catch (error) {
+      return { ok: false, kind: "response", errorCode: "ai_invalid_json", httpStatus: 200, error, info };
+    }
+  };
+
+  const isConfigRejected = (r: PlanAttempt): r is FailedPlanAttempt =>
+    !r.ok && r.kind === "request" && isInvalidArgumentError(r.error);
+
+  const preferredThinking = preferredThinkingFor(modelName);
+  let result: PlanAttempt = await attempt(preferredThinking, true);
+  if (preferredThinking !== "none" && isConfigRejected(result)) {
+    console.warn(`[${modelName}] thinking の指定（${preferredThinking}）が受け付けられなかったため指定なしで再試行します: ${errorMessageOf(result.error).substring(0, 200)}`);
+    onFailure({ ...result, kind: "config_rejected" });
+    result = await attempt("none", true);
+  }
+  if (isConfigRejected(result)) {
+    console.warn(`[${modelName}] responseSchema が受け付けられなかったためスキーマなしで再試行します: ${errorMessageOf(result.error).substring(0, 200)}`);
+    onFailure({ ...result, kind: "config_rejected" });
+    result = await attempt("none", false);
+  }
+  if (!result.ok) onFailure(result);
+  return result;
+}
 
 // --- 生成結果の検証（ユーザー指定の目的地が抜けていないか） ---------------------
 // プロンプトで「絶対に削除しないこと」と指示しても実際には欠落することがあるため、
@@ -430,6 +927,153 @@ function parsePlanJson(responseText: string): unknown {
     if (jsonMatch) return JSON.parse(jsonMatch[1].trim());
     throw new Error("Failed to parse Gemini response as JSON");
   }
+}
+
+/** 休憩地点を表す type の表記ゆれ（大文字小文字・区切り記号を除いて比較） */
+const REST_STOP_TYPE_ALIASES = new Set(["reststop", "parking", "stop"]);
+
+/**
+ * 休憩地点の type を "reststop" にそろえる。
+ * responseSchema を外して再試行した場合などに、モデルが parking / restStop / stop などを返すことがあるため。
+ */
+function normalizePlanItemTypes(parsed: unknown): unknown {
+  const plansValue = (parsed as { plans?: unknown })?.plans;
+  const plans: unknown[] = Array.isArray(plansValue) ? plansValue : [parsed];
+  for (const plan of plans) {
+    const days = (plan as { days?: unknown })?.days;
+    if (!Array.isArray(days)) continue;
+    for (const day of days) {
+      const items = (day as { items?: unknown })?.items;
+      if (!Array.isArray(items)) continue;
+      for (const item of items) {
+        const planItem = item as { type?: unknown } | null;
+        if (
+          typeof planItem?.type === "string" &&
+          REST_STOP_TYPE_ALIASES.has(planItem.type.toLowerCase().replace(/[\s_-]/g, ""))
+        ) {
+          planItem.type = "reststop";
+        }
+      }
+    }
+  }
+  return parsed;
+}
+
+type PlanSanitizeAction =
+  | "empty_day_removed"
+  | "excess_day_removed"
+  | "lunchSpot_removed_no_lunch"
+  | "lunchSpot_removed_destination_lunch"
+  | "dinnerSpot_removed_no_dinner"
+  | "dinnerSpot_removed_destination_dinner"
+  // 以下は検出だけで、プランは書き換えない
+  | "lunchSpot_missing"
+  | "dinnerSpot_missing";
+
+/** プランの整形の記録。何をなぜ取り除いたか（または何が欠けていたか）を監査ログに残す */
+interface PlanSanitizeRecord {
+  /** どの生成結果を整形したか（correction なら作り直し後のプランを採用した） */
+  stage: PlanAttemptStage;
+  planIndex: number;
+  /** 整形前の days 配列内の位置 */
+  position: number;
+  /** モデルが返した dayIndex */
+  dayIndex: number | null;
+  action: PlanSanitizeAction;
+  /** 取り除いたもの（食事スポット名、または日の中身の要約） */
+  detail: string;
+}
+
+const SANITIZE_DETAIL_MAX = 60;
+
+function spotNameOf(spot: unknown): string {
+  const name = (spot as { name?: unknown } | null)?.name;
+  return typeof name === "string" ? name.slice(0, SANITIZE_DETAIL_MAX) : "(名前なし)";
+}
+
+function describeRemovedDay(day: unknown): string {
+  const d = day as { items?: unknown; lunchSpot?: unknown; dinnerSpot?: unknown } | null;
+  const parts = [`items:${Array.isArray(d?.items) ? d.items.length : "なし"}`];
+  if (d?.lunchSpot) parts.push(`lunchSpot:${spotNameOf(d.lunchSpot)}`);
+  if (d?.dinnerSpot) parts.push(`dinnerSpot:${spotNameOf(d.dinnerSpot)}`);
+  return parts.join(" / ");
+}
+
+/**
+ * 利用者の画面に出してはいけないものをプランから取り除く（その場で書き換える）。
+ * - 予定が0件の日（gemini-3.5-flash-lite が、dinnerSpot だけを持つ空の日を余分に作ることがあった）
+ * - 依頼した日数を超える日（後ろから切る）
+ * - 食事が「不要」の日の lunchSpot/dinnerSpot、目的地で食べると指定された食事の lunchSpot/dinnerSpot（ルール15）
+ * 取り除いたものは必ず記録として返す。黙って消すと、次の不具合が見えなくなるため。
+ * 残した日と依頼の日は、並び順で対応させる（モデルの dayIndex は重複することがあったため使わない）。
+ */
+function sanitizePlan(body: PlanRequest, parsed: unknown, stage: PlanAttemptStage): PlanSanitizeRecord[] {
+  const records: PlanSanitizeRecord[] = [];
+  const plansValue = (parsed as { plans?: unknown })?.plans;
+  const plans: unknown[] = Array.isArray(plansValue) ? plansValue : [parsed];
+
+  plans.forEach((plan, planIndex) => {
+    const p = plan as { days?: unknown } | null;
+    if (!p || !Array.isArray(p.days)) return;
+
+    const record = (day: unknown, position: number, action: PlanSanitizeAction, detail: string) => {
+      const dayIndex = (day as { dayIndex?: unknown } | null)?.dayIndex;
+      records.push({ stage, planIndex, position, dayIndex: typeof dayIndex === "number" ? dayIndex : null, action, detail });
+    };
+
+    const kept: { day: unknown; position: number }[] = [];
+    p.days.forEach((day: unknown, position: number) => {
+      const items = (day as { items?: unknown } | null)?.items;
+      if (!Array.isArray(items) || items.length === 0) {
+        record(day, position, "empty_day_removed", describeRemovedDay(day));
+      } else if (kept.length >= body.days.length) {
+        record(day, position, "excess_day_removed", describeRemovedDay(day));
+      } else {
+        kept.push({ day, position });
+      }
+    });
+
+    kept.forEach(({ day, position }, i) => {
+      const requestDay = body.days[i];
+      const d = day as { lunchSpot?: unknown; dinnerSpot?: unknown };
+      const hasMealDestination = (meal: "lunch" | "dinner") =>
+        requestDay.destinations.some((dest) => !dest.isOmakase && dest.meal === meal && dest.name?.trim());
+
+      // 目的地で食べる指定を先に見る（その場合、食事の「あり/不要」より目的地の指定が優先される）
+      if (d.lunchSpot) {
+        const action: PlanSanitizeAction | null = hasMealDestination("lunch")
+          ? "lunchSpot_removed_destination_lunch"
+          : !requestDay.includeLunch ? "lunchSpot_removed_no_lunch" : null;
+        if (action) {
+          record(day, position, action, spotNameOf(d.lunchSpot));
+          d.lunchSpot = null;
+        }
+      } else if (requestDay.includeLunch && !hasMealDestination("lunch")) {
+        record(day, position, "lunchSpot_missing", "");
+      }
+
+      if (d.dinnerSpot) {
+        const action: PlanSanitizeAction | null = hasMealDestination("dinner")
+          ? "dinnerSpot_removed_destination_dinner"
+          : !requestDay.includeDinner ? "dinnerSpot_removed_no_dinner" : null;
+        if (action) {
+          record(day, position, action, spotNameOf(d.dinnerSpot));
+          d.dinnerSpot = null;
+        }
+      } else if (requestDay.includeDinner && !hasMealDestination("dinner")) {
+        record(day, position, "dinnerSpot_missing", "");
+      }
+    });
+
+    p.days = kept.map(({ day }) => day);
+  });
+  return records;
+}
+
+function formatSanitizeRecords(records: PlanSanitizeRecord[]): string {
+  return records
+    .map((r) => `plan${r.planIndex}/day${r.position}: ${r.action}${r.detail ? `（${r.detail}）` : ""}`)
+    .join(" / ");
 }
 
 /** 全角英数字・ハイフンのゆれ・空白・「〒」「日本、」を吸収して比較用に正規化する */
@@ -607,16 +1251,45 @@ export async function POST(request: NextRequest) {
     accepted = true;
 
     const prompt = buildPrompt(body);
-    let lastError: unknown;
-    const modelErrors: string[] = [];
+    const maxOutputTokens = maxOutputTokensFor(body);
+    /** JSONとして読めなかったときの再試行は、リクエスト全体で1回だけ */
+    let parseRetryUsed = false;
+    /** 失敗した全試行の記録（モデル・HTTPステータス・finishReason・エラーコード）。利用者向けの文面は先頭の失敗で決める */
+    const attemptHistory: PlanAttemptRecord[] = [];
 
-    // Diagnostic: log key info for debugging
-    console.log(`[DIAG] API keys: ${apiKeys.length} (${apiKeys.map(k => k.tier).join(" → ")})`);
-    apiKeys.forEach((k, i) => {
-      const last4 = k.key.slice(-4);
-      console.log(`[DIAG] key${i + 1} [${k.tier}]: ...${last4}`);
-    });
-    console.log(`[DIAG] Models: ${MODEL_NAMES.join(", ")}`);
+    /** 失敗した試行を1件ずつ監査ログに出し、履歴にも積む */
+    const recordFailure = (stage: PlanAttemptStage) => (attempt: FailedPlanAttempt) => {
+      const message = errorMessageOf(attempt.error).substring(0, 300);
+      const quota = quotaDetailsOf(attempt.error);
+      const { usageMetadata, ...info } = attempt.info;
+      attemptHistory.push({
+        ...info,
+        stage,
+        kind: attempt.kind,
+        httpStatus: attempt.httpStatus,
+        errorCode: attempt.errorCode,
+        outputTokens: usageMetadata?.candidatesTokenCount,
+        thoughtsTokens: thoughtsTokensOf(usageMetadata),
+        message,
+        ...(quota ? { quota } : {}),
+      });
+      auditPlanLog({
+        requestId,
+        ipHash,
+        userAgent,
+        sessionId,
+        errorType: "gemini_attempt_failed",
+        stage,
+        ...attempt.info,
+        httpStatus: attempt.httpStatus,
+        errorCode: attempt.errorCode,
+        reason: `${attempt.kind}: ${message}`,
+        ...(quota ? { quota } : {}),
+      });
+    };
+
+    // キーそのもの（一部でも）はログに出さない。本数と種別だけ残す
+    console.log(`[plan] API keys: ${apiKeys.length} (${apiKeys.map(k => k.tier).join(" → ")}) / Models: ${MODEL_NAMES.join(", ")} / maxOutputTokens: ${maxOutputTokens}`);
 
     // Outer loop: FREE key first → PAID key fallback (seamless to user)
     keyLoop: for (let keyIdx = 0; keyIdx < apiKeys.length; keyIdx++) {
@@ -628,78 +1301,38 @@ export async function POST(request: NextRequest) {
       for (const modelName of MODEL_NAMES) {
         let retries = 0;
         const maxRetries = 1;
+        let stage: PlanAttemptStage = "initial";
+        let attemptTokens = maxOutputTokens;
         while (retries <= maxRetries) {
-          try {
-            console.log(`[${keyLabel}] Trying model: ${modelName}${retries > 0 ? ` (retry ${retries})` : ""}`);
-            const model = genAI.getGenerativeModel({ model: modelName });
+          console.log(`[${keyLabel}] Trying model: ${modelName}${retries > 0 ? ` (retry ${retries})` : ""}${stage === "parse_retry" ? " (JSON再試行)" : ""}`);
+          const attempt = await requestPlan(genAI, modelName, prompt, attemptTokens, 0.7, recordFailure(stage));
 
-            const result = await model.generateContent({
-              contents: [{ role: "user", parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: MAX_OUTPUT_TOKENS,
-                responseMimeType: "application/json",
-              },
-            });
+          if (!attempt.ok) {
+            const errMsg = errorMessageOf(attempt.error);
+            console.error(`[${keyLabel}/${modelName}] FULL ERROR (${attempt.errorCode}): ${errMsg.substring(0, 500)}`);
 
-            const responseText = result.response.text();
-            let plan = parsePlanJson(responseText);
-
-            // ユーザー指定の目的地が抜けていたら、指摘を添えて1回だけ作り直す
-            let warnings = findMissingDestinationWarnings(body, plan);
-            if (warnings.length > 0) {
-              console.warn(`[${keyLabel}/${modelName}] 指定目的地の欠落を検出: ${warnings.join(" / ")} — 1回だけ再生成します`);
-              try {
-                const retryResult = await model.generateContent({
-                  contents: [{ role: "user", parts: [{ text: buildCorrectionPrompt(prompt, warnings) }] }],
-                  generationConfig: {
-                    temperature: 0.4,
-                    maxOutputTokens: MAX_OUTPUT_TOKENS,
-                    responseMimeType: "application/json",
-                  },
-                });
-                const retryPlan = parsePlanJson(retryResult.response.text());
-                const retryWarnings = findMissingDestinationWarnings(body, retryPlan);
-                // 改善した場合のみ採用する（悪化した再生成結果は使わない）
-                if (retryWarnings.length < warnings.length) {
-                  plan = retryPlan;
-                  warnings = retryWarnings;
-                }
-              } catch (retryError) {
-                const retryMessage = retryError instanceof Error ? retryError.message : String(retryError);
-                console.warn(`[${keyLabel}/${modelName}] 再生成に失敗: ${retryMessage.substring(0, 200)}`);
+            if (attempt.kind === "response") {
+              if (attempt.errorCode === "ai_blocked") {
+                // 安全性などの理由で止められた応答は、作り直しても同じ結果になりやすいので再試行しない
+                console.warn(`[${keyLabel}] ${modelName} の応答がブロックされたため再試行しません (${errMsg.substring(0, 200)})`);
+                break keyLoop;
               }
+              if (!parseRetryUsed) {
+                // 応答はあったがプランとして使えなかった（空・途中終了・JSONとして読めない） → 同じモデルで1回だけ作り直す。
+                // 出力上限で途切れていた場合は上限を倍にする。
+                parseRetryUsed = true;
+                stage = "parse_retry";
+                if (attempt.errorCode === "ai_truncated") {
+                  attemptTokens = Math.min(OUTPUT_TOKENS_MAX, attemptTokens * 2);
+                }
+                console.warn(`[${keyLabel}] ${modelName} の応答をプランとして使えなかったため1回だけ再試行します (${attempt.errorCode}, finishReason: ${attempt.info.finishReason ?? "unknown"}, maxOutputTokens: ${attemptTokens})`);
+                continue;
+              }
+              // 再試行でも使えなければ打ち切る（別モデルで続けると待ち時間とAPI利用量が膨らむため）
+              break keyLoop;
             }
 
-            console.log(`[${keyLabel}] Success with model: ${modelName}`);
-            const usage = (result.response as unknown as {
-              usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
-            }).usageMetadata;
-            auditPlanLog({
-              requestId,
-              ipHash,
-              userAgent,
-              sessionId,
-              errorType: "ok",
-              inputTokens: usage?.promptTokenCount,
-              outputTokens: usage?.candidatesTokenCount,
-              totalTokens: usage?.totalTokenCount,
-            });
-            return NextResponse.json(
-              warnings.length > 0
-                ? { ...(plan as Record<string, unknown>), warnings }
-                : plan
-            );
-          } catch (err) {
-            const errMsg = err instanceof Error ? err.message : String(err);
-            const is503 = errMsg.includes("503") || errMsg.includes("Service Unavailable");
-            const is404 = errMsg.includes("404") || errMsg.includes("NOT_FOUND") || errMsg.includes("not found");
-            const is403 = errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("API_KEY_INVALID");
-            const is429 = errMsg.includes("429") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota");
-
-            // Log full error for diagnosis
-            console.error(`[${keyLabel}/${modelName}] FULL ERROR: ${errMsg.substring(0, 500)}`);
-            modelErrors.push(`[${keyLabel}/${modelName}] ${errMsg.substring(0, 150)}`);
+            const { is503, is404, is403, is429 } = classifyGeminiError(errMsg);
 
             if (is503 && retries < maxRetries) {
               console.warn(`[${keyLabel}] ${modelName} 503, retrying once...`);
@@ -711,19 +1344,16 @@ export async function POST(request: NextRequest) {
               // Quota exhausted → try next model, then fallback to next key (FREE→PAID)
               const nextKeyInfo = keyIdx + 1 < apiKeys.length ? ` → next: ${apiKeys[keyIdx + 1].tier}` : " (last key)";
               console.warn(`[${keyLabel}] ${modelName} 429 quota — trying next model${nextKeyInfo}`);
-              lastError = err;
               break;
             }
             if (is403) {
               // Auth/key error → switch key immediately
               console.warn(`[${keyLabel}] ${modelName} 403 auth — switching to next key`);
-              lastError = err;
               continue keyLoop;
             }
             if (is503) {
               // Server error after retry → try next model on same key first
               console.warn(`[${keyLabel}] ${modelName} 503 after retry — trying next model`);
-              lastError = err;
               break;
             }
             if (is404) {
@@ -731,45 +1361,99 @@ export async function POST(request: NextRequest) {
             } else {
               console.warn(`[${keyLabel}] ${modelName} failed:`, errMsg.substring(0, 200));
             }
-            lastError = err;
             break;
           }
+
+          let plan = attempt.plan;
+
+          // 空の日・余分な日・不要な食事スポットを取り除く。欠落の判定より先に行う
+          // （取り除いた食事スポットの名前で目的地が見つかったことにしないため）
+          let sanitized = sanitizePlan(body, plan, stage);
+          if (sanitized.length > 0) {
+            console.warn(`[${keyLabel}/${modelName}] プランを整形しました (${stage}): ${formatSanitizeRecords(sanitized)}`);
+          }
+
+          // ユーザー指定の目的地が抜けていたら、指摘を添えて1回だけ作り直す
+          let warnings = findMissingDestinationWarnings(body, plan);
+          if (warnings.length > 0) {
+            console.warn(`[${keyLabel}/${modelName}] 指定目的地の欠落を検出: ${warnings.join(" / ")} — 1回だけ再生成します`);
+            const correction = await requestPlan(genAI, modelName, buildCorrectionPrompt(prompt, warnings), attemptTokens, 0.4, recordFailure("correction"));
+            if (correction.ok) {
+              const correctionSanitized = sanitizePlan(body, correction.plan, "correction");
+              if (correctionSanitized.length > 0) {
+                console.warn(`[${keyLabel}/${modelName}] プランを整形しました (correction): ${formatSanitizeRecords(correctionSanitized)}`);
+              }
+              const retryWarnings = findMissingDestinationWarnings(body, correction.plan);
+              // 改善した場合のみ採用する（悪化した再生成結果は使わない）
+              if (retryWarnings.length < warnings.length) {
+                plan = correction.plan;
+                warnings = retryWarnings;
+                sanitized = correctionSanitized;
+              }
+            } else {
+              console.warn(`[${keyLabel}/${modelName}] 再生成に失敗: ${errorMessageOf(correction.error).substring(0, 200)}`);
+            }
+          }
+
+          console.log(`[${keyLabel}] Success with model: ${modelName}`);
+          const usage = attempt.info.usageMetadata;
+          auditPlanLog({
+            requestId,
+            ipHash,
+            userAgent,
+            sessionId,
+            errorType: "ok",
+            inputTokens: usage?.promptTokenCount,
+            outputTokens: usage?.candidatesTokenCount,
+            thoughtsTokens: thoughtsTokensOf(usage),
+            totalTokens: usage?.totalTokenCount,
+            stage,
+            ...attempt.info,
+            // 再試行やフォールバックの末に成功した場合も、先に失敗した試行の理由を残す
+            ...(attemptHistory.length > 0 ? { attempts: attemptHistory } : {}),
+            // 返したプランから取り除いたもの（黙って消さない）
+            ...(sanitized.length > 0 ? { sanitized } : {}),
+          });
+          return NextResponse.json(
+            warnings.length > 0
+              ? { ...(plan as Record<string, unknown>), warnings }
+              : plan
+          );
         }
       }
     }
 
-    // All models failed — return detailed error for diagnosis
-    console.error("All Gemini models failed. Errors:", modelErrors);
-    const diagMessage = modelErrors.length > 0
-      ? `[診断] ${modelErrors.join(" / ")}`
-      : "AI plan generation failed";
-    const lastErrMessage = lastError instanceof Error ? lastError.message : "AI plan generation failed";
-
-    // Check error type for user-friendly message
-    const is403 = lastErrMessage.includes("403") || lastErrMessage.includes("PERMISSION_DENIED") || lastErrMessage.includes("API_KEY_INVALID");
-    const is429 = lastErrMessage.includes("429") || lastErrMessage.includes("RESOURCE_EXHAUSTED");
-    const is404 = lastErrMessage.includes("404") || lastErrMessage.includes("NOT_FOUND");
-
-    let userMessage: string;
-    if (is403) {
-      userMessage = `APIキーエラー（403）: Gemini APIキーが無効です。管理者にお問い合わせください。[詳細: ${lastErrMessage.substring(0, 150)}]`;
-    } else if (is429) {
-      userMessage = `利用制限（429）: 現在アクセスが集中しています。しばらく時間をおいてから再度お試しください。`;
-    } else if (is404) {
-      userMessage = `モデルエラー（404）: 指定したAIモデルが見つかりません。[詳細: ${lastErrMessage.substring(0, 150)}]`;
-    } else {
-      userMessage = `AIサーバーエラー: ${lastErrMessage.substring(0, 200)}`;
-    }
-
-    console.error("Diagnosis:", diagMessage);
-    auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "gemini_error" });
-    return NextResponse.json({ error: userMessage }, { status: 500 });
+    // All models failed — 詳細はサーバーログにだけ残し、利用者には errorCode に応じた定型文を返す。
+    // 文面は最後ではなく最初の失敗で決める（後段のモデルは1段目の失敗を受けて呼んだ代替で、根本原因は1段目にあるため）。
+    // 生成設定を 400 で拒否されて設定を外して続けた分（config_rejected）は、利用者向けの判定からは除く。
+    const firstFailure = attemptHistory.find((record) => record.kind !== "config_rejected");
+    const errorCode: PlanErrorCode = firstFailure?.errorCode ?? "ai_failed";
+    console.error("All Gemini models failed. Attempts:", JSON.stringify(attemptHistory));
+    auditPlanLog({
+      requestId,
+      ipHash,
+      userAgent,
+      sessionId,
+      errorType: "gemini_error",
+      errorCode,
+      reason: firstFailure
+        ? `first failure: ${firstFailure.model} ${firstFailure.kind} ${firstFailure.message.substring(0, 200)}`
+        : "no failed attempt recorded",
+      attempts: attemptHistory,
+    });
+    const status = errorCode === "ai_busy" || errorCode === "ai_unavailable" ? 503 : 500;
+    return planJsonError(PLAN_ERROR_MESSAGES[errorCode], status, "gemini_error", errorCode);
   } catch (error: unknown) {
     console.error("Gemini API error:", error);
-    const message =
-      error instanceof Error ? error.message : "AI plan generation failed";
-    auditPlanLog({ requestId, ipHash, userAgent, sessionId, errorType: "bad_input" });
-    return NextResponse.json({ error: message }, { status: 400 });
+    auditPlanLog({
+      requestId,
+      ipHash,
+      userAgent,
+      sessionId,
+      errorType: "bad_input",
+      reason: errorMessageOf(error).substring(0, 300),
+    });
+    return planJsonError(PLAN_ERROR_MESSAGES.bad_request, 400, "bad_input", "bad_request");
   } finally {
     if (accepted) releasePlanIp(ipHash);
   }
@@ -1240,6 +1924,7 @@ ${planVariationInstruction}
 - 最外層は必ず { "plans": [...] } にすること。days配列を直接返さないこと
 - plans配列には必ず2つのプランを含めること（プランAとプランB）
 - **犬連れ旅行ではない場合（withDog=false）: dogWalkStop は必ず false にすること。犬の散歩休憩をプランに含めないこと**
+- itemsのtypeは "departure" / "destination" / "lunch" / "dinner" / "reststop" / "arrival" のいずれかにすること。SA・PA・道の駅などに休憩（トイレ・運転の休憩・犬の散歩）のために立ち寄る地点は type="reststop" とすること。観光や買い物そのものが目的のスポット（大型の道の駅を含む）は "destination" とすること
 - 【最初に行く】と指定された目的地がある場合、その目的地を最初に訪れること。ただしPAなどの休憩が必要な場合は休憩後に向かうこと。
 - 昼食ジャンルが指定されている場合、itemsの中にtype="lunch"のアイテムを**必ず追加**すること（省略禁止）
 - 夕食ジャンルが指定されている場合、itemsの中にtype="dinner"のアイテムを**必ず追加**すること（省略禁止）

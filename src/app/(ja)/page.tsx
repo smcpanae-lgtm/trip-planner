@@ -28,10 +28,38 @@ import {
   TripPlannerLanguageProvider,
   useTripLang,
 } from "@/lib/i18n/TripPlannerLanguageContext";
+import type { TripPlannerDict } from "@/lib/i18n/tripPlannerDictionaries";
 
 type ViewMode = "form" | "result";
 const PLAN_SESSION_STORAGE_KEY = "plan-anonymous-session-id";
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
+/**
+ * /api/plan のエラー応答を画面に出す文面にする。
+ * AI生成の失敗は errorCode で辞書を引き、表示中の言語に合わせる（日本語はサーバーの文面と同じ）。
+ * コードの無いエラー（入力チェック・回数制限など）はサーバーの文面をそのまま使う。
+ */
+const PLAN_ERROR_KEYS = {
+  ai_busy: "aiBusy",
+  ai_failed: "aiFailed",
+  ai_unavailable: "aiUnavailable",
+  bad_request: "badRequest",
+  ai_blocked: "aiBlocked",
+  ai_empty_response: "aiEmptyResponse",
+  ai_truncated: "aiTruncated",
+  ai_bad_finish: "aiBadFinish",
+  ai_invalid_json: "aiInvalidJson",
+} as const satisfies Record<string, keyof TripPlannerDict["error"]>;
+
+function planErrorMessage(t: TripPlannerDict, data: { error?: unknown; errorCode?: unknown }): string {
+  const code = data.errorCode;
+  if (typeof code === "string" && Object.prototype.hasOwnProperty.call(PLAN_ERROR_KEYS, code)) {
+    return t.error[PLAN_ERROR_KEYS[code as keyof typeof PLAN_ERROR_KEYS]];
+  }
+  if (typeof data.error === "string" && data.error) return data.error;
+  // 応答がJSONでない（タイムアウト等）か、プランとして読み取れなかった場合
+  return t.error.aiFailed;
+}
 
 declare global {
   interface Window {
@@ -758,16 +786,14 @@ function HomeContent() {
         }
       }
 
-      const apiError: string = data.error || `HTTPエラー ${res.status}`;
-      console.warn("Gemini API error:", apiError);
-      setPlanError(apiError);
+      console.warn("Plan API error:", res.status, data.errorCode ?? data.errorType ?? data.error);
+      setPlanError(planErrorMessage(t, data));
       setIsLoading(false);
       setLoadingMessage("");
       return;
     } catch (e) {
       console.error("Error building plan:", e);
-      const msg = e instanceof Error ? e.message : String(e);
-      setPlanError(`通信エラー: ${msg}`);
+      setPlanError(t.error.network);
     } finally {
       if (turnstileWidgetIdRef.current && window.turnstile) {
         window.turnstile.reset(turnstileWidgetIdRef.current);
