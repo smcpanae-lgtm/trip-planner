@@ -39,6 +39,27 @@ git push origin master
   作業用ブランチを push → Preview デプロイでビルド成功を確認 → `master` にマージ、
   という2段階で行うと安全（2026年8月5日の同期作業ではこの手順を実施した）。
 
+## Gemini APIキーの環境変数について（重要）
+
+**変数名から中身を判断しないこと。** 2026年9月の /api/plan 障害調査では、ユーザーも Claude も
+名前から中身を誤解し、何度も判断を誤った。名前は変更しないため、実態をここに記録しておく。
+
+- 本番が実際に読むのは `GEMINI_API_KEY_FREE`。
+  コード（`src/app/api/plan/route.ts`・`src/app/api/generate/route.ts`）は
+  `GEMINI_API_KEY_FREE || GEMINI_API_KEY` の順で読む。
+- 名前に FREE とあるが、**中身は課金済みプロジェクトのキー**。名前と実態が食い違っているので、
+  名前から無料枠と判断しないこと（ログに出る「(FREE)」も変数名から付いたラベルにすぎない）。
+- 本番が使う Google Cloud プロジェクトは **Trip Planner（`trip-planner-493102`）**。
+  請求先アカウントが紐づいており、課金実績がある。
+  Places API・Directions API・Maps JavaScript API も同じプロジェクトに同居している。
+- AI Studio のキー一覧にこのプロジェクトは表示されない。
+  AI Studio 上で「Tier 1」と出る Default Gemini Project（`gen-lang-client-0340620747`）は、本番とは別のプロジェクト。
+- `GEMINI_API_KEY_PAID` と `GEMINI_API_KEY_2` はコードから参照されていない。
+  過去に無料枠と有料枠を切り替える構想を検討したが、レート制限はキー単位ではなく
+  プロジェクト単位で効くため機能せず、見送った名残。
+- ローカル開発用のキーは本番とは別のプロジェクトで、無料枠。ローカル検証で 429 が出ても本番とは無関係。
+- 環境変数名の変更は行わない方針。動作中のものを触るリスクを避けるため。
+
 ## その他の前提
 
 - 世界遺産の訪問記録は**ブラウザ内保存のみ**。この仕組みは変更しない。
