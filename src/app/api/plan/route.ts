@@ -8,6 +8,12 @@ import {
   type UsageMetadata,
 } from "@google/generative-ai";
 import { createHash, randomUUID } from "crypto";
+import {
+  checkScheduleFromAiTimes,
+  clockMinutes,
+  windowCrossesMidnight,
+  type DayScheduleCheck,
+} from "@/lib/scheduleCheck";
 
 export const runtime = "nodejs";
 
@@ -340,6 +346,14 @@ function auditPlanLog(data: {
   attempts?: PlanAttemptRecord[];
   /** 返したプランを整形したときの記録（何をなぜ取り除いたか） */
   sanitized?: PlanSanitizeRecord[];
+  /** 返したプランに入らなかった指定目的地の件数（explained: AIが理由を記載 / unexplained: 理由なし） */
+  missingDestinations?: { explained: number; unexplained: number };
+  /** 作り直し（correction）を行った場合の理由・結果・出力トークン */
+  correction?: PlanCorrectionRecord;
+  /** 返したプランに残った時刻の問題の日数（overnight: 日付をまたいだ / reversed: 時刻が前後した） */
+  scheduleTimeIssues?: { overnight: number; reversed: number };
+  /** AIの時刻で到着希望を超過した日数（全プラン合計）と最大の超過（分） */
+  scheduleChecks?: { overDays: number; maxOverrunMinutes: number };
 }) {
   console.log(JSON.stringify({ type: "plan_generate_audit", at: new Date().toISOString(), ...data }));
 }
@@ -579,6 +593,8 @@ const PLAN_COMMENTARY_SCHEMA: ObjectSchema = {
   properties: {
     removedSpots: {
       type: SchemaType.ARRAY,
+      description:
+        "ユーザー指定の目的地のうち、物理的に訪問できずitemsに入れなかったものだけを、名前と具体的な理由とともに記載する。代わりのスポットは入れない。該当がなければ空配列",
       items: {
         type: SchemaType.OBJECT,
         properties: {
@@ -1076,12 +1092,15 @@ function formatSanitizeRecords(records: PlanSanitizeRecord[]): string {
     .join(" / ");
 }
 
-/** 全角英数字・ハイフンのゆれ・空白・「〒」「日本、」を吸収して比較用に正規化する */
+/**
+ * 全角英数字・ハイフンのゆれ・空白・カッコ・「〒」「日本、」を吸収して比較用に正規化する
+ * （例:「上高地（河童橋）」と「上高地 河童橋」を同じとみなす）
+ */
 function normalizeForMatch(value: string): string {
   return value
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
     .replace(/[‐‑‒–—―ー−ｰ－]/g, "-")
-    .replace(/[〒\s、,。．・]/g, "")
+    .replace(/[〒\s、,。．・（）()「」『』【】[\]〈〉《》]/g, "")
     .replace(/^日本/, "")
     .toLowerCase();
 }
@@ -1159,46 +1178,274 @@ function planIncludesDestination(
   return false;
 }
 
-/** 各プランについて、抜けているユーザー指定目的地の警告文を返す */
-function findMissingDestinationWarnings(body: PlanRequest, parsed: unknown): string[] {
-  const plansValue = (parsed as { plans?: unknown })?.plans;
-  const plans: unknown[] = Array.isArray(plansValue) ? plansValue : [parsed];
-  const warnings: string[] = [];
+/** プランに入っていないユーザー指定目的地（プランごとに1件） */
+interface MissingDestination {
+  planIndex: number;
+  planName: string;
+  dayIndex: number;
+  name: string;
+  /** AIが commentary.removedSpots に理由付きで記載していれば true */
+  explained: boolean;
+}
 
-  plans.forEach((plan, planIdx) => {
+/** 画面に出す除外目的地。ai: AIが理由を書いて除外 / unexplained: AIが理由を示さずに省略 */
+interface AnnotatedRemovedSpot {
+  name: string;
+  reason: string;
+  source: "ai" | "unexplained";
+}
+
+function plansOf(parsed: unknown): unknown[] {
+  const plansValue = (parsed as { plans?: unknown })?.plans;
+  return Array.isArray(plansValue) ? plansValue : [parsed];
+}
+
+function planNameOf(plan: unknown, planIdx: number): string {
+  const name = (plan as { planName?: unknown })?.planName;
+  if (typeof name === "string") return name;
+  return planIdx === 0 ? "プランA" : "プランB";
+}
+
+function removedSpotsOf(plan: unknown): { name: string; reason: string }[] {
+  const list = (plan as { commentary?: { removedSpots?: unknown } })?.commentary?.removedSpots;
+  if (!Array.isArray(list)) return [];
+  return list.flatMap((entry) => {
+    const e = entry as { name?: unknown; reason?: unknown };
+    if (!e || typeof e.name !== "string" || !e.name.trim()) return [];
+    return [{ name: e.name.trim(), reason: typeof e.reason === "string" ? e.reason.trim() : "" }];
+  });
+}
+
+/** removedSpots の1件がユーザー指定目的地を指しているか（名前だけで照合） */
+function removedSpotRefersTo(dest: { name: string }, removed: { name: string }): boolean {
+  return planIncludesDestination({ name: dest.name }, [{ name: removed.name }]);
+}
+
+/** 各プランについて、抜けているユーザー指定目的地を返す */
+function findMissingDestinations(body: PlanRequest, parsed: unknown): MissingDestination[] {
+  const missing: MissingDestination[] = [];
+
+  plansOf(parsed).forEach((plan, planIdx) => {
     const items = collectPlanItems(plan);
-    // 想定外の形（items無し）の場合は判定できないので警告しない
+    // 想定外の形（items無し）の場合は判定できないので欠落扱いしない
     if (items.length === 0) return;
-    const planName =
-      typeof (plan as { planName?: unknown })?.planName === "string"
-        ? ((plan as { planName: string }).planName)
-        : planIdx === 0
-          ? "プランA"
-          : "プランB";
+    const planName = planNameOf(plan, planIdx);
+    const removed = removedSpotsOf(plan);
 
     for (const day of body.days) {
       for (const dest of day.destinations) {
         if (dest.isOmakase || !dest.name?.trim()) continue;
-        if (!planIncludesDestination(dest, items)) {
-          warnings.push(`${planName}に「${dest.name.trim()}」が含まれていません`);
-        }
+        if (planIncludesDestination(dest, items)) continue;
+        missing.push({
+          planIndex: planIdx,
+          planName,
+          dayIndex: day.dayIndex,
+          name: dest.name.trim(),
+          explained: removed.some((r) => r.reason !== "" && removedSpotRefersTo(dest, r)),
+        });
       }
     }
   });
 
-  return warnings;
+  return missing;
 }
 
-function buildCorrectionPrompt(basePrompt: string, warnings: string[]): string {
+function describeMissing(m: MissingDestination, multiDay: boolean): string {
+  return `${m.planName}に「${m.name}」${multiDay ? `（${m.dayIndex + 1}日目）` : ""}が含まれていません`;
+}
+
+/** 作り直しの結果のほうが良いか：抜けが少ないほう、同数なら理由のない抜けが少ないほう */
+function hasFewerMissing(next: MissingDestination[], current: MissingDestination[]): boolean {
+  if (next.length !== current.length) return next.length < current.length;
+  const unexplained = (list: MissingDestination[]) => list.filter((m) => !m.explained).length;
+  return unexplained(next) < unexplained(current);
+}
+
+/**
+ * AIが書いた時刻の問題。各日の items を [到着, 出発] の順に並べ、前の時刻より早い時刻を探す。
+ * - overnight: 日付をまたいだ（24:00以降の表記、または12時間以上の逆戻り。例: 23:30 → 00:45）
+ * - reversed: 12時間未満の逆戻り（例: 14:15 の次に 12:10。項目の並びと時刻が食い違っている）
+ * 利用者が日付をまたぐ時間帯（出発時刻より早い到着希望時刻）を指定した日は、overnight として扱わない。
+ */
+interface ScheduleTimeIssue {
+  planIndex: number;
+  planName: string;
+  dayIndex: number;
+  kind: "overnight" | "reversed";
+  /** 例: 「23:30 → 00:45（富岡製糸場）」 */
+  detail: string;
+}
+
+/** 日付をまたいだとみなす逆戻りの幅。実測では日付またぎが1,290〜1,410分、並びの食い違いが105〜145分だった */
+const OVERNIGHT_BACKSTEP_MINUTES = 12 * 60;
+
+/** 利用者の指定した時間帯そのものが日付をまたいでいるか（例: 20:00出発・01:00到着希望） */
+function dayWindowCrossesMidnight(day: PlanRequest["days"][number] | undefined): boolean {
+  return windowCrossesMidnight(day?.departureTime, day?.arrivalTime);
+}
+
+/** 各プラン・各日について、時刻の問題を種類ごとに最初の1件だけ返す */
+function findScheduleTimeIssues(body: PlanRequest, parsed: unknown): ScheduleTimeIssue[] {
+  const issues: ScheduleTimeIssue[] = [];
+
+  plansOf(parsed).forEach((plan, planIdx) => {
+    const days = (plan as { days?: unknown })?.days;
+    if (!Array.isArray(days)) return;
+    const planName = planNameOf(plan, planIdx);
+
+    days.forEach((day, position) => {
+      const items = (day as { items?: unknown } | null)?.items;
+      if (!Array.isArray(items)) return;
+      const requestDay = body.days[position];
+      const overnightAllowed = dayWindowCrossesMidnight(requestDay);
+      const found = new Set<ScheduleTimeIssue["kind"]>();
+      const add = (kind: ScheduleTimeIssue["kind"], detail: string) => {
+        if (found.has(kind) || (kind === "overnight" && overnightAllowed)) return;
+        found.add(kind);
+        issues.push({ planIndex: planIdx, planName, dayIndex: requestDay?.dayIndex ?? position, kind, detail });
+      };
+
+      let prev: { minutes: number; label: string } | null = null;
+      for (const item of items) {
+        const it = item as { name?: unknown; arrivalTime?: unknown; departureTime?: unknown } | null;
+        const name = typeof it?.name === "string" ? it.name : "";
+        for (const value of [it?.arrivalTime, it?.departureTime]) {
+          const minutes = clockMinutes(value);
+          if (minutes === null) continue;
+          const label = String(value).trim();
+          if (minutes >= 24 * 60) add("overnight", `${label}（${name}）`);
+          if (prev && minutes < prev.minutes) {
+            add(prev.minutes - minutes >= OVERNIGHT_BACKSTEP_MINUTES ? "overnight" : "reversed", `${prev.label} → ${label}（${name}）`);
+          }
+          prev = { minutes, label };
+        }
+      }
+    });
+  });
+
+  return issues;
+}
+
+function describeTimeIssue(issue: ScheduleTimeIssue, multiDay: boolean): string {
+  const where = `${issue.planName}${multiDay ? `の${issue.dayIndex + 1}日目` : ""}`;
+  return issue.kind === "overnight"
+    ? `${where}の行程が日付をまたいでいます（${issue.detail}）`
+    : `${where}で時刻が前の項目より早くなっています（${issue.detail}）`;
+}
+
+/** 作り直し（correction）の理由と結果。adopted: 採用 / rejected: 改善しないため不採用 / failed: 生成に失敗 */
+interface PlanCorrectionRecord {
+  trigger: ("unexplained_missing" | "overnight")[];
+  outcome: "adopted" | "rejected" | "failed";
+  outputTokens?: number;
+}
+
+/**
+ * 作り直しの結果のほうが良いか。日付をまたいだ日が少ないほうを優先し、同数なら目的地の抜けで比べる
+ * （日付をまたぐプランは実行できないため、理由付きの除外が増えても日付をまたがないほうを採る）
+ */
+function isBetterPlan(
+  next: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[] },
+  current: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[] }
+): boolean {
+  const overnight = (list: ScheduleTimeIssue[]) => list.filter((i) => i.kind === "overnight").length;
+  if (overnight(next.timeIssues) !== overnight(current.timeIssues)) {
+    return overnight(next.timeIssues) < overnight(current.timeIssues);
+  }
+  return hasFewerMissing(next.missing, current.missing);
+}
+
+/**
+ * 抜けた指定目的地を、各プランの commentary.removedSpots にまとめる（黙って落とさない）。
+ * - AIが理由付きで記載したもの → source: "ai"
+ * - 理由なしで抜けたもの → source: "unexplained" として追加
+ * - removedSpots に書かれているのに実際はプランに入っている指定目的地 → 食い違いなので出さない
+ */
+function annotateRemovedSpots(body: PlanRequest, parsed: unknown, missing: MissingDestination[]): void {
+  const userDests = body.days.flatMap((day) =>
+    day.destinations.filter((d) => !d.isOmakase && d.name?.trim())
+  );
+
+  plansOf(parsed).forEach((plan, planIdx) => {
+    if (!plan || typeof plan !== "object") return;
+    const planMissing = missing.filter((m) => m.planIndex === planIdx);
+    const result: AnnotatedRemovedSpot[] = [];
+
+    for (const removed of removedSpotsOf(plan)) {
+      const refersToMissing = planMissing.some((m) => removedSpotRefersTo(m, removed));
+      const refersToIncluded = !refersToMissing && userDests.some((d) => removedSpotRefersTo(d, removed));
+      if (refersToIncluded) continue;
+      // 抜けた目的地を指していても理由が空なら、下で unexplained として出す
+      if (refersToMissing && removed.reason === "") continue;
+      result.push({ name: removed.name, reason: removed.reason, source: "ai" });
+    }
+    for (const m of planMissing) {
+      if (!m.explained) result.push({ name: m.name, reason: "", source: "unexplained" });
+    }
+
+    const p = plan as { commentary?: unknown };
+    if (p.commentary && typeof p.commentary === "object") {
+      (p.commentary as { removedSpots?: unknown }).removedSpots = result;
+    } else if (result.length > 0) {
+      p.commentary = { removedSpots: result, highlights: [], tips: [] };
+    }
+  });
+}
+
+/**
+ * 各プランの各日に、AIの時刻による到着見込みの判定（scheduleCheck）を付ける。
+ * 日は並び順で利用者の指定と対応させる（findScheduleTimeIssues と同じ）。
+ * 画面では、地図の経路の所要時間による判定が取れればそちらを優先し、取れなければこれを表示する。
+ */
+function attachScheduleChecks(body: PlanRequest, parsed: unknown): DayScheduleCheck[] {
+  const checks: DayScheduleCheck[] = [];
+
+  plansOf(parsed).forEach((plan) => {
+    const days = (plan as { days?: unknown })?.days;
+    if (!Array.isArray(days)) return;
+
+    days.forEach((day, position) => {
+      const items = (day as { items?: unknown } | null)?.items;
+      const requestDay = body.days[position];
+      if (!day || typeof day !== "object" || !Array.isArray(items) || !requestDay) return;
+      const check = checkScheduleFromAiTimes(items, requestDay.departureTime, requestDay.arrivalTime);
+      if (!check) return;
+      (day as { scheduleCheck?: DayScheduleCheck }).scheduleCheck = check;
+      checks.push(check);
+    });
+  });
+
+  return checks;
+}
+
+function buildCorrectionPrompt(basePrompt: string, missingLines: string[], overnightLines: string[]): string {
+  const sections: string[] = [];
+  if (missingLines.length > 0) {
+    sections.push(`## ユーザーが指定した目的地が、理由の説明なしに抜けていました
+${missingLines.map((w) => `- ${w}`).join("\n")}
+
+今回は上記の目的地を必ず該当プランの、指定された日のitemsに含めてください（プランAとプランBで分け合うこと・別の日へ移すことは禁止）。`);
+  }
+  if (overnightLines.length > 0) {
+    sections.push(`## 行程が日付をまたいでいました（到着地への到着が翌日になっており、実行できません）
+${overnightLines.map((w) => `- ${w}`).join("\n")}
+
+今回は各日の行程をその日のうちに終えてください（到着地への到着は23:59まで。すべての時刻を00:00〜23:59の範囲で、前の項目より後の時刻で書く）。`);
+  }
+
   return `${basePrompt}
 
 # 【再生成の指示・最優先】
-直前の出力では、ユーザーが指定した目的地が次のとおり抜けていました。
+直前の出力には次の問題がありました。
 
-${warnings.map((w) => `- ${w}`).join("\n")}
+${sections.join("\n\n")}
 
-今回は上記の目的地を必ず該当プランのitemsに含めてください。
-時間が足りない場合は、AIが追加した観光スポットや休憩スポットのほうを削って調整すること。
+時間が足りない場合は、ルール5の順で調整すること：
+1. AIが追加した観光スポットを削る
+2. 滞在時間を短縮する（最低30分）
+3. それでも収まらなければ、到着希望時間を超えてもプランに含め、tipsに到着の遅れ見込みを明記する（ただし日付はまたがないこと）
+到着時刻は移動時間と滞在時間を積み上げて書き、時刻を詰めてつじつまを合わせないこと。
+物理的に訪問できない場合（含めると日付をまたぐ場合を含む）に限り、その目的地をitemsに入れず、removedSpotsに名前と具体的な理由を書くこと（別スポットへの置き換えは禁止）。
 出力は前回と同じ { "plans": [...] } のJSONのみを返すこと。`;
 }
 
@@ -1373,27 +1620,62 @@ export async function POST(request: NextRequest) {
             console.warn(`[${keyLabel}/${modelName}] プランを整形しました (${stage}): ${formatSanitizeRecords(sanitized)}`);
           }
 
-          // ユーザー指定の目的地が抜けていたら、指摘を添えて1回だけ作り直す
-          let warnings = findMissingDestinationWarnings(body, plan);
-          if (warnings.length > 0) {
-            console.warn(`[${keyLabel}/${modelName}] 指定目的地の欠落を検出: ${warnings.join(" / ")} — 1回だけ再生成します`);
-            const correction = await requestPlan(genAI, modelName, buildCorrectionPrompt(prompt, warnings), attemptTokens, 0.4, recordFailure("correction"));
+          // 次のどちらかがあれば、指摘を添えて1回だけ作り直す
+          // - ユーザー指定の目的地が理由なしに抜けている（AIが理由付きで除外したものは方針どおりなので対象外）
+          // - 行程が日付をまたいでいる（到着地への到着が翌日になるプランは実行できない）
+          // 時刻の前後（reversed）だけでは作り直さない（記録のみ）
+          const multiDay = body.days.length > 1;
+          let missing = findMissingDestinations(body, plan);
+          let timeIssues = findScheduleTimeIssues(body, plan);
+          let correctionRecord: PlanCorrectionRecord | undefined;
+          const unexplained = missing.filter((m) => !m.explained);
+          const overnight = timeIssues.filter((i) => i.kind === "overnight");
+          if (unexplained.length > 0 || overnight.length > 0) {
+            const missingLines = unexplained.map((m) => describeMissing(m, multiDay));
+            const overnightLines = overnight.map((i) => describeTimeIssue(i, multiDay));
+            const trigger: PlanCorrectionRecord["trigger"] = [
+              ...(unexplained.length > 0 ? (["unexplained_missing"] as const) : []),
+              ...(overnight.length > 0 ? (["overnight"] as const) : []),
+            ];
+            console.warn(`[${keyLabel}/${modelName}] 作り直しの対象を検出: ${[...missingLines, ...overnightLines].join(" / ")} — 1回だけ再生成します`);
+            const correction = await requestPlan(genAI, modelName, buildCorrectionPrompt(prompt, missingLines, overnightLines), attemptTokens, 0.4, recordFailure("correction"));
             if (correction.ok) {
               const correctionSanitized = sanitizePlan(body, correction.plan, "correction");
               if (correctionSanitized.length > 0) {
                 console.warn(`[${keyLabel}/${modelName}] プランを整形しました (correction): ${formatSanitizeRecords(correctionSanitized)}`);
               }
-              const retryWarnings = findMissingDestinationWarnings(body, correction.plan);
+              const retryMissing = findMissingDestinations(body, correction.plan);
+              const retryTimeIssues = findScheduleTimeIssues(body, correction.plan);
               // 改善した場合のみ採用する（悪化した再生成結果は使わない）
-              if (retryWarnings.length < warnings.length) {
+              const adopted = isBetterPlan({ missing: retryMissing, timeIssues: retryTimeIssues }, { missing, timeIssues });
+              if (adopted) {
                 plan = correction.plan;
-                warnings = retryWarnings;
+                missing = retryMissing;
+                timeIssues = retryTimeIssues;
                 sanitized = correctionSanitized;
               }
+              correctionRecord = { trigger, outcome: adopted ? "adopted" : "rejected", outputTokens: correction.info.usageMetadata?.candidatesTokenCount };
             } else {
               console.warn(`[${keyLabel}/${modelName}] 再生成に失敗: ${errorMessageOf(correction.error).substring(0, 200)}`);
+              correctionRecord = { trigger, outcome: "failed" };
             }
           }
+
+          if (timeIssues.length > 0) {
+            console.warn(`[${keyLabel}/${modelName}] 時刻の問題が残りました: ${timeIssues.map((i) => describeTimeIssue(i, multiDay)).join(" / ")}`);
+          }
+
+          // 残った欠落は removedSpots にまとめて利用者に示す（黙って落とさない）
+          if (missing.length > 0) {
+            console.warn(
+              `[${keyLabel}/${modelName}] 指定目的地の欠落が残りました: ${missing
+                .map((m) => `${describeMissing(m, multiDay)}${m.explained ? "（AIの理由あり）" : "（理由なし）"}`)
+                .join(" / ")}`
+            );
+          }
+          annotateRemovedSpots(body, plan, missing);
+          const explainedCount = missing.filter((m) => m.explained).length;
+          const overDays = attachScheduleChecks(body, plan).filter((c) => c.overrunMinutes > 0);
 
           console.log(`[${keyLabel}] Success with model: ${modelName}`);
           const usage = attempt.info.usageMetadata;
@@ -1413,12 +1695,29 @@ export async function POST(request: NextRequest) {
             ...(attemptHistory.length > 0 ? { attempts: attemptHistory } : {}),
             // 返したプランから取り除いたもの（黙って消さない）
             ...(sanitized.length > 0 ? { sanitized } : {}),
+            // 返したプランに入らなかった指定目的地の件数（AIの理由あり／なし）
+            ...(missing.length > 0
+              ? { missingDestinations: { explained: explainedCount, unexplained: missing.length - explainedCount } }
+              : {}),
+            ...(correctionRecord ? { correction: correctionRecord } : {}),
+            ...(timeIssues.length > 0
+              ? {
+                  scheduleTimeIssues: {
+                    overnight: timeIssues.filter((i) => i.kind === "overnight").length,
+                    reversed: timeIssues.filter((i) => i.kind === "reversed").length,
+                  },
+                }
+              : {}),
+            ...(overDays.length > 0
+              ? {
+                  scheduleChecks: {
+                    overDays: overDays.length,
+                    maxOverrunMinutes: Math.max(...overDays.map((c) => c.overrunMinutes)),
+                  },
+                }
+              : {}),
           });
-          return NextResponse.json(
-            warnings.length > 0
-              ? { ...(plan as Record<string, unknown>), warnings }
-              : plan
-          );
+          return NextResponse.json(plan);
         }
       }
     }
@@ -1470,6 +1769,12 @@ function buildPrompt(body: PlanRequest): string {
 
   // Check if omakase is used
   const hasOmakase = body.days.some(d => d.destinations.some(dd => dd.isOmakase));
+
+  // 日付をまたぐ行程は禁止する。利用者が日付をまたぐ時間帯（出発より早い到着希望時刻）を指定した日だけは例外
+  const userCrossesMidnight = body.days.some((d) => dayWindowCrossesMidnight(d));
+  const sameDayRule = `各日の行程は出発した日のうちに終えること（到着地への到着は23:59まで。すべての時刻を00:00〜23:59の範囲で、前の項目より後の時刻で書く${
+    userCrossesMidnight ? "。ただし、出発時刻より早い到着希望時刻が指定された日は、その到着希望時刻までの日付またぎを認める" : ""
+  }）`;
 
   const daysDescription = body.days
     .map((day) => {
@@ -1534,7 +1839,7 @@ ${destLines || "  - なし（AIが提案）"}${aiOmakaseNote}
   const mustIncludeBlock =
     mustIncludeNames.length > 0
       ? `
-- **【最重要】以下のユーザー指定目的地は、プランA・プランBの両方のitemsに必ず1回ずつ含めること。省略・統合・別スポットへの置き換えはすべて禁止。時間が足りない場合は他の（AIが追加した）スポットのほうを削ること:**
+- **【最重要】以下のユーザー指定目的地は、プランA・プランBの両方のitemsに、指定された日に必ず1回ずつ含めること。省略・統合・別スポットへの置き換え・プランAとプランBでの分け合い・別の日への移し替えはすべて禁止。時間が足りない場合はルール5の順（AIが追加したスポットを削る→滞在時間を短縮→到着の遅れを明記して含める）で調整し、物理的に訪問できない場合に限り、itemsに入れずremovedSpotsに具体的な理由を書くこと:**
 ${mustIncludeNames.map((n) => `  - ${n}`).join("\n")}`
       : "";
 
@@ -1557,12 +1862,12 @@ ${mustIncludeNames.map((n) => `  - ${n}`).join("\n")}`
 - **【特定施設の重要情報・誤情報に注意】**:
   - **群馬サファリパーク**: 「犬を車内に入れたままサファリゾーンを走行できる」という情報は**誤りです**。群馬サファリパークは犬を車内に乗せたままでの入場は一切できません。ペットを連れた場合は、必ず施設のペット預かりサービスに預けてから入場する必要があります（ペット預かりサービスの事前予約・確認が必須）。descriptionとtipsに「⚠️ 群馬サファリパークは犬を車に乗せたままでの入場はできません。施設のペット預かりサービスに預けてからご入場ください。事前に施設へご確認・ご予約ください」と必ず明記すること
 - **犬が入場できない可能性がある施設**（神社仏閣の境内、動物園・水族館、一部テーマパーク等）がユーザー指定の目的地に含まれる場合:
-  - **プランA・プランBともに、ユーザー指定の目的地は絶対にルートから除外しないこと。必ず両プランに含めること。**
+  - **犬が入場できない可能性があることを理由に、ユーザー指定の目的地をルートから除外しないこと。プランA・プランBともに必ず含めること。**
   - 理由: 施設内に犬が入れなくても、周辺の散歩・外観見学・駐車場での休憩など部分的に楽しめる場合があるため
   - プランA・プランBともに: descriptionに「⚠️ 施設内はペット入場不可の場合があります。周辺の散歩や外観見学は可能なことが多いですが、事前に施設へご確認ください。入場できない場合は車内待機または近隣のペット預かり施設をご利用ください」と明記する
   - プランBでは追加で: 同じ目的地を含めた上で、近隣に犬同伴可能なスポット（ドッグラン・ペットOK公園・テラス席OKカフェ・店内ペットOKカフェ等）があればルートに**追加**して提案する（代替ではなく追加）
   - tipsに犬が入場不可の可能性がある施設についての注意事項と対策を含める
-  - removedSpotsにユーザー指定の目的地を記載することは禁止`
+  - 犬の入場可否を理由に、removedSpotsへユーザー指定の目的地を記載することは禁止（犬と関係のない理由で物理的に訪問できない場合の扱いはルール5に従う）`
     : "";
 
   const dateContext = body.travelDate
@@ -1634,13 +1939,14 @@ ${p.ageRange === "60s" || p.ageRange === "70plus" ? "- 歩行距離を最小限�
   if (body.aiOmakase !== false) {
     planVariationInstruction = `
 ## 2プラン作成（おまかせONモード）
-「目的地以外はお任せ」がONになっています。**プランA・プランBともに、ユーザー指定の目的地をすべて含めた上で、出発〜到着の空き時間を活用してAIがおすすめ観光スポットを追加してください。**
+「目的地以外はお任せ」がONになっています。**プランA・プランBともに、まずユーザー指定の目的地をすべて含め、そのうえで出発〜到着の時間がなお余る場合に限り、AIがおすすめ観光スポットを追加してください。**
 2プランは追加するおすすめスポットのテーマを変えて差別化してください：
 - **プランA「定番プラン」**: ユーザー指定の目的地 + 定番・王道の観光スポットをAIが追加
 - **プランB「穴場プラン」**: ユーザー指定の目的地 + 穴場・体験型・ユニークなスポットをAIが追加
 **重要:**
-- 両プランとも、出発〜到着の時間に余裕がある限り積極的にスポットを追加すること
-- PAのみで終わらせず、観光地・道の駅・景勝地など魅力的なスポットを必ず追加すること
+- 両プランとも、ユーザー指定の目的地をすべて含めてもなお時間に余裕がある場合は、積極的にスポットを追加すること
+- AIが追加するスポットのために、指定目的地の滞在時間を削ったり到着希望時間を超えたりしないこと（時間が足りない場合はAIの追加スポットを減らす。ルール5）
+- 時間に余裕がある場合は、PAのみで終わらせず、観光地・道の駅・景勝地など魅力的なスポットを追加すること
 - planNameとplanDescriptionでテーマの違いを明確に説明すること`;
   } else {
     planVariationInstruction = `
@@ -1663,7 +1969,8 @@ ${englishContext}
 ${planVariationInstruction}
 
 # ルール
-1. 出発時間と到着希望時間の間で必ず収まるプランにすること
+1. 出発時間と到着希望時間の間に収めるよう努めること。ただし、ユーザー指定の目的地をすべて含めることのほうを優先する（収まらない場合の扱いはルール5に従う）
+   - **${sameDayRule}**。日付をまたがないと回れない場合は、ルール5の除外（理由付き）で対応すること
 2. 移動時間の計算:${body.useHighway === false ? `
    - **高速道路は使用しないこと（ユーザー設定）。すべて一般道でルートを組むこと**
    - 一般道の速度: 45km/h で計算
@@ -1681,11 +1988,15 @@ ${planVariationInstruction}
    - SA/PA・小規模スポット: 15〜30分
    - 時間が足りない場合でも動物園・水族館・テーマパーク等は最低90分を確保すること
 4. 「おまかせ」の目的地はルート上で魅力的な観光地をAIが提案すること
-5. **ユーザーが指定した目的地は絶対に削除しないこと**。時間が厳しい場合は以下の対応をすること：
-   - 到着希望時間を超えてもプランに含め、tipsで「到着時間が○○時に遅れる見込みです」と注記する
-   - 途中にSA/PA・道の駅での休憩を挟み、長距離移動でも実現可能なプランにする
-   - 滞在時間を短縮（最低30分）して対応する
-   - それでも物理的に不可能な場合のみ、removedSpotsに理由を記載し、代わりに近隣の同ジャンルのスポットをプランに含めること
+5. **ユーザーが指定した目的地はすべてプランに含めること（基本方針：全部入れる。どうしても無理なら置き換えずに除外し、理由を書く）**。時間が厳しい場合は、次の順で調整すること：
+   （1）AIが追加したスポット（おまかせ・時間調整のための追加スポット）を減らす
+   （2）ユーザー指定の目的地の滞在時間を短縮する（最低30分。動物園・水族館・テーマパーク等はルール3の最低90分）
+   （3）それでも収まらない場合は、到着希望時間を超えてもプランに含め、tipsで「到着が○○時頃に遅れる見込みです」と注記する（ただし日付はまたがないこと。ルール1）
+   - 長距離移動では途中にSA/PA・道の駅での休憩を挟み、実現可能なプランにすること
+   - 各itemの到着時刻は、直前の出発時刻に実際の移動時間（ルール2の目安）と滞在時間を積み上げて書くこと。到着希望時間に合わせるために移動時間を短く書くことは禁止
+   - 物理的に訪問できない場合（例：移動だけで1日の行程に収まらない、含めると到着地への到着が日付をまたぐ）に限り、その目的地はitemsに入れず、commentaryのremovedSpotsに名前と具体的な理由（例：「○○から片道約4時間かかり、1日の行程に収まらないため」）を書くこと
+   - 除外した目的地の代わりに別のスポットを入れることは禁止。removedSpotsには、実際にitemsに入れなかったユーザー指定の目的地だけを書くこと
+   - プランAとプランBで指定目的地を分け合うこと、指定された日から別の日へ移すことは禁止
 6. ルート最適化（**ジグザグ厳禁・最重要**）:
    - 帰りのドライブが楽になるよう、可能な限り遠い目的地から先に訪問し、帰りながら近い目的地を回るルートにすること（アウトアンドバック方式）
    - ただし最初に行く目的地が指定されている場合はその制約を優先すること
@@ -1725,7 +2036,7 @@ ${planVariationInstruction}
    - 出発時刻から終着地の希望時刻まで、できるだけ時間を有効に使うこと
    - 最後の目的地から終着地まで時間が2時間以上余る場合は、ルート上にさらなる観光スポットや食事スポットを追加すること
    - それでも追加スポットがない場合は、commentaryのtipsに「○○時頃に終着地に到着見込み。時間に余裕があります」と明記すること
-   - 終着地には希望到着時刻ちょうど（または少し前）に到着するようスケジュールを組むこと
+   - 終着地には希望到着時刻ちょうど（または少し前）に到着するようスケジュールを組むこと（ただし、ユーザー指定の目的地を含めると間に合わない場合はルール5に従い、遅れを明記すること）
 12. **営業時間・閉館時間の厳守（最重要）**:
    - 観光スポットへの到着時間が閉館時間に間に合うかを必ず確認すること
    - 日本の主な観光施設の一般的な閉館時間の目安：
@@ -1738,7 +2049,7 @@ ${planVariationInstruction}
    - **到着時間が16:00以降になる観光スポット（寺社・博物館・城等）は、閉館の可能性があるため以下を必ず実施する：**
      ・descriptionに「⚠️ 閉館時間にご注意ください。事前に営業時間をご確認の上、ご訪問ください（多くの寺社・観光施設は16:00〜17:00頃閉館）」と明記する
      ・tipsにも「○○は閉館時間が早いため、○○時頃の到着では入場できない可能性があります。事前に公式サイトで確認してください」と注記する
-   - **到着時間が17:00以降になる有料観光施設（寺社・博物館・城等）は原則スケジュールから除外し、代わりに夜間でも楽しめるスポット（夜景・ライトアップ・温泉街の散策・飲食エリア等）を提案すること**
+   - **到着時間が17:00以降になる有料観光施設（寺社・博物館・城等）のうち、AIが追加したスポットは原則スケジュールから除外し、代わりに夜間でも楽しめるスポット（夜景・ライトアップ・温泉街の散策・飲食エリア等）を提案すること**
    - ユーザーが指定した目的地でも閉館後になる場合は、tipsで「○○は閉館後の到着見込みです。翌日の訪問または日程の見直しをご検討ください」と警告すること
 13. **高速道路の上り/下り判定（最重要・絶対厳守）**:
    - 日本の高速道路はPA・SAが上り線と下り線で物理的に完全に分離されており、反対方向のPA・SAには絶対にアクセスできません。誤った方向のPA・SAを提案すると致命的なミスとなります

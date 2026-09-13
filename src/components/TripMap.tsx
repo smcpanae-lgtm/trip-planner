@@ -8,12 +8,12 @@ import {
   Polyline,
   InfoWindow,
 } from "@react-google-maps/api";
-import type { GeocodedSpot } from "@/types/trip";
+import type { GeocodedSpot, RoutePolyline } from "@/types/trip";
 
 interface TripMapProps {
   spots: GeocodedSpot[];
   highlightedSpot: { dayIndex: number; orderIndex: number } | null;
-  routePolylines?: { dayIndex: number; path: { lat: number; lng: number }[] }[];
+  routePolylines?: RoutePolyline[];
 }
 
 const mapContainerStyle = {
@@ -27,6 +27,22 @@ const defaultZoom = 6;
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 const DAY_COLORS = ["#2563eb", "#dc2626", "#16a34a", "#f59e0b", "#8b5cf6"];
+
+/** 経路が無い（まだ取得していない・取得できなかった）日に、地点を直線で結ぶ破線 */
+function straightLineOptions(dayIndex: number) {
+  return {
+    strokeColor: DAY_COLORS[dayIndex % DAY_COLORS.length],
+    strokeWeight: 4,
+    strokeOpacity: 0.6,
+    icons: [
+      {
+        icon: { path: "M 0,-1 0,1", strokeOpacity: 1, scale: 3 },
+        offset: "0",
+        repeat: "15px",
+      },
+    ],
+  };
+}
 
 function getMarkerIcon(
   label: string,
@@ -237,17 +253,21 @@ export default function TripMap({
         </InfoWindow>
       )}
 
-      {/* Route polylines from Directions API */}
+      {/* Route polylines from Directions API (days without a route are drawn as dashed straight lines) */}
       {routePolylines &&
         routePolylines.map((rp, idx) => (
           <Polyline
             key={`route-${rp.dayIndex}-${idx}`}
             path={rp.path}
-            options={{
-              strokeColor: DAY_COLORS[rp.dayIndex % DAY_COLORS.length],
-              strokeWeight: 5,
-              strokeOpacity: 0.7,
-            }}
+            options={
+              rp.straight
+                ? straightLineOptions(rp.dayIndex)
+                : {
+                    strokeColor: DAY_COLORS[rp.dayIndex % DAY_COLORS.length],
+                    strokeWeight: 5,
+                    strokeOpacity: 0.7,
+                  }
+            }
           />
         ))}
 
@@ -262,18 +282,7 @@ export default function TripMap({
             <Polyline
               key={`fallback-${dayIdx}`}
               path={path}
-              options={{
-                strokeColor: DAY_COLORS[dayIdx % DAY_COLORS.length],
-                strokeWeight: 4,
-                strokeOpacity: 0.6,
-                icons: [
-                  {
-                    icon: { path: "M 0,-1 0,1", strokeOpacity: 1, scale: 3 },
-                    offset: "0",
-                    repeat: "15px",
-                  },
-                ],
-              }}
+              options={straightLineOptions(dayIdx)}
             />
           );
         })}

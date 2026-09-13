@@ -1,3 +1,5 @@
+import type { DayScheduleCheck } from "@/lib/scheduleCheck";
+
 export type SpotMeal = "" | "lunch" | "dinner";
 
 export interface Spot {
@@ -94,6 +96,11 @@ export interface ItineraryItem {
 export interface RemovedSpot {
   name: string;
   reason: string;
+  /**
+   * AIプランでサーバーが付ける出どころ。
+   * ai: AIが理由を書いて除外したもの / unexplained: AIが理由を示さずに省略したもの
+   */
+  source?: "ai" | "unexplained";
 }
 
 export interface PlanCommentary {
@@ -119,6 +126,10 @@ export interface DayItinerary {
   lunchSpotInfo?: MealSpotInfo;
   dinnerSpotInfo?: MealSpotInfo;
   commentary?: PlanCommentary;
+  /** AIの時刻による到着見込みの判定（/api/plan がサーバー側で計算） */
+  scheduleCheck?: DayScheduleCheck;
+  /** 地図の経路の所要時間による判定（/api/directions が計算）。あればこちらを優先して表示する */
+  routeScheduleCheck?: DayScheduleCheck;
 }
 
 export interface SearchCandidate {
@@ -131,10 +142,19 @@ export interface SearchCandidate {
   placeId?: string;
 }
 
+export interface RoutePolyline {
+  dayIndex: number;
+  path: { lat: number; lng: number }[];
+  /** 経路が取れなかった日の代用（地点を直線で結んだもの） */
+  straight?: boolean;
+}
+
 export interface PlanVariantData {
   planName: string;
   planDescription: string;
   spots: GeocodedSpot[];
   itineraries: DayItinerary[];
-  routePolylines?: { dayIndex: number; path: { lat: number; lng: number }[] }[];
+  routePolylines?: RoutePolyline[];
+  /** 高速道路を使わない設定で作ったプラン（地図の経路も一般道で出す） */
+  avoidHighways?: boolean;
 }

@@ -65,7 +65,15 @@ export interface TripPlannerDict {
     petSearch: string;
     businessHours: string;
     commentary: { title: string };
-    removed: { title: string };
+    removed: { title: string; aiJudgment: string; unexplained: string; hint: string };
+    schedule: {
+      over: string;
+      overOvernight: string;
+      nextDay: string;
+      laterDays: string;
+      basisAi: string;
+      basisRoute: string;
+    };
     highlights: { title: string };
     tips: { title: string };
     dogTips: { title: string };
@@ -237,7 +245,20 @@ const ja: TripPlannerDict = {
     petSearch: "ペットOKで探す",
     businessHours: "営業時間を事前にご確認ください",
     commentary: { title: "AIプランナーの解説" },
-    removed: { title: "時間の都合で除外した目的地" },
+    removed: {
+      title: "プランに含められなかった指定目的地",
+      aiJudgment: "AIの判断",
+      unexplained: "AIが理由を示さずに省略",
+      hint: "条件を変更してもう一度作成すると改善する場合があります（目的地名は住所より施設名のほうが認識されやすいです）。",
+    },
+    schedule: {
+      over: "この日は到着希望（{desired}）を約{min}分超過する見込みです（到着見込み {arrival}）",
+      overOvernight: "この日は到着希望（{desired}）を約{min}分超過し、日付をまたぐ見込みです（到着見込み {arrival}）",
+      nextDay: "翌日{time}",
+      laterDays: "{n}日後の{time}",
+      basisAi: "AIの時刻による判定",
+      basisRoute: "地図の経路の所要時間（渋滞を含まない）による判定",
+    },
     highlights: { title: "プランのポイント" },
     tips: { title: "アドバイス" },
     dogTips: { title: "犬連れ旅行のアドバイス" },
@@ -454,7 +475,20 @@ const en: TripPlannerDict = {
     petSearch: "Find Pet-Friendly",
     businessHours: "Please check opening hours in advance",
     commentary: { title: "AI Planner Commentary" },
-    removed: { title: "Destinations removed due to time constraints" },
+    removed: {
+      title: "Your destinations not included in this plan",
+      aiJudgment: "AI's judgment",
+      unexplained: "Omitted by the AI without giving a reason",
+      hint: "Changing the conditions and creating the plan again may help (facility names are recognized more reliably than addresses).",
+    },
+    schedule: {
+      over: "This day is expected to exceed your desired arrival time ({desired}) by about {min} min (estimated arrival {arrival})",
+      overOvernight: "This day is expected to exceed your desired arrival time ({desired}) by about {min} min and run past midnight (estimated arrival {arrival})",
+      nextDay: "{time} the next day",
+      laterDays: "{time}, {n} days later",
+      basisAi: "Based on the AI's times",
+      basisRoute: "Based on map route driving times (traffic not included)",
+    },
     highlights: { title: "Plan Highlights" },
     tips: { title: "Tips & Advice" },
     dogTips: { title: "Dog Travel Tips" },
@@ -671,7 +705,20 @@ const ko: TripPlannerDict = {
     petSearch: "펫 OK로 찾기",
     businessHours: "영업시간을 사전에 확인해 주세요",
     commentary: { title: "AI 플래너 해설" },
-    removed: { title: "시간 문제로 제외된 목적지" },
+    removed: {
+      title: "이 플랜에 포함되지 못한 지정 목적지",
+      aiJudgment: "AI의 판단",
+      unexplained: "AI가 이유를 밝히지 않고 생략",
+      hint: "조건을 바꿔 다시 만들면 개선될 수 있습니다(목적지는 주소보다 시설명으로 입력하면 더 잘 인식됩니다).",
+    },
+    schedule: {
+      over: "이날은 희망 도착 시간({desired})을 약 {min}분 초과할 것으로 예상됩니다(도착 예상 {arrival})",
+      overOvernight: "이날은 희망 도착 시간({desired})을 약 {min}분 초과해 날짜를 넘길 것으로 예상됩니다(도착 예상 {arrival})",
+      nextDay: "다음 날 {time}",
+      laterDays: "{n}일 후 {time}",
+      basisAi: "AI가 제시한 시각으로 판정",
+      basisRoute: "지도 경로의 소요 시간(교통 체증 미포함)으로 판정",
+    },
     highlights: { title: "플랜 포인트" },
     tips: { title: "어드바이스" },
     dogTips: { title: "반려견 여행 어드바이스" },
@@ -886,7 +933,20 @@ const zhCN: TripPlannerDict = {
     petSearch: "搜索宠物友好餐厅",
     businessHours: "请提前确认营业时间",
     commentary: { title: "AI 规划师解说" },
-    removed: { title: "因时间原因未能纳入的目的地" },
+    removed: {
+      title: "未能纳入本方案的指定目的地",
+      aiJudgment: "AI的判断",
+      unexplained: "AI未说明理由而省略",
+      hint: "更改条件后重新生成可能会有所改善（目的地填写设施名称比填写地址更容易识别）。",
+    },
+    schedule: {
+      over: "当天预计比期望到达时间（{desired}）晚约{min}分钟（预计到达 {arrival}）",
+      overOvernight: "当天预计比期望到达时间（{desired}）晚约{min}分钟，并将跨过午夜（预计到达 {arrival}）",
+      nextDay: "次日{time}",
+      laterDays: "{n}天后{time}",
+      basisAi: "根据AI给出的时间判断",
+      basisRoute: "根据地图路线的行驶时间判断（不含拥堵）",
+    },
     highlights: { title: "计划亮点" },
     tips: { title: "建议与提示" },
     dogTips: { title: "带狗旅行建议" },
@@ -1098,7 +1158,20 @@ const zhTW: TripPlannerDict = {
     petSearch: "搜尋寵物友善餐廳",
     businessHours: "請事先確認營業時間",
     commentary: { title: "AI 規劃師解說" },
-    removed: { title: "因時間問題未能納入的目的地" },
+    removed: {
+      title: "未能納入本方案的指定目的地",
+      aiJudgment: "AI的判斷",
+      unexplained: "AI未說明理由而省略",
+      hint: "變更條件後重新產生可能會有所改善（目的地填寫設施名稱比填寫地址更容易辨識）。",
+    },
+    schedule: {
+      over: "當天預計比期望抵達時間（{desired}）晚約{min}分鐘（預計抵達 {arrival}）",
+      overOvernight: "當天預計比期望抵達時間（{desired}）晚約{min}分鐘，並將跨過午夜（預計抵達 {arrival}）",
+      nextDay: "隔天{time}",
+      laterDays: "{n}天後{time}",
+      basisAi: "依AI提供的時間判斷",
+      basisRoute: "依地圖路線的行車時間判斷（不含塞車）",
+    },
     highlights: { title: "計畫亮點" },
     tips: { title: "建議與提示" },
     dogTips: { title: "帶狗旅行建議" },
@@ -1312,7 +1385,20 @@ const es: TripPlannerDict = {
     petSearch: "Buscar con mascotas",
     businessHours: "Confirma el horario de apertura con antelación",
     commentary: { title: "Comentario del planificador IA" },
-    removed: { title: "Destinos descartados por falta de tiempo" },
+    removed: {
+      title: "Destinos indicados que no se incluyeron en este plan",
+      aiJudgment: "Criterio de la IA",
+      unexplained: "Omitido por la IA sin indicar el motivo",
+      hint: "Cambiar las condiciones y volver a crear el plan puede ayudar (los nombres de los lugares se reconocen mejor que las direcciones).",
+    },
+    schedule: {
+      over: "Este día se prevé superar la hora de llegada deseada ({desired}) en unos {min} min (llegada estimada {arrival})",
+      overOvernight: "Este día se prevé superar la hora de llegada deseada ({desired}) en unos {min} min y pasar la medianoche (llegada estimada {arrival})",
+      nextDay: "{time} del día siguiente",
+      laterDays: "{time}, {n} días después",
+      basisAi: "Calculado con los horarios de la IA",
+      basisRoute: "Calculado con los tiempos de la ruta del mapa (sin tráfico)",
+    },
     highlights: { title: "Puntos destacados del plan" },
     tips: { title: "Consejos" },
     dogTips: { title: "Consejos para viajar con perro" },
@@ -1526,7 +1612,20 @@ const ru: TripPlannerDict = {
     petSearch: "Найти pet-friendly",
     businessHours: "Заранее уточните часы работы",
     commentary: { title: "Комментарий AI-планировщика" },
-    removed: { title: "Исключённые места из-за нехватки времени" },
+    removed: {
+      title: "Указанные места, не вошедшие в этот план",
+      aiJudgment: "Решение ИИ",
+      unexplained: "ИИ пропустил без объяснения причины",
+      hint: "Попробуйте изменить условия и создать план заново (названия мест распознаются лучше, чем адреса).",
+    },
+    schedule: {
+      over: "В этот день ожидается превышение желаемого времени прибытия ({desired}) примерно на {min} мин (ожидаемое прибытие {arrival})",
+      overOvernight: "В этот день ожидается превышение желаемого времени прибытия ({desired}) примерно на {min} мин с переходом за полночь (ожидаемое прибытие {arrival})",
+      nextDay: "{time} следующего дня",
+      laterDays: "{time} через {n} дн.",
+      basisAi: "Расчёт по времени, указанному ИИ",
+      basisRoute: "Расчёт по времени в пути по маршруту на карте (без учёта пробок)",
+    },
     highlights: { title: "Особенности маршрута" },
     tips: { title: "Советы" },
     dogTips: { title: "Советы для путешествий с собакой" },

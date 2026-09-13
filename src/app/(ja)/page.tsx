@@ -19,7 +19,9 @@ import type {
   PlanVariantData,
   DayPlan,
   TravelerProfile,
+  RoutePolyline,
 } from "@/types/trip";
+import { formatScheduleWarning, isDayScheduleCheck, type DayScheduleCheck } from "@/lib/scheduleCheck";
 
 import SiteFooter from "@/components/SiteFooter";
 import TripMap from "@/components/TripMap";
@@ -187,6 +189,8 @@ function parseGeminiPlan(plan: any): {
         alternatives: day.dinnerSpot.alternatives || [],
       } : undefined,
       commentary,
+      // AIの時刻による到着見込みの判定（/api/plan がサーバー側で計算して付ける）
+      scheduleCheck: isDayScheduleCheck(day.scheduleCheck) ? day.scheduleCheck : undefined,
     });
   }
 
@@ -243,25 +247,52 @@ function parseGeminiResponse(data: any): PlanVariantData[] {
   return [];
 }
 
-async function fetchRoutePolylines(
-  spots: GeocodedSpot[]
-): Promise<{ dayIndex: number; path: { lat: number; lng: number }[] }[]> {
+interface RouteData {
+  polylines: RoutePolyline[];
+  /** 地図の経路の所要時間による各日の到着見込みの判定 */
+  routeChecks: { dayIndex: number; check: DayScheduleCheck }[];
+}
+
+/**
+ * 各日の経路（地図の線）と、実際の所要時間による到着見込みの判定を /api/directions から取る（1日1回）。
+ * 経路が取れなかった日は地点を直線で結んで代用し（破線で表示）、判定はAIの時刻によるものを使う。
+ */
+async function fetchRouteData(variant: PlanVariantData): Promise<RouteData> {
   const dayGroups: globalThis.Map<number, GeocodedSpot[]> = new globalThis.Map();
-  spots.forEach((s) => {
+  variant.spots.forEach((s) => {
     const group = dayGroups.get(s.dayIndex) || [];
     group.push(s);
     dayGroups.set(s.dayIndex, group);
   });
 
-  const polylines: { dayIndex: number; path: { lat: number; lng: number }[] }[] = [];
+  const polylines: RoutePolyline[] = [];
+  const routeChecks: RouteData["routeChecks"] = [];
 
   for (const [dayIndex, daySpots] of dayGroups.entries()) {
-    const sorted = daySpots.sort((a, b) => a.orderIndex - b.orderIndex);
+    const sorted = [...daySpots].sort((a, b) => a.orderIndex - b.orderIndex);
     if (sorted.length < 2) continue;
 
     const origin = sorted[0];
     const destination = sorted[sorted.length - 1];
     const waypoints = sorted.slice(1, -1).map((s) => ({ lat: s.lat, lng: s.lng }));
+    const straight: RoutePolyline = {
+      dayIndex,
+      path: sorted.map((s) => ({ lat: s.lat, lng: s.lng })),
+      straight: true,
+    };
+
+    // 到着見込みの判定に使う入力。AIの時刻による判定がある日だけ送る（出発時刻・到着希望はそこから取る）
+    const itin = variant.itineraries.find((d) => d.dayIndex === dayIndex);
+    const aiCheck = itin?.scheduleCheck;
+    const schedule = aiCheck
+      ? {
+          startTime: aiCheck.startTime,
+          desiredArrival: aiCheck.desiredArrival,
+          windowCrossesMidnight: aiCheck.windowCrossesMidnight,
+          stayMinutes: sorted.map((s) => itin?.items[s.orderIndex]?.stayMinutes ?? 0),
+          aiOverrunMinutes: aiCheck.overrunMinutes,
+        }
+      : undefined;
 
     try {
       const res = await fetch("/api/directions", {
@@ -271,22 +302,39 @@ async function fetchRoutePolylines(
           origin: { lat: origin.lat, lng: origin.lng },
           destination: { lat: destination.lat, lng: destination.lng },
           waypoints,
+          avoidHighways: variant.avoidHighways === true,
+          ...(schedule ? { schedule } : {}),
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.overviewPolyline) {
-          const path = decodePolyline(data.overviewPolyline);
-          polylines.push({ dayIndex, path });
+      const data = res.ok ? await res.json() : null;
+      if (data?.routeFound && data.overviewPolyline) {
+        polylines.push({ dayIndex, path: decodePolyline(data.overviewPolyline) });
+        if (isDayScheduleCheck(data.scheduleCheck)) {
+          routeChecks.push({ dayIndex, check: data.scheduleCheck });
         }
+      } else {
+        polylines.push(straight);
       }
     } catch (e) {
       console.warn(`Directions API failed for day ${dayIndex}:`, e);
+      polylines.push(straight);
     }
   }
 
-  return polylines;
+  return { polylines, routeChecks };
+}
+
+/** 取得した経路と判定をプランに反映する（取れなかった日も routePolylines を入れて、再取得しないようにする） */
+function withRouteData(variant: PlanVariantData, data: RouteData): PlanVariantData {
+  return {
+    ...variant,
+    routePolylines: data.polylines,
+    itineraries: variant.itineraries.map((itin) => {
+      const found = data.routeChecks.find((r) => r.dayIndex === itin.dayIndex);
+      return found ? { ...itin, routeScheduleCheck: found.check } : itin;
+    }),
+  };
 }
 
 function buildDemoPlanVariant(): PlanVariantData {
@@ -459,7 +507,6 @@ function HomeContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [planError, setPlanError] = useState<string | null>(null);
-  const [planWarnings, setPlanWarnings] = useState<string[]>([]);
   const [highlightedSpot, setHighlightedSpot] = useState<{
     dayIndex: number;
     orderIndex: number;
@@ -697,12 +744,10 @@ function HomeContent() {
       setActivePlanIndex(index);
       const variant = planVariants[index];
       if (variant && !variant.routePolylines) {
-        fetchRoutePolylines(variant.spots).then((polylines) => {
-          if (polylines.length > 0) {
-            setPlanVariants((prev) =>
-              prev.map((v, i) => i === index ? { ...v, routePolylines: polylines } : v)
-            );
-          }
+        fetchRouteData(variant).then((routeData) => {
+          setPlanVariants((prev) =>
+            prev.map((v, i) => i === index ? withRouteData(v, routeData) : v)
+          );
         });
       }
     },
@@ -711,7 +756,6 @@ function HomeContent() {
 
   const handleSubmit = useCallback(async (config: TripConfig) => {
     setPlanError(null);
-    setPlanWarnings([]);
     setLastConfig(config);
     if (!planVerificationReady) {
       setPlanError("AIプラン作成の認証確認が完了していません。しばらく待ってから再度お試しください。");
@@ -766,21 +810,21 @@ function HomeContent() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && !data.error) {
-        const variants = parseGeminiResponse(data);
+        const variants = parseGeminiResponse(data).map((v) => ({
+          ...v,
+          avoidHighways: config.useHighway === false,
+        }));
         if (variants.length > 0) {
-          setPlanWarnings(Array.isArray(data.warnings) ? data.warnings : []);
           setPlanVariants(variants);
           setActivePlanIndex(0);
           setViewMode("result");
           trackEvent("plan_created", { nights: config.nights, withDog: config.withDog });
 
           setLoadingMessage(t.loading.messageRoute);
-          fetchRoutePolylines(variants[0].spots).then((polylines) => {
-            if (polylines.length > 0) {
-              setPlanVariants((prev) =>
-                prev.map((v, i) => i === 0 ? { ...v, routePolylines: polylines } : v)
-              );
-            }
+          fetchRouteData(variants[0]).then((routeData) => {
+            setPlanVariants((prev) =>
+              prev.map((v, i) => i === 0 ? withRouteData(v, routeData) : v)
+            );
           });
           return;
         }
@@ -901,12 +945,11 @@ function HomeContent() {
       planDescription: "",
       spots: allGeoSpots,
       itineraries: dayItineraries,
+      avoidHighways: config.useHighway === false,
     };
 
-    fetchRoutePolylines(allGeoSpots).then((polylines) => {
-      if (polylines.length > 0) {
-        setPlanVariants([{ ...variant, routePolylines: polylines }]);
-      }
+    fetchRouteData(variant).then((routeData) => {
+      setPlanVariants([withRouteData(variant, routeData)]);
     });
 
     setPlanVariants([variant]);
@@ -965,6 +1008,15 @@ function HomeContent() {
       const dayLabel = t.itinerary.day.replace("{n}", String(dayItin.dayIndex + 1));
       lines.push(`■ ${dayLabel}`);
       lines.push(`${"─".repeat(30)}`);
+
+      // 到着希望を超過する見込みの日は、画面と同じ警告を入れる（地図の経路による判定を優先）
+      const scheduleCheck = dayItin.routeScheduleCheck ?? dayItin.scheduleCheck;
+      const scheduleWarning = scheduleCheck && formatScheduleWarning(scheduleCheck, t.itinerary.schedule);
+      if (scheduleWarning) {
+        lines.push(`  ⚠️ ${scheduleWarning.text}`);
+        lines.push(`     ${scheduleWarning.basis}`);
+        lines.push("");
+      }
 
       for (const item of dayItin.items) {
         const typeLabel =
@@ -1119,7 +1171,7 @@ function HomeContent() {
             </a>
             {viewMode === "result" && (
               <button
-                onClick={() => { setViewMode("form"); setPlanError(null); setPlanWarnings([]); setIsDemoPlan(false); }}
+                onClick={() => { setViewMode("form"); setPlanError(null); setIsDemoPlan(false); }}
                 className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-all"
               >
                 {t.header.editPlan}
@@ -1275,23 +1327,6 @@ function HomeContent() {
                   <div>
                     <p className="text-sm font-medium text-red-700">{t.error.title}</p>
                     <p className="text-xs text-red-500 mt-1">{planError}</p>
-                  </div>
-                </div>
-              )}
-
-              {planWarnings.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                  <div className="text-amber-500 shrink-0 mt-0.5">⚠️</div>
-                  <div>
-                    <p className="text-sm font-medium text-amber-800">指定した目的地が一部反映されていません</p>
-                    <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
-                      {planWarnings.map((w, i) => (
-                        <li key={i}>{w}</li>
-                      ))}
-                    </ul>
-                    <p className="text-xs text-amber-600 mt-1.5">
-                      条件を変更してもう一度作成すると改善する場合があります（目的地名は住所より施設名のほうが認識されやすいです）。
-                    </p>
                   </div>
                 </div>
               )}

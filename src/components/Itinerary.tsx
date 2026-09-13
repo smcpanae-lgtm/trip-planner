@@ -22,6 +22,30 @@ import {
 import type { DayItinerary } from "@/types/trip";
 import { generateYouTubeSearchLinks } from "@/lib/youtube";
 import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
+import { formatScheduleWarning } from "@/lib/scheduleCheck";
+
+/**
+ * 到着希望を超過する見込みの日の警告（日の見出しの下に出す）。
+ * 地図の経路の所要時間による判定があればそれを、無ければAIの時刻による判定を使い、どちらによるかを添える。
+ */
+function DayScheduleWarning({ dayItin }: { dayItin: DayItinerary }) {
+  const { t } = useTripLang();
+  const check = dayItin.routeScheduleCheck ?? dayItin.scheduleCheck;
+  const warning = check && formatScheduleWarning(check, t.itinerary.schedule);
+  if (!check || !warning) return null;
+  const tone = check.overnight
+    ? "bg-red-50 border-red-200 text-red-800"
+    : "bg-amber-50 border-amber-200 text-amber-800";
+  return (
+    <div className={`-mt-2 mb-4 p-2.5 rounded-lg border text-xs flex items-start gap-1.5 ${tone}`}>
+      <AlertTriangle className="w-4 h-4 shrink-0 mt-px" />
+      <div>
+        <p className="font-medium">{warning.text}</p>
+        <p className="mt-0.5 opacity-80">{warning.basis}</p>
+      </div>
+    </div>
+  );
+}
 
 function buildGoogleMapsUrl(name: string, address?: string): string {
   const query = address ? `${name} ${address}` : name;
@@ -140,6 +164,8 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
               {t.itinerary.day.replace("{n}", String(dayItin.dayIndex + 1))}
             </h3>
           </div>
+
+          <DayScheduleWarning dayItin={dayItin} />
 
           <div className="relative ml-4">
             {/* Vertical timeline line */}
@@ -387,24 +413,41 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             </div>
           )}
 
-          {/* Removed spots */}
+          {/* Destinations not included: AI's reasoned exclusions and unexplained omissions */}
           {planCommentary.removedSpots.length > 0 && (
-            <div className="p-3 bg-red-50 rounded-lg border border-red-100">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-red-700 mb-2">
+            <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-amber-800 mb-2">
                 <AlertTriangle className="w-4 h-4" />
                 {t.itinerary.removed.title}
               </div>
               <ul className="space-y-1">
                 {planCommentary.removedSpots.map((removed, idx) => (
-                  <li key={idx} className="text-xs text-red-600 flex items-start gap-1.5">
-                    <span className="text-red-400 mt-0.5">•</span>
+                  <li key={idx} className="text-xs text-amber-700 flex items-start gap-1.5">
+                    <span className="text-amber-400 mt-0.5">•</span>
                     <span>
                       <span className="font-medium">{removed.name}</span>
-                      <span className="text-red-400 ml-1">— {removed.reason}</span>
+                      <span className="text-amber-600 ml-1">
+                        {"— "}
+                        {removed.source === "unexplained" ? (
+                          t.itinerary.removed.unexplained
+                        ) : (
+                          <>
+                            {removed.source === "ai" && (
+                              <span className="inline-block px-1 mr-1 rounded bg-amber-100 text-amber-800 text-[10px] font-medium">
+                                {t.itinerary.removed.aiJudgment}
+                              </span>
+                            )}
+                            {removed.reason}
+                          </>
+                        )}
+                      </span>
                     </span>
                   </li>
                 ))}
               </ul>
+              {planCommentary.removedSpots.some((r) => r.source) && (
+                <p className="text-xs text-amber-600 mt-2">{t.itinerary.removed.hint}</p>
+              )}
             </div>
           )}
 
