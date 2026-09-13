@@ -74,6 +74,16 @@ export interface TripPlannerDict {
       basisAi: string;
       basisRoute: string;
     };
+    /** マイカー規制区域の警告。{place} は「区域名（地点名）」、period で yearRound／seasonal を使い分ける */
+    carRestriction: {
+      yearRound: string;
+      seasonal: string;
+      place: string;
+      separator: string;
+      note: string;
+      badge: string;
+      aiLabel: string;
+    };
     highlights: { title: string };
     tips: { title: string };
     dogTips: { title: string };
@@ -259,6 +269,15 @@ const ja: TripPlannerDict = {
       basisAi: "AIの時刻による判定",
       basisRoute: "地図の経路の所要時間（渋滞を含まない）による判定",
     },
+    carRestriction: {
+      yearRound: "{place}はマイカー規制区域です。自家用車では入れません。路線バスやシャトルバスなどで行けます。",
+      seasonal: "{place}は、時期によりマイカー規制があります。訪問日の規制を公式情報でご確認ください。",
+      place: "{area}（{spots}）",
+      separator: "・",
+      note: "※登録している主な規制区域のみを判定しています。",
+      badge: "🚫 マイカー規制区域",
+      aiLabel: "AIによる注意（要確認）",
+    },
     highlights: { title: "プランのポイント" },
     tips: { title: "アドバイス" },
     dogTips: { title: "犬連れ旅行のアドバイス" },
@@ -392,6 +411,7 @@ const ja: TripPlannerDict = {
         "・提案されたスポットや飲食店の営業状況、ペット同伴の可否等は、必ず事前にご自身でご確認ください。",
         "・本サービスの利用により生じたいかなる損害についても、運営者は一切の責任を負いません。",
         "・交通ルール・法規を遵守し、安全運転でお出かけください。",
+        "・マイカー規制の警告は、登録している主要な規制区域のみが対象で、すべての規制を網羅するものではありません。規制の有無や期間は年や時期により変わるため、訪問前に公式情報をご確認ください。",
       ],
     },
     terms: {
@@ -488,6 +508,15 @@ const en: TripPlannerDict = {
       laterDays: "{time}, {n} days later",
       basisAi: "Based on the AI's times",
       basisRoute: "Based on map route driving times (traffic not included)",
+    },
+    carRestriction: {
+      yearRound: "{place} is a private-car restricted area. Private cars cannot enter; you can get there by route bus, shuttle bus, etc.",
+      seasonal: "{place} has private-car restrictions during certain periods. Please check official information for restrictions on your visit date.",
+      place: "{area} ({spots})",
+      separator: ", ",
+      note: "* Only the major registered restricted areas are checked.",
+      badge: "🚫 Private-car restricted area",
+      aiLabel: "AI note (please verify)",
     },
     highlights: { title: "Plan Highlights" },
     tips: { title: "Tips & Advice" },
@@ -622,6 +651,7 @@ const en: TripPlannerDict = {
         "· Please verify in advance the operating status of suggested spots and restaurants, and whether pets are allowed.",
         "· The operator accepts no liability for any damages arising from use of this service.",
         "· Please obey traffic laws and drive safely.",
+        "· Private-car restriction warnings cover only the major restricted areas we have registered and do not include every restriction. Whether and when restrictions apply varies by year and season, so please check official information before your visit.",
       ],
     },
     terms: {
@@ -718,6 +748,15 @@ const ko: TripPlannerDict = {
       laterDays: "{n}일 후 {time}",
       basisAi: "AI가 제시한 시각으로 판정",
       basisRoute: "지도 경로의 소요 시간(교통 체증 미포함)으로 판정",
+    },
+    carRestriction: {
+      yearRound: "{place}은(는) 마이카 규제 구역입니다. 자가용으로는 들어갈 수 없습니다. 노선버스나 셔틀버스 등으로 갈 수 있습니다.",
+      seasonal: "{place}은(는) 시기에 따라 마이카 규제가 있습니다. 방문일의 규제를 공식 정보로 확인해 주세요.",
+      place: "{area}({spots})",
+      separator: ", ",
+      note: "※ 등록된 주요 규제 구역만 판정합니다.",
+      badge: "🚫 마이카 규제 구역",
+      aiLabel: "AI 주의사항(확인 필요)",
     },
     highlights: { title: "플랜 포인트" },
     tips: { title: "어드바이스" },
@@ -852,6 +891,7 @@ const ko: TripPlannerDict = {
         "· 제안된 스팟이나 음식점의 영업 상황, 반려동물 동반 가능 여부 등은 반드시 사전에 직접 확인해 주세요.",
         "· 본 서비스 이용으로 발생한 어떠한 손해에 대해서도 운영자는 일절 책임을 지지 않습니다.",
         "· 교통 규칙·법규를 준수하고 안전 운전으로 여행하세요.",
+        "· 마이카 규제 경고는 등록된 주요 규제 구역만 대상이며, 모든 규제를 망라하지 않습니다. 규제 여부와 기간은 연도나 시기에 따라 달라지므로 방문 전에 공식 정보를 확인해 주세요.",
       ],
     },
     terms: {
@@ -946,6 +986,15 @@ const zhCN: TripPlannerDict = {
       laterDays: "{n}天后{time}",
       basisAi: "根据AI给出的时间判断",
       basisRoute: "根据地图路线的行驶时间判断（不含拥堵）",
+    },
+    carRestriction: {
+      yearRound: "{place}为私家车限行区域，私家车无法进入，可乘坐路线巴士或接驳巴士等前往。",
+      seasonal: "{place}在部分时期实行私家车限行，请通过官方信息确认访问当天的限行情况。",
+      place: "{area}（{spots}）",
+      separator: "、",
+      note: "※仅判断已登记的主要限行区域。",
+      badge: "🚫 私家车限行区域",
+      aiLabel: "AI提示（请核实）",
     },
     highlights: { title: "计划亮点" },
     tips: { title: "建议与提示" },
@@ -1077,6 +1126,7 @@ const zhCN: TripPlannerDict = {
         "· 请事先自行确认推荐景点和餐厅的营业状况及宠物是否允许入内。",
         "· 对于因使用本服务而产生的任何损失，运营方概不负责。",
         "· 请遵守交通规则和法律，安全驾驶。",
+        "· 私家车限行警告仅针对已登记的主要限行区域，并未涵盖所有限行规定。是否限行及限行期间因年份和季节而异，请在出行前查阅官方信息。",
       ],
     },
     terms: {
@@ -1171,6 +1221,15 @@ const zhTW: TripPlannerDict = {
       laterDays: "{n}天後{time}",
       basisAi: "依AI提供的時間判斷",
       basisRoute: "依地圖路線的行車時間判斷（不含塞車）",
+    },
+    carRestriction: {
+      yearRound: "{place}為自用車管制區域，自用車無法進入，可搭乘路線巴士或接駁巴士等前往。",
+      seasonal: "{place}在部分期間實施自用車管制，請透過官方資訊確認造訪當天的管制情況。",
+      place: "{area}（{spots}）",
+      separator: "、",
+      note: "※僅判斷已登錄的主要管制區域。",
+      badge: "🚫 自用車管制區域",
+      aiLabel: "AI提醒（請確認）",
     },
     highlights: { title: "計畫亮點" },
     tips: { title: "建議與提示" },
@@ -1302,6 +1361,7 @@ const zhTW: TripPlannerDict = {
         "· 請事先自行確認推薦景點和餐廳的營業狀況及寵物是否允許入內。",
         "· 對於因使用本服務而產生的任何損失，運營方概不負責。",
         "· 請遵守交通規則和法律，安全駕駛。",
+        "· 自用車管制警告僅針對已登錄的主要管制區域，並未涵蓋所有管制規定。是否管制及管制期間因年份和季節而異，請在出發前查閱官方資訊。",
       ],
     },
     terms: {
@@ -1398,6 +1458,15 @@ const es: TripPlannerDict = {
       laterDays: "{time}, {n} días después",
       basisAi: "Calculado con los horarios de la IA",
       basisRoute: "Calculado con los tiempos de la ruta del mapa (sin tráfico)",
+    },
+    carRestriction: {
+      yearRound: "{place} es una zona con acceso restringido a vehículos particulares. No se puede entrar en coche particular; se puede llegar en autobús de línea, autobús lanzadera, etc.",
+      seasonal: "{place} tiene restricciones a vehículos particulares en ciertas épocas. Consulta la información oficial sobre las restricciones del día de tu visita.",
+      place: "{area} ({spots})",
+      separator: ", ",
+      note: "* Solo se comprueban las principales zonas restringidas registradas.",
+      badge: "🚫 Zona restringida a coches particulares",
+      aiLabel: "Aviso de la IA (verifícalo)",
     },
     highlights: { title: "Puntos destacados del plan" },
     tips: { title: "Consejos" },
@@ -1529,6 +1598,7 @@ const es: TripPlannerDict = {
         "· Verifica de antemano el estado de los lugares y restaurantes sugeridos, así como si se admiten mascotas.",
         "· El operador no acepta ninguna responsabilidad por daños derivados del uso de este servicio.",
         "· Respeta las normas de tráfico y conduce con seguridad.",
+        "· Las advertencias de restricción de vehículos particulares solo abarcan las principales zonas restringidas que tenemos registradas y no incluyen todas las restricciones. La existencia y el periodo de las restricciones varían según el año y la temporada, así que consulta la información oficial antes de tu visita.",
       ],
     },
     terms: {
@@ -1625,6 +1695,15 @@ const ru: TripPlannerDict = {
       laterDays: "{time} через {n} дн.",
       basisAi: "Расчёт по времени, указанному ИИ",
       basisRoute: "Расчёт по времени в пути по маршруту на карте (без учёта пробок)",
+    },
+    carRestriction: {
+      yearRound: "{place} — зона ограничения въезда личных автомобилей. На личном автомобиле туда не проехать; добраться можно на рейсовом или шаттл-автобусе и т. п.",
+      seasonal: "{place}: в определённые периоды действует ограничение въезда личных автомобилей. Проверьте официальную информацию об ограничениях на день поездки.",
+      place: "{area} ({spots})",
+      separator: ", ",
+      note: "* Проверяются только основные зарегистрированные зоны ограничений.",
+      badge: "🚫 Въезд личных авто ограничен",
+      aiLabel: "Примечание ИИ (требует проверки)",
     },
     highlights: { title: "Особенности маршрута" },
     tips: { title: "Советы" },
@@ -1756,6 +1835,7 @@ const ru: TripPlannerDict = {
         "· Заранее самостоятельно проверьте статус рекомендованных мест и ресторанов, а также допускаются ли домашние животные.",
         "· Оператор не несёт никакой ответственности за ущерб, возникший в результате использования данного сервиса.",
         "· Соблюдайте правила дорожного движения и езжайте осторожно.",
+        "· Предупреждения об ограничении въезда личных автомобилей охватывают только основные зарегистрированные зоны и не включают все ограничения. Наличие и сроки ограничений зависят от года и сезона, поэтому перед поездкой проверьте официальную информацию.",
       ],
     },
     terms: {

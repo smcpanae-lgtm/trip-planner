@@ -22,6 +22,7 @@ import type {
   RoutePolyline,
 } from "@/types/trip";
 import { formatScheduleWarning, isDayScheduleCheck, type DayScheduleCheck } from "@/lib/scheduleCheck";
+import { findDayCarRestrictions, formatCarRestrictionWarning, visibleAiCarRestrictionNote } from "@/lib/carRestriction";
 
 import SiteFooter from "@/components/SiteFooter";
 import TripMap from "@/components/TripMap";
@@ -149,6 +150,10 @@ function parseGeminiPlan(plan: any): {
         isMealSpot:
           item.type === "lunch" || item.type === "dinner"
             ? item.type
+            : undefined,
+        carRestrictionNote:
+          typeof item.carRestriction === "string" && item.carRestriction.trim()
+            ? item.carRestriction.trim()
             : undefined,
       });
 
@@ -1018,6 +1023,16 @@ function HomeContent() {
         lines.push("");
       }
 
+      // 登録済みのマイカー規制区域に入る日も、画面と同じ警告を入れる
+      const carHits = findDayCarRestrictions(dayItin.items);
+      if (carHits.length > 0) {
+        carHits.forEach((hit) =>
+          lines.push(`  ⚠️ ${formatCarRestrictionWarning(hit, t.itinerary.carRestriction, lang)}`)
+        );
+        lines.push(`     ${t.itinerary.carRestriction.note}`);
+        lines.push("");
+      }
+
       for (const item of dayItin.items) {
         const typeLabel =
           item.spot.type === "departure" ? `🚗 ${t.itinerary.meal.lunch.replace("昼食", "出発") || "出発"}` :
@@ -1035,6 +1050,8 @@ function HomeContent() {
 
         if (item.address) lines.push(`    📍 ${item.address}`);
         if (item.description) lines.push(`    💡 ${item.description}`);
+        const aiCarNote = visibleAiCarRestrictionNote(item, carHits);
+        if (aiCarNote) lines.push(`    ⚠️ ${t.itinerary.carRestriction.aiLabel} ${aiCarNote}`);
         if (item.parkingInfo) lines.push(`    🅿️ ${item.parkingInfo}`);
         if (item.highway) {
           lines.push(`    🛣️ ${item.highway.entryIC} → ${item.highway.exitIC}（${item.highway.entryHighway}）`);

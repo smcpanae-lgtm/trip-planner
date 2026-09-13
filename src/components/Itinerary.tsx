@@ -23,6 +23,13 @@ import type { DayItinerary } from "@/types/trip";
 import { generateYouTubeSearchLinks } from "@/lib/youtube";
 import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
 import { formatScheduleWarning } from "@/lib/scheduleCheck";
+import {
+  carRestrictionPlaceOf,
+  findDayCarRestrictions,
+  formatCarRestrictionWarning,
+  matchCarRestrictionArea,
+  visibleAiCarRestrictionNote,
+} from "@/lib/carRestriction";
 
 /**
  * 到着希望を超過する見込みの日の警告（日の見出しの下に出す）。
@@ -42,6 +49,32 @@ function DayScheduleWarning({ dayItin }: { dayItin: DayItinerary }) {
       <div>
         <p className="font-medium">{warning.text}</p>
         <p className="mt-0.5 opacity-80">{warning.basis}</p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 登録済みのマイカー規制区域に入る地点がある日の警告（日の見出しの下に、区域ごとに1文）。
+ * 通年の規制区域を含む日は赤、時期による規制だけの日は黄色で出す。
+ */
+function DayCarRestrictionWarning({ dayItin }: { dayItin: DayItinerary }) {
+  const { t, lang } = useTripLang();
+  const hits = findDayCarRestrictions(dayItin.items);
+  if (hits.length === 0) return null;
+  const tone = hits.some((hit) => hit.area.period === "yearRound")
+    ? "bg-red-50 border-red-200 text-red-800"
+    : "bg-amber-50 border-amber-200 text-amber-800";
+  return (
+    <div className={`-mt-2 mb-4 p-2.5 rounded-lg border text-xs flex items-start gap-1.5 ${tone}`}>
+      <AlertTriangle className="w-4 h-4 shrink-0 mt-px" />
+      <div>
+        {hits.map((hit) => (
+          <p key={hit.area.id} className="font-medium">
+            {formatCarRestrictionWarning(hit, t.itinerary.carRestriction, lang)}
+          </p>
+        ))}
+        <p className="mt-0.5 opacity-80">{t.itinerary.carRestriction.note}</p>
       </div>
     </div>
   );
@@ -166,6 +199,7 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
           </div>
 
           <DayScheduleWarning dayItin={dayItin} />
+          <DayCarRestrictionWarning dayItin={dayItin} />
 
           <div className="relative ml-4">
             {/* Vertical timeline line */}
@@ -174,6 +208,8 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             {dayItin.items.map((item, idx) => {
               const spotType = item.spot.type;
               const circleNum = item.spot.orderIndex;
+              const carRestricted = !!matchCarRestrictionArea(carRestrictionPlaceOf(item));
+              const aiCarNote = visibleAiCarRestrictionNote(item, findDayCarRestrictions(dayItin.items));
 
               return (
                 <div key={idx} className="relative">
@@ -265,13 +301,16 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                         : "bg-white border-slate-100 group-hover:border-blue-200"
                     }`}>
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <h4 className="font-bold text-sm">{item.spot.name}</h4>
                           {item.isMealSpot === "lunch" && (
                             <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">{t.itinerary.badge.lunch}</span>
                           )}
                           {item.isMealSpot === "dinner" && (
                             <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full font-medium">{t.itinerary.badge.dinner}</span>
+                          )}
+                          {carRestricted && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full font-medium">{t.itinerary.carRestriction.badge}</span>
                           )}
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
@@ -318,6 +357,16 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                           <span className="text-xs text-slate-500">
                             {item.parkingInfo}
                           </span>
+                        </div>
+                      )}
+
+                      {/* AIによるマイカー規制の注意（リストの警告と重なるものは出さない） */}
+                      {aiCarNote && (
+                        <div className="mt-1.5 flex items-start gap-1.5 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-amber-700 leading-relaxed">
+                            <span className="font-bold">{t.itinerary.carRestriction.aiLabel}</span> {aiCarNote}
+                          </p>
                         </div>
                       )}
 
