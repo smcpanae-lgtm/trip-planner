@@ -79,7 +79,13 @@ interface ShioriResponse {
   spots: GeneratedSpot[];
 }
 
-const MODEL_NAMES = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+/**
+ * 1件目が失敗したときだけ2件目を使う。2件目は 2026-09 に gemini-2.5-flash から gemini-3.5-flash-lite に替えた。
+ * 2.5-flash は thinking が既定でオンのため、thinking の指定を拒否されて指定なしで再試行すると、
+ * thinking が出力枠を使い切って JSON が途切れるおそれがある（/api/plan の 2026-09 の本番障害と同じ形）。
+ * 3.5-flash-lite は thinking の既定が最小で、/api/plan の本番で実績がある。
+ */
+const MODEL_NAMES = ["gemini-2.5-flash-lite", "gemini-3.5-flash-lite"];
 const OUTPUT_LANGUAGES: OutputLanguage[] = ["ja", "en", "zh-CN", "fr", "ko", "zh-TW", "de"];
 // クライアント側の既定選択もこの値で打ち切る（定義元: lib/shiori/tripSelection.ts）。
 const MAX_SPOTS = MAX_AI_SPOTS;
@@ -100,6 +106,8 @@ const OUTPUT_TOKENS_BASE = 400;
 const OUTPUT_TOKENS_PER_SPOT = 160;
 const OUTPUT_TOKENS_MIN = 900;
 const OUTPUT_TOKENS_MAX = 3600;
+/** thinking を止められなかったときに上乗せする分（thinking のトークンも出力上限に含まれるため。/api/plan と同じ値） */
+const THINKING_TOKENS_ALLOWANCE = 8192;
 
 const MAX_TOTAL_TEXT_LENGTH = 6000;
 const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
@@ -223,21 +231,43 @@ function maxOutputTokensFor(spotCount: number): number {
 }
 
 /**
+ * 1回の試行でAPIに渡す出力上限。上の本文用の枠に、必要なら thinking 分を足す。
+ *
+ * thinking を 0 に止められるのは 2.5 系に thinkingBudget: 0 を送ったときだけ。
+ * 3 系の MINIMAL と、thinkingConfig を拒否されたあとの無指定での再試行では thinking が出うる。
+ * thinking のトークンも出力上限に含まれるため、足さないと本文用の枠を食われて JSON が途切れる
+ * （/api/plan の 2026-09 の本番障害と同じ形）。/api/plan と同じ条件・同じ幅で上乗せする。
+ * 課金は実際に出力されたトークン分だけなので、thinking が出なければ費用は変わらない。
+ */
+function attemptMaxOutputTokens(modelName: string, bodyTokens: number, disableThinking: boolean): number {
+  const thinkingStopped = disableThinking && !modelName.startsWith("gemini-3");
+  return thinkingStopped ? bodyTokens : bodyTokens + THINKING_TOKENS_ALLOWANCE;
+}
+
+/**
  * 思考トークンは maxOutputTokens を消費するため、本文用の枠を確定させる目的で無効化する。
  * この処理は固定スキーマへの書き換えで多段推論を必要とせず、思考を切ってもJSONの質は落ちない。
+ *
+ * 世代で指定方法が違う（/api/plan と同じ切り分け）。
+ * 2.5 系は thinkingBudget: 0 で思考を止める。3 系は thinkingBudget: 0 を送ると 400 になるため、
+ * thinkingLevel: "MINIMAL"（最小。完全には止められない）を使う。
  *
  * thinkingConfig はこのSDK（@google/generative-ai）の GenerationConfig 型には無いが、
  * リクエストは JSON.stringify でそのまま送られるためAPIには届く。万一APIが受理しない場合に
  * 備えて、呼び出し側は同じモデルを thinkingConfig 無しでもう一度試す。
  */
-function buildGenerationConfig(maxOutputTokens: number, disableThinking: boolean): GenerationConfig {
+function buildGenerationConfig(modelName: string, maxOutputTokens: number, disableThinking: boolean): GenerationConfig {
+  const isGemini3 = modelName.startsWith("gemini-3");
   const base: GenerationConfig = {
-    temperature: 0.65,
     maxOutputTokens,
     responseMimeType: "application/json",
+    // Gemini 3 系では temperature が非推奨になり、送っても無視されるため指定しない（2026-07-21 の変更。top_p・top_k も同じ）
+    ...(isGemini3 ? {} : { temperature: 0.65 }),
   };
   if (!disableThinking) return base;
-  return { ...base, thinkingConfig: { thinkingBudget: 0 } } as GenerationConfig;
+  // SDK 0.24 の型に thinkingConfig が無いためキャストして渡す（フィールド名と値は後継SDK @google/genai の ThinkingConfig / ThinkingLevel と同じ）
+  const thinkingConfig = isGemini3 ? { thinkingLevel: "MINIMAL" } : { thinkingBudget: 0 };
+  return { ...base, thinkingConfig } as GenerationConfig;
 }
 
 function isOutputLanguage(value: unknown): value is OutputLanguage {
@@ -632,11 +662,12 @@ export async function POST(request: NextRequest) {
           let responded = false;
           let usage: GeminiUsage | undefined;
           let finishReason: string | undefined;
+          const attemptTokens = attemptMaxOutputTokens(modelName, maxOutputTokens, thinkingDisabled);
           try {
             const model = genAI.getGenerativeModel({ model: modelName });
             const result = await model.generateContent({
               contents: [{ role: "user", parts: [{ text: prompt }] }],
-              generationConfig: buildGenerationConfig(maxOutputTokens, thinkingDisabled),
+              generationConfig: buildGenerationConfig(modelName, attemptTokens, thinkingDisabled),
             });
             responded = true;
             const response = result.response as unknown as {
@@ -659,7 +690,7 @@ export async function POST(request: NextRequest) {
               totalTokens: usage?.totalTokenCount,
               model: modelName,
               spotCount,
-              maxOutputTokens,
+              maxOutputTokens: attemptTokens,
               thinkingDisabled,
               finishReason,
             });
@@ -677,7 +708,7 @@ export async function POST(request: NextRequest) {
               totalTokens: usage?.totalTokenCount,
               model: modelName,
               spotCount,
-              maxOutputTokens,
+              maxOutputTokens: attemptTokens,
               thinkingDisabled,
               finishReason,
               reason: error instanceof Error ? error.message.slice(0, 300) : String(error).slice(0, 300),
