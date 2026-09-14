@@ -22,7 +22,7 @@ import type {
   RoutePolyline,
 } from "@/types/trip";
 import { formatScheduleWarning, isDayScheduleCheck, type DayScheduleCheck } from "@/lib/scheduleCheck";
-import { findDayCarRestrictions, formatCarRestrictionWarning, visibleAiCarRestrictionNote } from "@/lib/carRestriction";
+import { findDayCarRestrictions, formatCarRestrictionWarning } from "@/lib/carRestriction";
 
 import SiteFooter from "@/components/SiteFooter";
 import TripMap from "@/components/TripMap";
@@ -150,10 +150,6 @@ function parseGeminiPlan(plan: any): {
         isMealSpot:
           item.type === "lunch" || item.type === "dinner"
             ? item.type
-            : undefined,
-        carRestrictionNote:
-          typeof item.carRestriction === "string" && item.carRestriction.trim()
-            ? item.carRestriction.trim()
             : undefined,
       });
 
@@ -1050,8 +1046,6 @@ function HomeContent() {
 
         if (item.address) lines.push(`    📍 ${item.address}`);
         if (item.description) lines.push(`    💡 ${item.description}`);
-        const aiCarNote = visibleAiCarRestrictionNote(item, carHits);
-        if (aiCarNote) lines.push(`    ⚠️ ${t.itinerary.carRestriction.aiLabel} ${aiCarNote}`);
         if (item.parkingInfo) lines.push(`    🅿️ ${item.parkingInfo}`);
         if (item.highway) {
           lines.push(`    🛣️ ${item.highway.entryIC} → ${item.highway.exitIC}（${item.highway.entryHighway}）`);

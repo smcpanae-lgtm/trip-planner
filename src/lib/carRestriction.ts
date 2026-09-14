@@ -114,23 +114,6 @@ export function findDayCarRestrictions(items: ItineraryItem[]): CarRestrictionHi
   return findCarRestrictions(items.map(carRestrictionPlaceOf));
 }
 
-/**
- * AIが書いたマイカー規制の注意（carRestrictionNote）のうち、表示するもの。
- * リストによる警告が主なので、重複する場合は出さない:
- * - その地点自体が登録済みの区域に当たる（バッジと日の警告が出る）
- * - 注意の文に、その日の警告に出る区域の名前・キーワードが含まれる（沢渡駐車場に「上高地へは…」と書いた場合など）
- */
-export function visibleAiCarRestrictionNote(item: ItineraryItem, dayHits: CarRestrictionHit[]): string | undefined {
-  const note = item.carRestrictionNote?.trim();
-  if (!note) return undefined;
-  if (matchCarRestrictionArea(carRestrictionPlaceOf(item))) return undefined;
-  const text = normalize(note);
-  const covered = dayHits.some(({ area }) =>
-    [area.name.ja, ...area.keywords].some((k) => text.includes(normalize(k)))
-  );
-  return covered ? undefined : note;
-}
-
 export interface CarRestrictionTexts {
   yearRound: string;
   seasonal: string;

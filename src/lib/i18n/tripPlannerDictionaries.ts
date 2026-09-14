@@ -82,7 +82,6 @@ export interface TripPlannerDict {
       separator: string;
       note: string;
       badge: string;
-      aiLabel: string;
     };
     highlights: { title: string };
     tips: { title: string };
@@ -276,7 +275,6 @@ const ja: TripPlannerDict = {
       separator: "・",
       note: "※登録している主な規制区域のみを判定しています。",
       badge: "🚫 マイカー規制区域",
-      aiLabel: "AIによる注意（要確認）",
     },
     highlights: { title: "プランのポイント" },
     tips: { title: "アドバイス" },
@@ -516,7 +514,6 @@ const en: TripPlannerDict = {
       separator: ", ",
       note: "* Only the major registered restricted areas are checked.",
       badge: "🚫 Private-car restricted area",
-      aiLabel: "AI note (please verify)",
     },
     highlights: { title: "Plan Highlights" },
     tips: { title: "Tips & Advice" },
@@ -756,7 +753,6 @@ const ko: TripPlannerDict = {
       separator: ", ",
       note: "※ 등록된 주요 규제 구역만 판정합니다.",
       badge: "🚫 마이카 규제 구역",
-      aiLabel: "AI 주의사항(확인 필요)",
     },
     highlights: { title: "플랜 포인트" },
     tips: { title: "어드바이스" },
@@ -994,7 +990,6 @@ const zhCN: TripPlannerDict = {
       separator: "、",
       note: "※仅判断已登记的主要限行区域。",
       badge: "🚫 私家车限行区域",
-      aiLabel: "AI提示（请核实）",
     },
     highlights: { title: "计划亮点" },
     tips: { title: "建议与提示" },
@@ -1229,7 +1224,6 @@ const zhTW: TripPlannerDict = {
       separator: "、",
       note: "※僅判斷已登錄的主要管制區域。",
       badge: "🚫 自用車管制區域",
-      aiLabel: "AI提醒（請確認）",
     },
     highlights: { title: "計畫亮點" },
     tips: { title: "建議與提示" },
@@ -1466,7 +1460,6 @@ const es: TripPlannerDict = {
       separator: ", ",
       note: "* Solo se comprueban las principales zonas restringidas registradas.",
       badge: "🚫 Zona restringida a coches particulares",
-      aiLabel: "Aviso de la IA (verifícalo)",
     },
     highlights: { title: "Puntos destacados del plan" },
     tips: { title: "Consejos" },
@@ -1703,7 +1696,6 @@ const ru: TripPlannerDict = {
       separator: ", ",
       note: "* Проверяются только основные зарегистрированные зоны ограничений.",
       badge: "🚫 Въезд личных авто ограничен",
-      aiLabel: "Примечание ИИ (требует проверки)",
     },
     highlights: { title: "Особенности маршрута" },
     tips: { title: "Советы" },

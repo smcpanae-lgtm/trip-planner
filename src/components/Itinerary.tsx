@@ -28,7 +28,6 @@ import {
   findDayCarRestrictions,
   formatCarRestrictionWarning,
   matchCarRestrictionArea,
-  visibleAiCarRestrictionNote,
 } from "@/lib/carRestriction";
 
 /**
@@ -209,7 +208,6 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
               const spotType = item.spot.type;
               const circleNum = item.spot.orderIndex;
               const carRestricted = !!matchCarRestrictionArea(carRestrictionPlaceOf(item));
-              const aiCarNote = visibleAiCarRestrictionNote(item, findDayCarRestrictions(dayItin.items));
 
               return (
                 <div key={idx} className="relative">
@@ -357,16 +355,6 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                           <span className="text-xs text-slate-500">
                             {item.parkingInfo}
                           </span>
-                        </div>
-                      )}
-
-                      {/* AIによるマイカー規制の注意（リストの警告と重なるものは出さない） */}
-                      {aiCarNote && (
-                        <div className="mt-1.5 flex items-start gap-1.5 bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                          <p className="text-[11px] text-amber-700 leading-relaxed">
-                            <span className="font-bold">{t.itinerary.carRestriction.aiLabel}</span> {aiCarNote}
-                          </p>
                         </div>
                       )}
 

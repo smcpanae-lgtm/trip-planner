@@ -355,11 +355,8 @@ function auditPlanLog(data: {
   scheduleTimeIssues?: { overnight: number; reversed: number };
   /** AIの時刻で到着希望を超過した日数（全プラン合計）と最大の超過（分） */
   scheduleChecks?: { overDays: number; maxOverrunMinutes: number };
-  /**
-   * マイカー規制の記録（全プラン）。listHits: 登録済みの規制区域に当たった区域のid /
-   * aiNotes: AIが carRestriction を書いた地点と、その地点がリストでも当たったか（listed=false がリスト外の拾い上げ）
-   */
-  carRestriction?: { listHits: string[]; aiNotes: { name: string; listed: boolean }[] };
+  /** マイカー規制の記録（全プラン）。listHits: 登録済みの規制区域に当たった区域のid */
+  carRestriction?: { listHits: string[] };
 }) {
   console.log(JSON.stringify({ type: "plan_generate_audit", at: new Date().toISOString(), ...data }));
 }
@@ -574,10 +571,8 @@ const PLAN_ITEM_SCHEMA: ObjectSchema = {
     parkingInfo: { type: SchemaType.STRING },
     description: { type: SchemaType.STRING },
     dogWalkStop: { type: SchemaType.BOOLEAN },
-    // マイカー規制の注意（ルール17）。規制がある地点だけに付く
-    carRestriction: { type: SchemaType.STRING },
   },
-  // 高速道路の項目は高速を使う区間だけに付くため必須にしない（carRestriction も同様）
+  // 高速道路の項目は高速を使う区間だけに付くため必須にしない
   required: [
     "name",
     "lat",
@@ -1427,11 +1422,8 @@ function attachScheduleChecks(body: PlanRequest, parsed: unknown): DayScheduleCh
 }
 
 /** 返したプランのマイカー規制の記録（監査ログ用。何も無ければ undefined） */
-function collectCarRestrictions(
-  parsed: unknown
-): { listHits: string[]; aiNotes: { name: string; listed: boolean }[] } | undefined {
+function collectCarRestrictions(parsed: unknown): { listHits: string[] } | undefined {
   const listHits = new Set<string>();
-  const aiNotes: { name: string; listed: boolean }[] = [];
 
   plansOf(parsed).forEach((plan) => {
     const days = (plan as { days?: unknown })?.days;
@@ -1440,7 +1432,7 @@ function collectCarRestrictions(
       const items = (day as { items?: unknown } | null)?.items;
       if (!Array.isArray(items)) return;
       items.forEach((raw) => {
-        const item = raw as { name?: unknown; address?: unknown; lat?: unknown; lng?: unknown; carRestriction?: unknown } | null;
+        const item = raw as { name?: unknown; address?: unknown; lat?: unknown; lng?: unknown } | null;
         if (!item || typeof item.name !== "string") return;
         const area = matchCarRestrictionArea({
           name: item.name,
@@ -1449,15 +1441,12 @@ function collectCarRestrictions(
           lng: typeof item.lng === "number" ? item.lng : undefined,
         });
         if (area) listHits.add(area.id);
-        if (typeof item.carRestriction === "string" && item.carRestriction.trim()) {
-          aiNotes.push({ name: item.name, listed: !!area });
-        }
       });
     });
   });
 
-  if (listHits.size === 0 && aiNotes.length === 0) return undefined;
-  return { listHits: [...listHits], aiNotes };
+  if (listHits.size === 0) return undefined;
+  return { listHits: [...listHits] };
 }
 
 function buildCorrectionPrompt(basePrompt: string, missingLines: string[], overnightLines: string[]): string {
@@ -2147,12 +2136,6 @@ ${planVariationInstruction}
    - その住所にある施設名が分かる場合は name に施設名、address に指定された住所を入れること
    - 分からない場合は name に指定された文字列をそのまま使い、address にも同じ住所を入れること
    - 座標が併記されている場合は、その座標をそのまま lat / lng に使うこと
-17. マイカー規制（自家用車の乗り入れ規制）について:
-   - プランの地点（出発地・到着地・食事スポットを含む）が、自家用車では入れない場所、または時期によって自家用車の乗り入れが規制される場所の場合は、その地点の carRestriction に「規制があること」と「車で行ける地点からバスなどに乗り換える必要があること」を1文で書くこと
-   - 規制の期間・日付・時刻は書かないこと（年によって変わるため）
-   - 規制があるか確信が持てない場所や、規制がない場所では carRestriction を出力しないこと
-   - 同じ内容を description や tips に重ねて書かないこと
-   - ユーザーが指定した目的地を、マイカー規制を理由に省略・除外しないこと
 
 # 出力JSON形式
 **必ず以下の形式で出力すること。最外層は必ず { "plans": [...] } とすること。plans配列には必ず2つのプランを含めること。**

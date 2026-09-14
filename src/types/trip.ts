@@ -91,11 +91,6 @@ export interface ItineraryItem {
   description?: string;
   address?: string;
   isMealSpot?: "lunch" | "dinner";
-  /**
-   * AIが書いたマイカー規制の注意（AIの判断なので確実ではない）。
-   * 登録済みの規制区域（src/data/carRestrictions.ts）に当たる地点では表示しない（リストの警告を優先）。
-   */
-  carRestrictionNote?: string;
 }
 
 export interface RemovedSpot {
