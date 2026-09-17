@@ -1449,6 +1449,65 @@ function collectCarRestrictions(parsed: unknown): { listHits: string[] } | undef
   return { listHits: [...listHits] };
 }
 
+/** 2案の観光地点を同じ地点とみなす距離（名前の表記ゆれで座標がわずかにずれる分を吸収する） */
+const SAME_SPOT_KM = 0.3;
+
+/**
+ * プランAとプランBが同じ行程か。日ごとに観光地点（type="destination"）が同じ順序で1対1に対応すれば同じとみなす。
+ * 名前が同じか、SAME_SPOT_KM 以内なら同じ地点。滞在時間・食事の場所やジャンル・休憩地点（PA・SA）の違いは見ない。
+ * 2案の名前（定番／穴場など）が約束しているのは観光スポットの違いのため。
+ * 実測では、指定目的地で日が埋まるとAIの追加が0件になり、名前と説明だけが違う同じ行程が返っていた。
+ */
+function plansHaveSameItinerary(parsed: unknown): boolean {
+  const plans = (parsed as { plans?: unknown })?.plans;
+  if (!Array.isArray(plans) || plans.length !== 2) return false;
+  const daysA = (plans[0] as { days?: unknown })?.days;
+  const daysB = (plans[1] as { days?: unknown })?.days;
+  if (!Array.isArray(daysA) || !Array.isArray(daysB) || daysA.length !== daysB.length) return false;
+
+  const spotsOf = (day: unknown): PlanItemLite[] | null => {
+    const items = (day as { items?: unknown } | null)?.items;
+    if (!Array.isArray(items)) return null;
+    return items.flatMap((raw) => {
+      const item = raw as { type?: unknown; name?: unknown; lat?: unknown; lng?: unknown } | null;
+      if (!item || item.type !== "destination" || typeof item.name !== "string") return [];
+      return [{
+        name: item.name,
+        lat: typeof item.lat === "number" ? item.lat : undefined,
+        lng: typeof item.lng === "number" ? item.lng : undefined,
+      }];
+    });
+  };
+  const sameSpot = (a: PlanItemLite, b: PlanItemLite) =>
+    normalizeForMatch(a.name) === normalizeForMatch(b.name) ||
+    (typeof a.lat === "number" &&
+      typeof a.lng === "number" &&
+      typeof b.lat === "number" &&
+      typeof b.lng === "number" &&
+      // 座標0,0は未設定の扱い
+      !(a.lat === 0 && a.lng === 0) &&
+      !(b.lat === 0 && b.lng === 0) &&
+      distanceKm(a.lat, a.lng, b.lat, b.lng) <= SAME_SPOT_KM);
+
+  return daysA.every((dayA, i) => {
+    const a = spotsOf(dayA);
+    const b = spotsOf(daysB[i]);
+    return a !== null && b !== null && a.length === b.length && a.every((spot, k) => sameSpot(spot, b[k]));
+  });
+}
+
+/**
+ * 2案が同じ行程なら、プランAだけを残して samePlans を付ける（別名を付けて違う案に見せない）。
+ * 名前と説明は画面側で固定の文言に置き換える。まとめたら true。
+ */
+function mergeSamePlans(parsed: unknown): boolean {
+  if (!plansHaveSameItinerary(parsed)) return false;
+  const result = parsed as { plans: unknown[]; samePlans?: boolean };
+  result.plans = [result.plans[0]];
+  result.samePlans = true;
+  return true;
+}
+
 function buildCorrectionPrompt(basePrompt: string, missingLines: string[], overnightLines: string[]): string {
   const sections: string[] = [];
   if (missingLines.length > 0) {
@@ -1705,6 +1764,7 @@ export async function POST(request: NextRequest) {
             );
           }
           annotateRemovedSpots(body, plan, missing);
+          const samePlans = mergeSamePlans(plan);
           const explainedCount = missing.filter((m) => m.explained).length;
           const overDays = attachScheduleChecks(body, plan).filter((c) => c.overrunMinutes > 0);
           const carRestriction = collectCarRestrictions(plan);
@@ -1749,6 +1809,8 @@ export async function POST(request: NextRequest) {
                 }
               : {}),
             ...(carRestriction ? { carRestriction } : {}),
+            // 2案が同じ行程で、プランAだけを返した
+            ...(samePlans ? { samePlans: true } : {}),
           });
           return NextResponse.json(plan);
         }

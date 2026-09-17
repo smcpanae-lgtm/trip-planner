@@ -814,6 +814,8 @@ function HomeContent() {
         const variants = parseGeminiResponse(data).map((v) => ({
           ...v,
           avoidHighways: config.useHighway === false,
+          // 2案が同じ行程でサーバーが1案にまとめた。AIの名前・説明は中身と合わないため使わない
+          ...(data.samePlans === true ? { planDescription: "", samePlans: { aiOmakase: config.aiOmakase !== false } } : {}),
         }));
         if (variants.length > 0) {
           setPlanVariants(variants);
@@ -998,7 +1000,7 @@ function HomeContent() {
   function variantToText(variant: PlanVariantData): string {
     const lines: string[] = [];
     lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    lines.push(`📋 ${variant.planName}`);
+    lines.push(`📋 ${variant.samePlans ? t.planCompare.sameName : variant.planName}`);
     if (variant.planDescription) {
       lines.push(`   ${variant.planDescription}`);
     }
@@ -1371,6 +1373,18 @@ function HomeContent() {
                       </p>
                     </div>
                   )}
+                </div>
+              )}
+
+              {planVariants.length === 1 && activeVariant?.samePlans && (
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <p className="text-sm font-bold text-slate-800 mb-1">{t.planCompare.sameName}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">{t.planCompare.sameNote}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                    {activeVariant.samePlans.aiOmakase
+                      ? t.planCompare.sameTipOn
+                      : t.planCompare.sameTipOff.replace("{omakase}", t.form.omakase.label)}
+                  </p>
                 </div>
               )}
 

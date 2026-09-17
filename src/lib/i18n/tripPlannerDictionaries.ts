@@ -43,7 +43,16 @@ export interface TripPlannerDict {
     copy: string;
     cancel: string;
   };
-  planCompare: { hint: string };
+  planCompare: {
+    hint: string;
+    /** 2案が同じ行程で1案にまとめたときの名前 */
+    sameName: string;
+    /** 1案にまとめたことの説明 */
+    sameNote: string;
+    /** 2案に分かれる可能性がある操作の案内（おまかせON／OFF別。{omakase} は「目的地以外はお任せ」の表示名） */
+    sameTipOn: string;
+    sameTipOff: string;
+  };
   buttons: {
     print: string;
     copy: string;
@@ -227,7 +236,13 @@ const ja: TripPlannerDict = {
     copy: "コピー",
     cancel: "キャンセル",
   },
-  planCompare: { hint: "▼ 2つのプランを比較できます ▼" },
+  planCompare: {
+    hint: "▼ 2つのプランを比較できます ▼",
+    sameName: "おすすめプラン",
+    sameNote: "この条件では指定の目的地で行程が決まるため、2つの案が同じになりました。1つのプランとして表示しています。",
+    sameTipOn: "1日の目的地を減らすか、出発・到着の時間に余裕を持たせると、AIがスポットを加えられるようになり、2つの案に分かれることがあります。",
+    sameTipOff: "「{omakase}」をオンにしたうえで、1日の目的地を減らすか、出発・到着の時間に余裕を持たせると、2つの案に分かれることがあります。",
+  },
   buttons: { print: "印刷する", copy: "テキストをコピー", copied: "コピー済み！" },
   itinerary: {
     day: "{n}日目",
@@ -466,7 +481,13 @@ const en: TripPlannerDict = {
     copy: "Copy",
     cancel: "Cancel",
   },
-  planCompare: { hint: "▼ Compare 2 plans ▼" },
+  planCompare: {
+    hint: "▼ Compare 2 plans ▼",
+    sameName: "Recommended plan",
+    sameNote: "With these conditions, your destinations fill the itinerary, so both options came out the same. They are shown as one plan.",
+    sameTipOn: "Fewer destinations per day, or more time between departure and arrival, leaves room for AI-suggested stops and may produce two different options.",
+    sameTipOff: "Turning on \"{omakase}\" and then choosing fewer destinations per day, or allowing more time between departure and arrival, may produce two different options.",
+  },
   buttons: { print: "Print", copy: "Copy Text", copied: "Copied!" },
   itinerary: {
     day: "Day {n}",
@@ -705,7 +726,13 @@ const ko: TripPlannerDict = {
     copy: "복사",
     cancel: "취소",
   },
-  planCompare: { hint: "▼ 2개의 플랜을 비교할 수 있습니다 ▼" },
+  planCompare: {
+    hint: "▼ 2개의 플랜을 비교할 수 있습니다 ▼",
+    sameName: "추천 플랜",
+    sameNote: "이 조건에서는 지정한 목적지로 일정이 정해져 두 플랜이 같아졌습니다. 하나의 플랜으로 표시합니다.",
+    sameTipOn: "하루 목적지를 줄이거나 출발·도착 시간에 여유를 두면 AI가 스폿을 추가할 수 있어 두 플랜으로 나뉠 수 있습니다.",
+    sameTipOff: "「{omakase}」를 켠 뒤 하루 목적지를 줄이거나 출발·도착 시간에 여유를 두면 두 플랜으로 나뉠 수 있습니다.",
+  },
   buttons: { print: "인쇄", copy: "텍스트 복사", copied: "복사됨!" },
   itinerary: {
     day: "{n}일째",
@@ -942,7 +969,13 @@ const zhCN: TripPlannerDict = {
     copy: "复制",
     cancel: "取消",
   },
-  planCompare: { hint: "▼ 可以比较两个计划 ▼" },
+  planCompare: {
+    hint: "▼ 可以比较两个计划 ▼",
+    sameName: "推荐计划",
+    sameNote: "在此条件下，行程由您指定的目的地决定，两个方案完全相同，因此合并为一个计划显示。",
+    sameTipOn: "减少每天的目的地，或在出发与到达之间留出更多时间，AI 便能添加景点，可能会生成两个不同的方案。",
+    sameTipOff: "开启「{omakase}」后，再减少每天的目的地或留出更多时间，可能会生成两个不同的方案。",
+  },
   buttons: { print: "打印", copy: "复制文本", copied: "已复制！" },
   itinerary: {
     day: "第{n}天",
@@ -1176,7 +1209,13 @@ const zhTW: TripPlannerDict = {
     copy: "複製",
     cancel: "取消",
   },
-  planCompare: { hint: "▼ 可以比較兩個計畫 ▼" },
+  planCompare: {
+    hint: "▼ 可以比較兩個計畫 ▼",
+    sameName: "推薦計畫",
+    sameNote: "在此條件下，行程由您指定的目的地決定，兩個方案完全相同，因此合併為一個計畫顯示。",
+    sameTipOn: "減少每天的目的地，或在出發與抵達之間留出更多時間，AI 便能加入景點，可能會產生兩個不同的方案。",
+    sameTipOff: "開啟「{omakase}」後，再減少每天的目的地或留出更多時間，可能會產生兩個不同的方案。",
+  },
   buttons: { print: "列印", copy: "複製文字", copied: "已複製！" },
   itinerary: {
     day: "第{n}天",
@@ -1412,7 +1451,13 @@ const es: TripPlannerDict = {
     copy: "Copiar",
     cancel: "Cancelar",
   },
-  planCompare: { hint: "▼ Puedes comparar 2 planes ▼" },
+  planCompare: {
+    hint: "▼ Puedes comparar 2 planes ▼",
+    sameName: "Plan recomendado",
+    sameNote: "Con estas condiciones, tus destinos ocupan todo el itinerario y las dos opciones resultaron iguales. Se muestran como un solo plan.",
+    sameTipOn: "Con menos destinos por día o más tiempo entre la salida y la llegada, la IA puede añadir paradas y es posible que salgan dos opciones distintas.",
+    sameTipOff: "Si activas «{omakase}» y eliges menos destinos por día o dejas más tiempo entre la salida y la llegada, es posible que salgan dos opciones distintas.",
+  },
   buttons: { print: "Imprimir", copy: "Copiar texto", copied: "¡Copiado!" },
   itinerary: {
     day: "Día {n}",
@@ -1648,7 +1693,13 @@ const ru: TripPlannerDict = {
     copy: "Копировать",
     cancel: "Отмена",
   },
-  planCompare: { hint: "▼ Сравните 2 варианта маршрута ▼" },
+  planCompare: {
+    hint: "▼ Сравните 2 варианта маршрута ▼",
+    sameName: "Рекомендуемый маршрут",
+    sameNote: "При этих условиях маршрут полностью определяется выбранными местами, поэтому оба варианта совпали. Они показаны как один маршрут.",
+    sameTipOn: "Если уменьшить число мест в день или оставить больше времени между отправлением и прибытием, ИИ сможет добавить остановки, и варианты могут получиться разными.",
+    sameTipOff: "Если включить «{omakase}» и затем уменьшить число мест в день или оставить больше времени между отправлением и прибытием, варианты могут получиться разными.",
+  },
   buttons: { print: "Печать", copy: "Копировать текст", copied: "Скопировано!" },
   itinerary: {
     day: "День {n}",

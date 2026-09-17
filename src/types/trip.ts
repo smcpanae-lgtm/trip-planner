@@ -157,4 +157,6 @@ export interface PlanVariantData {
   routePolylines?: RoutePolyline[];
   /** 高速道路を使わない設定で作ったプラン（地図の経路も一般道で出す） */
   avoidHighways?: boolean;
+  /** 2案が同じ行程で、1案にまとめて返されたプラン（aiOmakase は作成時の設定。案内の出し分けに使う） */
+  samePlans?: { aiOmakase: boolean };
 }
