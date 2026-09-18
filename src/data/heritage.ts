@@ -41,6 +41,20 @@ export const HERITAGE_SITES = snapshot.sites as HeritageSite[];
 export const HERITAGE_TOTAL = HERITAGE_SITES.length;
 export const HERITAGE_GENERATED_AT = snapshot.generatedAt;
 
+/**
+ * ビルド時に事前生成する遺産（日本の27件）。
+ * 残りはオンデマンド生成（ISR）に任せ、ビルド成果物とデプロイ容量を抑える。
+ * 事前生成を増やしたい場合はこの絞り込み条件を広げる。
+ */
+export const PRERENDERED_HERITAGE_SITES = HERITAGE_SITES.filter((site) =>
+  site.isoCodes.includes("JP")
+);
+
+/** 事前生成するスラッグ。各言語の generateStaticParams が共有する */
+export function prerenderedHeritageSlugs(): { slug: string }[] {
+  return PRERENDERED_HERITAGE_SITES.map((site) => ({ slug: site.slug }));
+}
+
 export const SITE_ORIGIN = "https://www.ai-drive-planner.com";
 export const HERITAGE_APP_PATH = "/heritage";
 export const HERITAGE_SITES_PATH = "/heritage/sites";
@@ -115,8 +129,8 @@ export function areaLabel(site: HeritageSite): string | null {
   return `約${ha.toLocaleString("ja-JP", { maximumFractionDigits: 1 })}ha`;
 }
 
-/** 同じ国の他の世界遺産（内部リンク用） */
-export function relatedSitesInSameCountry(site: HeritageSite, limit = 12): HeritageSite[] {
+/** 同じ国の他の世界遺産（内部リンク用）。1ページあたりの出力量を抑えるため6件までにする */
+export function relatedSitesInSameCountry(site: HeritageSite, limit = 6): HeritageSite[] {
   const codes = new Set(site.isoCodes);
   const names = new Set(site.countriesEn);
   return HERITAGE_SITES.filter((other) => {

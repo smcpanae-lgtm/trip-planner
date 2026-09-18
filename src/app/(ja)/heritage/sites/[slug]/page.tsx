@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteDetail, { buildSiteMetadata } from "@/components/heritage/SiteDetail";
-import { HERITAGE_SITES, getHeritageSiteBySlug } from "@/data/heritage";
+import { getHeritageSiteBySlug, prerenderedHeritageSlugs } from "@/data/heritage";
 
 /**
  * 日本語版の個別ページ。
@@ -9,13 +9,13 @@ import { HERITAGE_SITES, getHeritageSiteBySlug } from "@/data/heritage";
  * 他言語だけを /heritage/{lang}/sites/{slug} に置く。
  */
 
-/** 1,273件すべてをビルド時に静的生成する（実行時のサーバー処理を発生させない） */
+/** 日本の27件だけをビルド時に生成し、残りはオンデマンド生成に任せる */
 export function generateStaticParams() {
-  return HERITAGE_SITES.map((site) => ({ slug: site.slug }));
+  return prerenderedHeritageSlugs();
 }
 
-/** 未知のスラッグは静的な404にする（動的レンダリングを行わない） */
-export const dynamicParams = false;
+/** 事前生成していないスラッグは初回アクセス時にオンデマンド生成する（ISR） */
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
