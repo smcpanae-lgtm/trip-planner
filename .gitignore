@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# 晴れ探しドライブ：国土数値情報 N03 の元データ（約600MB。docs/hare-source/README.md の手順で取得）
+/docs/hare-source/raw/

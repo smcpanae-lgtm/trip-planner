@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Map, X, Sparkles, Printer, Copy, Check, Globe, Share2, ImageDown } from "lucide-react";
+import { Map, X, Sparkles, Printer, Copy, Check, Globe, Share2, ImageDown, Sun } from "lucide-react";
 import { buildSharePostText, buildXShareUrl, generatePlanShareCard, downloadDataUrl } from "@/lib/shareCard";
 import { trackEvent } from "@/lib/analytics";
 import TripForm from "@/components/TripForm";
@@ -25,6 +25,7 @@ import { formatScheduleWarning, isDayScheduleCheck, type DayScheduleCheck } from
 import { findDayCarRestrictions, formatCarRestrictionWarning } from "@/lib/carRestriction";
 
 import SiteFooter from "@/components/SiteFooter";
+import { hareJa } from "@/lib/hare/i18n";
 import TripMap from "@/components/TripMap";
 import { decodePolyline } from "@/components/TripMap";
 import {
@@ -1294,6 +1295,16 @@ function HomeContent() {
                   サンプルを見る
                 </button>
               </div>
+              {/* 晴れ探しドライブ（日本語のみ提供のため ja 表示時だけ案内する） */}
+              {lang === "ja" && (
+                <a
+                  href="/hare"
+                  className="mb-4 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-sm font-bold text-amber-800 transition-colors"
+                >
+                  <Sun className="w-4 h-4 shrink-0" />
+                  {hareJa.topPageLink}
+                </a>
+              )}
               <div className="mb-4">
                 <p className="text-xs font-bold text-slate-500 mb-2">シーンから選んでかんたん設定</p>
                 <div className="flex flex-wrap gap-2">

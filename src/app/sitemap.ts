@@ -96,6 +96,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: "https://www.ai-drive-planner.com/hare",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     ...ROUTES.map((route) => ({
       url: `https://www.ai-drive-planner.com/routes/${route.slug}`,
       lastModified: new Date(),
