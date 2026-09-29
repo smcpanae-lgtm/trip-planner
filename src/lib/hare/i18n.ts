@@ -7,6 +7,8 @@ export interface HareDict {
   pageTitle: string;
   /** トップページ（プラン作成フォーム付近）からの導線 */
   topPageLink: string;
+  /** トップページ導線カードの説明文 */
+  topPageLinkDescription: string;
   lead: string;
   breadcrumbHome: string;
   originLabel: string;
@@ -61,6 +63,7 @@ export interface HareDict {
 export const hareJa: HareDict = {
   pageTitle: "晴れ探しドライブ",
   topPageLink: "雨の日は晴れの場所を探す",
+  topPageLinkDescription: "現在地から半径50〜300km以内の晴れの地域を表示",
   lead: "雨の日でも、車で行ける範囲に晴れている場所があるかもしれません。出発地と行ける距離を選ぶと、到着する頃に晴れていそうな市町村を地図と一覧で探します。",
   breadcrumbHome: "AIドライブプランナー",
   originLabel: "出発地",

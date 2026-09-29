@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Map, X, Sparkles, Printer, Copy, Check, Globe, Share2, ImageDown, Sun } from "lucide-react";
+import { Map, X, Sparkles, Printer, Copy, Check, Globe, Share2, ImageDown, Sun, ChevronRight } from "lucide-react";
 import { buildSharePostText, buildXShareUrl, generatePlanShareCard, downloadDataUrl } from "@/lib/shareCard";
 import { trackEvent } from "@/lib/analytics";
 import TripForm from "@/components/TripForm";
@@ -1299,10 +1299,16 @@ function HomeContent() {
               {lang === "ja" && (
                 <a
                   href="/hare"
-                  className="mb-4 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-sm font-bold text-amber-800 transition-colors"
+                  className="mb-4 flex items-center gap-3 min-h-[70px] p-4 rounded-xl border-2 border-amber-200 bg-amber-50 hover:bg-amber-100 transition-colors"
                 >
-                  <Sun className="w-4 h-4 shrink-0" />
-                  {hareJa.topPageLink}
+                  <span className="flex items-center justify-center w-10 h-10 shrink-0 rounded-full bg-amber-400 text-white">
+                    <Sun className="w-5 h-5" />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-sm font-bold text-amber-900">{hareJa.topPageLink}</span>
+                    <span className="block text-xs text-amber-700 mt-0.5">{hareJa.topPageLinkDescription}</span>
+                  </span>
+                  <ChevronRight className="w-5 h-5 shrink-0 text-amber-600" />
                 </a>
               )}
               <div className="mb-4">

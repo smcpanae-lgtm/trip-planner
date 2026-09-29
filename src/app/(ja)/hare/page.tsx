@@ -9,22 +9,36 @@ const description =
   "現在地から半径50〜300kmの市区町村の天気予報を調べ、到着する頃に晴れていそうな場所を地図と一覧で表示。見つけた場所へのドライブプランもそのまま作成できます。";
 const url = "https://www.ai-drive-planner.com/hare";
 
+const shareTitle = "晴れ探しドライブ｜AIドライブプランナー";
+const shareDescription =
+  "雨続きの日に。現在地から半径50〜300km以内で晴れている地域を探して、そのままドライブプランを作れます。";
+const ogImage = "https://www.ai-drive-planner.com/ogp-hare.png";
+
 export const metadata: Metadata = {
   title,
   description,
   keywords: "雨の日 ドライブ,晴れている場所 探す,ドライブ 天気,晴れ 行き先,雨 回避 ドライブ",
   openGraph: {
-    title,
-    description,
+    title: shareTitle,
+    description: shareDescription,
     type: "website",
     locale: "ja_JP",
     siteName: "AI ドライブプランナー",
     url,
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "晴れ探しドライブ｜雨の日は、晴れの場所へ。",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: shareTitle,
+    description: shareDescription,
+    images: [ogImage],
   },
   alternates: {
     canonical: url,
