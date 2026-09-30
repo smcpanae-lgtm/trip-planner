@@ -41,6 +41,28 @@ function defaultTime(): string {
   return `${String(d.getUTCHours()).padStart(2, "0")}:00`;
 }
 
+/**
+ * 「今日」で選べる最も早い時刻（日本時間・15分単位で切り上げ）。
+ * 今日の残りに15分刻みの時刻がなければ null。
+ */
+function earliestTodayTime(): string | null {
+  const d = new Date(Date.now() + JST_OFFSET_MS);
+  const minutes = Math.ceil((d.getUTCHours() * 60 + d.getUTCMinutes() + 1) / 15) * 15;
+  if (minutes >= 24 * 60) return null;
+  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+}
+
+/** 判定に使った出発時刻（ISO）→ 日本時間の月・日・時・分 */
+function jstParts(iso: string) {
+  const d = new Date(Date.parse(iso) + JST_OFFSET_MS);
+  return {
+    month: d.getUTCMonth() + 1,
+    day: d.getUTCDate(),
+    hour: d.getUTCHours(),
+    minute: d.getUTCMinutes(),
+  };
+}
+
 function buildPlannerLink(spot: HareSpot): string {
   const params = new URLSearchParams();
   params.set("destination", `${spot.pref}${spot.name}`);
@@ -71,6 +93,8 @@ export default function HareClient() {
   const [radiusKm, setRadiusKm] = useState(RADIUS_DEFAULT_KM);
   const [departureMode, setDepartureMode] = useState<DepartureMode>("now");
   const [departureTime, setDepartureTime] = useState(defaultTime);
+  /** 「今日」を選んだ時点で選べる最も早い時刻（それより前は選べない） */
+  const [todayMinTime, setTodayMinTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HareSearchResponse | null>(null);
@@ -132,6 +156,30 @@ export default function HareClient() {
     setOrigin(resolved);
     setOriginInput("");
     return resolved;
+  };
+
+  const selectDepartureMode = (mode: DepartureMode) => {
+    if (mode === "today") {
+      const min = earliestTodayTime();
+      if (!min) return;
+      setTodayMinTime(min);
+      if (departureTime < min) setDepartureTime(min);
+    }
+    setDepartureMode(mode);
+  };
+
+  const handleDepartureTimeChange = (value: string) => {
+    if (!value) return;
+    if (departureMode === "today") {
+      // 入力中に時間が過ぎた場合も含め、今より前の時刻にはしない
+      const min = earliestTodayTime() ?? todayMinTime;
+      if (min && value < min) {
+        setTodayMinTime(min);
+        setDepartureTime(min);
+        return;
+      }
+    }
+    setDepartureTime(value);
   };
 
   const search = async () => {
@@ -258,7 +306,7 @@ export default function HareClient() {
               <button
                 key={mode}
                 type="button"
-                onClick={() => setDepartureMode(mode)}
+                onClick={() => selectDepartureMode(mode)}
                 aria-pressed={departureMode === mode}
                 className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-colors ${
                   departureMode === mode
@@ -279,7 +327,8 @@ export default function HareClient() {
                 aria-label={dict.departureTime}
                 value={departureTime}
                 step={900}
-                onChange={(e) => e.target.value && setDepartureTime(e.target.value)}
+                min={departureMode === "today" ? (todayMinTime ?? undefined) : undefined}
+                onChange={(e) => handleDepartureTimeChange(e.target.value)}
                 className="px-2 py-1.5 rounded-lg border border-slate-300 text-sm"
               />
             )}
@@ -327,12 +376,19 @@ export default function HareClient() {
             <span className="inline-block w-3 h-3 rounded-full bg-green-600" />
             {dict.originMarker}
           </span>
+          <p className="basis-full text-slate-500">{dict.legendNote(WEATHER_WINDOW_HOURS)}</p>
         </div>
       </section>
 
       {/* 結果一覧 */}
       {result && (
         <section className="space-y-3">
+          <p className="text-sm font-bold text-slate-700">
+            {(() => {
+              const d = jstParts(result.departureAt);
+              return dict.judgedDeparture(d.month, d.day, d.hour, d.minute);
+            })()}
+          </p>
           <p className="text-sm text-slate-600">
             {dict.summary(grouped.sunny.length, grouped.cloudy.length, grouped.rain.length)}
           </p>
@@ -417,7 +473,7 @@ export default function HareClient() {
 
       {/* 判定方法と出典 */}
       <section className="text-xs text-slate-500 leading-relaxed space-y-1.5 border-t border-slate-200 pt-4">
-        <p>{dict.assumptionNote(ROAD_DISTANCE_FACTOR, AVERAGE_SPEED_KMH, WEATHER_WINDOW_HOURS)}</p>
+        <p>{dict.assumptionNote(ROAD_DISTANCE_FACTOR, AVERAGE_SPEED_KMH)}</p>
         <p>{dict.judgeNote(SUNNY_MAX_PRECIP_PROBABILITY, RAIN_MIN_PRECIP_PROBABILITY)}</p>
         <p className="pt-1 font-bold text-slate-600">{dict.attributionTitle}</p>
         <p>

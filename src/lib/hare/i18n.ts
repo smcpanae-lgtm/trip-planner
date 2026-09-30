@@ -28,6 +28,10 @@ export interface HareDict {
   searching: string;
   weatherLabel: Record<HareWeather, string>;
   legendTitle: string;
+  /** 凡例の下に出す、天気の判定時間帯の説明 */
+  legendNote: (hours: number) => string;
+  /** 検索結果の上に出す、判定に使った出発時刻 */
+  judgedDeparture: (month: number, day: number, hour: number, minute: number) => string;
   originMarker: string;
   resultSunnyTitle: (count: number) => string;
   resultCloudyTitle: (count: number) => string;
@@ -44,7 +48,7 @@ export interface HareDict {
   landNotice: (land: string) => string;
   landLabel: (land: string) => string;
   unavailableNotice: (count: number) => string;
-  assumptionNote: (factor: number, speed: number, hours: number) => string;
+  assumptionNote: (factor: number, speed: number) => string;
   judgeNote: (sunnyMax: number, rainMin: number) => string;
   errors: {
     geolocationUnsupported: string;
@@ -75,14 +79,18 @@ export const hareJa: HareDict = {
   currentLocationName: "現在地",
   radiusLabel: (km) => `探す範囲：半径 ${km}km`,
   departureLabel: "出発",
-  departureNow: "今すぐ",
-  departureToday: "今日",
-  departureTomorrow: "明日",
+  departureNow: "今すぐ出発",
+  departureToday: "今日（時刻を指定）",
+  departureTomorrow: "明日（時刻を指定）",
   departureTime: "出発時刻",
   searchButton: "晴れの場所を探す",
   searching: "天気を調べています…",
   weatherLabel: { sunny: "晴れ", cloudy: "くもり", rain: "雨" },
-  legendTitle: "到着後3時間の天気",
+  legendTitle: "天気の色分け",
+  legendNote: (hours) =>
+    `各地点に到着してから${hours}時間の予報で判定しています。到着時刻は、出発時刻と距離から計算した目安です。`,
+  judgedDeparture: (month, day, hour, minute) =>
+    `${month}月${day}日 ${hour}時${String(minute).padStart(2, "0")}分 出発として判定しています`,
   originMarker: "出発地",
   resultSunnyTitle: (count) => `晴れの場所（${count}か所・近い順）`,
   resultCloudyTitle: (count) => `くもりの場所（${count}か所・近い順）`,
@@ -105,8 +113,8 @@ export const hareJa: HareDict = {
     return land.startsWith("island:") ? land.slice("island:".length) : land;
   },
   unavailableNotice: (count) => `${count}か所は予報を取得できなかったため表示していません。`,
-  assumptionNote: (factor, speed, hours) =>
-    `到着時刻は直線距離×${factor}を道のりとし、平均時速${speed}kmで走った場合の目安です。到着から${hours}時間の予報で判定しています。`,
+  assumptionNote: (factor, speed) =>
+    `到着時刻は直線距離×${factor}を道のりとし、平均時速${speed}kmで走った場合の目安です。`,
   judgeNote: (sunnyMax, rainMin) =>
     `晴れ：快晴・晴れ・薄曇りで降水確率${sunnyMax}%未満。雨：雨や雪の予報、または降水確率${rainMin}%以上。それ以外はくもり。各市区町村の代表地点（山間部の場合あり）の予報です。`,
   errors: {
