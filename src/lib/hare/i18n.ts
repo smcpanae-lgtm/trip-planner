@@ -24,6 +24,10 @@ export interface HareDict {
   departureToday: string;
   departureTomorrow: string;
   departureTime: string;
+  /** 今日に選べる出発時刻がもう無いときの案内 */
+  todayClosedNotice: string;
+  /** 「今日」のまま選べる時刻が無くなり、検索時に「明日」へ切り替えたときの案内 */
+  switchedToTomorrowNotice: string;
   searchButton: string;
   searching: string;
   weatherLabel: Record<HareWeather, string>;
@@ -83,6 +87,8 @@ export const hareJa: HareDict = {
   departureToday: "今日（時刻を指定）",
   departureTomorrow: "明日（時刻を指定）",
   departureTime: "出発時刻",
+  todayClosedNotice: "本日の出発時刻の指定は終了しました。明日を選んでください",
+  switchedToTomorrowNotice: "本日の出発時刻の指定が終了したため、「明日」に切り替えて検索しました。",
   searchButton: "晴れの場所を探す",
   searching: "天気を調べています…",
   weatherLabel: { sunny: "晴れ", cloudy: "くもり", rain: "雨" },

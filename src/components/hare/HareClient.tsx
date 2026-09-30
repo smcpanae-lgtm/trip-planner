@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Crosshair, Search, Sun, Cloud, CloudRain, Car, Loader2 } from "lucide-react";
 import HareMap, { WEATHER_COLORS } from "./HareMap";
 import { geocode } from "@/lib/geocoding";
@@ -95,6 +95,23 @@ export default function HareClient() {
   const [departureTime, setDepartureTime] = useState(defaultTime);
   /** 「今日」を選んだ時点で選べる最も早い時刻（それより前は選べない） */
   const [todayMinTime, setTodayMinTime] = useState<string | null>(null);
+  /** 「今日」を選んだ日（日本時間）。ページを開いたまま日付をまたいだかの判定に使う */
+  const [todaySelectedDate, setTodaySelectedDate] = useState<string | null>(null);
+  /** 今日に選べる出発時刻がもう無い（23:46以降） */
+  const [todayClosed, setTodayClosed] = useState(false);
+  /** 検索時に「今日」から「明日」へ自動で切り替えた */
+  const [switchedToTomorrow, setSwitchedToTomorrow] = useState(false);
+
+  // 開いている間も時刻は進むため、今日に選べる時刻が残っているかを定期的に確かめる
+  useEffect(() => {
+    const update = () => setTodayClosed(earliestTodayTime() === null);
+    const first = setTimeout(update, 0);
+    const timer = setInterval(update, 30 * 1000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(timer);
+    };
+  }, []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HareSearchResponse | null>(null);
@@ -161,10 +178,15 @@ export default function HareClient() {
   const selectDepartureMode = (mode: DepartureMode) => {
     if (mode === "today") {
       const min = earliestTodayTime();
-      if (!min) return;
+      if (!min) {
+        setTodayClosed(true);
+        return;
+      }
       setTodayMinTime(min);
+      setTodaySelectedDate(jstDate(0));
       if (departureTime < min) setDepartureTime(min);
     }
+    setSwitchedToTomorrow(false);
     setDepartureMode(mode);
   };
 
@@ -193,8 +215,15 @@ export default function HareClient() {
       lng: from.lng.toFixed(5),
       radius: String(radiusKm),
     });
-    if (departureMode !== "now") {
-      const date = jstDate(departureMode === "tomorrow" ? 1 : 0);
+    let mode = departureMode;
+    // 「今日」のまま今日に選べる時刻が無くなった、または日付をまたいだ場合は「明日」に切り替える
+    if (mode === "today" && (earliestTodayTime() === null || todaySelectedDate !== jstDate(0))) {
+      mode = "tomorrow";
+      setDepartureMode("tomorrow");
+      setSwitchedToTomorrow(true);
+    }
+    if (mode !== "now") {
+      const date = jstDate(mode === "tomorrow" ? 1 : 0);
       params.set("departure", `${date}T${departureTime}:00+09:00`);
     }
 
@@ -302,25 +331,31 @@ export default function HareClient() {
         <div>
           <p className="text-sm font-bold text-slate-700 mb-2">{dict.departureLabel}</p>
           <div className="flex flex-wrap items-center gap-2">
-            {(["now", "today", "tomorrow"] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => selectDepartureMode(mode)}
-                aria-pressed={departureMode === mode}
-                className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-colors ${
-                  departureMode === mode
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
-                }`}
-              >
-                {mode === "now"
-                  ? dict.departureNow
-                  : mode === "today"
-                    ? dict.departureToday
-                    : dict.departureTomorrow}
-              </button>
-            ))}
+            {(["now", "today", "tomorrow"] as const).map((mode) => {
+              const disabled = mode === "today" && todayClosed;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => selectDepartureMode(mode)}
+                  disabled={disabled}
+                  aria-pressed={departureMode === mode}
+                  className={`px-3 py-1.5 rounded-full text-sm font-bold border transition-colors ${
+                    disabled
+                      ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                      : departureMode === mode
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
+                  }`}
+                >
+                  {mode === "now"
+                    ? dict.departureNow
+                    : mode === "today"
+                      ? dict.departureToday
+                      : dict.departureTomorrow}
+                </button>
+              );
+            })}
             {departureMode !== "now" && (
               <input
                 type="time"
@@ -333,6 +368,13 @@ export default function HareClient() {
               />
             )}
           </div>
+          {switchedToTomorrow ? (
+            <p role="status" className="mt-2 text-xs font-bold text-amber-700">
+              {dict.switchedToTomorrowNotice}
+            </p>
+          ) : (
+            todayClosed && <p className="mt-2 text-xs text-slate-500">{dict.todayClosedNotice}</p>
+          )}
         </div>
 
         <button
