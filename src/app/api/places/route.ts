@@ -49,6 +49,8 @@ interface PlacePrediction {
     secondaryText?: { text: string };
   };
   text?: { text: string };
+  /** 場所の種類（locality など）。追加料金なしで返る。除外したい場所の範囲（地点か地域か）の判定に使う */
+  types?: string[];
 }
 
 async function handleAutocomplete(request: NextRequest) {
@@ -95,6 +97,7 @@ async function handleAutocomplete(request: NextRequest) {
         placeId: p.placeId,
         name: p.structuredFormat?.mainText?.text || p.text?.text || "",
         address: p.structuredFormat?.secondaryText?.text || "",
+        types: p.types || [],
       }));
 
     setCached(cacheKey, results);

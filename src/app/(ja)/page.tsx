@@ -163,6 +163,10 @@ function parseGeminiPlan(plan: any): {
       tips: plan.commentary?.tips || [],
       dogTips: plan.commentary?.dogTips || undefined,
       overallDescription: plan.commentary?.overallDescription || undefined,
+      excludedPlaceRemoved:
+        typeof plan.commentary?.excludedPlaceRemoved === "string"
+          ? plan.commentary.excludedPlaceRemoved
+          : undefined,
     };
 
     const extractGenre = (spotName: string): string => {
@@ -796,6 +800,10 @@ function HomeContent() {
         useHighway: config.useHighway ?? true,
         travelDate: config.travelDate,
         travelerProfile: config.travelerProfile,
+        // 除外したい場所はおまかせON で入力があるときだけ送る（空欄なら従来と同じ内容）
+        ...(config.aiOmakase && config.excludedPlace?.name.trim()
+          ? { excludedPlace: config.excludedPlace }
+          : {}),
         turnstileToken,
         sessionId,
       };

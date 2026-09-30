@@ -1,7 +1,7 @@
 import { presetSpots } from "./presets";
 import { highwayICs } from "./highway";
 import { parkingAreas, michiNoEkis } from "./rest-stops";
-import type { SearchCandidate } from "@/types/trip";
+import type { PlaceKind, SearchCandidate } from "@/types/trip";
 
 interface NominatimResult {
   lat: string;
@@ -16,6 +16,46 @@ interface NominatimReverseResult {
     state?: string;
     province?: string;
   };
+}
+
+// Google の場所の種類のうち、市区町村・地域として広く扱うもの（neighborhood は狭いので地点のまま）
+const GOOGLE_AREA_TYPES = new Set([
+  "locality",
+  "sublocality",
+  "sublocality_level_1",
+  "sublocality_level_2",
+  "administrative_area_level_1",
+  "administrative_area_level_2",
+  "administrative_area_level_3",
+  "administrative_area_level_4",
+  "colloquial_area",
+  "postal_town",
+]);
+
+// Nominatim（OpenStreetMap）の place の種類のうち、市区町村・地域として扱うもの
+const NOMINATIM_AREA_PLACES = new Set([
+  "city",
+  "town",
+  "village",
+  "county",
+  "state",
+  "region",
+  "municipality",
+  "suburb",
+]);
+
+/** Google の types から範囲の種類を決める。types が無ければ不明（undefined） */
+export function placeKindFromGoogleTypes(types: unknown): PlaceKind | undefined {
+  if (!Array.isArray(types) || types.length === 0) return undefined;
+  return types.some((t) => typeof t === "string" && GOOGLE_AREA_TYPES.has(t)) ? "area" : "point";
+}
+
+/** Nominatim の class/type から範囲の種類を決める */
+function placeKindFromNominatim(r: { class?: string; type?: string }): PlaceKind | undefined {
+  if (!r.class) return undefined;
+  if (r.class === "boundary" && r.type === "administrative") return "area";
+  if (r.class === "place" && r.type && NOMINATIM_AREA_PLACES.has(r.type)) return "area";
+  return "point";
 }
 
 // クエリ単位の検索結果キャッシュ。
@@ -55,6 +95,8 @@ export async function searchPlaces(
       address: `${s.region}・${s.category}（${s.description}）`,
       lat: s.lat,
       lng: s.lng,
+      // プリセットは観光スポット（施設・地点）のみ
+      kind: "point" as const,
     }));
 
   if (presetMatches.length >= 3) {
@@ -72,10 +114,11 @@ export async function searchPlaces(
       const data = await res.json();
       if (data.results && data.results.length > 0) {
         const googleResults: SearchCandidate[] = data.results.map(
-          (r: { name: string; address: string; placeId: string }) => ({
+          (r: { name: string; address: string; placeId: string; types?: string[] }) => ({
             name: r.name,
             address: r.address,
             placeId: r.placeId,
+            kind: placeKindFromGoogleTypes(r.types),
           })
         );
         const merged = [...presetMatches, ...googleResults].slice(0, 5);
@@ -99,11 +142,12 @@ export async function searchPlaces(
       const data = await res.json();
       if (data.results && data.results.length > 0) {
         const googleResults: SearchCandidate[] = data.results.map(
-          (r: { name: string; address: string; lat: number; lng: number }) => ({
+          (r: { name: string; address: string; lat: number; lng: number; types?: string[] }) => ({
             name: r.name,
             address: r.address,
             lat: r.lat,
             lng: r.lng,
+            kind: placeKindFromGoogleTypes(r.types),
           })
         );
         const merged = [...presetMatches, ...googleResults].slice(0, 5);
@@ -136,6 +180,7 @@ export async function searchPlaces(
       address: r.display_name,
       lat: parseFloat(r.lat),
       lng: parseFloat(r.lon),
+      kind: placeKindFromNominatim(r),
     }));
     const merged = [...presetMatches, ...nominatimResults].slice(0, 5);
     // Nominatimでも見つからず、かつGoogle側がエラーだった場合のみ「一時的に使えません」を出す。

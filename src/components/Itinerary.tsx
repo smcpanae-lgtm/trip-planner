@@ -488,6 +488,13 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
             </div>
           )}
 
+          {/* Stops near the user's excluded place were removed by the server */}
+          {planCommentary.excludedPlaceRemoved && (
+            <p className="text-xs text-slate-500 px-1">
+              {t.itinerary.excludedRemoved.replace("{name}", planCommentary.excludedPlaceRemoved)}
+            </p>
+          )}
+
           {/* Highlights */}
           {planCommentary.highlights.length > 0 && (
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">

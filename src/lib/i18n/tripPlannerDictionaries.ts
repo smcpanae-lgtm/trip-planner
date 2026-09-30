@@ -75,6 +75,8 @@ export interface TripPlannerDict {
     businessHours: string;
     commentary: { title: string };
     removed: { title: string; aiJudgment: string; unexplained: string; hint: string };
+    /** 除外したい場所の周辺のスポットをコードで取り除いたときの1行表示（{name} に場所名） */
+    excludedRemoved: string;
     schedule: {
       over: string;
       overOvernight: string;
@@ -106,6 +108,7 @@ export interface TripPlannerDict {
     tripDuration: { title: string; options: string[] };
     departureDate: { label: string; optional: string; hint: string };
     omakase: { label: string; description: string };
+    excludedPlace: { label: string; hint: string; placeholder: string };
     dog: { label: string; description: string };
     highway: { label: string; on: string; off: string };
     traveler: {
@@ -269,6 +272,7 @@ const ja: TripPlannerDict = {
     petSearch: "ペットOKで探す",
     businessHours: "営業時間を事前にご確認ください",
     commentary: { title: "AIプランナーの解説" },
+    excludedRemoved: "除外したい場所（{name}）の周辺に当たるスポットを取り除きました。前後の時刻は調整されていません。",
     removed: {
       title: "プランに含められなかった指定目的地",
       aiJudgment: "AIの判断",
@@ -319,6 +323,11 @@ const ja: TripPlannerDict = {
     omakase: {
       label: "目的地以外はお任せ",
       description: "目的地以外は出発地、終着地、その時間等を勘案しAIがプランを作成します。",
+    },
+    excludedPlace: {
+      label: "除外したい場所",
+      hint: "行きたくない場所を1か所だけ指定できます。空欄のままでも問題ありません。",
+      placeholder: "例：江ノ島",
     },
     dog: {
       label: "犬連れ旅行",
@@ -514,6 +523,7 @@ const en: TripPlannerDict = {
     petSearch: "Find Pet-Friendly",
     businessHours: "Please check opening hours in advance",
     commentary: { title: "AI Planner Commentary" },
+    excludedRemoved: "Stops near the place you excluded ({name}) were removed. The times before and after them were not adjusted.",
     removed: {
       title: "Your destinations not included in this plan",
       aiJudgment: "AI's judgment",
@@ -564,6 +574,11 @@ const en: TripPlannerDict = {
     omakase: {
       label: "Leave details to AI",
       description: "AI will plan stops between your departure and arrival based on time and distance.",
+    },
+    excludedPlace: {
+      label: "Place to avoid",
+      hint: "You can name one place you'd rather not visit. It's fine to leave this blank.",
+      placeholder: "e.g. Enoshima",
     },
     dog: {
       label: "Travelling with a dog",
@@ -759,6 +774,7 @@ const ko: TripPlannerDict = {
     petSearch: "펫 OK로 찾기",
     businessHours: "영업시간을 사전에 확인해 주세요",
     commentary: { title: "AI 플래너 해설" },
+    excludedRemoved: "제외할 장소({name}) 주변에 해당하는 스폿을 삭제했습니다. 앞뒤 시간은 조정되지 않았습니다.",
     removed: {
       title: "이 플랜에 포함되지 못한 지정 목적지",
       aiJudgment: "AI의 판단",
@@ -809,6 +825,11 @@ const ko: TripPlannerDict = {
     omakase: {
       label: "목적지 이외는 AI에게 맡기기",
       description: "목적지 이외의 경유지는 출발지·도착지·시간 등을 고려하여 AI가 플랜을 작성합니다.",
+    },
+    excludedPlace: {
+      label: "제외할 장소",
+      hint: "가고 싶지 않은 장소를 1곳만 지정할 수 있습니다. 비워 두어도 괜찮습니다.",
+      placeholder: "예: 에노시마",
     },
     dog: {
       label: "반려견 동반 여행",
@@ -1002,6 +1023,7 @@ const zhCN: TripPlannerDict = {
     petSearch: "搜索宠物友好餐厅",
     businessHours: "请提前确认营业时间",
     commentary: { title: "AI 规划师解说" },
+    excludedRemoved: "已删除位于排除地点（{name}）周边的景点。前后的时间未作调整。",
     removed: {
       title: "未能纳入本方案的指定目的地",
       aiJudgment: "AI的判断",
@@ -1052,6 +1074,11 @@ const zhCN: TripPlannerDict = {
     omakase: {
       label: "目的地以外交给 AI 规划",
       description: "AI 将综合出发地、终点及时间，为您规划沿途停靠点。",
+    },
+    excludedPlace: {
+      label: "想排除的地点",
+      hint: "可以指定1个不想去的地方。留空也没有问题。",
+      placeholder: "例：江之岛",
     },
     dog: { label: "携犬旅行", description: "考虑遛狗时间及宠物友好餐厅" },
     highway: {
@@ -1242,6 +1269,7 @@ const zhTW: TripPlannerDict = {
     petSearch: "搜尋寵物友善餐廳",
     businessHours: "請事先確認營業時間",
     commentary: { title: "AI 規劃師解說" },
+    excludedRemoved: "已刪除位於排除地點（{name}）周邊的景點。前後的時間未作調整。",
     removed: {
       title: "未能納入本方案的指定目的地",
       aiJudgment: "AI的判斷",
@@ -1292,6 +1320,11 @@ const zhTW: TripPlannerDict = {
     omakase: {
       label: "目的地以外交給 AI 規劃",
       description: "AI 將綜合出發地、終點及時間，為您規劃沿途停靠點。",
+    },
+    excludedPlace: {
+      label: "想排除的地點",
+      hint: "可以指定1個不想去的地方。留空也沒有問題。",
+      placeholder: "例：江之島",
     },
     dog: { label: "攜犬旅行", description: "考量遛狗時間及寵物友善餐廳" },
     highway: {
@@ -1484,6 +1517,7 @@ const es: TripPlannerDict = {
     petSearch: "Buscar con mascotas",
     businessHours: "Confirma el horario de apertura con antelación",
     commentary: { title: "Comentario del planificador IA" },
+    excludedRemoved: "Se quitaron las paradas cercanas al lugar excluido ({name}). Los horarios anteriores y posteriores no se ajustaron.",
     removed: {
       title: "Destinos indicados que no se incluyeron en este plan",
       aiJudgment: "Criterio de la IA",
@@ -1534,6 +1568,11 @@ const es: TripPlannerDict = {
     omakase: {
       label: "Dejar el resto al criterio de la IA",
       description: "La IA planificará las paradas entre tu salida y llegada según tiempo y distancia.",
+    },
+    excludedPlace: {
+      label: "Lugar a evitar",
+      hint: "Puedes indicar un solo lugar que prefieras no visitar. Puedes dejarlo en blanco.",
+      placeholder: "Ej.: Enoshima",
     },
     dog: { label: "Viajar con perro", description: "Incluye paradas para pasear y restaurantes pet-friendly" },
     highway: {
@@ -1726,6 +1765,7 @@ const ru: TripPlannerDict = {
     petSearch: "Найти pet-friendly",
     businessHours: "Заранее уточните часы работы",
     commentary: { title: "Комментарий AI-планировщика" },
+    excludedRemoved: "Остановки рядом с исключённым местом ({name}) удалены. Время до и после них не пересчитано.",
     removed: {
       title: "Указанные места, не вошедшие в этот план",
       aiJudgment: "Решение ИИ",
@@ -1776,6 +1816,11 @@ const ru: TripPlannerDict = {
     omakase: {
       label: "Остальное оставить ИИ",
       description: "ИИ спланирует остановки между отправлением и прибытием с учётом времени и расстояния.",
+    },
+    excludedPlace: {
+      label: "Место, которое исключить",
+      hint: "Можно указать одно место, которое вы не хотите посещать. Поле можно оставить пустым.",
+      placeholder: "Например: Эносима",
     },
     dog: { label: "Путешествие с собакой", description: "Учитывает остановки для прогулок и рестораны для питомцев" },
     highway: {

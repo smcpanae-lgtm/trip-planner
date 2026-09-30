@@ -153,6 +153,13 @@ interface PlanRequest {
     hasChildren: boolean;
     childAges: string;
   };
+  /** 除外したい場所（おまかせON のときだけ使う。1か所・任意）。kind: point=施設・地点 / area=市区町村・地域 */
+  excludedPlace?: {
+    name: string;
+    lat?: number;
+    lng?: number;
+    kind?: "point" | "area";
+  };
 }
 
 function planJsonError(message: string, status: number, errorType: PlanAuditError, errorCode?: PlanErrorCode) {
@@ -280,6 +287,7 @@ function contentHash(body: PlanRequest): string {
       useHighway: body.useHighway,
       travelDate: body.travelDate,
       travelerProfile: body.travelerProfile,
+      excludedPlace: body.excludedPlace,
     }))
     .digest("hex");
 }
@@ -311,6 +319,19 @@ function validatePlanInput(body: PlanRequest): { ok: true } | { ok: false; messa
     }
     if (day.destinations.length > MAX_DESTINATIONS_PER_DAY) {
       return { ok: false, message: `1日あたりの目的地は${MAX_DESTINATIONS_PER_DAY}件までにしてください。` };
+    }
+  }
+  if (body.excludedPlace !== undefined) {
+    const ep = body.excludedPlace as unknown as { name?: unknown; lat?: unknown; lng?: unknown; kind?: unknown } | null;
+    if (
+      !ep ||
+      typeof ep !== "object" ||
+      typeof ep.name !== "string" ||
+      (ep.lat !== undefined && typeof ep.lat !== "number") ||
+      (ep.lng !== undefined && typeof ep.lng !== "number") ||
+      (ep.kind !== undefined && ep.kind !== "point" && ep.kind !== "area")
+    ) {
+      return { ok: false, message: "除外したい場所の形式が正しくありません。" };
     }
   }
   if (JSON.stringify(body).length > MAX_TOTAL_TEXT_LENGTH) {
@@ -357,6 +378,18 @@ function auditPlanLog(data: {
   scheduleChecks?: { overDays: number; maxOverrunMinutes: number };
   /** マイカー規制の記録（全プラン）。listHits: 登録済みの規制区域に当たった区域のid */
   carRestriction?: { listHits: string[] };
+  /**
+   * 除外したい場所の記録（場所名は残さない）。kind: 範囲の種類 / hasCoords: 座標あり /
+   * initialHits: 最初の生成で範囲に当たった数 / finalHits: 返したプランで当たった数 / removed: コードで取り除いた数 / mealHits: 食事（記録のみ）
+   */
+  excludedPlace?: {
+    kind: "point" | "area" | "unknown";
+    hasCoords: boolean;
+    initialHits: number;
+    finalHits: number;
+    removed: number;
+    mealHits: number;
+  };
 }) {
   console.log(JSON.stringify({ type: "plan_generate_audit", at: new Date().toISOString(), ...data }));
 }
@@ -1336,25 +1369,195 @@ function describeTimeIssue(issue: ScheduleTimeIssue, multiDay: boolean): string 
     : `${where}で時刻が前の項目より早くなっています（${issue.detail}）`;
 }
 
+/** 除外したい場所の範囲（km）。施設・地点のとき */
+const EXCLUDE_RADIUS_POINT_KM = 3;
+/** 除外したい場所の範囲（km）。市区町村・地域のとき（箱根・軽井沢など、地点用では狭すぎるため） */
+const EXCLUDE_RADIUS_AREA_KM = 10;
+/** 除外したい場所の名前の長さの上限（超えた分は切り捨てる） */
+const EXCLUDED_NAME_MAX = 50;
+
+/** 整えた除外したい場所。kind が不明なら地点として扱い、名前でも照合する */
+interface ExcludedPlaceInput {
+  name: string;
+  lat?: number;
+  lng?: number;
+  kind?: "point" | "area";
+  radiusKm: number;
+}
+
+/**
+ * 除外したい場所を取り出して整える。おまかせOFF・空欄なら null（従来どおりの動作）。
+ * 改行などは空白にし、長すぎる名前は切り捨てる（指示文にそのまま入れるため）。
+ */
+function excludedPlaceOf(body: PlanRequest): ExcludedPlaceInput | null {
+  if (body.aiOmakase === false || !body.excludedPlace) return null;
+  const { lat, lng, kind } = body.excludedPlace;
+  const name = String(body.excludedPlace.name ?? "")
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, EXCLUDED_NAME_MAX)
+    .trim();
+  if (!name) return null;
+  const hasCoords =
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    Math.abs(lat) <= 90 &&
+    Math.abs(lng) <= 180 &&
+    // 座標0,0は未設定の扱い
+    !(lat === 0 && lng === 0);
+  const placeKind = kind === "area" || kind === "point" ? kind : undefined;
+  return {
+    name,
+    ...(hasCoords ? { lat, lng } : {}),
+    kind: placeKind,
+    radiusKm: placeKind === "area" ? EXCLUDE_RADIUS_AREA_KM : EXCLUDE_RADIUS_POINT_KM,
+  };
+}
+
+/** 指示文での範囲の書き方。地域なら「◯◯」エリア全体、地点（または不明）なら「◯◯」とその周辺（半径約3km） */
+function describeExcludedScope(ex: ExcludedPlaceInput): string {
+  return ex.kind === "area" ? `「${ex.name}」エリア全体` : `「${ex.name}」とその周辺（半径約${ex.radiusKm}km）`;
+}
+
+/** 除外したい場所の範囲に当たったプランの地点。meal: 食事（記録のみで取り除かない） */
+interface ExcludedHit {
+  planIndex: number;
+  planName: string;
+  dayPosition: number;
+  name: string;
+  category: "spot" | "meal";
+  /** days[dayPosition].items の中の要素（取り除くときに使う）。lunchSpot/dinnerSpot なら undefined */
+  item?: unknown;
+}
+
+/** 地点が除外したい場所の範囲に入るか（名前の一致、または座標が半径内） */
+function isInExcludedPlace(
+  ex: ExcludedPlaceInput,
+  item: { name: string; address?: string; lat?: number; lng?: number }
+): boolean {
+  const exName = normalizeForMatch(ex.name);
+  const itemName = normalizeForMatch(item.name);
+  if (exName.length >= 2 && itemName.includes(exName)) return true;
+  if (itemName.length >= 3 && exName.includes(itemName)) return true;
+  // 地域（箱根町など）は住所に名前が入るので住所でも照合する。地点は住所が一致しても近いとは限らないので見ない
+  if (ex.kind === "area" && exName.length >= 2 && item.address && normalizeForMatch(item.address).includes(exName)) {
+    return true;
+  }
+  return (
+    typeof ex.lat === "number" &&
+    typeof ex.lng === "number" &&
+    typeof item.lat === "number" &&
+    typeof item.lng === "number" &&
+    !(item.lat === 0 && item.lng === 0) &&
+    distanceKm(ex.lat, ex.lng, item.lat, item.lng) <= ex.radiusKm
+  );
+}
+
+/**
+ * 各プランで、除外したい場所の範囲に当たった地点を返す。
+ * 出発地・到着地と、ユーザーが指定した目的地（範囲内でも利用者の指定が優先）は対象外。
+ */
+function findExcludedHits(body: PlanRequest, parsed: unknown, ex: ExcludedPlaceInput): ExcludedHit[] {
+  const hits: ExcludedHit[] = [];
+  const userDests = body.days.flatMap((day) => day.destinations.filter((d) => !d.isOmakase && d.name?.trim()));
+
+  plansOf(parsed).forEach((plan, planIndex) => {
+    const days = (plan as { days?: unknown })?.days;
+    if (!Array.isArray(days)) return;
+    const planName = planNameOf(plan, planIndex);
+
+    const check = (raw: unknown, dayPosition: number, category: ExcludedHit["category"], inItems: boolean) => {
+      const s = raw as { name?: unknown; address?: unknown; lat?: unknown; lng?: unknown } | null;
+      if (!s || typeof s.name !== "string" || !s.name.trim()) return;
+      const spot = {
+        name: s.name,
+        address: typeof s.address === "string" ? s.address : undefined,
+        lat: typeof s.lat === "number" ? s.lat : undefined,
+        lng: typeof s.lng === "number" ? s.lng : undefined,
+      };
+      if (!isInExcludedPlace(ex, spot)) return;
+      if (userDests.some((d) => planIncludesDestination(d, [spot]))) return;
+      hits.push({ planIndex, planName, dayPosition, name: spot.name, category, ...(inItems ? { item: raw } : {}) });
+    };
+
+    days.forEach((day, dayPosition) => {
+      const d = day as { items?: unknown; lunchSpot?: unknown; dinnerSpot?: unknown } | null;
+      if (!d) return;
+      if (Array.isArray(d.items)) {
+        for (const raw of d.items) {
+          const type = (raw as { type?: unknown } | null)?.type;
+          if (type === "departure" || type === "arrival") continue;
+          check(raw, dayPosition, type === "lunch" || type === "dinner" ? "meal" : "spot", true);
+        }
+      }
+      check(d.lunchSpot, dayPosition, "meal", false);
+      check(d.dinnerSpot, dayPosition, "meal", false);
+    });
+  });
+  return hits;
+}
+
+function describeExcludedHit(hit: ExcludedHit, multiDay: boolean): string {
+  return `${hit.planName}${multiDay ? `（${hit.dayPosition + 1}日目）` : ""}の「${hit.name}」が除外したい場所の範囲に入っています`;
+}
+
+/**
+ * 作り直しても残った観光スポット・休憩地点を取り除き、取り除いたプランの commentary に場所名を付ける（画面の1行表示用）。
+ * 食事は取り除かない（記録のみ）。前後の時刻は調整しない。取り除いた件数を返す。
+ */
+function removeExcludedHits(parsed: unknown, hits: ExcludedHit[], ex: ExcludedPlaceInput): number {
+  let removed = 0;
+  const removedPlans = new Set<number>();
+  const plans = plansOf(parsed);
+
+  for (const hit of hits) {
+    if (hit.category !== "spot" || hit.item === undefined) continue;
+    const days = (plans[hit.planIndex] as { days?: unknown } | null)?.days;
+    const items = Array.isArray(days) ? (days[hit.dayPosition] as { items?: unknown } | null)?.items : undefined;
+    if (!Array.isArray(items)) continue;
+    const index = items.indexOf(hit.item);
+    if (index < 0) continue;
+    items.splice(index, 1);
+    removed++;
+    removedPlans.add(hit.planIndex);
+  }
+
+  for (const planIndex of removedPlans) {
+    const p = plans[planIndex] as { commentary?: unknown } | null;
+    if (!p || typeof p !== "object") continue;
+    if (p.commentary && typeof p.commentary === "object") {
+      (p.commentary as { excludedPlaceRemoved?: string }).excludedPlaceRemoved = ex.name;
+    } else {
+      p.commentary = { removedSpots: [], highlights: [], tips: [], excludedPlaceRemoved: ex.name };
+    }
+  }
+  return removed;
+}
+
 /** 作り直し（correction）の理由と結果。adopted: 採用 / rejected: 改善しないため不採用 / failed: 生成に失敗 */
 interface PlanCorrectionRecord {
-  trigger: ("unexplained_missing" | "overnight")[];
+  trigger: ("unexplained_missing" | "overnight" | "excluded_place")[];
   outcome: "adopted" | "rejected" | "failed";
   outputTokens?: number;
 }
 
 /**
- * 作り直しの結果のほうが良いか。日付をまたいだ日が少ないほうを優先し、同数なら目的地の抜けで比べる
+ * 作り直しの結果のほうが良いか。日付をまたいだ日が少ないほうを優先し、同数なら除外したい場所に当たった数、
+ * それも同数なら目的地の抜けで比べる
  * （日付をまたぐプランは実行できないため、理由付きの除外が増えても日付をまたがないほうを採る）
  */
 function isBetterPlan(
-  next: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[] },
-  current: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[] }
+  next: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[]; excludedHits: number },
+  current: { missing: MissingDestination[]; timeIssues: ScheduleTimeIssue[]; excludedHits: number }
 ): boolean {
   const overnight = (list: ScheduleTimeIssue[]) => list.filter((i) => i.kind === "overnight").length;
   if (overnight(next.timeIssues) !== overnight(current.timeIssues)) {
     return overnight(next.timeIssues) < overnight(current.timeIssues);
   }
+  if (next.excludedHits !== current.excludedHits) return next.excludedHits < current.excludedHits;
   return hasFewerMissing(next.missing, current.missing);
 }
 
@@ -1508,7 +1711,13 @@ function mergeSamePlans(parsed: unknown): boolean {
   return true;
 }
 
-function buildCorrectionPrompt(basePrompt: string, missingLines: string[], overnightLines: string[]): string {
+function buildCorrectionPrompt(
+  basePrompt: string,
+  missingLines: string[],
+  overnightLines: string[],
+  excludedLines: string[] = [],
+  excluded: ExcludedPlaceInput | null = null
+): string {
   const sections: string[] = [];
   if (missingLines.length > 0) {
     sections.push(`## ユーザーが指定した目的地が、理由の説明なしに抜けていました
@@ -1521,6 +1730,12 @@ ${missingLines.map((w) => `- ${w}`).join("\n")}
 ${overnightLines.map((w) => `- ${w}`).join("\n")}
 
 今回は各日の行程をその日のうちに終えてください（到着地への到着は23:59まで。すべての時刻を00:00〜23:59の範囲で、前の項目より後の時刻で書く）。`);
+  }
+  if (excludedLines.length > 0 && excluded) {
+    sections.push(`## ユーザーが除外したい場所の範囲に当たるスポットが含まれていました
+${excludedLines.map((w) => `- ${w}`).join("\n")}
+
+今回は${describeExcludedScope(excluded)}にある観光スポット・休憩地点・食事の場所を入れず、別の方面のスポットにしてください（ユーザーが指定した目的地はそのまま含めること）。`);
   }
 
   return `${basePrompt}
@@ -1588,6 +1803,7 @@ export async function POST(request: NextRequest) {
     accepted = true;
 
     const prompt = buildPrompt(body);
+    const excludedPlace = excludedPlaceOf(body);
     const maxOutputTokens = maxOutputTokensFor(body);
     /** JSONとして読めなかったときの再試行は、リクエスト全体で1回だけ */
     let parseRetryUsed = false;
@@ -1714,21 +1930,26 @@ export async function POST(request: NextRequest) {
           // - ユーザー指定の目的地が理由なしに抜けている（AIが理由付きで除外したものは方針どおりなので対象外）
           // - 行程が日付をまたいでいる（到着地への到着が翌日になるプランは実行できない）
           // 時刻の前後（reversed）だけでは作り直さない（記録のみ）
+          // - 除外したい場所の範囲に当たるスポットがある（ユーザー指定の目的地は対象外）
           const multiDay = body.days.length > 1;
           let missing = findMissingDestinations(body, plan);
           let timeIssues = findScheduleTimeIssues(body, plan);
+          let excludedHits = excludedPlace ? findExcludedHits(body, plan, excludedPlace) : [];
+          const initialExcludedHits = excludedHits.length;
           let correctionRecord: PlanCorrectionRecord | undefined;
           const unexplained = missing.filter((m) => !m.explained);
           const overnight = timeIssues.filter((i) => i.kind === "overnight");
-          if (unexplained.length > 0 || overnight.length > 0) {
+          if (unexplained.length > 0 || overnight.length > 0 || excludedHits.length > 0) {
             const missingLines = unexplained.map((m) => describeMissing(m, multiDay));
             const overnightLines = overnight.map((i) => describeTimeIssue(i, multiDay));
+            const excludedLines = excludedHits.map((h) => describeExcludedHit(h, multiDay));
             const trigger: PlanCorrectionRecord["trigger"] = [
               ...(unexplained.length > 0 ? (["unexplained_missing"] as const) : []),
               ...(overnight.length > 0 ? (["overnight"] as const) : []),
+              ...(excludedHits.length > 0 ? (["excluded_place"] as const) : []),
             ];
-            console.warn(`[${keyLabel}/${modelName}] 作り直しの対象を検出: ${[...missingLines, ...overnightLines].join(" / ")} — 1回だけ再生成します`);
-            const correction = await requestPlan(genAI, modelName, buildCorrectionPrompt(prompt, missingLines, overnightLines), attemptTokens, 0.4, recordFailure("correction"));
+            console.warn(`[${keyLabel}/${modelName}] 作り直しの対象を検出: ${[...missingLines, ...overnightLines, ...excludedLines].join(" / ")} — 1回だけ再生成します`);
+            const correction = await requestPlan(genAI, modelName, buildCorrectionPrompt(prompt, missingLines, overnightLines, excludedLines, excludedPlace), attemptTokens, 0.4, recordFailure("correction"));
             if (correction.ok) {
               const correctionSanitized = sanitizePlan(body, correction.plan, "correction");
               if (correctionSanitized.length > 0) {
@@ -1736,12 +1957,17 @@ export async function POST(request: NextRequest) {
               }
               const retryMissing = findMissingDestinations(body, correction.plan);
               const retryTimeIssues = findScheduleTimeIssues(body, correction.plan);
+              const retryExcludedHits = excludedPlace ? findExcludedHits(body, correction.plan, excludedPlace) : [];
               // 改善した場合のみ採用する（悪化した再生成結果は使わない）
-              const adopted = isBetterPlan({ missing: retryMissing, timeIssues: retryTimeIssues }, { missing, timeIssues });
+              const adopted = isBetterPlan(
+                { missing: retryMissing, timeIssues: retryTimeIssues, excludedHits: retryExcludedHits.length },
+                { missing, timeIssues, excludedHits: excludedHits.length }
+              );
               if (adopted) {
                 plan = correction.plan;
                 missing = retryMissing;
                 timeIssues = retryTimeIssues;
+                excludedHits = retryExcludedHits;
                 sanitized = correctionSanitized;
               }
               correctionRecord = { trigger, outcome: adopted ? "adopted" : "rejected", outputTokens: correction.info.usageMetadata?.candidatesTokenCount };
@@ -1764,6 +1990,16 @@ export async function POST(request: NextRequest) {
             );
           }
           annotateRemovedSpots(body, plan, missing);
+          // 作り直しても除外したい場所の範囲に残った観光スポット・休憩地点はここで取り除く（食事は記録のみ）
+          const excludedMealHits = excludedHits.filter((h) => h.category === "meal").length;
+          const excludedRemoved = excludedPlace ? removeExcludedHits(plan, excludedHits, excludedPlace) : 0;
+          if (excludedHits.length > 0) {
+            console.warn(
+              `[${keyLabel}/${modelName}] 除外したい場所の範囲に残りました: ${excludedHits
+                .map((h) => describeExcludedHit(h, multiDay))
+                .join(" / ")}（取り除いた: ${excludedRemoved}件・食事は記録のみ: ${excludedMealHits}件）`
+            );
+          }
           const samePlans = mergeSamePlans(plan);
           const explainedCount = missing.filter((m) => m.explained).length;
           const overDays = attachScheduleChecks(body, plan).filter((c) => c.overrunMinutes > 0);
@@ -1809,6 +2045,19 @@ export async function POST(request: NextRequest) {
                 }
               : {}),
             ...(carRestriction ? { carRestriction } : {}),
+            // 除外したい場所の記録（場所名は残さない）
+            ...(excludedPlace
+              ? {
+                  excludedPlace: {
+                    kind: excludedPlace.kind ?? "unknown",
+                    hasCoords: typeof excludedPlace.lat === "number",
+                    initialHits: initialExcludedHits,
+                    finalHits: excludedHits.length,
+                    removed: excludedRemoved,
+                    mealHits: excludedMealHits,
+                  },
+                }
+              : {}),
             // 2案が同じ行程で、プランAだけを返した
             ...(samePlans ? { samePlans: true } : {}),
           });
@@ -2053,6 +2302,30 @@ ${p.ageRange === "60s" || p.ageRange === "70plus" ? "- 歩行距離を最小限�
 planNameとplanDescriptionでプランの違いを明確に説明してください。`;
   }
 
+  // 除外したい場所（おまかせON で入力があるときだけ。空欄なら何も足さない）
+  const excluded = excludedPlaceOf(body);
+  const excludedScope = excluded ? describeExcludedScope(excluded) : "";
+  const excludedInstruction = excluded
+    ? `
+
+## 除外したい場所（ユーザー指定）
+ユーザーは次の場所を旅程に含めたくないと指定しています: 「${excluded.name}」${
+        typeof excluded.lat === "number" && typeof excluded.lng === "number"
+          ? `（座標: ${excluded.lat.toFixed(5)}, ${excluded.lng.toFixed(5)}）`
+          : ""
+      }
+- AIが追加する観光スポット・休憩地点（SA・PA・道の駅）・食事の場所には、${excludedScope}にあるものを選ばないこと${
+        excluded.kind === "area" ? "（エリア内の個別の施設も含む）" : ""
+      }
+- 車でその近くを通過するだけなら問題ない
+- ユーザーが指定した目的地は、この範囲にあっても必ず含めること（ユーザー指定の目的地が優先）
+- 代わりに、別の方面のスポットを提案すること`
+    : "";
+  const excludedChecklist = excluded
+    ? `
+- ${excludedScope}にある観光スポット・休憩地点・食事の場所をAIが追加しないこと（ユーザー指定の目的地は除く）`
+    : "";
+
   return `あなたは日本の車旅行の専門プランナーです。以下の条件で**2つの旅行プラン**をJSON形式で作成してください。
 
 # 旅行条件
@@ -2061,7 +2334,7 @@ ${dogContext}
 ${travelerContext}
 ${dateContext}
 ${englishContext}
-${planVariationInstruction}
+${planVariationInstruction}${excludedInstruction}
 
 # ルール
 1. 出発時間と到着希望時間の間に収めるよう努めること。ただし、ユーザー指定の目的地をすべて含めることのほうを優先する（収まらない場合の扱いはルール5に従う）
@@ -2339,5 +2612,5 @@ ${planVariationInstruction}
 - 食事アイテムにはlat, lng, addressを必ず含めること
 - 緯度経度は正確な値を使用してください。日本国内の実在する場所のみを提案してください
 - 2つのプランは必ず異なる内容にしてください（同じプランの重複は不可）
-- 各プランのplanNameとplanDescriptionは必須です${mustIncludeBlock}`;
+- 各プランのplanNameとplanDescriptionは必須です${excludedChecklist}${mustIncludeBlock}`;
 }

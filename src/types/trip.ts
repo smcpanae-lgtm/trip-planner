@@ -49,6 +49,18 @@ export interface TripConfig {
   useHighway: boolean; // true = highways allowed (default), false = general roads only
   travelDate?: string; // "YYYY-MM-DD" format, optional
   travelerProfile?: TravelerProfile;
+  /** 除外したい場所（おまかせON のときだけ使う。1か所・任意） */
+  excludedPlace?: ExcludedPlace;
+}
+
+/** 範囲の種類。point: 施設・地点 / area: 市区町村・地域。わからないときは未設定 */
+export type PlaceKind = "point" | "area";
+
+export interface ExcludedPlace {
+  name: string;
+  lat?: number;
+  lng?: number;
+  kind?: PlaceKind;
 }
 
 export interface GeocodedSpot {
@@ -109,6 +121,8 @@ export interface PlanCommentary {
   tips: string[];
   dogTips?: string[];
   overallDescription?: string;
+  /** 除外したい場所の周辺のスポットをサーバーが取り除いたとき、その場所名（1行表示用） */
+  excludedPlaceRemoved?: string;
 }
 
 export interface MealSpotInfo {
@@ -140,6 +154,8 @@ export interface SearchCandidate {
   lat?: number;
   lng?: number;
   placeId?: string;
+  /** 候補の種類（施設・地点か、市区町村・地域か）。わからないときは未設定 */
+  kind?: PlaceKind;
 }
 
 export interface RoutePolyline {

@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { searchPlaces, getPlaceDetails } from "@/lib/geocoding";
 import { Users, Baby } from "lucide-react";
-import type { TripConfig, DayPlan, Spot, SpotMeal, SearchCandidate, TravelerProfile } from "@/types/trip";
+import type { TripConfig, DayPlan, Spot, SpotMeal, SearchCandidate, TravelerProfile, ExcludedPlace } from "@/types/trip";
 import { useTripLang } from "@/lib/i18n/TripPlannerLanguageContext";
 
 interface TripFormProps {
@@ -205,7 +205,7 @@ function SearchInput({
       setQuery(c.name);
       setShowDropdown(false);
       setCandidates([]);
-      onSelect({ name: c.name, address: c.address, lat: c.lat, lng: c.lng });
+      onSelect({ name: c.name, address: c.address, lat: c.lat, lng: c.lng, kind: c.kind });
       return;
     }
     if (!c.placeId) return;
@@ -216,7 +216,8 @@ function SearchInput({
         setQuery(details.name);
         setShowDropdown(false);
         setCandidates([]);
-        onSelect(details);
+        // 範囲の種類は候補一覧の時点の情報を引き継ぐ（詳細取得では種類を取らない）
+        onSelect({ ...details, kind: c.kind });
       } else {
         setSearchError(true);
       }
@@ -315,6 +316,10 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [withDog, setWithDog] = useState(initialConfig?.withDog ?? false);
   const [aiOmakase, setAiOmakase] = useState(initialConfig?.aiOmakase ?? true);
+  // 除外したい場所（おまかせON のときだけ表示・送信する。空欄なら従来どおり）
+  const [excludedPlace, setExcludedPlace] = useState<ExcludedPlace>(
+    initialConfig?.excludedPlace ?? { name: "" }
+  );
   const [useHighway, setUseHighway] = useState(initialConfig?.useHighway ?? true);
   const [travelDate, setTravelDate] = useState(initialConfig?.travelDate ?? "");
   const [homeAddress, setHomeAddress] = useState("");
@@ -346,6 +351,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       setDays(initialConfig.days);
       setWithDog(initialConfig.withDog);
       setAiOmakase(initialConfig.aiOmakase ?? true);
+      setExcludedPlace(initialConfig.excludedPlace ?? { name: "" });
       setUseHighway(initialConfig.useHighway ?? true);
       setTravelDate(initialConfig.travelDate ?? "");
       if (initialConfig.travelerProfile) {
@@ -567,6 +573,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
   const handleSubmit = () => {
     if (!validate()) return;
     const hasProfile = travelerProfile.partyType || travelerProfile.ageRange || travelerProfile.hobbies.trim() || travelerProfile.hasChildren;
+    const excludedName = excludedPlace.name.trim();
     onSubmit({
       nights,
       days,
@@ -575,6 +582,7 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
       useHighway,
       travelDate: travelDate || undefined,
       travelerProfile: hasProfile ? travelerProfile : undefined,
+      excludedPlace: aiOmakase && excludedName ? { ...excludedPlace, name: excludedName } : undefined,
     });
   };
 
@@ -771,6 +779,39 @@ export default function TripForm({ onSubmit, isLoading, initialConfig }: TripFor
             />
           </div>
         </button>
+
+        {/* Place to exclude (optional, only with AI omakase) */}
+        {aiOmakase && (
+          <div className="px-1">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mb-2">
+              {t.form.excludedPlace.label}
+              <span className="text-xs text-slate-400 font-normal ml-1">{t.form.departureDate.optional}</span>
+            </label>
+            <div className="flex items-center gap-2">
+              <SearchInput
+                value={excludedPlace.name}
+                placeholder={t.form.excludedPlace.placeholder}
+                // 手で書き換えたら、候補から選んだときの座標・種類は使わない
+                onChange={(val) => setExcludedPlace({ name: val })}
+                onSelect={(c) =>
+                  setExcludedPlace({ name: c.name, lat: c.lat, lng: c.lng, kind: c.kind })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+              />
+              {excludedPlace.name && (
+                <button
+                  type="button"
+                  onClick={() => setExcludedPlace({ name: "" })}
+                  aria-label={t.form.excludedPlace.label}
+                  className="p-2 rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-1">{t.form.excludedPlace.hint}</p>
+          </div>
+        )}
 
         {/* Dog-friendly toggle */}
         <button
