@@ -29,6 +29,7 @@ import {
   formatCarRestrictionWarning,
   matchCarRestrictionArea,
 } from "@/lib/carRestriction";
+import { findNearbyDogShops } from "@/lib/dogFriendlyShops";
 
 /**
  * 到着希望を超過する見込みの日の警告（日の見出しの下に出す）。
@@ -423,6 +424,44 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                           </span>
                         )}
                       </div>
+
+                      {/* 管理人が犬連れで訪問したお店（食事地点の近くにあれば表示） */}
+                      {item.isMealSpot && withDog && (() => {
+                        const nearby = findNearbyDogShops(item.spot.lat, item.spot.lng);
+                        if (nearby.length === 0) return null;
+                        return (
+                          <div className="mt-1.5 rounded border border-amber-200 bg-amber-50 px-2 py-1.5">
+                            <p className="text-[11px] font-bold text-amber-800">
+                              {t.itinerary.visitedDogShops.title}
+                            </p>
+                            <ul className="mt-1 space-y-0.5">
+                              {nearby.map(({ shop, km }) => (
+                                <li key={shop.id} className="text-[11px] text-slate-600 leading-relaxed">
+                                  <a
+                                    href={shop.mapsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:underline"
+                                  >
+                                    <PawPrint className="w-3 h-3 shrink-0 text-amber-600" />
+                                    {shop.name}
+                                  </a>
+                                  <span className="ml-1.5 text-slate-400">
+                                    {t.itinerary.visitedDogShops.distance.replace(
+                                      "{km}",
+                                      km < 1 ? km.toFixed(1) : String(Math.round(km))
+                                    )}
+                                  </span>
+                                  {shop.note && <span className="ml-1.5">{shop.note}</span>}
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="mt-1 text-[10px] text-slate-400 leading-relaxed">
+                              {t.itinerary.visitedDogShops.note}
+                            </p>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

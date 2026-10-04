@@ -10,7 +10,8 @@
     "lint": "tsc --noEmit && eslint src --max-warnings 0",
     "heritage:check": "node scripts/heritage-unesco-check.mjs",
     "heritage:data": "node scripts/heritage-build-data.mjs",
-    "heritage:locales": "node scripts/heritage-build-locales.mjs"
+    "heritage:locales": "node scripts/heritage-build-locales.mjs",
+    "dog:add": "node scripts/dog-friendly-add.mjs"
   },
   "keywords": [],
   "author": "",

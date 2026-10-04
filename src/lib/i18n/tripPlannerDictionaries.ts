@@ -72,6 +72,8 @@ export interface TripPlannerDict {
     closing16: { bold: string; text: string };
     googleMap: string;
     petSearch: string;
+    /** 管理人が犬連れで訪問したお店（distance の {km} に距離） */
+    visitedDogShops: { title: string; distance: string; note: string };
     businessHours: string;
     commentary: { title: string };
     removed: { title: string; aiJudgment: string; unexplained: string; hint: string };
@@ -270,6 +272,11 @@ const ja: TripPlannerDict = {
     },
     googleMap: "Google Mapで確認",
     petSearch: "ペットOKで探す",
+    visitedDogShops: {
+      title: "🐾 管理人が犬連れで訪問したお店",
+      distance: "約{km}km",
+      note: "訪問時の情報です。同伴条件は変わることがあるため事前にご確認ください。",
+    },
     businessHours: "営業時間を事前にご確認ください",
     commentary: { title: "AIプランナーの解説" },
     excludedRemoved: "除外したい場所（{name}）の周辺に当たるスポットを取り除きました。前後の時刻は調整されていません。",
@@ -521,6 +528,11 @@ const en: TripPlannerDict = {
     },
     googleMap: "View on Google Maps",
     petSearch: "Find Pet-Friendly",
+    visitedDogShops: {
+      title: "🐾 Dog-friendly spots our team has visited",
+      distance: "approx. {km} km",
+      note: "Based on our visit. Pet policies may change, so please check in advance.",
+    },
     businessHours: "Please check opening hours in advance",
     commentary: { title: "AI Planner Commentary" },
     excludedRemoved: "Stops near the place you excluded ({name}) were removed. The times before and after them were not adjusted.",
@@ -772,6 +784,11 @@ const ko: TripPlannerDict = {
     },
     googleMap: "Google 지도로 확인",
     petSearch: "펫 OK로 찾기",
+    visitedDogShops: {
+      title: "🐾 운영자가 반려견과 방문한 가게",
+      distance: "약 {km}km",
+      note: "방문 당시 정보입니다. 동반 조건이 바뀔 수 있으니 미리 확인해 주세요.",
+    },
     businessHours: "영업시간을 사전에 확인해 주세요",
     commentary: { title: "AI 플래너 해설" },
     excludedRemoved: "제외할 장소({name}) 주변에 해당하는 스폿을 삭제했습니다. 앞뒤 시간은 조정되지 않았습니다.",
@@ -1021,6 +1038,11 @@ const zhCN: TripPlannerDict = {
     },
     googleMap: "在 Google 地图上确认",
     petSearch: "搜索宠物友好餐厅",
+    visitedDogShops: {
+      title: "🐾 站长带狗去过的餐厅",
+      distance: "约{km}公里",
+      note: "以上为到访时的信息。携宠条件可能变化，请事先确认。",
+    },
     businessHours: "请提前确认营业时间",
     commentary: { title: "AI 规划师解说" },
     excludedRemoved: "已删除位于排除地点（{name}）周边的景点。前后的时间未作调整。",
@@ -1267,6 +1289,11 @@ const zhTW: TripPlannerDict = {
     },
     googleMap: "在 Google 地圖上確認",
     petSearch: "搜尋寵物友善餐廳",
+    visitedDogShops: {
+      title: "🐾 站長帶狗去過的餐廳",
+      distance: "約{km}公里",
+      note: "以上為造訪時的資訊。攜寵條件可能變動，請事先確認。",
+    },
     businessHours: "請事先確認營業時間",
     commentary: { title: "AI 規劃師解說" },
     excludedRemoved: "已刪除位於排除地點（{name}）周邊的景點。前後的時間未作調整。",
@@ -1515,6 +1542,11 @@ const es: TripPlannerDict = {
     },
     googleMap: "Ver en Google Maps",
     petSearch: "Buscar con mascotas",
+    visitedDogShops: {
+      title: "🐾 Lugares que visitamos con nuestro perro",
+      distance: "aprox. {km} km",
+      note: "Información de nuestra visita. Las condiciones pueden cambiar; consulta antes de ir.",
+    },
     businessHours: "Confirma el horario de apertura con antelación",
     commentary: { title: "Comentario del planificador IA" },
     excludedRemoved: "Se quitaron las paradas cercanas al lugar excluido ({name}). Los horarios anteriores y posteriores no se ajustaron.",
@@ -1763,6 +1795,11 @@ const ru: TripPlannerDict = {
     },
     googleMap: "Посмотреть на Google Картах",
     petSearch: "Найти pet-friendly",
+    visitedDogShops: {
+      title: "🐾 Места, где мы были с собакой",
+      distance: "около {km} км",
+      note: "Информация на момент визита. Условия могут измениться — уточняйте заранее.",
+    },
     businessHours: "Заранее уточните часы работы",
     commentary: { title: "Комментарий AI-планировщика" },
     excludedRemoved: "Остановки рядом с исключённым местом ({name}) удалены. Время до и после них не пересчитано.",
