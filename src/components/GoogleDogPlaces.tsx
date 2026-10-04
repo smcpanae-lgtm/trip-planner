@@ -39,6 +39,20 @@ function normalize(name: string): string {
   return name.replace(/[\s　・･\-ー]/g, "").toLowerCase();
 }
 
+/**
+ * 【確認用の隠しスイッチ】URL に ?dogtest=1 が付いているときだけ、検索と表示を行う。
+ * 全員に公開するときは、この定数を true にし、下の useEffect 内の dogtest の判定（isTestSwitchOn）を外す。
+ */
+const PUBLIC_RELEASE = false;
+
+function isTestSwitchOn(): boolean {
+  try {
+    return new URLSearchParams(window.location.search).get("dogtest") === "1";
+  } catch {
+    return false;
+  }
+}
+
 /** 犬連れモードの食事地点で、Google の情報で犬同伴可のお店を別の囲みで表示する。何も無い・失敗したときは何も出さない */
 export default function GoogleDogPlaces({
   lat,
@@ -54,6 +68,8 @@ export default function GoogleDogPlaces({
   const [places, setPlaces] = useState<GooglePlace[]>([]);
 
   useEffect(() => {
+    // スイッチが無いときは、Googleへの検索を一切しない
+    if (!PUBLIC_RELEASE && !isTestSwitchOn()) return;
     let cancelled = false;
     fetchPlaces(lat, lng, lang).then((r) => {
       if (!cancelled) setPlaces(r);
