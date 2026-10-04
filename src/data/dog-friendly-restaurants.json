@@ -160,5 +160,14 @@
     "mapsUrl": "https://www.google.com/maps/place/Grower's+Kitchen(GK)/@36.3432279,138.4182679,606m/data=!3m2!1e3!4b1!4m6!3m5!1s0x601dc9136f140441:0x4982046e9009d538!8m2!3d36.3432236!4d138.4208428!16s%2Fg%2F11kj8l41hz?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
     "note": "",
     "visitedAt": ""
+  },
+  {
+    "id": "0x6018f6f7a155cb05:0x28ed06ef95b99848",
+    "name": "初代 鷺沼店",
+    "lat": 35.5766905,
+    "lng": 139.5805085,
+    "mapsUrl": "https://www.google.com/maps/place/%E5%88%9D%E4%BB%A3+%E9%B7%BA%E6%B2%BC%E5%BA%97/@35.5766948,139.5779336,612m/data=!3m2!1e3!4b1!4m6!3m5!1s0x6018f6f7a155cb05:0x28ed06ef95b99848!8m2!3d35.5766905!4d139.5805085!16s%2Fg%2F11df7lgchv?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
   }
 ]
