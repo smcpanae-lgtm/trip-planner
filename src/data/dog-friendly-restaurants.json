@@ -7,5 +7,149 @@
     "mapsUrl": "https://www.google.com/maps/place/%E4%BF%A1%E5%B7%9E%E3%81%9D%E3%81%B0+%E5%9C%B0%E7%B2%89%E3%82%84/@36.3391918,138.4979389,606m/data=!3m2!1e3!4b1!4m6!3m5!1s0x601dce9799fb4a81:0x9db36b72eaedaab5!8m2!3d36.3391875!4d138.5005138!16s%2Fg%2F11cs0qnp1n",
     "note": "",
     "visitedAt": ""
+  },
+  {
+    "id": "0x601f89c717bb6c2f:0xc53c9ff94586e78b",
+    "name": "ペニーレイン 那須店",
+    "lat": 37.0688889,
+    "lng": 140,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%83%9A%E3%83%8B%E3%83%BC%E3%83%AC%E3%82%A4%E3%83%B3+%E9%82%A3%E9%A0%88%E5%BA%97/@37.0688932,139.9974251,601m/data=!3m2!1e3!4b1!4m6!3m5!1s0x601f89c717bb6c2f:0xc53c9ff94586e78b!8m2!3d37.0688889!4d140!16s%2Fg%2F1tdqnrr8?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x6022731db13fd497:0x315ab109e6037f3d",
+    "name": "ペニーレイン つくば店",
+    "lat": 36.0363076,
+    "lng": 140.1365471,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%83%9A%E3%83%8B%E3%83%BC%E3%83%AC%E3%82%A4%E3%83%B3+%E3%81%A4%E3%81%8F%E3%81%B0%E5%BA%97/@36.0363076,140.1339722,17z/data=!3m2!4b1!5s0x60227317fbb69833:0x3962bf73c45c9509!4m6!3m5!1s0x6022731db13fd497:0x315ab109e6037f3d!8m2!3d36.0363076!4d140.1365471!16s%2Fg%2F12hr6m29h?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601e03a098d7aaab:0x6ee062049e77eb29",
+    "name": "新潟本店 ラ・ロカンダ・デル・ピットーレ岩原",
+    "lat": 36.9373439,
+    "lng": 138.8439879,
+    "mapsUrl": "https://www.google.com/maps/place/%E6%96%B0%E6%BD%9F%E6%9C%AC%E5%BA%97+%E3%83%A9%E3%83%BB%E3%83%AD%E3%82%AB%E3%83%B3%E3%83%80%E3%83%BB%E3%83%87%E3%83%AB%E3%83%BB%E3%83%94%E3%83%83%E3%83%88%E3%83%BC%E3%83%AC%E5%B2%A9%E5%8E%9F/@36.9373482,138.841413,602m/data=!3m2!1e3!4b1!4m6!3m5!1s0x601e03a098d7aaab:0x6ee062049e77eb29!8m2!3d36.9373439!4d138.8439879!16s%2Fg%2F1thd6rtk?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd3518f73dd97:0x40962ffc83e44761",
+    "name": "石臼挽き蕎麦 東間",
+    "lat": 36.3167641,
+    "lng": 138.6306847,
+    "mapsUrl": "https://www.google.com/maps/place/%E7%9F%B3%E8%87%BC%E6%8C%BD%E3%81%8D%E8%95%8E%E9%BA%A6+%E6%9D%B1%E9%96%93/@36.3167641,138.6281098,17z/data=!3m1!4b1!4m6!3m5!1s0x601dd3518f73dd97:0x40962ffc83e44761!8m2!3d36.3167641!4d138.6306847!16s%2Fg%2F1tfq99gy?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd365d72c1377:0x9427c7b22eb0354d",
+    "name": "信州そば処 きりさと",
+    "lat": 36.3347478,
+    "lng": 138.6309933,
+    "mapsUrl": "https://www.google.com/maps/place/%E4%BF%A1%E5%B7%9E%E3%81%9D%E3%81%B0%E5%87%A6+%E3%81%8D%E3%82%8A%E3%81%95%E3%81%A8/@36.3347478,138.6284184,17z/data=!3m1!4b1!4m6!3m5!1s0x601dd365d72c1377:0x9427c7b22eb0354d!8m2!3d36.3347478!4d138.6309933!16s%2Fg%2F1tf6m8ql?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd385d6723a63:0xd36dc29b2822b8cb",
+    "name": "川上庵本店",
+    "lat": 36.3562621,
+    "lng": 138.633816,
+    "mapsUrl": "https://www.google.com/maps/place/%E5%B7%9D%E4%B8%8A%E5%BA%B5%E6%9C%AC%E5%BA%97/@36.3347407,138.5897935,13z/data=!4m10!1m2!2m1!1z6Lu95LqV5rKiIOW3neS4iuW6tQ!3m6!1s0x601dd385d6723a63:0xd36dc29b2822b8cb!8m2!3d36.3562621!4d138.633816!15sChPou73kupXmsqIg5bed5LiK5bq1IgOIAQFaFiIU6Lu95LqV5rKiIOW3neS4iiDlurWSARBzb2JhX25vb2RsZV9zaG9wmgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVF4Y0V0MU5rRlJFQUXgAQD6AQQIABAl!16s%2Fg%2F1thgh388?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dbd26debac1fb:0x5f1f22bf60a9cb42",
+    "name": "手打百藝 おお西",
+    "lat": 36.4065125,
+    "lng": 138.2533385,
+    "mapsUrl": "https://www.google.com/maps/place/%E6%89%8B%E6%89%93%E7%99%BE%E8%97%9D+%E3%81%8A%E3%81%8A%E8%A5%BF/@36.4065125,138.2507636,17z/data=!3m1!4b1!4m6!3m5!1s0x601dbd26debac1fb:0x5f1f22bf60a9cb42!8m2!3d36.4065125!4d138.2533385!16s%2Fg%2F1xtf1n8s?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x6019a4eee56e2885:0x8c46c74469893a90",
+    "name": "OCEAN CAFE FULLHOUSE（オーシャンカフェ フルハウス）",
+    "lat": 35.2409766,
+    "lng": 139.1493761,
+    "mapsUrl": "https://www.google.com/maps/place/OCEAN+CAFE+FULLHOUSE%EF%BC%88%E3%82%AA%E3%83%BC%E3%82%B7%E3%83%A3%E3%83%B3%E3%82%AB%E3%83%95%E3%82%A7+%E3%83%95%E3%83%AB%E3%83%8F%E3%82%A6%E3%82%B9%EF%BC%89/@35.240981,139.1468012,615m/data=!3m2!1e3!4b1!4m6!3m5!1s0x6019a4eee56e2885:0x8c46c74469893a90!8m2!3d35.2409766!4d139.1493761!16s%2Fg%2F1tqtxyll?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601853af954808df:0x67a2d2ce42e29ab9",
+    "name": "ちがさき丸食堂",
+    "lat": 35.3175313,
+    "lng": 139.3962039,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%81%A1%E3%81%8C%E3%81%95%E3%81%8D%E4%B8%B8%E9%A3%9F%E5%A0%82/@35.3175817,139.3937106,17z/data=!4m10!1m2!2m1!1z44Gh44GM44GV44GN5Li4!3m6!1s0x601853af954808df:0x67a2d2ce42e29ab9!8m2!3d35.3175313!4d139.3962039!15sCg_jgaHjgYzjgZXjgY3kuLhaFCIS44GhIOOBjCDjgZXjgY0g5Li4kgETamFwYW5lc2VfcmVzdGF1cmFudJoBRENpOURRVWxSUVVOdlpFTm9kSGxqUmpsdlQyczVRazFWVG1oT2JWRjNUakZXVVZKclVrTlZWbWgyV1RKV1JtUXhSUkFC4AEA-gEECAAQGA!16s%2Fg%2F11v3txy_pw?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601c6a1f67c70acd:0x358a7391092d6fd0",
+    "name": "そばきり祥香",
+    "lat": 35.8755791,
+    "lng": 138.3226517,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%81%9D%E3%81%B0%E3%81%8D%E3%82%8A%E7%A5%A5%E9%A6%99/@35.8755791,138.3200768,17z/data=!3m1!4b1!4m6!3m5!1s0x601c6a1f67c70acd:0x358a7391092d6fd0!8m2!3d35.8755791!4d138.3226517!16s%2Fg%2F1v_ncl9c?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x6022c3f06eb3e471:0x8a50b77d35d2859b",
+    "name": "浜茶屋網元",
+    "lat": 35.5186817,
+    "lng": 140.4420636,
+    "mapsUrl": "https://www.google.com/maps/place/%E6%B5%9C%E8%8C%B6%E5%B1%8B%E7%B6%B2%E5%85%83/@35.5186817,140.4394887,17z/data=!4m7!3m6!1s0x6022c3f06eb3e471:0x8a50b77d35d2859b!8m2!3d35.5186817!4d140.4420636!10e1!16s%2Fg%2F1tds6tqn?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd384968d2f8f:0x6d97c89c8385318c",
+    "name": "軽井沢葡萄房",
+    "lat": 36.3585826,
+    "lng": 138.6334936,
+    "mapsUrl": "https://www.google.com/maps/place/%E8%BB%BD%E4%BA%95%E6%B2%A2%E8%91%A1%E8%90%84%E6%88%BF/@36.3430245,138.5944362,14z/data=!4m10!1m2!2m1!1z6JGh6JCE5YKN44CA6Lu95LqV5rKi!3m6!1s0x601dd384968d2f8f:0x6d97c89c8385318c!8m2!3d36.3585826!4d138.6334936!15sChXokaHokITlgo3jgIDou73kupXmsqJaFiIU6JGh6JCEIOWCjSDou73kupXmsqKSARJpdGFsaWFuX3Jlc3RhdXJhbnSaASNDaFpEU1VoTk1HOW5TMFZKUTBGblRVTm5kSE5RYmxoUkVBReABAPoBBAhzECQ!16s%2Fg%2F11s4f9x0r_?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd387cbf0cb13:0x276f98eaac7d9951",
+    "name": "リビスコ 軽井沢本店",
+    "lat": 36.3582684,
+    "lng": 138.6367794,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%83%AA%E3%83%93%E3%82%B9%E3%82%B3+%E8%BB%BD%E4%BA%95%E6%B2%A2%E6%9C%AC%E5%BA%97/@36.3582684,138.6342045,17z/data=!3m1!4b1!4m6!3m5!1s0x601dd387cbf0cb13:0x276f98eaac7d9951!8m2!3d36.3582684!4d138.6367794!16s%2Fg%2F1tsypw51?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd3887199f0fb:0x93176cf6789d7b6d",
+    "name": "ちもと総本店",
+    "lat": 36.3601837,
+    "lng": 138.6372223,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%81%A1%E3%82%82%E3%81%A8%E7%B7%8F%E6%9C%AC%E5%BA%97/@36.3601837,138.6346474,17z/data=!3m1!4b1!4m6!3m5!1s0x601dd3887199f0fb:0x93176cf6789d7b6d!8m2!3d36.3601837!4d138.6372223!16s%2Fg%2F1tk8c5wf?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x60198f949810a76b:0xcd01aaed48d0b8f4",
+    "name": "なな輝",
+    "lat": 35.0833438,
+    "lng": 138.8584187,
+    "mapsUrl": "https://www.google.com/maps/place/%E3%81%AA%E3%81%AA%E8%BC%9D/@35.0833482,138.8558438,616m/data=!3m1!1e3!4m6!3m5!1s0x60198f949810a76b:0xcd01aaed48d0b8f4!8m2!3d35.0833438!4d138.8584187!16s%2Fg%2F1tgx21v_?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
+  },
+  {
+    "id": "0x601dd372f8ecb77d:0x3a3ebc246a16ec4f",
+    "name": "TsuruTonTan UDON NOODLE Brasserie 軽井沢",
+    "lat": 36.3569016,
+    "lng": 138.6342282,
+    "mapsUrl": "https://www.google.com/maps/place/TsuruTonTan+UDON+NOODLE+Brasserie+%E8%BB%BD%E4%BA%95%E6%B2%A2/@36.3569059,138.6316533,606m/data=!3m2!1e3!4b1!4m6!3m5!1s0x601dd372f8ecb77d:0x3a3ebc246a16ec4f!8m2!3d36.3569016!4d138.6342282!16s%2Fg%2F11nmt3j0cn?authuser=0&entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D",
+    "note": "",
+    "visitedAt": ""
   }
 ]
