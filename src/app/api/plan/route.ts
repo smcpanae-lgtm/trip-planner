@@ -15,6 +15,7 @@ import {
   type DayScheduleCheck,
 } from "@/lib/scheduleCheck";
 import { matchCarRestrictionArea } from "@/lib/carRestriction";
+import { buildDogRunSapaInstruction } from "@/lib/dogRunSapa";
 
 export const runtime = "nodejs";
 
@@ -2212,7 +2213,10 @@ ${mustIncludeNames.map((n) => `  - ${n}`).join("\n")}`
   - プランA・プランBともに: descriptionに「⚠️ 施設内はペット入場不可の場合があります。周辺の散歩や外観見学は可能なことが多いですが、事前に施設へご確認ください。入場できない場合は車内待機または近隣のペット預かり施設をご利用ください」と明記する
   - プランBでは追加で: 同じ目的地を含めた上で、近隣に犬同伴可能なスポット（ドッグラン・ペットOK公園・テラス席OKカフェ・店内ペットOKカフェ等）があればルートに**追加**して提案する（代替ではなく追加）
   - tipsに犬が入場不可の可能性がある施設についての注意事項と対策を含める
-  - 犬の入場可否を理由に、removedSpotsへユーザー指定の目的地を記載することは禁止（犬と関係のない理由で物理的に訪問できない場合の扱いはルール5に従う）`
+  - 犬の入場可否を理由に、removedSpotsへユーザー指定の目的地を記載することは禁止（犬と関係のない理由で物理的に訪問できない場合の扱いはルール5に従う）${
+        // ドッグランのあるSA・PAは高速道路を使うプランのときだけ渡す（一般道のみなら指示文は変えない）
+        body.useHighway !== false ? buildDogRunSapaInstruction() : ""
+      }`
     : "";
 
   const dateContext = body.travelDate

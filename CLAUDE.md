@@ -73,6 +73,24 @@ git push origin master
 - 有料 API は使わない（URL から店名と座標を取り出すだけ）。
 - 登録後の commit は対象 JSON のみ。push はユーザーの指示を待つ。
 
+## ドッグランのある SA・PA の登録手順
+
+犬連れモードで、走行ルート上の休憩候補として AI に渡すための一覧。データは `src/data/dog-run-sapa.json`（座標なし）。
+
+- **各高速道路会社の公式サイトで裏づけが取れた施設だけ**を登録する。第三者サイトは候補探しの手がかりにだけ使い、文章や一覧を写さない。
+  公式で確認できないものは登録せず、「公式未確認」として報告する。
+- 1件の項目：`id`・`name`（上り下りを含まない施設名）・`company`・`road`・`direction`（`"上り"`／`"下り"`／`"上下共用"`）・
+  `prefecture`（公式の住所から）・`note`（休止期間・利用時間などを**公式の表記のまま**。無ければ空文字）・`sourceUrl`（裏づけた公式ページ）・`confirmedAt`（確認日 YYYY-MM-DD）。
+- 上り・下りは別々の項目にする。1か所を両方向で使う施設（京丹波PA・宝塚北SAなど）は `"上下共用"` の1件にする。
+  片側にしか無く反対側から歩いて行ける施設は、ある側の方向で登録し、その旨を `note` に書く（例：高坂SA・佐野SA）。
+- `id` の付け方：東日本 `east-<driveplaza の7桁>-<1=上り/2=下り>`、中日本 `central-<sapainfoid>`、西日本 `west-<5桁>`。
+  本四高速 `jb-<施設名のローマ字>-<up/down>`（例：`jb-awaji-up`）。それ以外の会社も `<会社の略称>-<施設名のローマ字>-<up/down/both>` のように重複しない名前にする。
+- AI への渡し方は `src/lib/dogRunSapa.ts`（犬連れモードかつ高速道路を使うプランのときだけ、全件を1件1行で渡す）。JSON に足すだけで AI に渡る。
+- 公式の一覧ページ（2026-10-04 時点）：東日本 driveplaza の SA・PA 検索で「ドッグラン」、中日本 `https://sapa.c-nexco.co.jp/guide/dogrun/`、
+  西日本 `https://www.w-holdings.co.jp/sapa/json/map-search.json` の `service_dog_run`、本四高速 `https://www.jb-honshi.co.jp/customer_index/sapa/dogrun/`。
+- 追加・修正したら `node -e "JSON.parse(require('fs').readFileSync('src/data/dog-run-sapa.json','utf8'))"` で形式を確認し、件数（会社別）を報告する。
+  `src/lib/rest-stops.ts` の既存の休憩地点データとは別物なので、そちらは消さない。
+
 ## その他の前提
 
 - 世界遺産の訪問記録は**ブラウザ内保存のみ**。この仕組みは変更しない。
