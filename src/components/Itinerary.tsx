@@ -30,6 +30,7 @@ import {
   matchCarRestrictionArea,
 } from "@/lib/carRestriction";
 import { findNearbyDogShops } from "@/lib/dogFriendlyShops";
+import GoogleDogPlaces from "@/components/GoogleDogPlaces";
 
 /**
  * 到着希望を超過する見込みの日の警告（日の見出しの下に出す）。
@@ -428,8 +429,9 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                       {/* 管理人が犬連れで訪問したお店（食事地点の近くにあれば表示） */}
                       {item.isMealSpot && withDog && (() => {
                         const nearby = findNearbyDogShops(item.spot.lat, item.spot.lng);
-                        if (nearby.length === 0) return null;
                         return (
+                          <>
+                          {nearby.length > 0 && (
                           <div className="mt-1.5 rounded border border-amber-200 bg-amber-50 px-2 py-1.5">
                             <p className="text-[11px] font-bold text-amber-800">
                               {t.itinerary.visitedDogShops.title}
@@ -460,6 +462,14 @@ export default function Itinerary({ itineraries, onSpotHover, withDog }: Itinera
                               {t.itinerary.visitedDogShops.note}
                             </p>
                           </div>
+                          )}
+                          {/* Google の情報で犬同伴可のお店（管理人訪問の枠とは別の囲み） */}
+                          <GoogleDogPlaces
+                            lat={item.spot.lat}
+                            lng={item.spot.lng}
+                            visitedShops={nearby.map((n) => n.shop)}
+                          />
+                          </>
                         );
                       })()}
                     </div>

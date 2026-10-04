@@ -21,7 +21,7 @@ const MAX_SHOPS = 3;
 
 const shops: DogFriendlyShop[] = shopsData;
 
-function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+export function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
