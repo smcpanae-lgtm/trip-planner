@@ -34,6 +34,12 @@ const TOOLS_JA = [
     title: "ドライブ旅行コラム",
     description: "持ち物リストや渋滞回避のコツなど、ドライブ旅行に役立つ情報をまとめて紹介",
   },
+  {
+    href: "https://bookscan-web.vercel.app/",
+    title: "ホンスキャン",
+    description: "スマホで本を撮ってPDF化・OCR",
+    external: true,
+  },
 ];
 
 // /en/life-map からのリンク用。関連ツールのうち英語で案内できるものだけを掲載。
@@ -52,6 +58,12 @@ const TOOLS_EN = [
     href: "/en/shiori",
     title: "AI Travel Journal Maker",
     description: "Turn your photos and notes into a travel journal, free — no app required.",
+  },
+  {
+    href: "https://bookscan-web.vercel.app/en/",
+    title: "HonScan",
+    description: "Scan books to PDF with your phone",
+    external: true,
   },
 ];
 
@@ -72,6 +84,12 @@ const TOOLS_ZH_HANT = [
     href: "/en/shiori",
     title: "AI Travel Journal Maker",
     description: "Turn your photos and notes into a travel journal, free — no app required.",
+  },
+  {
+    href: "https://bookscan-web.vercel.app/en/",
+    title: "HonScan",
+    description: "Scan books to PDF with your phone",
+    external: true,
   },
 ];
 
@@ -109,6 +127,7 @@ export default function SiteFooter({
                 <li key={tool.href} className="flex items-center gap-2">
                   <a
                     href={tool.href}
+                    {...(tool.external ? { target: "_blank", rel: "noopener" } : {})}
                     title={tool.description}
                     className="text-sm sm:text-base font-bold text-slate-700 hover:text-blue-600 hover:underline transition-colors"
                   >
@@ -137,6 +156,7 @@ export default function SiteFooter({
               <li key={tool.href}>
                 <a
                   href={tool.href}
+                  {...(tool.external ? { target: "_blank", rel: "noopener" } : {})}
                   className="block h-full p-4 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-colors"
                 >
                   <p className="text-sm font-bold text-slate-800">{tool.title}</p>
