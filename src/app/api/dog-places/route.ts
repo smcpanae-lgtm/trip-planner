@@ -11,10 +11,11 @@ const API_KEY = process.env.GOOGLE_MAPS_API_KEY || "";
  *   月の上限は Google Cloud 側の割り当てで管理する（ここでは数えない）。
  * - Google の規約により、結果は保存しない（サーバー側のキャッシュもしない）。
  * - 失敗・上限超過のときはエラーを返さず、空の一覧を返す（画面には枠を出さないだけにする）。
- */
+ * - 検索のたびに、サーバーの記録へ「成功／失敗・取得件数・犬同伴可の件数・失敗の種類」を1行残す（キー・店名は残さない）。
+ * - Google からは標準の並び（人気順）で上限の20件を取り、犬同伴可の店だけを返す。近い順の並べ替えと件数の絞り込みは画面側で行う。
+ * - 対象は飲食店（レストラン・カフェ）に絞る。 */
 
 const SEARCH_RADIUS_M = 5000;
-const MAX_RETURN = 5;
 const SUPPORTED_LANGS = ["ja", "en", "ko", "zh-CN", "zh-TW", "es", "ru"];
 
 // 1つの回線からの呼び出し制限（一時的な記憶。サーバーが入れ替わると数え直しになる）
@@ -55,6 +56,15 @@ interface NearbyPlace {
   googleMapsUri?: string;
 }
 
+/** 検索結果の記録。キー・店名・座標は含めない */
+function logSearch(result: "success" | "failure", detail: { fetched?: number; dogOk?: number; error?: string }) {
+  const parts = [`[dog-places] result=${result}`];
+  if (detail.fetched !== undefined) parts.push(`fetched=${detail.fetched}`);
+  if (detail.dogOk !== undefined) parts.push(`dogOk=${detail.dogOk}`);
+  if (detail.error) parts.push(`error=${detail.error}`);
+  console.log(parts.join(" "));
+}
+
 const empty = () => NextResponse.json({ places: [] }, { headers: { "Cache-Control": "no-store" } });
 
 export async function GET(request: NextRequest) {
@@ -68,8 +78,14 @@ export async function GET(request: NextRequest) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < 20 || lat > 46 || lng < 122 || lng > 154) {
     return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 });
   }
-  if (!API_KEY) return empty();
-  if (!allowRequest(getIp(request))) return empty();
+  if (!API_KEY) {
+    logSearch("failure", { error: "no_api_key" });
+    return empty();
+  }
+  if (!allowRequest(getIp(request))) {
+    logSearch("failure", { error: "local_rate_limit" });
+    return empty();
+  }
 
   try {
     const res = await fetch("https://places.googleapis.com/v1/places:searchNearby", {
@@ -82,7 +98,6 @@ export async function GET(request: NextRequest) {
       body: JSON.stringify({
         includedTypes: ["restaurant", "cafe"],
         maxResultCount: 20,
-        rankPreference: "DISTANCE",
         languageCode: lang,
         regionCode: "JP",
         locationRestriction: {
@@ -93,11 +108,19 @@ export async function GET(request: NextRequest) {
     });
     if (!res.ok) {
       // 上限超過（429）・認証エラーなど。エラーの種類だけ記録する（キーは出さない）
-      console.warn(`[dog-places] Google returned HTTP ${res.status}`);
+      let status = "";
+      try {
+        const body = (await res.json()) as { error?: { status?: string } };
+        status = body.error?.status ? `_${body.error.status}` : "";
+      } catch {
+        // 本文が読めなくてもHTTPの番号は残す
+      }
+      logSearch("failure", { error: `http_${res.status}${status}` });
       return empty();
     }
     const data = (await res.json()) as { places?: NearbyPlace[] };
-    const places = (data.places || [])
+    const fetched = data.places || [];
+    const places = fetched
       .filter(
         (p) =>
           p.allowsDogs === true &&
@@ -106,7 +129,6 @@ export async function GET(request: NextRequest) {
           typeof p.location?.latitude === "number" &&
           typeof p.location?.longitude === "number"
       )
-      .slice(0, MAX_RETURN)
       .map((p) => ({
         id: p.id ?? p.googleMapsUri!,
         name: p.displayName!.text!,
@@ -114,9 +136,10 @@ export async function GET(request: NextRequest) {
         lng: p.location!.longitude!,
         mapsUrl: p.googleMapsUri!,
       }));
+    logSearch("success", { fetched: fetched.length, dogOk: places.length });
     return NextResponse.json({ places }, { headers: { "Cache-Control": "no-store" } });
   } catch (e) {
-    console.warn(`[dog-places] request failed: ${e instanceof Error ? e.name : "unknown"}`);
+    logSearch("failure", { error: `exception_${e instanceof Error ? e.name : "unknown"}` });
     return empty();
   }
 }
